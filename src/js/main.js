@@ -2,8 +2,9 @@ mainApp.controller('MainCtrl', [
 	'$scope',
 	'$timeout',
 	'$interval',
+	'$http',
 	'MethodFactory',
-	function MainCtrl($s, $timeout, $interval, MF) {
+	function MainCtrl($s, $timeout, $interval, $http, MF) {
 		'use strict';
 
 		function init() {
@@ -18,6 +19,11 @@ mainApp.controller('MainCtrl', [
 		}
 
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
+
+		$http.get('http://www.w3schools.com/angular/customers_mysql.php')
+			.then(function (response) {
+				$s.names = response.data.records;
+			});
 
 		//	initialize scoped variables
 		_.assign($s, {

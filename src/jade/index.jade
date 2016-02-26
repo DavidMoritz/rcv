@@ -25,6 +25,10 @@ html(ng-app='mainApp')
 			li(ng-repeat='item in items') {{item}}
 		button(onclick='window.location.reload()') Reset
 		button.submit Submit
+		table
+			tr(ng-repeat="x in names")
+				td {{x.Name}}
+				td {{x.Country}}
 		script(src='inc/lib.js')
 		script(src='inc/main.js')
 //		| @@javascriptReplaceFiles
