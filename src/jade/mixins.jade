@@ -1,0 +1,12 @@
+//- all 4 sizes are passed into the mixin in case a different ratio size is provided for the various sizes
+mixin col(xs, ms, sm, md, lg)
+	- items = []
+	- (xs > 1 && xs <= 12) ? items.push('col-xs-' + xs) : undefined
+	- (ms > 1 && ms <= 12) ? items.push('col-ms-' + ms) : undefined
+	- (sm > 1 && sm <= 12) ? items.push('col-sm-' + sm) : undefined
+	- (md > 1 && md <= 12) ? items.push('col-md-' + md) : undefined
+	- (lg > 1 && lg <= 12) ? items.push('col-lg-' + lg) : undefined
+	- (!items.length) ? items.push('col-xs-12') : undefined
+	section(class=items.join(' '))&attributes(attributes)
+		if block
+			block

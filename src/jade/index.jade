@@ -1,0 +1,31 @@
+include mixins
+
+doctype html
+html(ng-app='mainApp')
+	head
+		meta(charset='UTF-8')
+		meta(name='description', content='My New Angular App')
+		meta(name='author', content='Moritz Company')
+		meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+		meta(name='apple-mobile-web-app-capable' content='yes')
+		meta(name='apple-touch-fullscreen' content='yes')
+		title My New Angular App
+		link(rel='shortcut icon', href='favicon.ico')
+		link(rel='stylesheet', href='https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css')
+		link(rel='stylesheet', href='inc/main.css')
+		script(src='inc/angular.js')
+	body(ng-cloak, ng-controller='MainCtrl')
+		.container
+			header.hide
+				h1 My New Angular App
+			.jumbotron
+				h2.text-center Success!
+		h2 Order by Preference
+		ul#sortable(ui-sortable, ng-model='items')
+			li(ng-repeat='item in items') {{item}}
+		button(onclick='window.location.reload()') Reset
+		button.submit Submit
+		script(src='inc/lib.js')
+		script(src='inc/main.js')
+//		| @@javascriptReplaceFiles
+

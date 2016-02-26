@@ -1,0 +1,33 @@
+{
+  "name": "new-angular",
+  "version": "0.0.1",
+  "description": "Initualize a new Angular app",
+  "homepage": "http://moritzcompany.com",
+  "author": "Moritz Company",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davidmoritz/init-angular.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davidmoritz/init-angular/issues"
+  },
+  "scripts": {
+    "install": "bower install"
+  },
+  "devDependencies": {
+    "bower": "latest",
+    "grunt": "latest",
+    "grunt-cli": "latest",
+    "grunt-contrib-concat": "latest",
+    "grunt-contrib-copy": "latest",
+    "grunt-contrib-jade": "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-contrib-less": "latest",
+    "grunt-contrib-uglify": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-pleeease": "~0.0.5",
+    "grunt-replace": "latest",
+    "grunt-jscs": "latest",
+    "jshint-stylish": "latest"
+  }
+}

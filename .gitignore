@@ -1,0 +1,17 @@
+# Folders to ignore
+bower_components
+node_modules/
+dist/
+lib
+
+# Extensions
+*.orig
+*.log
+
+# OS / Editor Files
+Thumbs.db
+.cache
+.project
+.settings
+*.sublime-project
+*.sublime-workspace
