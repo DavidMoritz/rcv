@@ -1,9 +1,13 @@
+/* First 3 values should come from API */
 var votes = [["Pie","Cake","Candy","Soda","Pizza"],["Pizza","Soda","Candy","Cake","Pie"],["Candy","Cake","Soda","Pie","Pizza"],["Cake","Candy","Soda","Pizza","Pie"],["Soda","Pie","Cake","Pizza","Candy"],["Pie","Pizza","Cake","Soda","none"],["Pizza", "Candy", "Pie", "Soda", "Cake"]];
 var names = ["Pie", "Cake", "Candy", "Soda", "Pizza"];
-var totcands = 5;
-var totvotes = 7;
-var candcount = 5;
-var votecount = 7;
+var seats = 3;
+/* end API */
+
+var totcands = names.length;
+var totvotes = votes.length;
+var candcount = names.length;
+var votecount = votes.length;
 var votenum = new Array();
 var outputstring = ' ';
 var totlivevotes = 0;
@@ -14,9 +18,8 @@ var mincount;
 var eliminated;
 var elimcount;
 var roundnum = 0;
-var quota = 1.75;
-var seats = 3;
-var voteweight = [1, 1, 1, 1, 1, 1, 1];
+var quota = (Math.ceil(totvotes * 100 / (seats + 1))) / 100;
+var voteweight = new Array(totvotes);
 var livecount;
 var elected = new Array();
 var quotacount;
@@ -24,6 +27,9 @@ var greatest;
 var maxcount;
 var roundelected;
 
+for(var i = 0; i < totvotes; i++) {
+    voteweight[i] = 1;
+} 
 
 $(function() {
     $(".voteset").click(voteset);

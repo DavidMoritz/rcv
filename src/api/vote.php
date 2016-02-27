@@ -1,8 +1,9 @@
 <?php
+include("config.php");
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 
-$conn = new mysqli("myServer", "myUser", "myPassword", "Northwind");
+$conn = new mysqli($DB_SERVER, $DB_USER, $DB_PASSWORD, $DB_DATABASE);
 
 $result = $conn->query("SELECT CompanyName, City, Country FROM Customers");
 

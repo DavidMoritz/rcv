@@ -28,7 +28,10 @@ mainApp.controller('MainCtrl', [
 		//	initialize scoped variables
 		_.assign($s, {
 			time: moment().format(timeFormat),
-			items: ['Cake', 'Cookies', 'Pie', 'Cheeses', 'Coffee', 'Brownies', 'Ice-cream']
+			items: ['Cake', 'Cookies', 'Pie', 'Cheeses', 'Coffee', 'Brownies', 'Ice-cream'],
+			votes: [['Pie','Cake','Candy','Soda','Pizza'],['Pizza','Soda','Candy','Cake','Pie'],['Candy','Cake','Soda','Pie','Pizza'],['Cake','Candy','Soda','Pizza','Pie'],['Soda','Pie','Cake','Pizza','Candy'],['Pie','Pizza','Cake','Soda','none'],['Pizza', 'Candy', 'Pie', 'Soda', 'Cake']],
+			names: ['Pie', 'Cake', 'Candy', 'Soda', 'Pizza'],
+			seats: 3
 		});
 	}
 ]);
