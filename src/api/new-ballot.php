@@ -7,11 +7,14 @@ $data = array();
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 // checking for blank values.
-if (empty($_POST['ballot_id']))
-	$errors['ballot_id'] = 'Ballot ID is required.';
+if (empty($_POST['name']))
+	$errors['name'] = 'Name is required.';
 
-if (empty($_POST['vote']))
-	$errors['vote'] = 'Vote is required.';
+if (empty($_POST['positions']))
+	$errors['positions'] = 'Positions is required.';
+
+if (empty($_POST['created']))
+	$errors['created'] = 'Created is required.';
 
 if (!empty($errors)) {
 	$data['errors']  = $errors;
@@ -20,10 +23,12 @@ if (!empty($errors)) {
 } else {
 	$query = "
 		INSERT INTO 
-			votes (`ballot_id`, `vote`, `ip_address`)
+			ballots (`name`, `positions`, `created_by`)
 		VALUES 
-			(". $_POST['ballot_id'] .",'". $_POST['vote'] ."','". $_SERVER['REMOTE_ADDR'] ."');";
+			('". $_POST['name'] ."','". $_POST['positions'] ."','". $_POST['created'] ."');";
+	
 	$sth = $dbh->prepare($query);
 	$sth->execute();
+	echo $dbh->lastInsertId();
 }
 ?>

@@ -42,6 +42,14 @@ module.exports = function exportCopy(grunt) {
 					dest: '<%= distRoot %>/img'
 				},
 
+				// copy all api files too
+				{
+					expand: true,
+					cwd: 'src/api',
+					src: ['**'],
+					dest: '<%= distRoot %>/api'
+				},
+
 				// copy favicon & apple-icon
 				{
 					expand: true,

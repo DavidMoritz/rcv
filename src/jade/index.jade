@@ -14,19 +14,46 @@ html(ng-app='mainApp')
 		link(rel='stylesheet', href='https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css')
 		link(rel='stylesheet', href='inc/main.css')
 		script(src='inc/angular.js')
-	body(ng-cloak, ng-controller='MainCtrl')
+	body(ng-cloak ng-controller='MainCtrl')
 		.container
 			header.hide
 				h1 My New Angular App
 			.jumbotron
 				h2.text-center Success!
 		h2 Order by Preference
-		ul#sortable(ui-sortable, ng-model='items')
+		ul#sortable(ui-sortable ng-model='items' ng-hide="true")
 			li(ng-repeat='item in items') {{item}}
 		button(onclick='window.location.reload()') Reset
 		button.submit Submit
 		button(onclick='runTheCode()') Run the Code
-		table
+		form(name='ballotForm' ng-submit='newBallot()' ng-hide='ballotId')
+			.form-group
+				label Name
+				input.form-control(name="name" ng-model="ballot.name")
+				span(ng-show='errorName') {{errorName}}
+			.form-group
+				label Positions
+				input.form-control(name="positions" ng-model="ballot.positions")
+				span(ng-show='errorPositions') {{errorPositions}}
+			.form-group
+				label Created
+				input.form-control(name="created" ng-model="ballot.created")
+				span(ng-show='errorCreated') {{errorCreated}}
+			button(type='submit') Submit
+		div(ng-show='ballotId')
+			form(name='entriesForm' ng-submit='addEntry()')
+				.form-group
+					label New Entry (use ENTER to add)
+					input.form-control(name="entryInput" ng-model="entryInput")
+					span(ng-show='errorEntry && !entryInput') {{errorEntry}}
+				button(type='submit') Add Entry
+				button(type='button' ng-click="submitEntries()") Submit
+			h2 Current Entry List
+				h5(ng-repeat="entry in entries track by $index")
+					strong {{$index + 1}}&nbsp;
+					| {{entry}}&nbsp;
+					i.fa.fa-close.pointer(ng-click="removeEntry($index)")
+		table(ng-hide="true")
 			tr(ng-repeat="x in names")
 				td {{x.Name}}
 				td {{x.Country}}
