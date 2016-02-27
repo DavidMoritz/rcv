@@ -8,6 +8,9 @@ lib
 *.orig
 *.log
 
+# Config files
+/src/api/config.php
+
 # OS / Editor Files
 Thumbs.db
 .cache

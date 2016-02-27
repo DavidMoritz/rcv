@@ -25,11 +25,15 @@ html(ng-app='mainApp')
 			li(ng-repeat='item in items') {{item}}
 		button(onclick='window.location.reload()') Reset
 		button.submit Submit
+		button(onclick='runTheCode()') Run the Code
 		table
 			tr(ng-repeat="x in names")
 				td {{x.Name}}
 				td {{x.Country}}
+		#bodytext
 		script(src='inc/lib.js')
 		script(src='inc/main.js')
+		script(src='html/runCode.js')
+
 //		| @@javascriptReplaceFiles
 
