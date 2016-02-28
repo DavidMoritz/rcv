@@ -1,8 +1,15 @@
-<%php
+<?php
 
-$DB_SERVER = "myServer";
-$DB_USER = "myUser";
-$DB_PASSWORD = "myPassword";
-$DB_DATABASE = "myDatabase";
+define('SERVER', 'myServer');
+define('USERNAME', 'myUser');
+define('PASSWORD', 'myPassword');
+define('DB', 'myDatabase');
 
-%>
+####	CONNECT TO THE DATABASE		######
+try {
+	$dbh = new PDO('mysql:host=' . SERVER . ';dbname=' . DB, USERNAME, PASSWORD, array(PDO::ATTR_PERSISTENT => true));
+} catch (PDOException $e) {
+	die($e->getMessage());
+}
+
+?>

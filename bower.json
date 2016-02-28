@@ -2,14 +2,15 @@
   "name": "init-angular",
   "version": "0.0.1",
   "dependencies": {
+    "angular": "latest",
+    "angular-bootstrap": "~1.2.1",
+    "angular-ui-sortable": "~0.13.4",
     "bootstrap": "latest",
+    "fontawesome": "latest",
     "jquery": "latest",
     "jquery-ui": "latest",
-    "fontawesome": "latest",
     "lodash": "latest",
-    "angular": "latest",
     "moment": "latest",
-    "touch-punch": "https://github.com/furf/jquery-ui-touch-punch.git",
-    "angular-ui-sortable": "~0.13.4"
+    "touch-punch": "https://github.com/furf/jquery-ui-touch-punch.git"
   }
 }

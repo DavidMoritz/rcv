@@ -15,15 +15,36 @@ mainApp.controller('MainCtrl', [
 				if ($(document).width() >= 768) {
 					event.preventDefault();
 				}
-			}, false);
+			}, false); 
 		}
 
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 
-		$http.get('http://www.w3schools.com/angular/customers_mysql.php')
-			.then(function (response) {
-				$s.names = response.data.records;
+		$http.get('/app/api/get-ballots.php')
+			.then(function (resp) {
+				$s.allBallots = resp.data;
 			});
+
+		$s.getCandidates = function() {
+			if($s.ballot.id) {
+				$s.ballotId = $s.ballot.id;
+				$http.get('/app/api/get-candidates.php?id=' + $s.ballotId)
+					.then(function(resp) {
+						$s.originalCandidates = resp.data.map(function(entry) {
+							return entry.name;
+						});
+						$s.resetCandidates();
+					});
+			}
+		};
+
+		$s.removeCandidate = function(idx) {
+			$s.candidates.splice(idx, 1);
+		}
+
+		$s.resetCandidates = function() {
+			$s.candidates = _.shuffle($s.originalCandidates);
+		}
 
 		$s.newBallot = function() {
 			$http({
@@ -42,10 +63,25 @@ mainApp.controller('MainCtrl', [
 				url: '/app/api/add-entries.php',
 				data: {
 					entries: $s.entries,
-					ballot_id: $s.ballotId
+					'ballot_id': $s.ballotId
 				},
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
+				$s.candidates = $s.entries;
+			});
+		};
+
+		$s.submitVote = function() {
+			$http({
+				method: 'POST',
+				url: '/app/api/vote.php',
+				data: {
+					vote: JSON.stringify($s.candidates),
+					'ballot_id': $s.ballotId
+				},
+				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).success(function(resp) {
+				$s.thanks = true;
 				console.log(resp);
 			});
 		};
@@ -70,9 +106,15 @@ mainApp.controller('MainCtrl', [
 			items: ['Cake', 'Cookies', 'Pie', 'Cheeses', 'Coffee', 'Brownies', 'Ice-cream'],
 			votes: [['Pie','Cake','Candy','Soda','Pizza'],['Pizza','Soda','Candy','Cake','Pie'],['Candy','Cake','Soda','Pie','Pizza'],['Cake','Candy','Soda','Pizza','Pie'],['Soda','Pie','Cake','Pizza','Candy'],['Pie','Pizza','Cake','Soda','none'],['Pizza', 'Candy', 'Pie', 'Soda', 'Cake']],
 			names: ['Pie', 'Cake', 'Candy', 'Soda', 'Pizza'],
+			vote: [],
 			seats: 3,
 			ballot: {},
-			entries: []
+			entries: [],
+			dateFormat: 'MMM d, y h:mm a',
+			pickerFormat: 'fullDate',
+			pickerOptions: {
+				showWeeks: false
+			}
 		});
 	}
 ]);
