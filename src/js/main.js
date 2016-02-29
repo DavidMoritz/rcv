@@ -15,7 +15,7 @@ mainApp.controller('MainCtrl', [
 				if ($(document).width() >= 768) {
 					event.preventDefault();
 				}
-			}, false); 
+			}, false);
 		}
 
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -23,18 +23,19 @@ mainApp.controller('MainCtrl', [
 		$http.get('/app/api/get-ballots.php')
 			.then(function (resp) {
 				$s.allBallots = resp.data;
-			});
+			})
+		;
 
 		$s.getCandidates = function() {
 			if($s.ballot.id) {
-				$s.ballotId = $s.ballot.id;
-				$http.get('/app/api/get-candidates.php?id=' + $s.ballotId)
+				$http.get('/app/api/get-candidates.php?id=' + $s.ballot.id)
 					.then(function(resp) {
 						$s.originalCandidates = resp.data.map(function(entry) {
 							return entry.name;
 						});
 						$s.resetCandidates();
-					});
+					})
+				;
 			}
 		};
 
@@ -53,7 +54,7 @@ mainApp.controller('MainCtrl', [
 				data: $s.ballot,
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp){
-				$s.ballotId = resp;
+				$s.ballot.id = resp;
 			});
 		};
 
@@ -63,7 +64,7 @@ mainApp.controller('MainCtrl', [
 				url: '/app/api/add-entries.php',
 				data: {
 					entries: $s.entries,
-					'ballotId': $s.ballotId
+					'ballotId': $s.ballot.id
 				},
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
@@ -77,7 +78,7 @@ mainApp.controller('MainCtrl', [
 				url: '/app/api/vote.php',
 				data: {
 					vote: JSON.stringify($s.candidates),
-					'ballotId': $s.ballotId
+					'ballotId': $s.ballot.id
 				},
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
@@ -87,7 +88,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.getResults = function() {
-			$http.get('/app/api/get-votes.php?id=' + $s.ballotId)
+			$http.get('/app/api/get-votes.php?id=' + $s.ballot.id)
 				.then(function(resp) {
 					votes = resp.data.map(function(result) {
 						return JSON.parse(result.vote);
@@ -96,7 +97,8 @@ mainApp.controller('MainCtrl', [
 					names = $s.originalCandidates;
 					runTheCode();
 					$s.final = true;
-				});
+				})
+			;
 		};
 
 		$s.addEntry = function() {

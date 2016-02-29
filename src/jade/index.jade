@@ -26,7 +26,7 @@ html(ng-app='mainApp')
 				div(ng-show="voteBallot")
 					select.form-control(ng-model="ballot" ng-change="getCandidates()" ng-options="item as item.name for item in allBallots track by item.id")
 				div(ng-show="createBallot")
-					form(name='ballotForm' ng-submit='newBallot()' ng-hide='ballotId')
+					form(name='ballotForm' ng-submit='newBallot()' ng-hide='ballot.id')
 						.form-group
 							label Name
 							input.form-control(name="name" ng-model="ballot.name")
@@ -62,7 +62,7 @@ html(ng-app='mainApp')
 											i.fa.fa-calendar
 								uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
 						button(type='submit') Submit
-					div(ng-show='ballotId && !candidates')
+					div(ng-show='ballot.id && !candidates')
 						form(name='entriesForm' ng-submit='addEntry()')
 							.form-group
 								label New Entry (use ENTER to add)
