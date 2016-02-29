@@ -4,95 +4,96 @@ doctype html
 html(ng-app='mainApp')
 	head
 		meta(charset='UTF-8')
-		meta(name='description', content='My New Angular App')
+		meta(name='description', content='STV Calculator App')
 		meta(name='author', content='Moritz Company')
 		meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
 		meta(name='apple-mobile-web-app-capable' content='yes')
 		meta(name='apple-touch-fullscreen' content='yes')
-		title My New Angular App
+		title Single Transferable Vote Calculator App
 		link(rel='shortcut icon', href='favicon.ico')
 		link(rel='stylesheet', href='https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css')
 		link(rel='stylesheet', href='inc/main.css')
 		script(src='inc/angular.js')
 	body(ng-cloak ng-controller='MainCtrl')
 		.container
-			header.hide
-				h1 My New Angular App
-			.jumbotron 
-				h2.text-center Success!
-		div(ng-hide="thanks")
-			ul#sortable(ui-sortable ng-model='items' ng-hide="true")
-				li(ng-repeat='item in items') {{item}}
-			div(ng-hide="voteBallot || createBallot")
-				button.btn.btn-primary(ng-click="voteBallot = true") Vote
-				button.btn.btn-success(ng-click="createBallot = true") Create New Ballot
-				button.btn.btn-default(onclick='runTheCode()') Run the Code
-			div(ng-show="voteBallot")
-				select.form-control(ng-model="ballot" ng-change="getCandidates()" ng-options="item as item.name for item in allBallots track by item.id")
-			div(ng-show="createBallot")
-				form(name='ballotForm' ng-submit='newBallot()' ng-hide='ballotId')
-					.form-group
-						label Name
-						input.form-control(name="name" ng-model="ballot.name")
-						span(ng-show='errorName') {{errorName}}
-					.form-group
-						label Positions
-						input.form-control(name="positions" ng-model="ballot.positions")
-						span(ng-show='errorPositions') {{errorPositions}}
-					.form-group
-						label Created
-						input.form-control(name="created" ng-model="ballot.created")
-						span(ng-show='errorCreated') {{errorCreated}}
-					.form-group
-						label Voting Cutoff Date
-							input(type="checkbox" ng-model="showCutoff")
-							small.text-muted(ng-show="showCutoff && ballot.vote_cutoff")  {{ballot.vote_cutoff | date: dateFormat }}
-						div(ng-show="showCutoff")
-							.input-group
-								input.form-control(type="text" ng-focus="cutoffOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.vote_cutoff" is-open="cutoffOpen")
-								span.input-group-btn
-									button.btn.btn-default(type="button" ng-click="cutoffOpen = !cutoffOpen")
-										i.fa.fa-calendar
-							uib-timepicker(ng-model="ballot.vote_cutoff" minute-step="15")
-					.form-group
-						label Release Results Date
-							input(type="checkbox" ng-model="showRelease")
-							small.text-muted(ng-show="showRelease && ballot.release_results")  {{ballot.release_results | date: dateFormat }}
-						div(ng-show="showRelease")
-							.input-group
-								input.form-control(type="text" ng-focus="releaseOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.release_results" is-open="releaseOpen")
-								span.input-group-btn
-									button.btn.btn-default(type="button" ng-click="releaseOpen = !releaseOpen")
-										i.fa.fa-calendar
-							uib-timepicker(ng-model="ballot.release_results" minute-step="15")
-					button(type='submit') Submit
-				div(ng-show='ballotId && !candidates')
-					form(name='entriesForm' ng-submit='addEntry()')
+			div(ng-hide="thanks")
+				ul#sortable(ui-sortable ng-model='items' ng-hide="true")
+					li(ng-repeat='item in items') {{item}}
+				div(ng-hide="voteBallot || createBallot")
+					button.btn.btn-primary(ng-click="voteBallot = true") Vote
+					button.btn.btn-success(ng-click="createBallot = true") Create New Ballot
+					button.btn.btn-default(onclick='runTheCode()') Run the Code
+				div(ng-show="voteBallot")
+					select.form-control(ng-model="ballot" ng-change="getCandidates()" ng-options="item as item.name for item in allBallots track by item.id")
+				div(ng-show="createBallot")
+					form(name='ballotForm' ng-submit='newBallot()' ng-hide='ballotId')
 						.form-group
-							label New Entry (use ENTER to add)
-							input.form-control(name="entryInput" ng-model="entryInput")
-							span(ng-show='errorEntry && !entryInput') {{errorEntry}}
-						button(type='submit') Add Entry
-						button(type='button' ng-click="submitEntries()") Submit
-					h2 Current Entry List
-						h5(ng-repeat="entry in entries track by $index")
-							strong {{$index + 1}}&nbsp;
-							| {{entry}}&nbsp;
-							i.fa.fa-close.pointer(ng-click="removeEntry($index)")
-			div(ng-if='candidates')
-				h2 Order by Preference
-				form(name='voteForm' ng-submit='submitVote()')
-					ul#sortable(ui-sortable ng-model='candidates')
-						li(ng-repeat='item in candidates') {{item}}
-							i.fa.fa-close(ng-click="removeCandidate($index)")
-					button.btn.btn-primary.clearfix(type='submit') Vote!
-					button.btn.btn-default(type="button" ng-click='resetCandidates()') Reset
-		h3(ng-show="thanks") Thank you for voting!
-		table(ng-hide="true")
-			tr(ng-repeat="x in names")
-				td {{x.Name}}
-				td {{x.Country}}
-		#bodytext
+							label Name
+							input.form-control(name="name" ng-model="ballot.name")
+							span(ng-show='errorName') {{errorName}}
+						.form-group
+							label Positions
+							input.form-control(name="positions" ng-model="ballot.positions")
+							span(ng-show='errorPositions') {{errorPositions}}
+						.form-group
+							label Created
+							input.form-control(name="created" ng-model="ballot.created")
+							span(ng-show='errorCreated') {{errorCreated}}
+						.form-group
+							label Voting Cutoff Date
+								input(type="checkbox" ng-model="showCutoff")
+								small.text-muted(ng-show="showCutoff && ballot.voteCutoff")  {{ballot.voteCutoff | date: dateFormat }}
+							div(ng-show="showCutoff")
+								.input-group
+									input.form-control(type="text" ng-focus="cutoffOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.voteCutoff" is-open="cutoffOpen")
+									span.input-group-btn
+										button.btn.btn-default(type="button" ng-click="cutoffOpen = !cutoffOpen")
+											i.fa.fa-calendar
+								uib-timepicker(ng-model="ballot.voteCutoff" minute-step="15")
+						.form-group
+							label Release Results Date
+								input(type="checkbox" ng-model="showRelease")
+								small.text-muted(ng-show="showRelease && ballot.resultsRelease")  {{ballot.resultsRelease | date: dateFormat }}
+							div(ng-show="showRelease")
+								.input-group
+									input.form-control(type="text" ng-focus="releaseOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.resultsRelease" is-open="releaseOpen")
+									span.input-group-btn
+										button.btn.btn-default(type="button" ng-click="releaseOpen = !releaseOpen")
+											i.fa.fa-calendar
+								uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
+						button(type='submit') Submit
+					div(ng-show='ballotId && !candidates')
+						form(name='entriesForm' ng-submit='addEntry()')
+							.form-group
+								label New Entry (use ENTER to add)
+								input.form-control(name="entryInput" ng-model="entryInput")
+								span(ng-show='errorEntry && !entryInput') {{errorEntry}}
+							button(type='submit') Add Entry
+							button(type='button' ng-click="submitEntries()") Submit
+						h2 Current Entry List
+							h5(ng-repeat="entry in entries track by $index")
+								strong {{$index + 1}}&nbsp;
+								| {{entry}}&nbsp;
+								i.fa.fa-close.pointer(ng-click="removeEntry($index)")
+				div(ng-if='candidates')
+					h2 Order by Preference
+					form(name='voteForm' ng-submit='submitVote()')
+						ul#sortable(ui-sortable ng-model='candidates')
+							li(ng-repeat='item in candidates') {{item}}
+								i.fa.fa-close(ng-click="removeCandidate($index)")
+						button.btn.btn-primary.clearfix(type='submit') Vote!
+						button.btn.btn-default(type="button" ng-click='resetCandidates()') Reset
+			h3(ng-show="thanks") Thank you for voting!
+				button.btn.btn-primary(ng-click="getResults()" ng-hide="final") See Results
+				div(ng-show="final")
+					h2 The winner(s):
+						span(ng-repeat="result in elected")  {{result}}
+					button.btn.btn-default(ng-click="showText = !showText") Show details
+			table(ng-hide="true")
+				tr(ng-repeat="x in names")
+					td {{x.Name}}
+					td {{x.Country}}
+			#bodytext(ng-show="showText")
 		script(src='inc/lib.js')
 		script(src='inc/main.js')
 

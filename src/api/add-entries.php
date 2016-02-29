@@ -16,8 +16,8 @@ if (!empty($_POST['entries'])) {
 	$errors['entryInput'] = 'Entries are required.';
 }
 
-if (empty($_POST['ballot_id']))
-	$errors['ballot_id'] = 'Ballot ID is required.';
+if (empty($_POST['ballotId']))
+	$errors['ballotId'] = 'Ballot ID is required.';
 
 if (!empty($errors)) {
 	$data['errors']  = $errors;
@@ -26,10 +26,10 @@ if (!empty($errors)) {
 } else {
 	$query = "
 		INSERT INTO 
-			entries (`ballot_id`, `name`)
+			entries (`ballotId`, `name`)
 		VALUES ";
 	for ($i=0; $i < $total; $i++) { 
-		$query .= "('". $_POST['ballot_id'] ."','". $_POST['entries'][$i] ."'),";
+		$query .= "('". $_POST['ballotId'] ."','". $_POST['entries'][$i] ."'),";
 	}
 	$query = substr($query, 0, -1) . ";";
 	$sth = $dbh->prepare($query);

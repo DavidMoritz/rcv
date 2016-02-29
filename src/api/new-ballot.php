@@ -13,18 +13,18 @@ if (empty($_POST['name']))
 if (empty($_POST['positions']))
 	$errors['positions'] = 'Positions is required.';
 
-if (empty($_POST['created']))
-	$errors['created'] = 'Created is required.';
+if (empty($_POST['createdBy']))
+	$errors['createdBy'] = 'Created is required.';
 
-if (empty($_POST['vote_cutoff']))
+if (empty($_POST['voteCutoff']))
 	$cutoff = "NULL";
 else
-	$cutoff = "'". date("Y-m-d H:i:s", strtotime($_POST['vote_cutoff'])) ."'";
+	$cutoff = "'". date("Y-m-d H:i:s", strtotime($_POST['voteCutoff'])) ."'";
 
-if (empty($_POST['release_results']))
+if (empty($_POST['resultsRelease']))
 	$release = "NULL";
 else
-	$release = "'". date("Y-m-d H:i:s", strtotime($_POST['release_results'])) ."'";
+	$release = "'". date("Y-m-d H:i:s", strtotime($_POST['resultsRelease'])) ."'";
 
 if (!empty($errors)) {
 	$data['errors']  = $errors;
@@ -33,9 +33,9 @@ if (!empty($errors)) {
 } else {
 	$query = "
 		INSERT INTO 
-			ballots (`name`, `positions`, `created_by`, `release_results`, `vote_cutoff`)
+			ballots (`name`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`)
 		VALUES 
-			('". $_POST['name'] ."','". $_POST['positions'] ."','". $_POST['created'] ."', ". $release .", ". $cutoff .");";
+			('". $_POST['name'] ."','". $_POST['positions'] ."','". $_POST['createdBy'] ."', ". $release .", ". $cutoff .");";
 	
 	$sth = $dbh->prepare($query);
 	$sth->execute();

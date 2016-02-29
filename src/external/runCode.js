@@ -4,10 +4,10 @@ var names = ["Pie", "Cake", "Candy", "Soda", "Pizza"];
 var seats = 3;
 /* end API */
 
-var totcands = names.length;
-var totvotes = votes.length;
-var candcount = names.length;
-var votecount = votes.length;
+var totcands;
+var totvotes;
+var candcount;
+var votecount;
 var votenum = new Array();
 var outputstring = ' ';
 var totlivevotes = 0;
@@ -18,8 +18,8 @@ var mincount;
 var eliminated;
 var elimcount;
 var roundnum = 0;
-var quota = (Math.ceil(totvotes * 100 / (seats + 1))) / 100;
-var voteweight = new Array(totvotes);
+var quota;
+var voteweight;
 var livecount;
 var elected = new Array();
 var quotacount;
@@ -27,14 +27,24 @@ var greatest;
 var maxcount;
 var roundelected;
 
-for(var i = 0; i < totvotes; i++) {
-    voteweight[i] = 1;
-} 
+function preVoteStuff() {
+    totcands = names.length;
+    totvotes = votes.length;
+    candcount = names.length;
+    votecount = votes.length;
+    // renew quota
+    quota = (Math.ceil(totvotes * 100 / (parseInt(seats) + 1))) / 100;
+    voteweight = new Array(totvotes);
+    for(var i = 0; i < totvotes; i++) {
+        voteweight[i] = 1;
+    } 
+}
 
 $(function() {
     $(".voteset").click(voteset);
     $(".votesform").click(votesform);
     $(".runCode").click(runTheCode);
+    preVoteStuff();
 });
 //This function takes the input number of candidates and number of votes, allocates them to variables and moves on to the name input section.
 function voteset() {
@@ -67,7 +77,7 @@ function namesinput(form) {
 }
 
 function runTheCode() {
-
+        preVoteStuff();
         outputstring = '<b>Candidates=' + totcands + ' Seats=' + seats + ' Votes=' + totvotes + ' Quota=' + quota + '<\/b><br \/>Raw votes<br \/>';
         for (k = 0; k < totvotes; k++) {
             outputstring += 'vote ' + (k + 1) + ': ';

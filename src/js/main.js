@@ -40,11 +40,11 @@ mainApp.controller('MainCtrl', [
 
 		$s.removeCandidate = function(idx) {
 			$s.candidates.splice(idx, 1);
-		}
+		};
 
 		$s.resetCandidates = function() {
 			$s.candidates = _.shuffle($s.originalCandidates);
-		}
+		};
 
 		$s.newBallot = function() {
 			$http({
@@ -63,7 +63,7 @@ mainApp.controller('MainCtrl', [
 				url: '/app/api/add-entries.php',
 				data: {
 					entries: $s.entries,
-					'ballot_id': $s.ballotId
+					'ballotId': $s.ballotId
 				},
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
@@ -77,13 +77,26 @@ mainApp.controller('MainCtrl', [
 				url: '/app/api/vote.php',
 				data: {
 					vote: JSON.stringify($s.candidates),
-					'ballot_id': $s.ballotId
+					'ballotId': $s.ballotId
 				},
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
 				$s.thanks = true;
 				console.log(resp);
 			});
+		};
+
+		$s.getResults = function() {
+			$http.get('/app/api/get-votes.php?id=' + $s.ballotId)
+				.then(function(resp) {
+					votes = resp.data.map(function(result) {
+						return JSON.parse(result.vote);
+					});
+					seats = $s.ballot.positions;
+					names = $s.originalCandidates;
+					runTheCode();
+					$s.final = true;
+				});
 		};
 
 		$s.addEntry = function() {
@@ -114,7 +127,8 @@ mainApp.controller('MainCtrl', [
 			pickerFormat: 'fullDate',
 			pickerOptions: {
 				showWeeks: false
-			}
+			},
+			elected: elected
 		});
 	}
 ]);

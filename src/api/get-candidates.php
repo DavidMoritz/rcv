@@ -11,7 +11,7 @@ if(!empty($id)) {
 		FROM 
 			`entries` 
 		WHERE 
-			`ballot_id` = ". $id .";";
+			`ballotId` = ". $id .";";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);

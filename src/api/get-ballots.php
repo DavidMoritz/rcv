@@ -6,13 +6,14 @@ require_once("config.php");
 		SELECT
 			`id`,
 			`name`,
-			`vote_cutoff`
+			`voteCutoff`,
+			`positions`
 		FROM 
 			`ballots` 
 		WHERE 
-			`vote_cutoff` >= NOW()
+			`voteCutoff` >= NOW()
 		OR 
-			`vote_cutoff` IS NULL;";
+			`voteCutoff` IS NULL;";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
