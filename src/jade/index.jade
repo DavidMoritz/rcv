@@ -22,7 +22,7 @@ html(ng-app='mainApp')
 				div(ng-hide="voteBallot || createBallot")
 					button.btn.btn-primary(ng-click="voteBallot = true") Vote
 					button.btn.btn-success(ng-click="createBallot = true") Create New Ballot
-					button.btn.btn-default(onclick='runTheCode()') Run the Code
+					button.btn.btn-default(onclick='runTheCode()' ng-click="showText = !showText") Run the Code
 				div(ng-show="voteBallot")
 					select.form-control(ng-model="ballot" ng-change="getCandidates()" ng-options="item as item.name for item in allBallots track by item.id")
 				div(ng-show="createBallot")
