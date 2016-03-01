@@ -40,7 +40,7 @@ function displayVotes() {
 		if(colspan) {
 			outputstring += "<td colspan=" + colspan + "></td>";
 		}
-		outputstring += '<td>vote-value = ' + voteweight[idx] + "</td></tr>";
+		outputstring += '<td>vote-value = ' + parseFloat(voteweight[idx]).toFixed(4) + "</td></tr>";
 	});
 	outputstring += "</tbody></table>";
 }
