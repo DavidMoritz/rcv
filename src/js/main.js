@@ -7,16 +7,8 @@ mainApp.controller('MainCtrl', [
 	function MainCtrl($s, $timeout, $interval, $http, MF) {
 		'use strict';
 
-		function init() {
-			//	init stuff
-
-			// remove scrolling also removes click and drag
-			window.addEventListener('touchmove', function disallowScrolling(event) {
-				if ($(document).width() >= 768) {
-					event.preventDefault();
-				}
-			}, false);
-		}
+		//during development
+		window.$s = $s;
 
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 
@@ -119,8 +111,8 @@ mainApp.controller('MainCtrl', [
 		_.assign($s, {
 			time: moment().format(timeFormat),
 			items: ['Cake', 'Cookies', 'Pie', 'Cheeses', 'Coffee', 'Brownies', 'Ice-cream'],
-			votes: [['Pie','Cake','Candy','Soda','Pizza'],['Pizza','Soda','Candy','Cake','Pie'],['Candy','Cake','Soda','Pie','Pizza'],['Cake','Candy','Soda','Pizza','Pie'],['Soda','Pie','Cake','Pizza','Candy'],['Pie','Pizza','Cake','Soda','none'],['Pizza', 'Candy', 'Pie', 'Soda', 'Cake']],
-			names: ['Pie', 'Cake', 'Candy', 'Soda', 'Pizza'],
+			votes: [['Pie','Cake','Candy','Brownie','Soda'],['Pizza','Brownie','Soda','Candy','Cake','Pie'],['Candy','Brownie','Soda','Pie'],['Cake','Soda','Pizza','Brownie','Pie'],['Soda','Pie','Cake','Pizza','Candy'],['Pie','Brownie','Pizza','Cake','Soda'],['Pizza','Brownie', 'Candy', 'Pie', 'Soda']],
+			names: ['Pie', 'Cake', 'Candy', 'Brownie', 'Soda', 'Pizza'],
 			vote: [],
 			seats: 3,
 			ballot: {},
@@ -132,5 +124,7 @@ mainApp.controller('MainCtrl', [
 			},
 			elected: elected
 		});
+
+		_.extend($s, MF);
 	}
 ]);
