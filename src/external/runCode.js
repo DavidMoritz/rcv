@@ -5,12 +5,11 @@ var seats = 3;
 /* end API */
 
 var outputstring = '';
-var totlivevotes = 0;
 var wincount = 0;
 var roundnum = 0;
 var votenum = [];
 var elected = [];
-var winner, elimcount, quota, voteweight, greatest, maxcount, roundelected;
+var quota, voteweight;
 
 $(renewQuota);
 
@@ -82,7 +81,6 @@ function countfirst() {
 function findmin() {
 	//This section counts the number of candidates with first preference votes. If that number is equal to the number of vacant seats, it goes to the allliveelected function which declares them all elected. Otherwise it moves on to remove the candidate with the fewest votes.
 	var mincount;
-	var eliminated;
 	var least;
 	var livecount = votenum.filter(function(num) {
 		return num > 0;
@@ -106,12 +104,14 @@ function findmin() {
 
 		outputstring += '<br>Number of candidates with the fewest votes = ' + mincount + '.';
 
+		var eliminated = votenum.indexOf(least);
+
 		if(mincount > 1) {
 			// we need a better way to break ties than flipping a coin. What is this, the Democratic Party?
-			eliminated = Math.ceil(Math.random() * mincount) - 1;
+			if(Math.ceil(Math.random() * mincount) > 1) {
+				eliminated = votenum.lastIndexOf(least);
+			}
 			outputstring += '<br>The tiebreaker loser is ' + names[eliminated] + '.';
-		} else {
-			eliminated = votenum.indexOf(least);
 		}
 
 		outputstring += '<br>' + names[eliminated] + ' is eliminated.';
@@ -133,87 +133,63 @@ function removemin(eliminated) {
 
 //This function determines if there is a tie in the number of candidates with the most votes above the quota.
 function overquota() {
-	greatest = 0;
-	for (c = 0; c < names.length; c++) {
-		if (votenum[c] > greatest) {
-			greatest = votenum[c];
-		}
-	}
+	var greatest = votenum.reduce(function(prev, current) {
+		return Math.max(prev, current);
+	});
+
 	outputstring += '<br>Most votes currently held by a candidate = ' + greatest + '.';
-	maxcount = 0;
-	for (c = 0; c < names.length; c++) {
-		if (votenum[c] == greatest) {
-			maxcount++;
-		}
-	}
+
+	var maxcount = votenum.filter(function(num) {
+		return num == greatest;
+	}).length;
+
 	outputstring += '<br>Number of candidates with the greatest number of votes = ' + maxcount + '.';
-	roundelected = 0;
-	(maxcount == 1) ? monomax(): multimax();
-}
+	
+	var roundelected = votenum.indexOf(greatest);
 
-//This function determines who is elected in the round if there is only one candidate with the highest number of votes.
-function monomax() {
-	for (c = 0; c < names.length; c++) {
-		if (votenum[c] == greatest) {
-			roundelected = c;
-		}
+	if(maxcount > 1) {
+		// seriously, are we still flipping a coin?
+		if(Math.ceil(Math.random() * maxcount) > 1) {
+			roundelected = votenum.lastIndexOf(greatest);
+		} 
+		outputstring += '<br>The tiebreaker says the first surplus to be re-allocated is ' + names[roundelected] + '\'s.';
 	}
-	outputstring += '<br>' + names[roundelected] + ' has exceeded the quota and is elected. If there are seats remaining to be filled, the surplus will now be reallocated.';
-	electmax();
-}
 
-//this function determines which candidate to elect in the round when two or more candidates have the greatest number of votes. It reuses the variables from the multimin function so tiebreakerloser isn't an accurate description in this case.
-function multimax() {
-	tiebreakloser = Math.ceil(Math.random() * maxcount);
-	elimcount = 0;
-	for (c = 0; c < names.length; c++) {
-		if (votenum[c] == greatest) {
-			elimcount++;
-			if (elimcount == tiebreakloser) {
-				roundelected = c;
-			}
-		}
-	}
-	outputstring += '<br>The tiebreaker says the first surplus to be re-allocated is ' + names[roundelected] + '\'s.';
 	outputstring += '<br>' + names[roundelected] + ' has exceeded the quota and is elected. If there are seats remaining to be filled, the surplus will now be reallocated.';
-	electmax()
+	electmax(roundelected);
 }
 
 //This function adds the name of the elected candidate to the elected array and then reweights their votes and changes their name to "none" in the votes array.
-function electmax() {
-	elected[wincount] = names[roundelected];
-	wincount++;
-	for (v = 0; v < votes.length; v++) {
-		if (votes[v][0] == names[roundelected]) {
-			voteweight[v] *= (votenum[roundelected] - quota) / votenum[roundelected];
+function electmax(roundelected) {
+	elected[wincount++] = names[roundelected];
+	_.each(votes, function(vote, idx) {
+		if(vote[0] == names[roundelected]) {
+			voteweight[idx] *= (votenum[roundelected] - quota) / votenum[roundelected];
 		}
-	}
-	for (v = 0; v < votes.length; v++) {
-		for (c = 0; c < names.length; c++) {
-			if (votes[v][c] == names[roundelected]) {
-				votes[v].splice(c, 1);
+		_.each(vote, function(name, idx2) {
+			if(name == names[roundelected]) {
+				vote.splice(idx2, 1);
 			}
-		}
-	}
+		})
+	});
 	nextRound();
 }
 
 //When there are as many active candidates as there are seats to fill, this function adds all the active candidates to the elected array.
 function allliveelected() {
-	for (c = 0; c < names.length; c++) {
-		if (votenum[c] > 0) {
-			elected[wincount] = names[c];
-			wincount++;
+	_.each(names, function(name, idx) {
+		if(votenum[idx] > 0) {
+			elected[wincount++] = name;
 		}
-	}
+	});
 	nextRound();
 }
 
 //This function announces the winner.
 function result() {
 	outputstring += '<p><b>The election is complete and the elected candidates are';
-	for (i = 0; i < seats; i++) {
-		outputstring += ' (' + elected[i] + ')';
-	}
+	_.each(elected, function(name) {
+		outputstring += ' (' + name + ')';
+	})
 	outputstring += '.<\/b><\/p>';
 }
