@@ -14,14 +14,7 @@ module.exports = function exportConcat(grunt) {
 					'lib/angular/angular.min.js'
 				],
 				'<%= distPath %>lib.js': [
-					'lib/jquery-ui/jquery-ui.min.js',
-					'lib/bootstrap/dist/js/bootstrap.min.js',
-					'lib/lodash/dist/lodash.min.js',
-					'lib/moment/min/moment.min.js',
-					'lib/touch-punch/jquery.ui.touch-punch.min.js',
-					'lib/angular-ui-sortable/sortable.min.js',
-					'lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
-					'src/external/**/*.js'
+					'lib/angular-bootstrap/ui-bootstrap-tpls.min.js'
 				],
 				'<%= distPath %>main.js': [
 					'src/services/mc.js',

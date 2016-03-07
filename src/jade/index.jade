@@ -16,6 +16,9 @@ html(ng-app='mainApp')
 		script(src='inc/angular.js')
 	body(ng-cloak ng-controller='MainCtrl')
 		.container
+			label(ng-model="radio" uib-btn-radio="'one'") YESH
+			label(ng-model="radio" uib-btn-radio="'two'") NO
+			p RADIO: {{radio}}
 			div(ng-hide="thanks")
 				ul#sortable(ui-sortable ng-model='items' ng-hide="true")
 					li(ng-repeat='item in items') {{item}}
