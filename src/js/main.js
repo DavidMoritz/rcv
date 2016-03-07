@@ -1,30 +1,17 @@
 mainApp.controller('MainCtrl', [
 	'$scope',
+	'$location',
 	'$timeout',
 	'$interval',
 	'$http',
 	'MethodFactory',
-	function MainCtrl($s, $timeout, $interval, $http, MF) {
+	function MainCtrl($s, $loc, $timeout, $interval, $http, MF) {
 		'use strict';
 
-		function init() {
-			//	init stuff
-
-			// remove scrolling also removes click and drag
-			window.addEventListener('touchmove', function disallowScrolling(event) {
-				if ($(document).width() >= 768) {
-					event.preventDefault();
-				}
-			}, false);
-		}
+		//during development
+		window.$s = $s;
 
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
-
-		$http.get('/app/api/get-ballots.php')
-			.then(function (resp) {
-				$s.allBallots = resp.data;
-			})
-		;
 
 		$s.getCandidates = function() {
 			if($s.ballot.id) {
@@ -38,6 +25,17 @@ mainApp.controller('MainCtrl', [
 				;
 			}
 		};
+
+		if($loc.search().entry) {
+			$s.ballot.id = $loc.search().entry;
+			$s.getCandidates();
+		} else {
+			$http.get('/app/api/get-ballots.php')
+				.then(function (resp) {
+					$s.allBallots = resp.data;
+				})
+			;
+		}
 
 		$s.removeCandidate = function(idx) {
 			$s.candidates.splice(idx, 1);
@@ -119,8 +117,8 @@ mainApp.controller('MainCtrl', [
 		_.assign($s, {
 			time: moment().format(timeFormat),
 			items: ['Cake', 'Cookies', 'Pie', 'Cheeses', 'Coffee', 'Brownies', 'Ice-cream'],
-			votes: [['Pie','Cake','Candy','Soda','Pizza'],['Pizza','Soda','Candy','Cake','Pie'],['Candy','Cake','Soda','Pie','Pizza'],['Cake','Candy','Soda','Pizza','Pie'],['Soda','Pie','Cake','Pizza','Candy'],['Pie','Pizza','Cake','Soda','none'],['Pizza', 'Candy', 'Pie', 'Soda', 'Cake']],
-			names: ['Pie', 'Cake', 'Candy', 'Soda', 'Pizza'],
+			votes: [['Pie','Cake','Candy','Brownie','Soda'],['Pizza','Brownie','Soda','Candy','Cake','Pie'],['Candy','Brownie','Soda','Pie'],['Cake','Soda','Pizza','Brownie','Pie'],['Soda','Pie','Cake','Pizza','Candy'],['Pie','Brownie','Pizza','Cake','Soda'],['Pizza','Brownie', 'Candy', 'Pie', 'Soda']],
+			names: ['Pie', 'Cake', 'Candy', 'Brownie', 'Soda', 'Pizza'],
 			vote: [],
 			seats: 3,
 			ballot: {},
@@ -130,7 +128,11 @@ mainApp.controller('MainCtrl', [
 			pickerOptions: {
 				showWeeks: false
 			},
-			elected: elected
+			elected: elected,
+			createBallot: $loc.search().ballot,
+			voteBallot: $loc.search().vote,
 		});
+
+		_.extend($s, MF);
 	}
 ]);

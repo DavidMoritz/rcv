@@ -1,6 +1,6 @@
 /* First 3 values should come from API */
-var votes = [["Pie","Cake","Candy","Soda"],["Pizza","Soda","Candy","Cake","Pie"],["Candy","Cake","Soda","Pie"],["Cake","Candy","Soda","Pizza","Pie"],["Soda","Pie","Cake","Pizza","Candy"],["Pie","Pizza","Cake","Soda"],["Pizza", "Candy", "Pie", "Soda", "Cake"]];
-var names = ["Pie", "Cake", "Candy", "Soda", "Pizza"];
+var votes = [["Pie","Cake","Candy","Brownie","Soda"],["Pizza","Brownie","Soda","Candy","Cake","Pie"],["Candy","Brownie","Soda","Pie"],["Cake","Soda","Pizza","Brownie","Pie"],["Soda","Pie","Cake","Pizza","Candy"],["Pie","Brownie","Pizza","Cake","Soda"],["Pizza","Brownie", "Candy", "Pie", "Soda"]];
+var names = ["Pie", "Cake", "Candy", "Brownie", "Soda", "Pizza"];
 var seats = 3;
 /* end API */
 
@@ -25,22 +25,28 @@ function renewQuota() {
 	voteweight = _.range(1, votes.length + 1, 0);
 }
 
-function displayVotes(weight) {
+function displayVotes() {
+	outputstring += "<tbody>"
 	_.each(votes, function(vote, idx) {
-		outputstring += 'vote ' + (idx + 1) + ': ';
-		_.each(vote, function(name) {
-			outputstring += '(' + name + ') ';
+		outputstring += '<tr><th>Vote ' + (idx + 1) + ':</th>';
+		var colspan = names.length - vote.length;
+		_.each(vote, function(name, idx2) {
+			if(idx2 == 0) {
+				outputstring += "<td><span class='next-vote'>" + name + "</span></td>";
+			} else {
+				outputstring += '<td>' + name + '</td>';
+			}
 		});
-		if(weight) {
-			outputstring += 'vote-value = ' + voteweight[idx];
+		if(colspan) {
+			outputstring += "<td colspan=" + colspan + "></td>";
 		}
-		outputstring += '<br>';
+		outputstring += '<td>vote-value = ' + parseFloat(voteweight[idx]).toFixed(4) + "</td></tr>";
 	});
+	outputstring += "</tbody></table>";
 }
 
 function showInitialVotes() {
-	outputstring = '<b>Candidates=' + names.length + ' Seats=' + seats + ' Votes=' + votes.length + ' Quota=' + quota + '<\/b><br>Raw votes<br>';
-	displayVotes();
+	outputstring = '<strong>Candidates=' + names.length + ' Seats=' + seats + ' Votes=' + votes.length + ' Quota=' + quota + '</strong><br>';
 }
 
 //If the number of winners is equal to the number of seats, this function goes to the result. If not, if the current highest preference in a vote is "none", this function removes it and the process repeats until every vote starts with something other than "none" and it then outputs a list of the votes.
@@ -49,10 +55,8 @@ function nextRound() {
 		result();
 	} else {
 		roundnum++;
-		outputstring += '<p><b>Round ' + roundnum + ' votes<\/b><br>';
-		displayVotes(true);
-		outputstring += '<\/p>';
-
+		outputstring += "</p><table class='table'><thead>Round " + roundnum + ' votes</thead>';
+		displayVotes();
 		countfirst();
 	}
 }
@@ -107,14 +111,12 @@ function findmin() {
 		var eliminated = votenum.indexOf(least);
 
 		if(mincount > 1) {
-			// we need a better way to break ties than flipping a coin. What is this, the Democratic Party?
-			if(Math.ceil(Math.random() * mincount) > 1) {
-				eliminated = votenum.lastIndexOf(least);
-			}
-			outputstring += '<br>The tiebreaker loser is ' + names[eliminated] + '.';
+			// we need a better way to break ties
+			eliminated = votenum.lastIndexOf(least);
+			outputstring += "<br>The tiebreaker loser is <span class='eliminated'>" + names[eliminated] + '</span>.';
 		}
 
-		outputstring += '<br>' + names[eliminated] + ' is eliminated.';
+		outputstring += "<br><span class='eliminated'>" + names[eliminated] + '</span> is eliminated.';
 
 		removemin(eliminated);
 	}
@@ -125,6 +127,7 @@ function removemin(eliminated) {
 	_.each(votes, function(vote) {
 		var idx = vote.indexOf(names[eliminated]);
 		if(idx !== -1) {
+			vote[vote.length] = "<span class='eliminated'>" + vote[idx] + "</span>";
 			vote.splice(idx, 1);
 		}
 	});
@@ -144,18 +147,16 @@ function overquota() {
 	}).length;
 
 	outputstring += '<br>Number of candidates with the greatest number of votes = ' + maxcount + '.';
-	
+
 	var roundelected = votenum.indexOf(greatest);
 
 	if(maxcount > 1) {
-		// seriously, are we still flipping a coin?
-		if(Math.ceil(Math.random() * maxcount) > 1) {
-			roundelected = votenum.lastIndexOf(greatest);
-		} 
-		outputstring += '<br>The tiebreaker says the first surplus to be re-allocated is ' + names[roundelected] + '\'s.';
+		// seriously, nothing better than this?
+		roundelected = votenum.lastIndexOf(greatest);
+		outputstring += '<br>The tiebreaker says the first surplus to be re-allocated is <span class="elected">' + names[roundelected] + '</span>\'s.';
 	}
 
-	outputstring += '<br>' + names[roundelected] + ' has exceeded the quota and is elected. If there are seats remaining to be filled, the surplus will now be reallocated.';
+	outputstring += '<br><span class="elected">' + names[roundelected] + '</span> has exceeded the quota and is elected. If there are seats remaining to be filled, the surplus will now be reallocated.';
 	electmax(roundelected);
 }
 
@@ -165,12 +166,12 @@ function electmax(roundelected) {
 	_.each(votes, function(vote, idx) {
 		if(vote[0] == names[roundelected]) {
 			voteweight[idx] *= (votenum[roundelected] - quota) / votenum[roundelected];
+			vote[vote.length] = "<span class='elected'>" + vote[0] + "</span>";
 		}
-		_.each(vote, function(name, idx2) {
-			if(name == names[roundelected]) {
-				vote.splice(idx2, 1);
-			}
-		})
+		var found = vote.indexOf(names[roundelected]);
+		if(found !== -1) {
+			vote.splice(found, 1);
+		}
 	});
 	nextRound();
 }
@@ -191,5 +192,5 @@ function result() {
 	_.each(elected, function(name) {
 		outputstring += ' (' + name + ')';
 	})
-	outputstring += '.<\/b><\/p>';
+	outputstring += '.</b></p>';
 }
