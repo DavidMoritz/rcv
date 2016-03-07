@@ -1,22 +1,17 @@
 mainApp.controller('MainCtrl', [
 	'$scope',
+	'$location',
 	'$timeout',
 	'$interval',
 	'$http',
 	'MethodFactory',
-	function MainCtrl($s, $timeout, $interval, $http, MF) {
+	function MainCtrl($s, $loc, $timeout, $interval, $http, MF) {
 		'use strict';
 
 		//during development
 		window.$s = $s;
 
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
-
-		$http.get('/app/api/get-ballots.php')
-			.then(function (resp) {
-				$s.allBallots = resp.data;
-			})
-		;
 
 		$s.getCandidates = function() {
 			if($s.ballot.id) {
@@ -30,6 +25,17 @@ mainApp.controller('MainCtrl', [
 				;
 			}
 		};
+
+		if($loc.search().entry) {
+			$s.ballot.id = $loc.search().entry;
+			$s.getCandidates();
+		} else {
+			$http.get('/app/api/get-ballots.php')
+				.then(function (resp) {
+					$s.allBallots = resp.data;
+				})
+			;
+		}
 
 		$s.removeCandidate = function(idx) {
 			$s.candidates.splice(idx, 1);
@@ -122,7 +128,9 @@ mainApp.controller('MainCtrl', [
 			pickerOptions: {
 				showWeeks: false
 			},
-			elected: elected
+			elected: elected,
+			createBallot: $loc.search().ballot,
+			voteBallot: $loc.search().vote,
 		});
 
 		_.extend($s, MF);
