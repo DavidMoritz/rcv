@@ -39,13 +39,19 @@ mainApp.factory('MethodFactory', [
 					if(colspan) {
 						model.outputstring += '<td colspan=' + colspan + '></td>';
 					}
-					model.outputstring += '<td>vote-value = ' + parseFloat(model.voteweight[idx]).toFixed(4) + '</td></tr>';
+					if(seats > 1) {
+						model.outputstring += '<td>vote-value = ' + parseFloat(model.voteweight[idx]).toFixed(4) + '</td></tr>';
+					}
 				});
 				this.outputstring += '</tbody></table>';
 			},
 
 			showInitialVotes: function() {
-				this.outputstring = '<strong>Candidates=' + names.length + ' Seats=' + seats + ' Votes=' + votes.length + ' Quota=' + this.quota + '</strong><br>';
+				if(seats > 1) {
+					this.outputstring = '<strong>Candidates: ' + names.length + ' Seats: ' + seats + ' Votes: ' + votes.length + ' Quota: ' + this.quota + '</strong><br>';
+				} else {
+					this.outputstring = '<strong>Candidates: ' + names.length + ' Votes: ' + votes.length + '</strong><br>';
+				}
 			},
 
 			//If the number of winners is equal to the number of seats, this function goes to the result. If not, if the current highest preference in a vote is 'none', this function removes it and the process repeats until every vote starts with something other than 'none' and it then outputs a list of the votes.
