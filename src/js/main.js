@@ -13,6 +13,17 @@ mainApp.controller('MainCtrl', [
 
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 
+		var getParam = function(param) {
+			var queryArray = $loc.$$url.split("/");
+			var index = queryArray.indexOf(param);
+
+			if(index) {
+				return queryArray[index + 1];
+			}
+
+			return false;
+		}
+
 		$s.getCandidates = function() {
 			if($s.ballot.id) {
 				$http.get('/app/api/get-candidates.php?id=' + $s.ballot.id)
@@ -26,8 +37,8 @@ mainApp.controller('MainCtrl', [
 			}
 		};
 
-		if($loc.search().entry) {
-			$s.ballot.id = $loc.search().entry;
+		if(getParam("entry")) {
+			$s.ballot.id = getParam("entry");
 			$s.getCandidates();
 		} else {
 			$http.get('/app/api/get-ballots.php')
@@ -129,8 +140,8 @@ mainApp.controller('MainCtrl', [
 				showWeeks: false
 			},
 			elected: elected,
-			createBallot: $loc.search().ballot,
-			voteBallot: $loc.search().vote,
+			createBallot: getParam("ballot"),
+			voteBallot: getParam("vote"),
 		});
 
 		_.extend($s, MF);
