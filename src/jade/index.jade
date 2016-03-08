@@ -88,12 +88,12 @@ html(ng-app='mainApp')
 				div(ng-show="final")
 					h2 The winner(s):
 						span(ng-repeat="result in elected")  {{result}} -
-					button.btn.btn-default(ng-click="showText = !showText") Show details
+					button.btn.btn-default(ng-click="showText = !showText") {{!showText ? "Show" : "Hide"}} details
 			table(ng-hide="true")
 				tr(ng-repeat="x in names")
 					td {{x.Name}}
 					td {{x.Country}}
-			#bodytext(ng-show="true")
+			#bodytext(ng-show="showText")
 		script(src='inc/lib.js')
 		script(src='inc/main.js')
 
