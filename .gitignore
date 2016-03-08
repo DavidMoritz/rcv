@@ -10,6 +10,7 @@ lib
 
 # Config files
 /src/api/config.php
+.ftppass
 
 # OS / Editor Files
 Thumbs.db

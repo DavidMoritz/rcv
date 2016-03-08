@@ -12,9 +12,11 @@ if (empty($_POST['name']))
 
 if (empty($_POST['positions']))
 	$errors['positions'] = 'Positions is required.';
+else if (intval($_POST['positions']) < 1)
+	$errors['positions'] = 'Positions must be a valid number.';
 
-if (empty($_POST['createdBy']))
-	$errors['createdBy'] = 'Created is required.';
+if (empty($_POST['created']))
+	$errors['created'] = 'Created is required.';
 
 if (empty($_POST['voteCutoff']))
 	$cutoff = "NULL";
@@ -35,7 +37,7 @@ if (!empty($errors)) {
 		INSERT INTO 
 			ballots (`name`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`)
 		VALUES 
-			('". $_POST['name'] ."','". $_POST['positions'] ."','". $_POST['createdBy'] ."', ". $release .", ". $cutoff .");";
+			('". $_POST['name'] ."','". $_POST['positions'] ."','". $_POST['created'] ."', ". $release .", ". $cutoff .");";
 	
 	$sth = $dbh->prepare($query);
 	$sth->execute();

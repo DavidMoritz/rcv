@@ -30,15 +30,15 @@ html(ng-app='mainApp')
 						.form-group
 							label Name
 							input.form-control(name="name" ng-model="ballot.name")
-							span(ng-show='errorName') {{errorName}}
+							span.text-danger(ng-show='errors.name') {{errors.name}}
 						.form-group
 							label Positions
 							input.form-control(name="positions" ng-model="ballot.positions")
-							span(ng-show='errorPositions') {{errorPositions}}
+							span.text-danger(ng-show='errors.positions') {{errors.positions}}
 						.form-group
 							label Created
 							input.form-control(name="created" ng-model="ballot.created")
-							span(ng-show='errorCreated') {{errorCreated}}
+							span.text-danger(ng-show='errors.created') {{errors.created}}
 						.form-group
 							label Voting Cutoff Date
 								input(type="checkbox" ng-model="showCutoff")
@@ -87,7 +87,7 @@ html(ng-app='mainApp')
 				button.btn.btn-primary(ng-click="getResults()" ng-hide="final") See Results
 				div(ng-show="final")
 					h2 The winner(s):
-						span(ng-repeat="result in elected")  {{result}}
+						span(ng-repeat="result in elected")  {{result}} -
 					button.btn.btn-default(ng-click="showText = !showText") Show details
 			table(ng-hide="true")
 				tr(ng-repeat="x in names")

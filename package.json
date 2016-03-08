@@ -29,5 +29,8 @@
     "grunt-replace": "latest",
     "grunt-jscs": "latest",
     "jshint-stylish": "latest"
+  },
+  "dependencies": {
+    "grunt-ftp-deploy": "^0.1.10"
   }
 }

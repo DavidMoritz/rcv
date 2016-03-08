@@ -14,7 +14,7 @@ mainApp.controller('MainCtrl', [
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 
 		var getParam = function(param) {
-			var queryArray = $loc.$$url.split("/");
+			var queryArray = $loc.$$url.split('/');
 			var index = queryArray.indexOf(param);
 
 			if(index) {
@@ -22,7 +22,7 @@ mainApp.controller('MainCtrl', [
 			}
 
 			return false;
-		}
+		};
 
 		$s.getCandidates = function() {
 			if($s.ballot.id) {
@@ -37,8 +37,8 @@ mainApp.controller('MainCtrl', [
 			}
 		};
 
-		if(getParam("entry")) {
-			$s.ballot.id = getParam("entry");
+		if(getParam('entry')) {
+			$s.ballot.id = getParam('entry');
 			$s.getCandidates();
 		} else {
 			$http.get('/app/api/get-ballots.php')
@@ -63,7 +63,11 @@ mainApp.controller('MainCtrl', [
 				data: $s.ballot,
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp){
-				$s.ballot.id = resp;
+				if(resp.errors) {
+					$s.errors = resp.errors;
+				} else {
+					$s.ballot.id = resp;
+				}
 			});
 		};
 
@@ -77,7 +81,12 @@ mainApp.controller('MainCtrl', [
 				},
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
-				$s.candidates = $s.entries;
+				if(resp.errors) {
+					$s.errors = resp.errors;
+				} else {
+					$s.originalCandidates = $s.entries;
+					$s.resetCandidates();
+				}
 			});
 		};
 
@@ -105,6 +114,7 @@ mainApp.controller('MainCtrl', [
 					seats = $s.ballot.positions;
 					names = $s.originalCandidates;
 					runTheCode();
+					$s.elected = elected;
 					$s.final = true;
 				})
 			;
@@ -140,8 +150,8 @@ mainApp.controller('MainCtrl', [
 				showWeeks: false
 			},
 			elected: elected,
-			createBallot: getParam("ballot"),
-			voteBallot: getParam("vote"),
+			createBallot: getParam('ballot'),
+			voteBallot: getParam('vote'),
 		});
 
 		_.extend($s, MF);
