@@ -19,12 +19,14 @@ html(ng-app='mainApp')
 			div(ng-hide="thanks")
 				ul#sortable(ui-sortable ng-model='items' ng-hide="true")
 					li(ng-repeat='item in items') {{item}}
-				div(ng-hide="voteBallot || createBallot")
+				div(ng-hide="voteBallot || createBallot || resultsBallot")
 					button.btn.btn-primary(ng-click="voteBallot = true") Vote
 					button.btn.btn-success(ng-click="createBallot = true") Create New Ballot
 					button.btn.btn-default(onclick='runTheCode()' ng-click="showText = !showText") Run the Code
 				div(ng-show="voteBallot")
 					select.form-control(ng-model="ballot" ng-change="getCandidates()" ng-options="item as item.name for item in allBallots track by item.id")
+				div(ng-show="resultsBallot")
+					select.form-control(ng-model="ballot" ng-change="showResults()" ng-options="item as item.name for item in allBallots track by item.id")
 				div(ng-show="createBallot")
 					form(name='ballotForm' ng-submit='newBallot()' ng-hide='ballot.id')
 						.form-group
@@ -77,17 +79,20 @@ html(ng-app='mainApp')
 								i.fa.fa-close.pointer(ng-click="removeEntry($index)")
 				div(ng-if='candidates')
 					h2 Order by Preference
+					h3 {{ballot.seats}} position{{ballot.seats.length == 1 ? "" : "s"}} available
 					form(name='voteForm' ng-submit='submitVote()')
 						ul#sortable(ui-sortable ng-model='candidates')
 							li(ng-repeat='item in candidates') {{item}}
 								i.fa.fa-close(ng-click="removeCandidate($index)")
 						button.btn.btn-primary.clearfix(type='submit') Vote!
 						button.btn.btn-default(type="button" ng-click='resetCandidates()') Reset
-			h3(ng-show="thanks") Thank you for voting!
+			div(ng-show="thanks")
+				h3(ng-hide="final") Thank you for voting!
 				button.btn.btn-primary(ng-click="getResults()" ng-hide="final") See Results
 				div(ng-show="final")
-					h2 The winner(s):
-						span(ng-repeat="result in elected")  {{result}} -
+					h2 The winner{{elected.length == 1 ? "" : "s"}}:
+						span(ng-repeat="result in elected")  {{result}}
+							span(ng-if="!$last") ,&nbsp;
 					button.btn.btn-default(ng-click="showText = !showText") {{!showText ? "Show" : "Hide"}} details
 			table(ng-hide="true")
 				tr(ng-repeat="x in names")

@@ -4,8 +4,8 @@ mainApp.controller('MainCtrl', [
 	'$timeout',
 	'$interval',
 	'$http',
-	'MethodFactory',
-	function MainCtrl($s, $loc, $timeout, $interval, $http, MF) {
+	'VoteFactory',
+	function MainCtrl($s, $loc, $timeout, $interval, $http, VF) {
 		'use strict';
 
 		//during development
@@ -105,16 +105,21 @@ mainApp.controller('MainCtrl', [
 			});
 		};
 
+		$s.showResults = function() {
+			$s.thanks = true;
+			$s.final = true; 
+			$s.getResults();
+		};
+
 		$s.getResults = function() {
 			$http.get('/app/api/get-votes.php?id=' + $s.ballot.id)
 				.then(function(resp) {
-					votes = resp.data.map(function(result) {
+					$s.votes = resp.data.map(function(result) {
 						return JSON.parse(result.vote);
 					});
-					seats = $s.ballot.positions;
-					names = $s.originalCandidates;
-					runTheCode();
-					$s.elected = elected;
+					$s.seats = $s.ballot.positions;
+					$s.names = _.uniq(_.flatten($s.votes));
+					$s.elected = $s.runTheCode();
 					$s.final = true;
 				})
 			;
@@ -149,11 +154,12 @@ mainApp.controller('MainCtrl', [
 			pickerOptions: {
 				showWeeks: false
 			},
-			elected: elected,
+			elected: [],
 			createBallot: getParam('ballot'),
 			voteBallot: getParam('vote'),
+			resultsBallot: getParam('results'),
 		});
 
-		_.extend($s, MF);
+		_.extend($s, VF);
 	}
 ]);
