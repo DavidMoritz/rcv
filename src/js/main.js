@@ -37,6 +37,39 @@ mainApp.controller('MainCtrl', [
 			}
 		};
 
+		$s.generateRandomKey = function() {
+			var key = Math.random().toString(36).substring(2, 6);
+			$http.get('/app/api/get-key-ballot.php?key=' + key)
+				.then(function(resp) {
+					if(resp.data.length) {
+						$s.generateRandomKey();
+					} else {
+						$s.errors.key = null;
+						$s.success.key = null;
+						$s.ballot.key = key;
+					}
+				})
+			;
+		};
+
+		$s.checkAvailability = function() {
+			$http.get('/app/api/get-key-ballot.php?key=' + $s.ballot.key)
+				.then(function(resp) {
+					if(resp.data.length) {
+						$s.success.key = null;
+						if($s.ballot.key) {
+							$s.errors.key = $s.ballot.key + ' is already in use';
+						} else {
+							$s.errors.key = 'Shortcode is required';
+						}
+					} else {
+						$s.errors.key = null;
+						$s.success.key = $s.ballot.key + ' is available'; 
+					}
+				})
+			;
+		};
+
 		if(getParam('entry')) {
 			$s.ballot.id = getParam('entry');
 			$s.getCandidates();
@@ -48,6 +81,10 @@ mainApp.controller('MainCtrl', [
 			;
 		}
 
+		if(getParam('ballot')) {
+			$s.generateRandomKey();
+		}
+
 		$s.removeCandidate = function(idx) {
 			$s.candidates.splice(idx, 1);
 		};
@@ -57,6 +94,8 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.newBallot = function() {
+			// temporarily hide "created"
+			$s.created = $s.key;
 			$http({
 				method: 'POST',
 				url: '/app/api/new-ballot.php',
@@ -148,6 +187,8 @@ mainApp.controller('MainCtrl', [
 			vote: [],
 			seats: 3,
 			ballot: {},
+			errors: {},
+			success: {},
 			entries: [],
 			dateFormat: 'MMM d, y h:mm a',
 			pickerFormat: 'fullDate',

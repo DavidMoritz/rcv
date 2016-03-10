@@ -21,7 +21,7 @@ html(ng-app='mainApp')
 					li(ng-repeat='item in items') {{item}}
 				div(ng-hide="voteBallot || createBallot || resultsBallot")
 					button.btn.btn-primary(ng-click="voteBallot = true") Vote
-					button.btn.btn-success(ng-click="createBallot = true") Create New Ballot
+					button.btn.btn-success(ng-click="createBallot = true; generateRandomKey()") Create New Ballot
 					button.btn.btn-default(onclick='runTheCode()' ng-click="showText = !showText") Run the Code
 				div(ng-show="voteBallot || resultsBallot")
 					select.form-control(ng-model="ballot" ng-change="voteBallot ? getCandidates() : showResults()" ng-options="item as item.name for item in allBallots track by item.id")
@@ -32,10 +32,19 @@ html(ng-app='mainApp')
 							input.form-control(name="name" ng-model="ballot.name")
 							span.text-danger(ng-show='errors.name') {{errors.name}}
 						.form-group
-							label Positions
+							label Shortcode (for link stvcalculator.com/{{ballot.key}})
+							.input-group
+								input.form-control(name="key" ng-model="ballot.key" ng-change="checkAvailability()" maxlength=16)
+								span.input-group-btn
+									button.btn.btn-secondary(type="button" ng-click="generateRandomKey()") New Shortcode
+							span.text-danger(ng-show='errors.key') {{errors.key}}
+							span.text-success(ng-show='success.key') {{success.key}}
+						.form-group
+							label Positions to be Elected
 							input.form-control(name="positions" ng-model="ballot.positions")
 							span.text-danger(ng-show='errors.positions') {{errors.positions}}
-						.form-group
+						// temporarily hide
+						.form-group.hidden
 							label Created
 							input.form-control(name="created" ng-model="ballot.created")
 							span.text-danger(ng-show='errors.created') {{errors.created}}
@@ -91,7 +100,7 @@ html(ng-app='mainApp')
 					h2 The winner{{elected.length == 1 ? "" : "s"}}:
 						span(ng-repeat="result in elected")  {{result}}
 							span(ng-if="!$last") ,&nbsp;
-					button.btn.btn-default(ng-click="showText = !showText") {{!showText ? "Show" : "Hide"}} details
+					button.btn.btn-default.hidden-xs(ng-click="showText = !showText") {{!showText ? "Show" : "Hide"}} details
 			table(ng-hide="true")
 				tr(ng-repeat="x in names")
 					td {{x.Name}}
