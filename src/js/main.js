@@ -37,12 +37,13 @@ mainApp.controller('MainCtrl', [
 			}
 		};
 
-		$s.generateRandomKey = function() {
-			var key = Math.random().toString(36).substring(2, 6);
+		$s.generateRandomKey = function(len) {
+			var len = len || 6;
+			var key = Math.random().toString(36).substring(2, len);
 			$http.get('/app/api/get-key-ballot.php?key=' + key)
 				.then(function(resp) {
 					if(resp.data.length) {
-						$s.generateRandomKey();
+						$s.generateRandomKey(++len);
 					} else {
 						$s.errors.key = null;
 						$s.success.key = null;
