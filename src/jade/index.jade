@@ -23,10 +23,8 @@ html(ng-app='mainApp')
 					button.btn.btn-primary(ng-click="voteBallot = true") Vote
 					button.btn.btn-success(ng-click="createBallot = true") Create New Ballot
 					button.btn.btn-default(onclick='runTheCode()' ng-click="showText = !showText") Run the Code
-				div(ng-show="voteBallot")
-					select.form-control(ng-model="ballot" ng-change="getCandidates()" ng-options="item as item.name for item in allBallots track by item.id")
-				div(ng-show="resultsBallot")
-					select.form-control(ng-model="ballot" ng-change="showResults()" ng-options="item as item.name for item in allBallots track by item.id")
+				div(ng-show="voteBallot || resultsBallot")
+					select.form-control(ng-model="ballot" ng-change="voteBallot ? getCandidates() : showResults()" ng-options="item as item.name for item in allBallots track by item.id")
 				div(ng-show="createBallot")
 					form(name='ballotForm' ng-submit='newBallot()' ng-hide='ballot.id')
 						.form-group
@@ -79,7 +77,7 @@ html(ng-app='mainApp')
 								i.fa.fa-close.pointer(ng-click="removeEntry($index)")
 				div(ng-if='candidates')
 					h2 Order by Preference
-					h3 {{ballot.seats}} position{{ballot.seats.length == 1 ? "" : "s"}} available
+					h3 {{ballot.positions}} position{{ballot.positions == "1" ? "" : "s"}} available
 					form(name='voteForm' ng-submit='submitVote()')
 						ul#sortable(ui-sortable ng-model='candidates')
 							li(ng-repeat='item in candidates') {{item}}
