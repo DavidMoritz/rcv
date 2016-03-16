@@ -86,6 +86,19 @@ mainApp.controller('MainCtrl', [
 			$s.generateRandomKey();
 		}
 
+		if(getParam('vote')) {
+			$http.get('/app/api/get-candidates.php?key=' + getParam('vote'))
+				.then(function(resp) {
+					$s.originalCandidates = resp.data.candidates.map(function(entry) {
+						$s.ballot.id = entry.ballotId;
+
+						return entry.name;
+					});
+					$s.resetCandidates();
+				})
+			;
+		}
+
 		$s.removeCandidate = function(idx) {
 			$s.candidates.splice(idx, 1);
 		};
