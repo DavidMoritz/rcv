@@ -16,7 +16,7 @@ html(ng-app='mainApp')
 		script(src='inc/angular.js')
 	body(ng-cloak ng-controller='MainCtrl')
 		.container
-			div(ng-hide="thanks")
+			div(ng-hide="thanks || congrats")
 				ul#sortable(ui-sortable ng-model='items' ng-hide="true")
 					li(ng-repeat='item in items') {{item}}
 				div(ng-hide="voteBallot || createBallot || resultsBallot")
@@ -100,7 +100,7 @@ html(ng-app='mainApp')
 				h3 Thank you for creating a ballot!
 				h4 Send this url to people for voting: 
 				h4.text-success http://stvcalculator.com/{{ballot.key}}
-				a(href="http://stvcalculator.com/vote/?ballot={{ballot.key}}") Click here to vote yourself
+				a.pointer(ng-click="voteNow()") Click here to vote yourself
 			div(ng-show="thanks || final")
 				h3(ng-hide="final") Thank you for voting!
 				button.btn.btn-primary(ng-click="getResults()" ng-hide="final") See Results

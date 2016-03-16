@@ -3,19 +3,6 @@ require_once("config.php");
 
 $key = $_GET['key'];
 
-// if (!empty($key)) {
-// 	$id = "(
-// 		SELECT
-// 			`id`
-// 		FROM
-// 			`ballots`
-// 		WHERE
-// 			`key` = '" . $key . "'
-// 	)";
-// } else {
-// 	$id = $_GET['id'];
-// }
-
 if(!empty($key)) {
 	$query = "
 		SELECT

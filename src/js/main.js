@@ -63,7 +63,8 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.getResults = function() {
-			$http.get('/app/api/get-votes.php?key=' + $s.resultsBallot)
+			var key = $s.ballot.key || $s.resultsBallot;
+			$http.get('/app/api/get-votes.php?key=' + key)
 				.then(function(resp) {
 					$s.votes = resp.data.map(function(result) {
 						$s.ballot = result;
@@ -110,6 +111,10 @@ mainApp.controller('MainCtrl', [
 					}
 				})
 			;
+		};
+
+		$s.removeEntry = function(idx) {
+			$s.entries.splice(idx, 1);
 		};
 
 		$s.removeCandidate = function(idx) {
@@ -170,6 +175,12 @@ mainApp.controller('MainCtrl', [
 			});
 		};
 
+		$s.voteNow = function() {
+			$s.congrats = false;
+			$s.originalCandidates = $s.entries;
+			$s.resetCandidates();
+		};
+
 		$s.showResults = function() {
 			$s.thanks = true;
 			$s.final = true;
@@ -184,10 +195,6 @@ mainApp.controller('MainCtrl', [
 			} else {
 				$s.errorEntry = 'Entries must not be blank';
 			}
-		};
-
-		$s.removeEntry = function(idx) {
-			$s.entries.splice(idx, 1);
 		};
 
 		if($s.createBallot) {
