@@ -89,7 +89,7 @@ mainApp.controller('MainCtrl', [
 		if(getParam('vote')) {
 			$http.get('/app/api/get-candidates.php?key=' + getParam('vote'))
 				.then(function(resp) {
-					$s.originalCandidates = resp.data.candidates.map(function(entry) {
+					$s.originalCandidates = resp.data.map(function(entry) {
 						$s.ballot.id = entry.ballotId;
 
 						return entry.name;
