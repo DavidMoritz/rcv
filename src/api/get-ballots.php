@@ -1,6 +1,8 @@
 <?php
 require_once("config.php");
 
+echo "Not operational at this time";
+
 // checking for blank values.
 	$query = "
 		SELECT
@@ -17,5 +19,5 @@ require_once("config.php");
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
-	print json_encode($results);
+	//print json_encode($results);
 ?>

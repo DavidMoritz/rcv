@@ -23,7 +23,10 @@ html(ng-app='mainApp')
 					button.btn.btn-primary(ng-click="voteBallot = true") Vote
 					button.btn.btn-success(ng-click="createBallot = true; generateRandomKey()") Create New Ballot
 					button.btn.btn-default(onclick='runTheCode()' ng-click="showText = !showText") Run the Code
-				div(ng-show="voteBallot || resultsBallot")
+				div(ng-if="ballot")
+					h1 Ballot: {{ballot.name}}
+				// temporarily hide
+				.hidden(ng-show="voteBallot || resultsBallot")
 					select.form-control(ng-model="ballot" ng-change="voteBallot ? getCandidates() : showResults()" ng-options="item as item.name for item in allBallots track by item.id")
 				div(ng-show="createBallot")
 					form(name='ballotForm' ng-submit='newBallot()' ng-hide='ballot.id')
@@ -70,15 +73,15 @@ html(ng-app='mainApp')
 										button.btn.btn-default(type="button" ng-click="releaseOpen = !releaseOpen")
 											i.fa.fa-calendar
 								uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
-						button(type='submit') Submit
+						input.btn.btn-info(type="submit" value="Submit")
 					div(ng-show='ballot.id && !candidates')
 						form(name='entriesForm' ng-submit='addEntry()')
 							.form-group
 								label New Entry (use ENTER to add)
 								input.form-control(name="entryInput" ng-model="entryInput")
 								span(ng-show='errorEntry && !entryInput') {{errorEntry}}
-							button(type='submit') Add Entry
-							button(type='button' ng-click="submitEntries()") Submit
+							button.btn.btn-info(type='submit') Add Entry
+							button.btn.btn-default(type='button' ng-click="submitEntries()") Submit
 						h2 Current Entry List
 							h5(ng-repeat="entry in entries track by $index")
 								strong {{$index + 1}}&nbsp;
@@ -89,11 +92,16 @@ html(ng-app='mainApp')
 					h3 {{ballot.positions}} position{{ballot.positions == "1" ? "" : "s"}} available
 					form(name='voteForm' ng-submit='submitVote()')
 						ul#sortable(ui-sortable ng-model='candidates')
-							li(ng-repeat='item in candidates') {{item}}
+							li(ng-repeat='item in candidates track by $index') {{item}}
 								i.fa.fa-close(ng-click="removeCandidate($index)")
 						button.btn.btn-primary.clearfix(type='submit') Vote!
 						button.btn.btn-default(type="button" ng-click='resetCandidates()') Reset
-			div(ng-show="thanks")
+			div(ng-show="congrats")
+				h3 Thank you for creating a ballot!
+				h4 Send this url to people for voting: 
+				h4.text-success http://stvcalculator.com/{{ballot.key}}
+				a(href="http://stvcalculator.com/vote/?ballot={{ballot.key}}") Click here to vote yourself
+			div(ng-show="thanks || final")
 				h3(ng-hide="final") Thank you for voting!
 				button.btn.btn-primary(ng-click="getResults()" ng-hide="final") See Results
 				div(ng-show="final")

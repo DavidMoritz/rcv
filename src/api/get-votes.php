@@ -1,22 +1,26 @@
 <?php
 require_once("config.php");
 
-$id = $_GET['id'];
+$key = $_GET['key'];
 
-if(!empty($id)) {
+if(!empty($key)) {
 // checking for blank values.
 	$query = "
 		SELECT
 			*
 		FROM 
-			`votes` 
+			votes
+		JOIN
+			ballots
+		ON
+			votes.ballotId = ballots.id
 		WHERE 
-			`ballotId` = ". $id .";";
+			ballots.key = '$key';";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 	print json_encode($results);
 } else {
-	echo "failed to supply ID";
+	echo "failed to supply key";
 }
 ?>

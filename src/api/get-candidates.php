@@ -3,33 +3,36 @@ require_once("config.php");
 
 $key = $_GET['key'];
 
-if (!empty($key)) {
-	$id = "(
-		SELECT
-			`id`
-		FROM
-			`ballots`
-		WHERE
-			`key` = '" . $key . "'
-	)";
-} else {
-	$id = $_GET['id'];
-}
+// if (!empty($key)) {
+// 	$id = "(
+// 		SELECT
+// 			`id`
+// 		FROM
+// 			`ballots`
+// 		WHERE
+// 			`key` = '" . $key . "'
+// 	)";
+// } else {
+// 	$id = $_GET['id'];
+// }
 
-if(!empty($id)) {
-// checking for blank values.
+if(!empty($key)) {
 	$query = "
 		SELECT
-			`name`, `ballot_id`
+			*, entries.name AS 'candidate'
 		FROM
-			`entries`
+			entries
+		JOIN
+			ballots
+		ON
+			entries.ballotId = ballots.id  
 		WHERE
-			`ballotId` = ". $id .";";
+			ballots.key = '$key';";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 	print json_encode($results);
 } else {
-	echo "failed to supply ID or KEY";
+	echo "failed to supply KEY";
 }
 ?>
