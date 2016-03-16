@@ -38,7 +38,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.generateRandomKey = function(len) {
-			var len = len || 4;
+			len = len || 4;
 			var key = Math.random().toString(36).substr(2, len);
 			$http.get('/app/api/get-key-ballot.php?key=' + key)
 				.then(function(resp) {
