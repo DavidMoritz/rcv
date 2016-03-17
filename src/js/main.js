@@ -11,7 +11,6 @@ mainApp.controller('MainCtrl', [
 		//during development
 		window.$s = $s;
 
-		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 
 		var getParam = function(param) {
 			var queryArray = $loc.$$url.split('/');
@@ -24,9 +23,20 @@ mainApp.controller('MainCtrl', [
 			return false;
 		};
 
+		var updateTime = function(dateObj) {
+			var mom = moment(dateObj);
+
+			if(mom.isDST()) {
+				mom.utcOffset(-5);
+			} else {
+				mom.utcOffset(-6);
+			}
+
+			return mom.format('YYYY-MM-DD HH:mm:ss');
+		};
+
 		//	initialize scoped variables
 		_.assign($s, {
-			time: moment().format(timeFormat),
 			timePresets: ['10 minutes', '30 minutes', '1 hour', '24 hours', 'Custom'],
 			votes: [],
 			names: [],
@@ -62,7 +72,7 @@ mainApp.controller('MainCtrl', [
 
 		$s.sameTime = function() {
 			$s.ballot.resultsRelease = new Date($s.ballot.voteCutoff.getTime());
-		}
+		};
 
 		$s.getCandidates = function(key) {
 			var pass = $s.password ? '&password=' + $s.password : '';
@@ -100,7 +110,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.getBallots = function() {
-			$http.get('app/api/get-ballots.php?key=' + $s.editBallot)
+			$http.get('/app/api/get-ballots.php?createdBy=' + $s.editBallot)
 				.then(function(resp) {
 					$s.allBallots = resp.data;
 				})
@@ -121,6 +131,25 @@ mainApp.controller('MainCtrl', [
 					}
 				})
 			;
+		};
+
+		$s.changeEditBallot = function() {
+			$s.createBallot = true;
+			$s.ballot.positions = parseInt($s.ballot.positions);
+			$s.ballot.resultsRelease = new Date($s.ballot.resultsRelease);
+			$s.ballot.voteCutoff = new Date($s.ballot.voteCutoff);
+
+			var pass = $s.ballot.password ? '&password=' + $s.ballot.password : '';
+			$http.get('/app/api/get-candidates.php?key=' + $s.ballot.key + pass)
+				.then(function(resp) {
+					if(resp.data) {
+						$s.entries = resp.data.map(function(entry) {
+							return entry.candidate;
+						});
+					}
+				})
+			;
+
 		};
 
 		$s.checkAvailability = function() {
@@ -157,23 +186,35 @@ mainApp.controller('MainCtrl', [
 			if(!$s.showRelease) {
 				$s.sameTime();
 			}
-			// temporarily hide "created"
-			$s.ballot.created = $s.ballot.key;
+			$s.ballot.resultsRelease = updateTime($s.ballot.resultsRelease);
+			$s.ballot.voteCutoff = updateTime($s.ballot.voteCutoff);
 			$http({
 				method: 'POST',
-				url: '/app/api/new-ballot.php',
+				url: '/app/api/' + ($s.editBallot ? 'update' : 'new') + '-ballot.php',
 				data: $s.ballot,
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp){
 				if(resp.errors) {
 					$s.errors = resp.errors;
 				} else {
-					$s.ballot.id = resp;
+					if(!$s.editBallot) {
+						$s.ballot.id = resp;
+					}
+					$s.updated = true;
 				}
 			});
 		};
 
 		$s.submitEntries = function() {
+			if($s.editBallot) {
+				$http.get('/app/api/delete-entries.php?ballotId=' + $s.ballot.id)
+					.then(function(resp) {
+						$s.editBallot = false;
+						$s.submitEntries();
+					})
+				;
+				return;
+			}
 			$http({
 				method: 'POST',
 				url: '/app/api/add-entries.php',
@@ -231,7 +272,7 @@ mainApp.controller('MainCtrl', [
 		if($s.createBallot) {
 			$s.ballot = {
 				positions: 1,
-				created: "guest"
+				createdBy: 'guest'
 			};
 			$s.ballot.voteCutoff = roundResultsRelease();
 			$s.generateRandomKey();

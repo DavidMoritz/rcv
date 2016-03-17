@@ -22,12 +22,12 @@ html(ng-app='mainApp')
 					button.btn.btn-success(ng-click="createBallot = true; generateRandomKey()") Create New Ballot
 					button.btn.btn-info(ng-click="editBallot = true") Edit Ballot
 				div(ng-show="editBallot")
-					select.form-control(ng-model="ballot" ng-options="item as item.name for item in allBallots track by item.id")
+					select.form-control(ng-model="ballot" ng-options="item as item.name for item in allBallots track by item.id" ng-change="changeEditBallot()")
 				div(ng-if="ballot")
 					h1 Ballot: {{ballot.name}}
 				// temporarily hide
 				div(ng-show="createBallot")
-					form(name='ballotForm' ng-submit='newBallot()' ng-hide='ballot.id')
+					form(name='ballotForm' ng-submit='newBallot()' ng-hide='updated')
 						.form-group
 							label Name
 							input.form-control(name="name" ng-model="ballot.name")
@@ -35,9 +35,9 @@ html(ng-app='mainApp')
 						.form-group
 							label Shortcode (for link stvcalculator.com/{{ballot.key}})
 							.input-group
-								input.form-control(name="key" ng-model="ballot.key" ng-change="checkAvailability()" maxlength=16)
+								input.form-control(name="key" ng-model="ballot.key" ng-change="checkAvailability()" maxlength=16 ng-readonly="editBallot")
 								span.input-group-btn
-									button.btn.btn-secondary(type="button" ng-click="generateRandomKey()") New Shortcode
+									button.btn.btn-secondary(type="button" ng-click="generateRandomKey()" ng-disabled="editBallot") New Shortcode
 							span.text-danger(ng-show='errors.key') {{errors.key}}
 							span.text-success(ng-show='success.key') {{success.key}}
 						.form-group
@@ -47,11 +47,11 @@ html(ng-app='mainApp')
 						.form-group
 							label Created By
 								small.text-muted  using default "guest" will restrict future editing
-							input.form-control(name="created" ng-model="ballot.created")
-							span.text-danger(ng-show='errors.created') {{errors.created}}
+							input.form-control(name="createdBy" ng-model="ballot.createdBy")
+							span.text-danger(ng-show='errors.createdBy') {{errors.createdBy}}
 						.form-group
 							label Password Protected
-								input(type="checkbox" ng-model="showPassword")
+								input(type="checkbox" ng-model="showPassword" ng-checked="ballot.password")
 							input.form-control(ng-show="showPassword" name="password" ng-model="ballot.password")
 							span.text-danger(ng-show='errors.password') {{errors.password}}
 						.form-group
@@ -82,7 +82,7 @@ html(ng-app='mainApp')
 											i.fa.fa-calendar
 								uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
 						input.btn.btn-info(type="submit" value="Submit")
-					div(ng-show='ballot.id && !candidates')
+					div(ng-show='updated && !candidates')
 						form(name='entriesForm' ng-submit='addEntry()')
 							.form-group
 								label New Entry (use ENTER to add)
