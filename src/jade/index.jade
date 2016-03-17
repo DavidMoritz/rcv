@@ -54,9 +54,9 @@ html(ng-app='mainApp')
 						.form-group
 							label Password Protected
 								input(type="checkbox" ng-model="showPassword")
-							input.form-control(name="password" ng-model="ballot.password")
+							input.form-control(ng-show="showPassword" name="password" ng-model="ballot.password")
 							span.text-danger(ng-show='errors.password') {{errors.password}}
-						.form-group
+						.form-group.hidden
 							label Voting Cutoff Date
 								input(type="checkbox" ng-model="showCutoff")
 								small.text-muted(ng-show="showCutoff && ballot.voteCutoff")  {{ballot.voteCutoff | date: dateFormat }}
@@ -68,16 +68,20 @@ html(ng-app='mainApp')
 											i.fa.fa-calendar
 								uib-timepicker(ng-model="ballot.voteCutoff" minute-step="15")
 						.form-group
-							label Release Results Date
-								input(type="checkbox" ng-model="showRelease")
-								small.text-muted(ng-show="showRelease && ballot.resultsRelease")  {{ballot.resultsRelease | date: dateFormat }}
-							div(ng-show="showRelease")
-								.input-group
-									input.form-control(type="text" ng-focus="releaseOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.resultsRelease" is-open="releaseOpen")
-									span.input-group-btn
-										button.btn.btn-default(type="button" ng-click="releaseOpen = !releaseOpen")
-											i.fa.fa-calendar
-								uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
+							h4 Voting Cutoff: {{editDate ? (ballot.resultsRelease | date: "MMM d, y") : "Today, at"}} {{ballot.resultsRelease | date: "h:mm a" }}
+							label Edit Time
+								input(type="checkbox" ng-model="editTime")
+							uib-timepicker(ng-show="editTime" ng-model="ballot.resultsRelease" minute-step="1")
+							//- label(ng-repeat="time in timePresets track by $index")
+							//- 	input(type="radio" ng-value="time" name="resultRadio" ng-model="ballot.preset" ng-change="adjustTime(time)")
+							//- 	| {{time}}
+							label Edit Date
+								input(type="checkbox" ng-model="editDate")
+							.input-group(ng-show="editDate")
+								input.form-control(type="text" ng-focus="releaseOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.resultsRelease" is-open="releaseOpen")
+								span.input-group-btn
+									button.btn.btn-default(type="button" ng-click="releaseOpen = !releaseOpen")
+										i.fa.fa-calendar
 						input.btn.btn-info(type="submit" value="Submit")
 					div(ng-show='ballot.id && !candidates')
 						form(name='entriesForm' ng-submit='addEntry()')

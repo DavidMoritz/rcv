@@ -27,12 +27,15 @@ mainApp.controller('MainCtrl', [
 		//	initialize scoped variables
 		_.assign($s, {
 			time: moment().format(timeFormat),
-			items: ['Cake', 'Cookies', 'Pie', 'Cheeses', 'Coffee', 'Brownies', 'Ice-cream'],
-			votes: [['Pie','Cake','Candy','Brownie','Soda'],['Pizza','Brownie','Soda','Candy','Cake','Pie'],['Candy','Brownie','Soda','Pie'],['Cake','Soda','Pizza','Brownie','Pie'],['Soda','Pie','Cake','Pizza','Candy'],['Pie','Brownie','Pizza','Cake','Soda'],['Pizza','Brownie', 'Candy', 'Pie', 'Soda']],
-			names: ['Pie', 'Cake', 'Candy', 'Brownie', 'Soda', 'Pizza'],
+			timePresets: ['10 minutes', '30 minutes', '1 hour', '24 hours', 'Custom'],
+			items: [],
+			votes: [],
+			names: [],
 			vote: [],
 			seats: 3,
-			ballot: {},
+			ballot: {
+				positions: 1
+			},
 			errors: {},
 			success: {},
 			entries: [],
@@ -48,6 +51,18 @@ mainApp.controller('MainCtrl', [
 		});
 
 		_.extend($s, VF);
+
+		function roundResultsRelease() {
+			var now = new Date();
+			var m = now.getMinutes();
+			var offset = parseInt((m+25)/15) * 15;
+			now = new Date(now.setSeconds(0));
+
+			// vote ends 15 minutes after it starts round to the nearest quarter
+			return new Date(now.setMinutes(offset));
+		}
+
+		$s.ballot.resultsRelease = roundResultsRelease();
 
 		$s.getCandidates = function(key) {
 			var pass = $s.password ? '&password=' + $s.password : '';
@@ -87,17 +102,17 @@ mainApp.controller('MainCtrl', [
 		$s.generateRandomKey = function(len) {
 			len = len || 4;
 			var key = Math.random().toString(36).substr(2, len);
-			$http.get('/app/api/get-key-ballot.php?key=' + key)
-				.then(function(resp) {
-					if(resp.data.length) {
-						$s.generateRandomKey(++len);
-					} else {
+			// $http.get('/app/api/get-key-ballot.php?key=' + key)
+			// 	.then(function(resp) {
+			// 		if(resp.data.length) {
+			// 			$s.generateRandomKey(++len);
+			// 		} else {
 						$s.errors.key = null;
 						$s.success.key = null;
 						$s.ballot.key = key;
-					}
-				})
-			;
+			// 		}
+			// 	})
+			// ;
 		};
 
 		$s.checkAvailability = function() {
