@@ -28,14 +28,11 @@ mainApp.controller('MainCtrl', [
 		_.assign($s, {
 			time: moment().format(timeFormat),
 			timePresets: ['10 minutes', '30 minutes', '1 hour', '24 hours', 'Custom'],
-			items: [],
 			votes: [],
 			names: [],
 			vote: [],
 			seats: 3,
-			ballot: {
-				positions: 1
-			},
+			ballot: {},
 			errors: {},
 			success: {},
 			entries: [],
@@ -48,6 +45,7 @@ mainApp.controller('MainCtrl', [
 			createBallot: getParam('ballot'),
 			voteBallot: getParam('vote'),
 			resultsBallot: getParam('results'),
+			editBallot: getParam('edit'),
 		});
 
 		_.extend($s, VF);
@@ -62,7 +60,9 @@ mainApp.controller('MainCtrl', [
 			return new Date(now.setMinutes(offset));
 		}
 
-		$s.ballot.resultsRelease = roundResultsRelease();
+		$s.sameTime = function() {
+			$s.ballot.resultsRelease = new Date($s.ballot.voteCutoff.getTime());
+		}
 
 		$s.getCandidates = function(key) {
 			var pass = $s.password ? '&password=' + $s.password : '';
@@ -99,20 +99,28 @@ mainApp.controller('MainCtrl', [
 			;
 		};
 
+		$s.getBallots = function() {
+			$http.get('app/api/get-ballots.php?key=' + $s.editBallot)
+				.then(function(resp) {
+					$s.allBallots = resp.data;
+				})
+			;
+		};
+
 		$s.generateRandomKey = function(len) {
 			len = len || 4;
 			var key = Math.random().toString(36).substr(2, len);
-			// $http.get('/app/api/get-key-ballot.php?key=' + key)
-			// 	.then(function(resp) {
-			// 		if(resp.data.length) {
-			// 			$s.generateRandomKey(++len);
-			// 		} else {
+			$http.get('/app/api/get-key-ballot.php?key=' + key)
+				.then(function(resp) {
+					if(resp.data.length) {
+						$s.generateRandomKey(++len);
+					} else {
 						$s.errors.key = null;
 						$s.success.key = null;
 						$s.ballot.key = key;
-			// 		}
-			// 	})
-			// ;
+					}
+				})
+			;
 		};
 
 		$s.checkAvailability = function() {
@@ -146,6 +154,9 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.newBallot = function() {
+			if(!$s.showRelease) {
+				$s.sameTime();
+			}
 			// temporarily hide "created"
 			$s.ballot.created = $s.ballot.key;
 			$http({
@@ -218,6 +229,11 @@ mainApp.controller('MainCtrl', [
 		};
 
 		if($s.createBallot) {
+			$s.ballot = {
+				positions: 1,
+				created: "guest"
+			};
+			$s.ballot.voteCutoff = roundResultsRelease();
 			$s.generateRandomKey();
 		}
 
@@ -227,6 +243,10 @@ mainApp.controller('MainCtrl', [
 
 		if($s.resultsBallot) {
 			$s.getResults();
+		}
+
+		if($s.editBallot) {
+			$s.getBallots();
 		}
 	}
 ]);

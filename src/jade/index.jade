@@ -17,17 +17,15 @@ html(ng-app='mainApp')
 	body(ng-cloak ng-controller='MainCtrl')
 		.container
 			div(ng-hide="thanks || congrats")
-				ul#sortable(ui-sortable ng-model='items' ng-hide="true")
-					li(ng-repeat='item in items') {{item}}
-				div(ng-hide="voteBallot || createBallot || resultsBallot")
+				div(ng-hide="voteBallot || createBallot || resultsBallot || editBallot")
 					button.btn.btn-primary(ng-click="voteBallot = true") Vote
 					button.btn.btn-success(ng-click="createBallot = true; generateRandomKey()") Create New Ballot
-					button.btn.btn-default(onclick='runTheCode()' ng-click="showText = !showText") Run the Code
+					button.btn.btn-info(ng-click="editBallot = true") Edit Ballot
+				div(ng-show="editBallot")
+					select.form-control(ng-model="ballot" ng-options="item as item.name for item in allBallots track by item.id")
 				div(ng-if="ballot")
 					h1 Ballot: {{ballot.name}}
 				// temporarily hide
-				.hidden(ng-show="voteBallot || resultsBallot")
-					select.form-control(ng-model="ballot" ng-change="voteBallot ? getCandidates() : showResults()" ng-options="item as item.name for item in allBallots track by item.id")
 				div(ng-show="createBallot")
 					form(name='ballotForm' ng-submit='newBallot()' ng-hide='ballot.id')
 						.form-group
@@ -44,11 +42,11 @@ html(ng-app='mainApp')
 							span.text-success(ng-show='success.key') {{success.key}}
 						.form-group
 							label Positions to be Elected
-							input.form-control(name="positions" ng-model="ballot.positions")
+							input.form-control(type="number" name="positions" ng-model="ballot.positions")
 							span.text-danger(ng-show='errors.positions') {{errors.positions}}
-						// temporarily hide
-						.form-group.hidden
-							label Created
+						.form-group
+							label Created By
+								small.text-muted  using default "guest" will restrict future editing
 							input.form-control(name="created" ng-model="ballot.created")
 							span.text-danger(ng-show='errors.created') {{errors.created}}
 						.form-group
@@ -56,32 +54,33 @@ html(ng-app='mainApp')
 								input(type="checkbox" ng-model="showPassword")
 							input.form-control(ng-show="showPassword" name="password" ng-model="ballot.password")
 							span.text-danger(ng-show='errors.password') {{errors.password}}
-						.form-group.hidden
-							label Voting Cutoff Date
-								input(type="checkbox" ng-model="showCutoff")
-								small.text-muted(ng-show="showCutoff && ballot.voteCutoff")  {{ballot.voteCutoff | date: dateFormat }}
-							div(ng-show="showCutoff")
-								.input-group
-									input.form-control(type="text" ng-focus="cutoffOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.voteCutoff" is-open="cutoffOpen")
-									span.input-group-btn
-										button.btn.btn-default(type="button" ng-click="cutoffOpen = !cutoffOpen")
-											i.fa.fa-calendar
-								uib-timepicker(ng-model="ballot.voteCutoff" minute-step="15")
 						.form-group
-							h4 Voting Cutoff: {{editDate ? (ballot.resultsRelease | date: "MMM d, y") : "Today, at"}} {{ballot.resultsRelease | date: "h:mm a" }}
+							h4 Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}} {{ballot.voteCutoff | date: "h:mm a" }}
 							label Edit Time
 								input(type="checkbox" ng-model="editTime")
-							uib-timepicker(ng-show="editTime" ng-model="ballot.resultsRelease" minute-step="1")
+							uib-timepicker(ng-show="editTime" ng-model="ballot.voteCutoff" minute-step="1")
 							//- label(ng-repeat="time in timePresets track by $index")
 							//- 	input(type="radio" ng-value="time" name="resultRadio" ng-model="ballot.preset" ng-change="adjustTime(time)")
 							//- 	| {{time}}
 							label Edit Date
 								input(type="checkbox" ng-model="editDate")
 							.input-group(ng-show="editDate")
-								input.form-control(type="text" ng-focus="releaseOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.resultsRelease" is-open="releaseOpen")
+								input.form-control(type="text" ng-focus="releaseOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.voteCutoff" is-open="releaseOpen")
 								span.input-group-btn
 									button.btn.btn-default(type="button" ng-click="releaseOpen = !releaseOpen")
 										i.fa.fa-calendar
+						.form-group
+							label Release Results:
+								span(ng-hide="showRelease")  after voting (check box for custom)
+								input(type="checkbox" ng-model="showRelease" ng-click="sameTime()")
+								small.text-muted(ng-show="showRelease && ballot.resultsRelease")  {{ballot.resultsRelease | date: dateFormat }}
+							div(ng-show="showRelease")
+								.input-group
+									input.form-control(type="text" ng-focus="cutoffOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.resultsRelease" is-open="cutoffOpen")
+									span.input-group-btn
+										button.btn.btn-default(type="button" ng-click="cutoffOpen = !cutoffOpen")
+											i.fa.fa-calendar
+								uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
 						input.btn.btn-info(type="submit" value="Submit")
 					div(ng-show='ballot.id && !candidates')
 						form(name='entriesForm' ng-submit='addEntry()')
