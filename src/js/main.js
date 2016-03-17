@@ -78,7 +78,7 @@ mainApp.controller('MainCtrl', [
 			var pass = $s.password ? '&password=' + $s.password : '';
 			$http.get('/app/api/get-candidates.php?key=' + $s.voteBallot + pass)
 				.then(function(resp) {
-					if(resp.data) {
+					if(typeof resp.data == 'object') {
 						$s.originalCandidates = resp.data.map(function(entry) {
 							$s.ballot = entry;
 
@@ -87,6 +87,7 @@ mainApp.controller('MainCtrl', [
 						$s.resetCandidates();
 					} else {
 						$s.passwordRequired = true;
+						alert('password required');
 					}
 				})
 			;
