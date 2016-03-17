@@ -52,6 +52,11 @@ html(ng-app='mainApp')
 							input.form-control(name="created" ng-model="ballot.created")
 							span.text-danger(ng-show='errors.created') {{errors.created}}
 						.form-group
+							label Password Protected
+								input(type="checkbox" ng-model="showPassword")
+							input.form-control(name="password" ng-model="ballot.password")
+							span.text-danger(ng-show='errors.password') {{errors.password}}
+						.form-group
 							label Voting Cutoff Date
 								input(type="checkbox" ng-model="showCutoff")
 								small.text-muted(ng-show="showCutoff && ballot.voteCutoff")  {{ballot.voteCutoff | date: dateFormat }}
