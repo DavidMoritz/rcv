@@ -50,14 +50,19 @@ mainApp.controller('MainCtrl', [
 		_.extend($s, VF);
 
 		$s.getCandidates = function(key) {
-			$http.get('/app/api/get-candidates.php?key=' + $s.voteBallot)
+			var pass = $s.password ? '&password=' + $s.password : '';
+			$http.get('/app/api/get-candidates.php?key=' + $s.voteBallot + pass)
 				.then(function(resp) {
-					$s.originalCandidates = resp.data.map(function(entry) {
-						$s.ballot = entry;
+					if(resp.data) {
+						$s.originalCandidates = resp.data.map(function(entry) {
+							$s.ballot = entry;
 
-						return entry.candidate;
-					});
-					$s.resetCandidates();
+							return entry.candidate;
+						});
+						$s.resetCandidates();
+					} else {
+						$s.passwordRequired = true;
+					}
 				})
 			;
 		};
