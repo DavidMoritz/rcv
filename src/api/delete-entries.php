@@ -9,9 +9,7 @@ if(!empty($ballotId)) {
 		DELETE FROM 
 			`entries` 
 		WHERE 
-			`ballotId` = $ballotId
-		LIMIT
-			1;";
+			`ballotId` = $ballotId;";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
