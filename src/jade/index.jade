@@ -54,6 +54,11 @@ html(ng-app='mainApp')
 								input(type="checkbox" ng-model="showPassword" ng-checked="ballot.password")
 							input.form-control(ng-show="showPassword" name="password" ng-model="ballot.password")
 							span.text-danger(ng-show='errors.password') {{errors.password}}
+						.form-group(ng-show="editBallot")
+							label Delete all votes and reset Ballot
+								input(type="checkbox" ng-model="showDelete")
+							input.btn.btn-danger(ng-show="showDelete" type="button" value="Are you sure?" ng-click="deleteVotes()")
+							span.text-warning(ng-show='deleted') Votes have been deleted.
 						.form-group
 							h4 Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}} {{ballot.voteCutoff | date: "h:mm a" }}
 							label Edit Time

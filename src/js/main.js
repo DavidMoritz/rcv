@@ -150,7 +150,6 @@ mainApp.controller('MainCtrl', [
 					}
 				})
 			;
-
 		};
 
 		$s.checkAvailability = function() {
@@ -245,6 +244,17 @@ mainApp.controller('MainCtrl', [
 			}).success(function(resp) {
 				$s.thanks = true;
 				console.log(resp);
+			});
+		};
+
+		$s.deleteVotes = function() {
+			$http({
+				method: 'POST',
+				url: '/app/api/delete-votes.php',
+				data: $s.ballot,
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).success(function(resp) {
+				$s.deleted = true;
 			});
 		};
 
