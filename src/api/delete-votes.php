@@ -1,6 +1,8 @@
 <?php
 require_once("config.php");
 
+$_POST = json_decode(file_get_contents('php://input'), true);
+
 $ballotId = $_POST['id'];
 
 if(!empty($ballotId)) {
