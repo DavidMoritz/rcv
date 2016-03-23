@@ -25,7 +25,7 @@ html(ng-app='mainApp')
 					select.form-control(ng-model="ballot" ng-options="item as item.name for item in allBallots track by item.id" ng-change="changeEditBallot()")
 				div(ng-if="ballot")
 					h1 Ballot: {{ballot.name}}
-				// temporarily hide
+				//- temporarily hide
 				div(ng-show="createBallot")
 					form(name='ballotForm' ng-submit='newBallot()' ng-hide='updated')
 						.form-group
@@ -97,7 +97,7 @@ html(ng-app='mainApp')
 								i.fa.fa-close.pointer(ng-click="removeEntry($index)")
 				div(ng-if='candidates')
 					h2 Order by Preference
-					h3 {{ballot.positions}} position{{ballot.positions == "1" ? "" : "s"}} available
+					h3 {{ballot.positions}} position{{ballot.positions == 1 ? "" : "s"}} available
 					form(name='voteForm' ng-submit='submitVote()')
 						ul#sortable(ui-sortable ng-model='candidates')
 							li(ng-repeat='item in candidates track by $index') {{item}}
@@ -106,7 +106,7 @@ html(ng-app='mainApp')
 						button.btn.btn-default(type="button" ng-click='resetCandidates()') Reset
 			div(ng-show="congrats")
 				h3 Thank you for creating a ballot!
-				h4 Send this url to people for voting: 
+				h4 Send this url to people for voting:
 				h4.text-success http://stvcalculator.com/{{ballot.key}}
 				a.pointer(ng-click="voteNow()") Click here to vote yourself
 			div(ng-show="thanks || final")
@@ -121,9 +121,7 @@ html(ng-app='mainApp')
 				tr(ng-repeat="x in names")
 					td {{x.Name}}
 					td {{x.Country}}
-			#bodytext(ng-show="showText")
+			div(ng-show="showText" ng-bind-html="bodyText")
 		script(src='inc/lib.js')
 		script(src='inc/main.js')
-
-//		| @@javascriptReplaceFiles
-
+		@@javascriptReplaceFiles

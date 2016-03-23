@@ -4,13 +4,13 @@ mainApp.controller('MainCtrl', [
 	'$timeout',
 	'$interval',
 	'$http',
+	'$sce',
 	'VoteFactory',
-	function MainCtrl($s, $loc, $timeout, $interval, $http, VF) {
+	function MainCtrl($s, $loc, $timeout, $interval, $http, $sce, VF) {
 		'use strict';
 
 		//during development
 		window.$s = $s;
-
 
 		var getParam = function(param) {
 			var queryArray = $loc.$$url.split('/');
@@ -38,11 +38,10 @@ mainApp.controller('MainCtrl', [
 		//	initialize scoped variables
 		_.assign($s, {
 			timePresets: ['10 minutes', '30 minutes', '1 hour', '24 hours', 'Custom'],
-			votes: [],
-			names: [],
-			vote: [],
-			seats: 3,
-			ballot: {},
+			ballot: {
+				positions: 1,
+				createdBy: 'guest'
+			},
 			errors: {},
 			success: {},
 			entries: [],
@@ -51,7 +50,6 @@ mainApp.controller('MainCtrl', [
 			pickerOptions: {
 				showWeeks: false
 			},
-			elected: [],
 			createBallot: getParam('ballot'),
 			voteBallot: getParam('vote'),
 			resultsBallot: getParam('results'),
@@ -80,6 +78,7 @@ mainApp.controller('MainCtrl', [
 					if(typeof resp.data == 'object') {
 						$s.originalCandidates = resp.data.map(function(entry) {
 							$s.ballot = entry;
+							$s.ballot.positions = parseInt($s.ballot.positions);
 
 							return entry.candidate;
 						});
@@ -97,12 +96,14 @@ mainApp.controller('MainCtrl', [
 				.then(function(resp) {
 					$s.votes = resp.data.map(function(result) {
 						$s.ballot = result;
+						$s.ballot.positions = parseInt($s.ballot.positions);
 
 						return JSON.parse(result.vote);
 					});
 					$s.seats = $s.ballot.positions;
 					$s.names = _.uniq(_.flatten($s.votes));
-					$s.elected = $s.runTheCode();
+					$s.runTheCode();
+					$s.bodyText = $sce.trustAsHtml($s.outputstring);
 					$s.final = true;
 				})
 			;
@@ -278,10 +279,6 @@ mainApp.controller('MainCtrl', [
 		};
 
 		if($s.createBallot) {
-			$s.ballot = {
-				positions: 1,
-				createdBy: 'guest'
-			};
 			$s.ballot.voteCutoff = roundResultsRelease();
 			$s.generateRandomKey();
 		}

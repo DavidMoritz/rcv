@@ -3,24 +3,18 @@ mainApp.factory('VoteFactory', [
 		'use strict';
 
 		return {
-			outputstring: '',
 			wincount: 0,
 			roundnum: 0,
-			votenum: [],
 			elected: [],
-			quota: 0,
-			voteweight: [],
 
 			runTheCode: function() {
 				this.renewQuota();
-				this.showInitialVotes();
-				this.nextRound();
-				$('#bodytext').html(this.outputstring);
-				return this.elected;
+				this.outputstring = this.createHeader();
+				this.anotherRound();
 			},
 
 			renewQuota: function() {
-				this.quota = (Math.ceil(this.votes.length * 100 / (parseInt(this.seats) + 1))) / 100;
+				this.quota = _.round(this.votes.length / (this.seats + 1), 2);
 				this.voteweight = _.range(1, this.votes.length + 1, 0);
 			},
 
@@ -41,34 +35,32 @@ mainApp.factory('VoteFactory', [
 						model.outputstring += '<td colspan=' + colspan + '></td>';
 					}
 					if(model.seats > 1) {
-						model.outputstring += '<td>vote-value = ' + parseFloat(model.voteweight[idx]).toFixed(4) + '</td></tr>';
+						model.outputstring += '<td>vote-value = ' + _.round(model.voteweight[idx], 4) + '</td></tr>';
 					}
 				});
 				this.outputstring += '</tbody></table>';
 			},
 
-			showInitialVotes: function() {
+			createHeader: function() {
 				if(this.seats > 1) {
-					this.outputstring = '<strong>Candidates: ' + this.names.length + ' Seats: ' + this.seats + ' Votes: ' + this.votes.length + ' Quota: ' + this.quota + '</strong><br>';
+					return '<strong>Candidates: ' + this.names.length + ' Seats: ' + this.seats + ' Votes: ' + this.votes.length + ' Quota: ' + this.quota + '</strong><br>';
 				} else {
-					this.outputstring = '<strong>Candidates: ' + this.names.length + ' Votes: ' + this.votes.length + '</strong><br>';
+					return '<strong>Candidates: ' + this.names.length + ' Votes: ' + this.votes.length + '</strong><br>';
 				}
 			},
 
-			//If the number of winners is equal to the number of this.seats, this function goes to the result. If not, if the current highest preference in a vote is 'none', this function removes it and the process repeats until every vote starts with something other than 'none' and it then outputs a list of the votes.
-			nextRound: function() {
+			// Check for 'end' conditions otherwise count votes again
+			anotherRound: function() {
 				if (this.wincount == this.seats) {
-					this.result();
+					this.finishElection();
 				} else {
-					this.roundnum++;
-					this.outputstring += '</p><table class="table"><thead>Round ' + this.roundnum + ' votes</thead>';
+					this.outputstring += '</p><table class="table"><thead>Round ' + (++this.roundnum) + ' votes</thead>';
 					this.displayVotes();
-					this.countfirst();
+					this.countVotes();
 				}
 			},
 
-			//This function creates an array which contains the number of highest preference votes that each candidate has and outputs a summary. If any candidate has enough votes to exceed the this.quota, it goes to the overquota function, otherwise it goes to the findmin function.
-			countfirst: function() {
+			countVotes: function() {
 				var quotacount = 0;
 				var model = this;
 				this.votenum = _.range(0, this.names.length, 0);
@@ -79,130 +71,128 @@ mainApp.factory('VoteFactory', [
 				});
 
 				_.each(this.names, function(name, idx) {
-					model.outputstring += name + ' = ' + model.votenum[idx] + '<br>';
+					model.outputstring += name + ' = ' + _.round(model.votenum[idx], 4) + '<br>';
 
 					if (model.votenum[idx] > model.quota) {
 						quotacount++;
 					}
 				});
 
-				if(quotacount) {
-					this.overquota();
-				} else {
-					this.findmin();
-				}
+				this.buildDataForOutcome(quotacount);
 			},
 
-			//This function works out which candidates have the fewest votes. If there is only one with the fewest votes, it goes to the function monomin. If there is a tie at the bottom it goes to multimin.
-			findmin: function() {
-				//This section counts the number of candidates with first preference votes. If that number is equal to the number of vacant seats, it goes to the allliveelected function which declares them all this.elected. Otherwise it moves on to remove the candidate with the fewest votes.
-				var mincount;
-				var least;
-				var livecount = this.votenum.filter(function(num) {
-					return num > 0;
-				});
-
-				if (livecount.length + this.wincount == this.seats) {
-					this.allliveelected();
-				} else {
-					least = this.votenum.reduce(function(prev, current) {
-						if (prev > current && current > -1) {
-							return current;
+			buildDataForOutcome: function(data) {
+				if(data) {
+					data = {
+						math: 'max',
+						class: 'elected',
+						elect: true,
+						text: {
+							count: 'Most votes currently held',
+							total: 'greatest number of',
+							tie: 'says the first surplus to be re-allocated',
+							result: 'has exceeded the quota and is elected. If there are seats remaining to be filled, the surplus will now be reallocated'
 						}
-						return prev;
-					}, this.quota);
-
-					this.outputstring += '<br>Fewest votes won by a candidate = ' + least + '.';
-
-					mincount = this.votenum.filter(function(num) {
-						return num == least;
-					}).length;
-
-					this.outputstring += '<br>Number of candidates with the fewest votes = ' + mincount + '.';
-
-					var eliminated = this.votenum.indexOf(least);
-
-					if(mincount > 1) {
-						// we need a better way to break ties
-						eliminated = this.votenum.lastIndexOf(least);
-						this.outputstring += '<br>The tiebreaker loser is <span class="eliminated">' + this.names[eliminated] + '</span>.';
-					}
-
-					this.outputstring += '<br><span class="eliminated">' + this.names[eliminated] + '</span> is eliminated.';
-
-					this.removemin(eliminated);
+					};
+				} else {
+					data = {
+						math: 'min',
+						class: 'eliminated',
+						text: {
+							count: 'Fewest votes won',
+							total: 'fewest',
+							tie: 'loser',
+							result: 'is eliminated'
+						}
+					};
 				}
+
+				this.determineOutcome(data);
 			},
 
-			//This function goes through the vote arrays and replaces each instance of the eliminated candidate with 'none'. It then goes back to the nextRound function at the start to begin another round of counting.
-			removemin: function(eliminated) {
-				var model = this;
-				_.each(this.votes, function(vote) {
-					var idx = vote.indexOf(model.names[eliminated]);
-					if(idx !== -1) {
-						vote[vote.length] = '<span class="eliminated">' + vote[idx] + '</span>';
-						vote.splice(idx, 1);
-					}
-				});
-				this.nextRound();
-			},
-
-			//This function determines if there is a tie in the number of candidates with the most votes above the this.quota.
-			overquota: function() {
-				var greatest = this.votenum.reduce(function(prev, current) {
-					return Math.max(prev, current);
-				});
-
-				this.outputstring += '<br>Most votes currently held by a candidate = ' + greatest + '.';
-
-				var maxcount = this.votenum.filter(function(num) {
-					return num == greatest;
+			// Show results for either winning candidate or losing candidate.
+			determineOutcome: function(data) {
+				// apex = votes needed to either be elected or be eliminated
+				var apex = this.votenum.reduce(function(prev, current) {
+					return current ? Math[data.math](prev, current) : prev;
+				}, this.quota);
+				var count = this.votenum.filter(function(num) {
+					return num == apex;
 				}).length;
+				var chosen = this.votenum.indexOf(apex);
 
-				this.outputstring += '<br>Number of candidates with the greatest number of votes = ' + maxcount + '.';
+				this.outputstring += '<br>'+ data.text.count +' by a candidate = ' + _.round(apex, 4) + '.';
+				this.outputstring += '<br>Number of candidates with the '+ data.text.total +' votes = ' + count + '.';
 
-				var roundelected = this.votenum.indexOf(greatest);
-
-				if(maxcount > 1) {
-					// seriously, nothing better than this?
-					roundelected = this.votenum.lastIndexOf(greatest);
-					this.outputstring += '<br>The tiebreaker says the first surplus to be re-allocated is <span class="elected">' + this.names[roundelected] + '</span>\'s.';
+				if(count > 1) {
+					chosen = this.breakTie(apex);
+					this.outputstring += '<br>The tiebreaker '+ data.text.tie +' is <span class="'+ data.class +'">' + this.names[chosen] + '</span>\'s.';
 				}
 
-				this.outputstring += '<br><span class="elected">' + this.names[roundelected] + '</span> has exceeded the quota and is elected. If there are seats remaining to be filled, the surplus will now be reallocated.';
-				this.electmax(roundelected);
+				this.outputstring += '<br><span class="'+ data.class +'">' + this.names[chosen] + '</span> '+ data.text.result +'.';
+				this.removeChosen(chosen, data.class, data.elect);
 			},
 
-			//This function adds the name of the this.elected candidate to the this.elected array and then reweights their votes and changes their name to "none" in the votes array.
-			electmax: function(roundelected) {
+			// remove either the elected or eliminated candidates from votes
+			removeChosen: function(chosen, className, elect) {
+				if(elect) {
+					this.elected[this.wincount++] = this.names[chosen];
+				}
 				var model = this;
-				this.elected[this.wincount++] = this.names[roundelected];
-				_.each(this.votes, function(vote, idx) {
-					if(vote[0] == model.names[roundelected]) {
-						model.voteweight[idx] *= (model.votenum[roundelected] - model.quota) / model.votenum[roundelected];
-						vote[vote.length] = '<span class="elected">' + vote[0] + '</span>';
-					}
-					var found = vote.indexOf(model.names[roundelected]);
+				_.each(this.votes, function(vote, index) {
+					var found = vote.indexOf(model.names[chosen]);
 					if(found !== -1) {
+						if(found === 0) {
+							if(elect) {
+								model.voteweight[index] *= 1 - model.quota / model.votenum[chosen];
+							}
+							vote.push('<span class="'+ className +'">'+ vote[found] +'</span>');
+						}
 						vote.splice(found, 1);
 					}
 				});
-				this.nextRound();
+				this.anotherRound();
 			},
 
-			//When there are as many active candidates as there are seats to fill, this function adds all the active candidates to the this.elected array.
-			allliveelected: function() {
+			// Analyses which candidates are marginally stronger for the purpose of breaking ties
+			breakTie: function(value) {
 				var model = this;
-				_.each(this.names, function(name, idx) {
-					if(model.votenum[idx] > 0) {
-						model.elected[model.wincount++] = name;
+				var tieArray = [];
+				var i;
+				// length of longest vote array
+				var voteSize = this.votes.reduce(function(voteSize, vote) {
+					return Math.max(voteSize, vote.length);
+				}, 0);
+				var calculateValue = function(voteArr, idx) {
+					var tie = _.find(tieArray, {name: voteArr[i]});
+					if(tie) {
+						// 2nd place votes are exponentially greater than 3rd place votes etc.
+						tie.value += model.voteweight[idx] / Math.pow(10, i);
+					}
+				};
+				// populate tieArray only with tie breakers
+				this.votenum.map(function(val, idx) {
+					if(val == value) {
+						tieArray.push({
+							index: idx,
+							name: model.names[idx],
+							value: 0
+						});
 					}
 				});
-				this.nextRound();
+				for(i = 1; i < voteSize; i++) {
+					this.votes.map(calculateValue);
+				}
+				// sort by ascending vote value
+				tieArray.sort(function(a, b) {
+					return a.value > b.value;
+				});
+
+				return tieArray[0].index;
 			},
 
-			//This function announces the winner.
-			result: function() {
+			// Finish election and announce the winner(s).
+			finishElection: function() {
 				var model = this;
 				this.outputstring += '<p><b>The election is complete and the elected candidates are';
 				_.each(this.elected, function(name) {
