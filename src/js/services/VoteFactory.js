@@ -202,26 +202,6 @@ mainApp.factory('VoteFactory', [
 				this.nextRound();
 			},
 
-			//I don't think this function is necessary
-			checkAllAlive: function() {
-				//This section counts the number of candidates with first preference votes. If that number is equal to the number of vacant seats, it goes to the allliveelected function which declares them all this.elected. Otherwise it moves on to remove the candidate with the fewest votes.
-				var livecount = this.votenum.filter(function(num) {
-					return num > 0;
-				});
-
-				if (livecount.length + this.wincount == this.seats) {
-					//When there are as many active candidates as there are seats to fill, this function adds all the active candidates to the this.elected array.
-					var model = this;
-					_.each(this.names, function(name, idx) {
-						if(model.votenum[idx] > 0) {
-							model.elected[model.wincount++] = name;
-						}
-					});
-					this.nextRound();
-					this.allliveelected();
-				}
-			},
-
 			//This function announces the winner.
 			result: function() {
 				var model = this;
