@@ -3,24 +3,20 @@ mainApp.factory('VoteFactory', [
 		'use strict';
 
 		return {
-			outputstring: '',
 			wincount: 0,
 			roundnum: 0,
-			votenum: [],
 			elected: [],
-			quota: 0,
-			voteweight: [],
 
 			runTheCode: function() {
 				this.renewQuota();
-				this.showInitialVotes();
+				this.displayHeader();
 				this.nextRound();
 				$('#bodytext').html(this.outputstring);
 				return this.elected;
 			},
 
 			renewQuota: function() {
-				this.quota = (Math.ceil(this.votes.length * 100 / (parseInt(this.seats) + 1))) / 100;
+				this.quota = _.round(this.votes.length / (this.seats + 1), 2);
 				this.voteweight = _.range(1, this.votes.length + 1, 0);
 			},
 
@@ -41,13 +37,13 @@ mainApp.factory('VoteFactory', [
 						model.outputstring += '<td colspan=' + colspan + '></td>';
 					}
 					if(model.seats > 1) {
-						model.outputstring += '<td>vote-value = ' + parseFloat(model.voteweight[idx]).toFixed(4) + '</td></tr>';
+						model.outputstring += '<td>vote-value = ' + _.round(parseFloat(model.voteweight[idx]), 4) + '</td></tr>';
 					}
 				});
 				this.outputstring += '</tbody></table>';
 			},
 
-			showInitialVotes: function() {
+			displayHeader: function() {
 				if(this.seats > 1) {
 					this.outputstring = '<strong>Candidates: ' + this.names.length + ' Seats: ' + this.seats + ' Votes: ' + this.votes.length + ' Quota: ' + this.quota + '</strong><br>';
 				} else {
@@ -55,13 +51,12 @@ mainApp.factory('VoteFactory', [
 				}
 			},
 
-			//If the number of winners is equal to the number of this.seats, this function goes to the result. If not, if the current highest preference in a vote is 'none', this function removes it and the process repeats until every vote starts with something other than 'none' and it then outputs a list of the votes.
+			//If the number of winners is equal to the number of this.seats, this function goes to the result. If not, it then outputs a list of the votes.
 			nextRound: function() {
 				if (this.wincount == this.seats) {
 					this.result();
 				} else {
-					this.roundnum++;
-					this.outputstring += '</p><table class="table"><thead>Round ' + this.roundnum + ' votes</thead>';
+					this.outputstring += '</p><table class="table"><thead>Round ' + (++this.roundnum) + ' votes</thead>';
 					this.displayVotes();
 					this.countfirst();
 				}
@@ -123,8 +118,7 @@ mainApp.factory('VoteFactory', [
 					var eliminated = this.votenum.indexOf(least);
 
 					if(mincount > 1) {
-						// we need a better way to break ties
-						eliminated = this.votenum.lastIndexOf(least);
+						eliminated = this.breakTie(least);
 						this.outputstring += '<br>The tiebreaker loser is <span class="eliminated">' + this.names[eliminated] + '</span>.';
 					}
 
@@ -132,6 +126,43 @@ mainApp.factory('VoteFactory', [
 
 					this.removemin(eliminated);
 				}
+			},
+
+			//This function analyses which candidates are marginally stronger for the purpose of breaking ties
+			breakTie: function(value) {
+				var model = this;
+				var tieArray = [];
+				var i;
+				// length of longest vote array
+				var voteSize = this.votes.reduce(function(voteSize, vote) {
+					return Math.max(voteSize, vote.length);
+				}, 0);
+				var calculateValue = function(voteArr, idx) {
+					var tie = _.find(tieArray, {name: voteArr[i]});
+					if(tie) {
+						// 2nd place votes are exponentially greater than 3rd place votes etc.
+						tie.value += (model.voteweight[idx] / (i * 10));
+					}
+				};
+				// populate tieArray only with tie breakers
+				this.votenum.map(function(val, idx) {
+					if(val == value) {
+						tieArray.push({
+							index: idx,
+							name: model.names[idx],
+							value: 0
+						});
+					}
+				});
+				for(i = 1; i < voteSize; i++) {
+					this.votes.map(calculateValue);
+				}
+				// sort by ascending vote value
+				tieArray.sort(function(a, b) {
+					return a.value > b.value;
+				});
+
+				return tieArray[0].index;
 			},
 
 			//This function goes through the vote arrays and replaces each instance of the eliminated candidate with 'none'. It then goes back to the nextRound function at the start to begin another round of counting.
@@ -164,8 +195,7 @@ mainApp.factory('VoteFactory', [
 				var roundelected = this.votenum.indexOf(greatest);
 
 				if(maxcount > 1) {
-					// seriously, nothing better than this?
-					roundelected = this.votenum.lastIndexOf(greatest);
+					roundelected = this.breakTie(greatest);
 					this.outputstring += '<br>The tiebreaker says the first surplus to be re-allocated is <span class="elected">' + this.names[roundelected] + '</span>\'s.';
 				}
 

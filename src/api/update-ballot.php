@@ -41,12 +41,12 @@ if (!empty($errors)) {
 	$query = "
 		UPDATE
 			ballots
-		SET 
+		SET
 			name = '". $_POST['name'] ."',
-			positions = '". $_POST['positions'] ."', 
-			createdBy = '". $_POST['createdBy'] ."', 
-			resultsRelease = $release, 
-			voteCutoff = $cutoff, 
+			positions = ". $_POST['positions'] .",
+			createdBy = '". $_POST['createdBy'] ."',
+			resultsRelease = $release,
+			voteCutoff = $cutoff,
 			password = $password
 		WHERE
 			`key` = '". $_POST['key'] ."'

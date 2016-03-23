@@ -38,11 +38,10 @@ mainApp.controller('MainCtrl', [
 		//	initialize scoped variables
 		_.assign($s, {
 			timePresets: ['10 minutes', '30 minutes', '1 hour', '24 hours', 'Custom'],
-			votes: [],
-			names: [],
-			vote: [],
-			seats: 3,
-			ballot: {},
+			ballot: {
+				positions: 1,
+				createdBy: 'guest'
+			},
 			errors: {},
 			success: {},
 			entries: [],
@@ -51,7 +50,6 @@ mainApp.controller('MainCtrl', [
 			pickerOptions: {
 				showWeeks: false
 			},
-			elected: [],
 			createBallot: getParam('ballot'),
 			voteBallot: getParam('vote'),
 			resultsBallot: getParam('results'),
@@ -76,11 +74,12 @@ mainApp.controller('MainCtrl', [
 
 		$s.getCandidates = function(key) {
 			var pass = $s.password ? '&password=' + $s.password : '';
-			$http.get('/app/api/get-candidates.php?key=' + $s.voteBallot + pass)
+			$http.get('http://stvcalculator.com/app/api/get-candidates.php?key=' + $s.voteBallot + pass)
 				.then(function(resp) {
 					if(typeof resp.data == 'object') {
 						$s.originalCandidates = resp.data.map(function(entry) {
 							$s.ballot = entry;
+							$s.ballot.positions = parseInt($s.ballot.positions);
 
 							return entry.candidate;
 						});
@@ -95,10 +94,11 @@ mainApp.controller('MainCtrl', [
 
 		$s.getResults = function() {
 			var key = $s.ballot.key || $s.resultsBallot;
-			$http.get('/app/api/get-votes.php?key=' + key)
+			$http.get('http://stvcalculator.com/app/api/get-votes.php?key=' + key)
 				.then(function(resp) {
 					$s.votes = resp.data.map(function(result) {
 						$s.ballot = result;
+						$s.ballot.positions = parseInt($s.ballot.positions);
 
 						return JSON.parse(result.vote);
 					});
@@ -111,7 +111,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.getBallots = function() {
-			$http.get('/app/api/get-ballots.php?createdBy=' + $s.editBallot)
+			$http.get('http://stvcalculator.com/app/api/get-ballots.php?createdBy=' + $s.editBallot)
 				.then(function(resp) {
 					$s.allBallots = resp.data;
 				})
@@ -121,7 +121,7 @@ mainApp.controller('MainCtrl', [
 		$s.generateRandomKey = function(len) {
 			len = len || 4;
 			var key = Math.random().toString(36).substr(2, len);
-			$http.get('/app/api/get-key-ballot.php?key=' + key)
+			$http.get('http://stvcalculator.com/app/api/get-key-ballot.php?key=' + key)
 				.then(function(resp) {
 					if(resp.data.length) {
 						$s.generateRandomKey(++len);
@@ -136,12 +136,11 @@ mainApp.controller('MainCtrl', [
 
 		$s.changeEditBallot = function() {
 			$s.createBallot = true;
-			$s.ballot.positions = parseInt($s.ballot.positions);
 			$s.ballot.resultsRelease = new Date($s.ballot.resultsRelease);
 			$s.ballot.voteCutoff = new Date($s.ballot.voteCutoff);
 
 			var pass = $s.ballot.password ? '&password=' + $s.ballot.password : '';
-			$http.get('/app/api/get-candidates.php?key=' + $s.ballot.key + pass)
+			$http.get('http://stvcalculator.com/app/api/get-candidates.php?key=' + $s.ballot.key + pass)
 				.then(function(resp) {
 					if(resp.data) {
 						$s.entries = resp.data.map(function(entry) {
@@ -153,7 +152,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.checkAvailability = function() {
-			$http.get('/app/api/get-key-ballot.php?key=' + $s.ballot.key)
+			$http.get('http://stvcalculator.com/app/api/get-key-ballot.php?key=' + $s.ballot.key)
 				.then(function(resp) {
 					if(resp.data.length) {
 						$s.success.key = null;
@@ -190,7 +189,7 @@ mainApp.controller('MainCtrl', [
 			$s.ballot.voteCutoff = updateTime($s.ballot.voteCutoff);
 			$http({
 				method: 'POST',
-				url: '/app/api/' + ($s.editBallot ? 'update' : 'new') + '-ballot.php',
+				url: 'http://stvcalculator.com/app/api/' + ($s.editBallot ? 'update' : 'new') + '-ballot.php',
 				data: $s.ballot,
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp){
@@ -207,7 +206,7 @@ mainApp.controller('MainCtrl', [
 
 		$s.submitEntries = function() {
 			if($s.editBallot) {
-				$http.get('/app/api/delete-entries.php?ballotId=' + $s.ballot.id)
+				$http.get('http://stvcalculator.com/app/api/delete-entries.php?ballotId=' + $s.ballot.id)
 					.then(function(resp) {
 						$s.editBallot = false;
 						$s.submitEntries();
@@ -217,7 +216,7 @@ mainApp.controller('MainCtrl', [
 			}
 			$http({
 				method: 'POST',
-				url: '/app/api/add-entries.php',
+				url: 'http://stvcalculator.com/app/api/add-entries.php',
 				data: {
 					entries: $s.entries,
 					'ballotId': $s.ballot.id
@@ -235,7 +234,7 @@ mainApp.controller('MainCtrl', [
 		$s.submitVote = function() {
 			$http({
 				method: 'POST',
-				url: '/app/api/vote.php',
+				url: 'http://stvcalculator.com/app/api/vote.php',
 				data: {
 					vote: JSON.stringify($s.candidates),
 					'ballotId': $s.ballot.id
@@ -250,7 +249,7 @@ mainApp.controller('MainCtrl', [
 		$s.deleteVotes = function() {
 			$http({
 				method: 'POST',
-				url: '/app/api/delete-votes.php',
+				url: 'http://stvcalculator.com/app/api/delete-votes.php',
 				data: $s.ballot,
 				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
@@ -281,10 +280,6 @@ mainApp.controller('MainCtrl', [
 		};
 
 		if($s.createBallot) {
-			$s.ballot = {
-				positions: 1,
-				createdBy: 'guest'
-			};
 			$s.ballot.voteCutoff = roundResultsRelease();
 			$s.generateRandomKey();
 		}
