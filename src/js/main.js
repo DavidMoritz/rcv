@@ -137,6 +137,7 @@ mainApp.controller('MainCtrl', [
 
 		$s.changeEditBallot = function() {
 			$s.createBallot = true;
+			$s.ballot.positions = parseInt($s.ballot.positions);
 			$s.ballot.resultsRelease = new Date($s.ballot.resultsRelease);
 			$s.ballot.voteCutoff = new Date($s.ballot.voteCutoff);
 
