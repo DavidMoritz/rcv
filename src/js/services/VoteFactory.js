@@ -10,7 +10,7 @@ mainApp.factory('VoteFactory', [
 			runTheCode: function() {
 				this.renewQuota();
 				this.outputstring = this.createHeader();
-				this.nextRound();
+				this.anotherRound();
 			},
 
 			renewQuota: function() {
@@ -49,19 +49,18 @@ mainApp.factory('VoteFactory', [
 				}
 			},
 
-			//If the number of winners is equal to the number of this.seats, this function goes to the result. If not, it then outputs a list of the votes.
-			nextRound: function() {
+			// Check for 'end' conditions otherwise count votes again
+			anotherRound: function() {
 				if (this.wincount == this.seats) {
-					this.result();
+					this.finishElection();
 				} else {
 					this.outputstring += '</p><table class="table"><thead>Round ' + (++this.roundnum) + ' votes</thead>';
 					this.displayVotes();
-					this.countfirst();
+					this.countVotes();
 				}
 			},
 
-			//This function creates an array which contains the number of highest preference votes that each candidate has and outputs a summary. If any candidate has enough votes to exceed the this.quota, it goes to the overquota function, otherwise it goes to the findmin function.
-			countfirst: function() {
+			countVotes: function() {
 				var quotacount = 0;
 				var model = this;
 				this.votenum = _.range(0, this.names.length, 0);
@@ -87,7 +86,7 @@ mainApp.factory('VoteFactory', [
 					data = {
 						math: 'max',
 						class: 'elected',
-						apply: 'electmax',
+						elect: true,
 						text: {
 							count: 'Most votes currently held',
 							total: 'greatest number of',
@@ -99,7 +98,6 @@ mainApp.factory('VoteFactory', [
 					data = {
 						math: 'min',
 						class: 'eliminated',
-						apply: 'removemin',
 						text: {
 							count: 'Fewest votes won',
 							total: 'fewest',
@@ -112,7 +110,7 @@ mainApp.factory('VoteFactory', [
 				this.determineOutcome(data);
 			},
 
-			//This function determines if there is a tie in the number of candidates with the most votes above the this.quota.
+			// Show results for either winning candidate or losing candidate.
 			determineOutcome: function(data) {
 				// apex = votes needed to either be elected or be eliminated
 				var apex = this.votenum.reduce(function(prev, current) {
@@ -132,10 +130,31 @@ mainApp.factory('VoteFactory', [
 				}
 
 				this.outputstring += '<br><span class="'+ data.class +'">' + this.names[chosen] + '</span> '+ data.text.result +'.';
-				this[data.apply](chosen);
+				this.removeChosen(chosen, data.class, data.elect);
 			},
 
-			//This function analyses which candidates are marginally stronger for the purpose of breaking ties
+			// remove either the elected or eliminated candidates from votes
+			removeChosen: function(chosen, className, elect) {
+				if(elect) {
+					this.elected[this.wincount++] = this.names[chosen];
+				}
+				var model = this;
+				_.each(this.votes, function(vote, index) {
+					var found = vote.indexOf(model.names[chosen]);
+					if(found !== -1) {
+						if(found === 0) {
+							if(elect) {
+								model.voteweight[index] *= 1 - model.quota / model.votenum[chosen];
+							}
+							vote.push('<span class="'+ className +'">'+ vote[found] +'</span>');
+						}
+						vote.splice(found, 1);
+					}
+				});
+				this.anotherRound();
+			},
+
+			// Analyses which candidates are marginally stronger for the purpose of breaking ties
 			breakTie: function(value) {
 				var model = this;
 				var tieArray = [];
@@ -172,38 +191,8 @@ mainApp.factory('VoteFactory', [
 				return tieArray[0].index;
 			},
 
-			//This function goes through the vote arrays and replaces each instance of the eliminated candidate with 'none'. It then goes back to the nextRound function at the start to begin another round of counting.
-			removemin: function(eliminated) {
-				var model = this;
-				_.each(this.votes, function(vote) {
-					var found = vote.indexOf(model.names[eliminated]);
-					if(found !== -1) {
-						vote[vote.length] = '<span class="eliminated">' + vote[found] + '</span>';
-						vote.splice(found, 1);
-					}
-				});
-				this.nextRound();
-			},
-
-			//This function adds the name of the this.elected candidate to the this.elected array and then reweights their votes and changes their name to "none" in the votes array.
-			electmax: function(roundelected) {
-				var model = this;
-				this.elected[this.wincount++] = this.names[roundelected];
-				_.each(this.votes, function(vote, idx) {
-					if(vote[0] == model.names[roundelected]) {
-						model.voteweight[idx] *= 1 - model.quota / model.votenum[roundelected];
-						vote[vote.length] = '<span class="elected">' + vote[0] + '</span>';
-					}
-					var found = vote.indexOf(model.names[roundelected]);
-					if(found !== -1) {
-						vote.splice(found, 1);
-					}
-				});
-				this.nextRound();
-			},
-
-			//This function announces the winner.
-			result: function() {
+			// Finish election and announce the winner(s).
+			finishElection: function() {
 				var model = this;
 				this.outputstring += '<p><b>The election is complete and the elected candidates are';
 				_.each(this.elected, function(name) {
