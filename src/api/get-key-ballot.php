@@ -7,11 +7,11 @@ if(!empty($key)) {
 // checking for blank values.
 	$query = "
 		SELECT
-			*
+			`key`
 		FROM 
 			`ballots` 
 		WHERE 
-			`key` = '". $key ."'
+			`key` = '$key'
 		LIMIT
 			1;";
 	$sth = $dbh->prepare($query);

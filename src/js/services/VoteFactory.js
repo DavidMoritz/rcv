@@ -106,7 +106,7 @@ mainApp.factory('VoteFactory', [
 					this.allliveelected();
 				} else {
 					least = this.votenum.reduce(function(prev, current) {
-						if (prev > current && current > 0) {
+						if (prev > current && current > -1) {
 							return current;
 						}
 						return prev;

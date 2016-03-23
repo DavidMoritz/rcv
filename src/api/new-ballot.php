@@ -43,9 +43,9 @@ if (!empty($errors)) {
 } else {
 	$query = "
 		INSERT INTO
-			ballots (`name`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `password`)
+			ballots (`name`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`)
 		VALUES
-			('". $_POST['name'] ."','". $_POST['key'] ."','". $_POST['positions'] ."','". $_POST['createdBy'] ."', ". $release .", ". $cutoff .", $password);";
+			('". $_POST['name'] ."','". $_POST['key'] ."','". $_POST['positions'] ."','". $_POST['createdBy'] ."', ". $release .", ". $cutoff .");";
 
 	$sth = $dbh->prepare($query);
 	$sth->execute();

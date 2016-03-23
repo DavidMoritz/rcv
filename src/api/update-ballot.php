@@ -7,6 +7,9 @@ $data = array();
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 // checking for blank values.
+if(empty($_POST['id']) || empty($_POST['key']))
+	$errors['key'] = 'Key is required';
+
 if (empty($_POST['name']))
 	$errors['name'] = 'Name is required.';
 
@@ -17,11 +20,6 @@ else if (intval($_POST['positions']) < 1)
 
 if (empty($_POST['createdBy']))
 	$errors['createdBy'] = 'Created By is required.';
-
-if (empty($_POST['password']))
-	$password = "NULL";
-else
-	$password = "'". $_POST['password'] ."'";
 
 if (empty($_POST['voteCutoff']))
 	$cutoff = "NULL";
@@ -46,8 +44,7 @@ if (!empty($errors)) {
 			positions = '". $_POST['positions'] ."', 
 			createdBy = '". $_POST['createdBy'] ."', 
 			resultsRelease = $release, 
-			voteCutoff = $cutoff, 
-			password = $password
+			voteCutoff = $cutoff
 		WHERE
 			`key` = '". $_POST['key'] ."'
 		AND

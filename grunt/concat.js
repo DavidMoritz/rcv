@@ -21,6 +21,7 @@ module.exports = function exportConcat(grunt) {
 					'lib/touch-punch/jquery.ui.touch-punch.min.js',
 					'lib/angular-ui-sortable/sortable.min.js',
 					'lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
+					'lib/ng-pattern-restrict/src/ng-pattern-restrict.min.js',
 					'src/external/**/*.js'
 				],
 				'<%= distPath %>main.js': [

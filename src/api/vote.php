@@ -5,10 +5,11 @@ $errors = array();
 $data = array();
 // Getting posted data and decodeing json
 $_POST = json_decode(file_get_contents('php://input'), true);
+$key = $_POST['key']);
 
 // checking for blank values.
-if (empty($_POST['ballotId']))
-	$errors['ballotId'] = 'Ballot ID is required.';
+if (empty($key)
+	$errors['key'] = 'Key is required.';
 
 if (empty($_POST['vote']))
 	$errors['vote'] = 'Vote is required.';
@@ -22,7 +23,15 @@ if (!empty($errors)) {
 		INSERT INTO 
 			votes (`ballotId`, `vote`, `ipAddress`)
 		VALUES 
-			(". $_POST['ballotId'] .",'". $_POST['vote'] ."','". $_SERVER['REMOTE_ADDR'] ."');";
+			((
+			SELECT
+				id
+			FROM
+				ballots
+			WHERE
+				`key` = '$key'
+			),
+			'". $_POST['vote'] ."','". $_SERVER['REMOTE_ADDR'] ."');";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 }

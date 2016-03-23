@@ -75,8 +75,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.getCandidates = function(key) {
-			var pass = $s.password ? '&password=' + $s.password : '';
-			$http.get('/app/api/get-candidates.php?key=' + $s.voteBallot + pass)
+			$http.get('/app/api/get-candidates.php?key=' + $s.voteBallot)
 				.then(function(resp) {
 					if(typeof resp.data == 'object') {
 						$s.originalCandidates = resp.data.map(function(entry) {
@@ -86,8 +85,7 @@ mainApp.controller('MainCtrl', [
 						});
 						$s.resetCandidates();
 					} else {
-						$s.passwordRequired = true;
-						alert('password required');
+						console.log('something went wrong');
 					}
 				})
 			;
@@ -140,8 +138,7 @@ mainApp.controller('MainCtrl', [
 			$s.ballot.resultsRelease = new Date($s.ballot.resultsRelease);
 			$s.ballot.voteCutoff = new Date($s.ballot.voteCutoff);
 
-			var pass = $s.ballot.password ? '&password=' + $s.ballot.password : '';
-			$http.get('/app/api/get-candidates.php?key=' + $s.ballot.key + pass)
+			$http.get('/app/api/get-candidates.php?key=' + $s.ballot.key)
 				.then(function(resp) {
 					if(resp.data) {
 						$s.entries = resp.data.map(function(entry) {

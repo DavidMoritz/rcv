@@ -1,7 +1,10 @@
 <?php
 require_once("config.php");
 
-$ballotId = $_GET['ballotId'];
+$_POST = json_decode(file_get_contents('php://input'), true);
+
+$ballotId = $_POST['id'];
+$createdBy = $_POST['createdBy'];
 
 if(!empty($ballotId)) {
 // checking for blank values.
@@ -9,7 +12,15 @@ if(!empty($ballotId)) {
 		DELETE FROM 
 			`entries` 
 		WHERE 
-			`ballotId` = $ballotId;";
+			`ballotId` = (
+			SELECT 
+				id 
+			FROM 
+				ballots
+			WHERE
+				`id` = $ballotId
+			AND 
+				`createdBy` = '$createdBy';";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);

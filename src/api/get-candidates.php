@@ -2,31 +2,28 @@
 require_once("config.php");
 
 $key = $_GET['key'];
-$password = $_GET['password'] ? "= '" . $_GET['password'] . "'" : "IS NULL";
 
 if(!empty($key)) {
 	$query = "
 		SELECT
-			*, entries.name AS 'candidate'
+			b.key, b.name, b.positions, e.name AS 'candidate'
 		FROM
-			entries
+			entries e
 		JOIN
-			ballots
+			ballots b
 		ON
-			entries.ballotId = ballots.id  
+			e.ballotId = b.id  
 		WHERE
-			ballots.key = '$key'
-		AND
-			ballots.password $password;";
+			b.key = '$key';";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
 	if(empty($results))
-		echo "Shortcode or Password incorrect";
+		echo "Shortcode is incorrect";
 	else 
 		print json_encode($results);
 } else {
-	echo "failed to supply KEY";
+	echo "failed to supply Shortcode";
 }
 ?>

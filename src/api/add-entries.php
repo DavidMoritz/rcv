@@ -7,6 +7,7 @@ $data = array();
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 // checking for blank values.
+$ballotId = parseInt($_POST['ballotId']);
 
 if (!empty($_POST['entries'])) {
 	$total = count($_POST['entries']);
@@ -16,7 +17,7 @@ if (!empty($_POST['entries'])) {
 	$errors['entryInput'] = 'Entries are required.';
 }
 
-if (empty($_POST['ballotId']))
+if (empty($ballotId))
 	$errors['ballotId'] = 'Ballot ID is required.';
 
 if (!empty($errors)) {
@@ -29,7 +30,7 @@ if (!empty($errors)) {
 			entries (`ballotId`, `name`)
 		VALUES ";
 	for ($i=0; $i < $total; $i++) { 
-		$query .= "('". $_POST['ballotId'] ."','". $_POST['entries'][$i] ."'),";
+		$query .= "($ballotId,'". $_POST['entries'][$i] ."'),";
 	}
 	$query = substr($query, 0, -1) . ";";
 	$sth = $dbh->prepare($query);

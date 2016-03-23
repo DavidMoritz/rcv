@@ -29,13 +29,13 @@ html(ng-app='mainApp')
 				div(ng-show="createBallot")
 					form(name='ballotForm' ng-submit='newBallot()' ng-hide='updated')
 						.form-group
-							label Name
+							label Ballot Name
 							input.form-control(name="name" ng-model="ballot.name")
 							span.text-danger(ng-show='errors.name') {{errors.name}}
 						.form-group
 							label Shortcode (for link stvcalculator.com/{{ballot.key}})
 							.input-group
-								input.form-control(name="key" ng-model="ballot.key" ng-change="checkAvailability()" maxlength=16 ng-readonly="editBallot")
+								input.form-control(name="key" ng-model="ballot.key" ng-pattern-restrict pattern="\\w*" ng-change="checkAvailability()" maxlength=16 ng-readonly="editBallot")
 								span.input-group-btn
 									button.btn.btn-secondary(type="button" ng-click="generateRandomKey()" ng-disabled="editBallot") New Shortcode
 							span.text-danger(ng-show='errors.key') {{errors.key}}
@@ -49,11 +49,6 @@ html(ng-app='mainApp')
 								small.text-muted  using default "guest" will restrict future editing
 							input.form-control(name="createdBy" ng-model="ballot.createdBy")
 							span.text-danger(ng-show='errors.createdBy') {{errors.createdBy}}
-						.form-group
-							label Password Protected
-								input(type="checkbox" ng-model="showPassword" ng-checked="ballot.password")
-							input.form-control(ng-show="showPassword" name="password" ng-model="ballot.password")
-							span.text-danger(ng-show='errors.password') {{errors.password}}
 						.form-group(ng-show="editBallot")
 							label Delete all votes and reset Ballot
 								input(type="checkbox" ng-model="showDelete")

@@ -1,21 +1,21 @@
 <?php
 require_once("config.php");
 
-$created = $_GET['createdBy'];
+$createdBy = $_GET['createdBy'];
 
-if(!empty($created)) {
+if(!empty($createdBy)) {
 	$query = "
 		SELECT
 			*
 		FROM 
 			ballots
 		WHERE 
-			createdBy = '$created';";
+			createdBy = '$createdBy';";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
-	if(strtolower($created) == "guest") {
+	if(strtolower($createdBy) == "guest") {
 		echo "'guest' is not a valid entry";
 	} else {
 		print json_encode($results);
