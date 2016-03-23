@@ -167,7 +167,7 @@ mainApp.factory('VoteFactory', [
 					var tie = _.find(tieArray, {name: voteArr[i]});
 					if(tie) {
 						// 2nd place votes are exponentially greater than 3rd place votes etc.
-						tie.value += (model.voteweight[idx] / (i * 10));
+						tie.value += model.voteweight[idx] / Math.pow(10, i);
 					}
 				};
 				// populate tieArray only with tie breakers
