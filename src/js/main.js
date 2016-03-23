@@ -95,12 +95,10 @@ mainApp.controller('MainCtrl', [
 			$http.get('/app/api/get-votes.php?key=' + key)
 				.then(function(resp) {
 					$s.votes = resp.data.map(function(result) {
-						$s.ballot = result;
-						$s.ballot.positions = parseInt($s.ballot.positions);
+						$s.seats = parseInt(result.positions);
 
 						return JSON.parse(result.vote);
 					});
-					$s.seats = $s.ballot.positions;
 					$s.names = _.uniq(_.flatten($s.votes));
 					$s.runTheCode();
 					$s.bodyText = $sce.trustAsHtml($s.outputstring);
@@ -236,7 +234,7 @@ mainApp.controller('MainCtrl', [
 				url: '/app/api/vote.php',
 				data: {
 					vote: JSON.stringify($s.candidates),
-					'ballotId': $s.ballot.id
+					key: $s.ballot.key
 				},
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {

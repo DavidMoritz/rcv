@@ -5,10 +5,10 @@ $errors = array();
 $data = array();
 // Getting posted data and decodeing json
 $_POST = json_decode(file_get_contents('php://input'), true);
-$key = $_POST['key']);
+$key = $_POST['key'];
 
 // checking for blank values.
-if (empty($key)
+if (empty($key))
 	$errors['key'] = 'Key is required.';
 
 if (empty($_POST['vote']))

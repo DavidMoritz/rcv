@@ -7,7 +7,7 @@ if(!empty($key)) {
 // checking for blank values.
 	$query = "
 		SELECT
-			vote
+			vote, ballots.positions
 		FROM 
 			votes
 		JOIN
