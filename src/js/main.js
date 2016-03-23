@@ -4,13 +4,13 @@ mainApp.controller('MainCtrl', [
 	'$timeout',
 	'$interval',
 	'$http',
+	'$sce',
 	'VoteFactory',
-	function MainCtrl($s, $loc, $timeout, $interval, $http, VF) {
+	function MainCtrl($s, $loc, $timeout, $interval, $http, $sce, VF) {
 		'use strict';
 
 		//during development
 		window.$s = $s;
-
 
 		var getParam = function(param) {
 			var queryArray = $loc.$$url.split('/');
@@ -104,7 +104,8 @@ mainApp.controller('MainCtrl', [
 					});
 					$s.seats = $s.ballot.positions;
 					$s.names = _.uniq(_.flatten($s.votes));
-					$s.elected = $s.runTheCode();
+					$s.runTheCode();
+					$s.bodyText = $sce.trustAsHtml($s.outputstring);
 					$s.final = true;
 				})
 			;

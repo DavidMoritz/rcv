@@ -25,7 +25,7 @@ html(ng-app='mainApp')
 					select.form-control(ng-model="ballot" ng-options="item as item.name for item in allBallots track by item.id" ng-change="changeEditBallot()")
 				div(ng-if="ballot")
 					h1 Ballot: {{ballot.name}}
-				// temporarily hide
+				//- temporarily hide
 				div(ng-show="createBallot")
 					form(name='ballotForm' ng-submit='newBallot()' ng-hide='updated')
 						.form-group
@@ -126,9 +126,7 @@ html(ng-app='mainApp')
 				tr(ng-repeat="x in names")
 					td {{x.Name}}
 					td {{x.Country}}
-			#bodytext(ng-show="showText")
+			div(ng-show="showText" ng-bind-html="bodyText")
 		script(src='inc/lib.js')
 		script(src='inc/main.js')
-
-//		| @@javascriptReplaceFiles
-
+		@@javascriptReplaceFiles
