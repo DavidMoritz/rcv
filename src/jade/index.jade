@@ -19,7 +19,7 @@ html(ng-app='mainApp')
 	body(ng-cloak ng-controller='MainCtrl')
 		.container
 			a(href='#' ng-click='signOut()') Sign out
-			.g-signin2(data-onsuccess='$s.onSignIn')
+			.g-signin2(data-onsuccess='onSignIn')
 			div(ng-hide="thanks || congrats")
 				div(ng-hide="voteBallot || createBallot || resultsBallot || editBallot")
 					button.btn.btn-primary(ng-click="voteBallot = true") Vote
