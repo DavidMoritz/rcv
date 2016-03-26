@@ -12,6 +12,8 @@
     "lodash": "latest",
     "moment": "latest",
     "ng-pattern-restrict": "~0.2.1",
-    "touch-punch": "https://github.com/furf/jquery-ui-touch-punch.git"
+    "touch-punch": "https://github.com/furf/jquery-ui-touch-punch.git",
+    "angular-ui-router": "^0.2.18",
+    "angular-animate": "^1.5.3"
   }
 }
