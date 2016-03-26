@@ -3,12 +3,14 @@ include mixins
 doctype html
 html(ng-app='mainApp')
 	head
+		script(src='https://apis.google.com/js/platform.js' async defer)
 		meta(charset='UTF-8')
 		meta(name='description', content='STV Calculator App')
 		meta(name='author', content='Moritz Company')
 		meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
 		meta(name='apple-mobile-web-app-capable' content='yes')
 		meta(name='apple-touch-fullscreen' content='yes')
+		meta(name='google-signin-client_id' content='828084230115-98814hb54sbrs34jjiecfirgak4svths.apps.googleusercontent.com')
 		title Single Transferable Vote Calculator App
 		link(rel='shortcut icon', href='favicon.ico')
 		link(rel='stylesheet', href='https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css')
@@ -16,6 +18,8 @@ html(ng-app='mainApp')
 		script(src='inc/angular.js')
 	body(ng-cloak ng-controller='MainCtrl')
 		.container
+			a.hidden(href='#' ng-click='signOut()') Sign out
+			.g-signin2.hidden(data-onsuccess='onSignIn')
 			div(ng-hide="thanks || congrats")
 				div(ng-hide="voteBallot || createBallot || resultsBallot || editBallot")
 					button.btn.btn-primary(ng-click="voteBallot = true") Vote
@@ -122,6 +126,12 @@ html(ng-app='mainApp')
 					td {{x.Name}}
 					td {{x.Country}}
 			div(ng-show="showText" ng-bind-html="bodyText")
-		script(src='inc/lib.js')
-		script(src='inc/main.js')
+		script(type="text/javascript") function onSignIn(googleUser) {
+			| console.log('test');
+			| var profile = googleUser.getBasicProfile();
+			| console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+			| console.log('Name: ' + profile.getName());
+			| console.log('Image URL: ' + profile.getImageUrl());
+			| console.log('Email: ' + profile.getEmail());
+			| };
 		@@javascriptReplaceFiles
