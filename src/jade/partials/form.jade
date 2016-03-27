@@ -4,7 +4,7 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='updated')
 		input.form-control(name="name" ng-model="ballot.name")
 		span.text-danger(ng-show='errors.name') {{errors.name}}
 	.form-group
-		label Shortcode (for link stvcalculator.com/{{ballot.key}})
+		label Shortcode (for link stvcalculator.com&#35;{{ballot.key}})
 		.input-group
 			input.form-control(name="key" ng-model="ballot.key" ng-pattern-restrict pattern="\\w*" ng-change="checkAvailability()" maxlength=16 ng-readonly="editBallot")
 			span.input-group-btn
@@ -17,7 +17,7 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='updated')
 		span.text-danger(ng-show='errors.positions') {{errors.positions}}
 	.form-group
 		label Created By
-			small.text-muted  using default "guest" will restrict future editing
+			small.text-muted(ng-show="ballot.createdBy == 'guest'")  using default "guest" will restrict future editing
 		input.form-control(name="createdBy" ng-model="ballot.createdBy")
 		span.text-danger(ng-show='errors.createdBy') {{errors.createdBy}}
 	.form-group(ng-show="editBallot")
@@ -52,4 +52,12 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='updated')
 					button.btn.btn-default(type="button" ng-click="cutoffOpen = !cutoffOpen")
 						i.fa.fa-calendar
 			uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
+	.form-group
+		label Require Voter Sign-in:
+			span(ng-hide="ballot.requireSignIn")  (with either Google or Facebook)
+			input(type="checkbox" ng-model="ballot.requireSignIn")
+		div(ng-show="ballot.requireSignIn")
+			.input-group
+				span.input-group-addon Max votes per person
+				input.form-control(type="number" ng-model="ballot.maxVotes")
 	input.btn.btn-info(type="submit" value="Submit")

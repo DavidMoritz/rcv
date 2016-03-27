@@ -17,20 +17,22 @@ html(ng-app='mainApp')
 			.panel.panel-default(ng-show="activeLink == 'about'")
 				.panel-body
 					include pages/about
-			.panel.panel-default(ng-show="activeLink != 'about' && activeLink != 'home'")
+			.panel.panel-default(ng-show="activeLink == 'create'")
 				.panel-body
-					a.hidden(href='#' ng-click='signOut()') Sign out
-					.g-signin2.hidden(data-onsuccess='onSignIn')
+					include pages/create
+			.panel.panel-default(ng-show="activeLink == 'vote'")
+				.panel-body
+					include pages/vote
+			.panel.panel-default(ng-show="activeLink == 'results'")
+				.panel-body
+					include pages/results
+			.panel.panel-default(ng-show="activeLink != 'about' && activeLink != 'home' && activeLink != 'create'")
+				.panel-body
 					div(ng-hide="thanks || congrats")
-						div(ng-hide="voteBallot || createBallot || resultsBallot || editBallot")
-							button.btn.btn-primary(ng-click="voteBallot = true") Vote
-							button.btn.btn-success(ng-click="createBallot = true; generateRandomKey()") Create New Ballot
-							button.btn.btn-info(ng-click="editBallot = true") Edit Ballot
 						div(ng-show="editBallot")
 							select.form-control(ng-model="ballot" ng-options="item as item.name for item in allBallots track by item.id" ng-change="changeEditBallot()")
 						h1 Ballot: {{ballot.name}}
 						div(ng-show="createBallot")
-							include partials/form
 							div(ng-show='updated && !candidates')
 								include partials/new-entries
 						div(ng-if='candidates')
@@ -56,5 +58,9 @@ html(ng-app='mainApp')
 						tr(ng-repeat="x in names")
 							td {{x.Name}}
 							td {{x.Country}}
-					div(ng-show="showText" ng-bind-html="bodyText")
+			.panel.panel-default(ng-show="showText")
+				.panel.heading
+					h3.panel-title Detailed Results
+				.panel-body(ng-bind-html="bodyText")
+			include partials/footer
 		@@javascriptReplaceFiles

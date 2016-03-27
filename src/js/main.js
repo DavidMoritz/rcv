@@ -23,6 +23,10 @@ mainApp.controller('MainCtrl', [
 			return false;
 		};
 
+		var getVoteParam = function() {
+			return $loc.$$url.split('/')[1];
+		};
+
 		var updateTime = function(dateObj) {
 			var mom = moment(dateObj);
 
@@ -40,7 +44,8 @@ mainApp.controller('MainCtrl', [
 			timePresets: ['10 minutes', '30 minutes', '1 hour', '24 hours', 'Custom'],
 			ballot: {
 				positions: 1,
-				createdBy: 'guest'
+				createdBy: 'guest',
+				maxVotes: 1
 			},
 			navItems: [
 				{
@@ -52,9 +57,9 @@ mainApp.controller('MainCtrl', [
 				},{
 					link: 'create',
 					text: 'Create a new Ballot!'
-				},{
-					link: 'edit',
-					text: 'Edit Ballot'
+				// },{
+				// 	link: 'edit',
+				// 	text: 'Edit Ballot'
 				},{
 					link: 'results',
 					text: 'Results'
@@ -75,10 +80,7 @@ mainApp.controller('MainCtrl', [
 			pickerOptions: {
 				showWeeks: false
 			},
-			createBallot: getParam('ballot'),
-			voteBallot: getParam('vote'),
-			resultsBallot: getParam('results'),
-			editBallot: getParam('edit'),
+			shortcode: getVoteParam(),
 		});
 
 		_.extend($s, VF);
@@ -122,7 +124,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.getCandidates = function(key) {
-			$http.get('/app/api/get-candidates.php?key=' + $s.voteBallot)
+			$http.get('/api/get-candidates.php?key=' + $s.shortcode)
 				.then(function(resp) {
 					if(typeof resp.data == 'object') {
 						$s.originalCandidates = resp.data.map(function(entry) {
@@ -140,8 +142,8 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.getResults = function() {
-			var key = $s.ballot.key || $s.resultsBallot;
-			$http.get('/app/api/get-votes.php?key=' + key)
+			var key = $s.ballot.key || $s.shortcode;
+			$http.get('/api/get-votes.php?key=' + key)
 				.then(function(resp) {
 					$s.votes = resp.data.map(function(result) {
 						$s.seats = parseInt(result.positions);
@@ -157,7 +159,8 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.getBallots = function() {
-			$http.get('/app/api/get-ballots.php?createdBy=' + $s.editBallot)
+			// we need to get ballots based on user signin
+			$http.get('/api/get-ballots.php?createdBy=' + $s.user)
 				.then(function(resp) {
 					$s.allBallots = resp.data;
 				})
@@ -167,7 +170,7 @@ mainApp.controller('MainCtrl', [
 		$s.generateRandomKey = function(len) {
 			len = len || 4;
 			var key = Math.random().toString(36).substr(2, len);
-			$http.get('/app/api/get-key-ballot.php?key=' + key)
+			$http.get('/api/get-key-ballot.php?key=' + key)
 				.then(function(resp) {
 					if(resp.data.length) {
 						$s.generateRandomKey(++len);
@@ -186,7 +189,7 @@ mainApp.controller('MainCtrl', [
 			$s.ballot.resultsRelease = new Date($s.ballot.resultsRelease);
 			$s.ballot.voteCutoff = new Date($s.ballot.voteCutoff);
 
-			$http.get('/app/api/get-candidates.php?key=' + $s.ballot.key)
+			$http.get('/api/get-candidates.php?key=' + $s.ballot.key)
 				.then(function(resp) {
 					if(resp.data) {
 						$s.entries = resp.data.map(function(entry) {
@@ -198,7 +201,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.checkAvailability = function() {
-			$http.get('/app/api/get-key-ballot.php?key=' + $s.ballot.key)
+			$http.get('/api/get-key-ballot.php?key=' + $s.ballot.key)
 				.then(function(resp) {
 					if(resp.data.length) {
 						$s.success.key = null;
@@ -235,7 +238,7 @@ mainApp.controller('MainCtrl', [
 			$s.ballot.voteCutoff = updateTime($s.ballot.voteCutoff);
 			$http({
 				method: 'POST',
-				url: '/app/api/' + ($s.editBallot ? 'update' : 'new') + '-ballot.php',
+				url: '/api/' + ($s.editBallot ? 'update' : 'new') + '-ballot.php',
 				data: $s.ballot,
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp){
@@ -252,7 +255,7 @@ mainApp.controller('MainCtrl', [
 
 		$s.submitEntries = function() {
 			if($s.editBallot) {
-				$http.get('/app/api/delete-entries.php?ballotId=' + $s.ballot.id)
+				$http.get('/api/delete-entries.php?ballotId=' + $s.ballot.id)
 					.then(function(resp) {
 						$s.editBallot = false;
 						$s.submitEntries();
@@ -262,7 +265,7 @@ mainApp.controller('MainCtrl', [
 			}
 			$http({
 				method: 'POST',
-				url: '/app/api/add-entries.php',
+				url: '/api/add-entries.php',
 				data: {
 					entries: $s.entries,
 					'ballotId': $s.ballot.id
@@ -280,7 +283,7 @@ mainApp.controller('MainCtrl', [
 		$s.submitVote = function() {
 			$http({
 				method: 'POST',
-				url: '/app/api/vote.php',
+				url: '/api/vote.php',
 				data: {
 					vote: JSON.stringify($s.candidates),
 					key: $s.ballot.key
@@ -295,7 +298,7 @@ mainApp.controller('MainCtrl', [
 		$s.deleteVotes = function() {
 			$http({
 				method: 'POST',
-				url: '/app/api/delete-votes.php',
+				url: '/api/delete-votes.php',
 				data: $s.ballot,
 				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
@@ -315,6 +318,14 @@ mainApp.controller('MainCtrl', [
 			$s.getResults();
 		};
 
+		$s.submitShortcode = function() {
+			if($s.activeLink == 'results') {
+				$s.getResults();
+			} else {
+				$s.getCandidates();
+			}
+		};
+
 		$s.addEntry = function() {
 			if($s.entryInput.length) {
 				$s.errorEntry = '';
@@ -325,21 +336,11 @@ mainApp.controller('MainCtrl', [
 			}
 		};
 
-		if($s.createBallot) {
-			$s.ballot.voteCutoff = roundResultsRelease();
-			$s.generateRandomKey();
-		}
+		$s.ballot.voteCutoff = roundResultsRelease();
+		$s.generateRandomKey();
 
-		if($s.voteBallot) {
+		if($s.shortcode) {
 			$s.getCandidates();
-		}
-
-		if($s.resultsBallot) {
-			$s.getResults();
-		}
-
-		if($s.editBallot) {
-			$s.getBallots();
 		}
 	}
 ]);
