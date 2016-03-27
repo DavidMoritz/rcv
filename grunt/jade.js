@@ -4,12 +4,9 @@ module.exports = function exportJade(grunt) {
 			options: {
 				pretty: true
 			},
-			files: grunt.file.expandMapping(['**/*.jade'], 'dist/', {
-				cwd: 'src/jade',
-				rename: function(destBase, destPath) {
-					return destBase + destPath.replace(/\.jade$/, '.html');
-				}
-			})
+			files: {
+				'dist/index.html': 'src/jade/index.jade'
+			}
 		}
 	});
 

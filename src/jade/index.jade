@@ -1,137 +1,60 @@
-include mixins
+include partials/mixins
 
 doctype html
 html(ng-app='mainApp')
-	head
-		script(src='https://apis.google.com/js/platform.js' async defer)
-		meta(charset='UTF-8')
-		meta(name='description', content='STV Calculator App')
-		meta(name='author', content='Moritz Company')
-		meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
-		meta(name='apple-mobile-web-app-capable' content='yes')
-		meta(name='apple-touch-fullscreen' content='yes')
-		meta(name='google-signin-client_id' content='828084230115-98814hb54sbrs34jjiecfirgak4svths.apps.googleusercontent.com')
-		title Single Transferable Vote Calculator App
-		link(rel='shortcut icon', href='favicon.ico')
-		link(rel='stylesheet', href='https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css')
-		link(rel='stylesheet', href='inc/main.css')
-		script(src='inc/angular.js')
+	include partials/head
 	body(ng-cloak ng-controller='MainCtrl')
 		.container
-			a.hidden(href='#' ng-click='signOut()') Sign out
-			.g-signin2.hidden(data-onsuccess='onSignIn')
-			div(ng-hide="thanks || congrats")
-				div(ng-hide="voteBallot || createBallot || resultsBallot || editBallot")
-					button.btn.btn-primary(ng-click="voteBallot = true") Vote
-					button.btn.btn-success(ng-click="createBallot = true; generateRandomKey()") Create New Ballot
-					button.btn.btn-info(ng-click="editBallot = true") Edit Ballot
-				div(ng-show="editBallot")
-					select.form-control(ng-model="ballot" ng-options="item as item.name for item in allBallots track by item.id" ng-change="changeEditBallot()")
-				div(ng-if="ballot")
-					h1 Ballot: {{ballot.name}}
-				//- temporarily hide
-				div(ng-show="createBallot")
-					form(name='ballotForm' ng-submit='newBallot()' ng-hide='updated')
-						.form-group
-							label Ballot Name
-							input.form-control(name="name" ng-model="ballot.name")
-							span.text-danger(ng-show='errors.name') {{errors.name}}
-						.form-group
-							label Shortcode (for link stvcalculator.com/{{ballot.key}})
-							.input-group
-								input.form-control(name="key" ng-model="ballot.key" ng-pattern-restrict pattern="\\w*" ng-change="checkAvailability()" maxlength=16 ng-readonly="editBallot")
-								span.input-group-btn
-									button.btn.btn-secondary(type="button" ng-click="generateRandomKey()" ng-disabled="editBallot") New Shortcode
-							span.text-danger(ng-show='errors.key') {{errors.key}}
-							span.text-success(ng-show='success.key') {{success.key}}
-						.form-group
-							label Positions to be Elected
-							input.form-control(type="number" name="positions" ng-model="ballot.positions")
-							span.text-danger(ng-show='errors.positions') {{errors.positions}}
-						.form-group
-							label Created By
-								small.text-muted  using default "guest" will restrict future editing
-							input.form-control(name="createdBy" ng-model="ballot.createdBy")
-							span.text-danger(ng-show='errors.createdBy') {{errors.createdBy}}
-						.form-group(ng-show="editBallot")
-							label Delete all votes and reset Ballot
-								input(type="checkbox" ng-model="showDelete")
-							input.btn.btn-danger(ng-show="showDelete" type="button" value="Are you sure?" ng-click="deleteVotes()")
-							span.text-warning(ng-show='deleted') Votes have been deleted.
-						.form-group
-							h4 Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}} {{ballot.voteCutoff | date: "h:mm a" }}
-							label Edit Time
-								input(type="checkbox" ng-model="editTime")
-							uib-timepicker(ng-show="editTime" ng-model="ballot.voteCutoff" minute-step="1")
-							//- label(ng-repeat="time in timePresets track by $index")
-							//- 	input(type="radio" ng-value="time" name="resultRadio" ng-model="ballot.preset" ng-change="adjustTime(time)")
-							//- 	| {{time}}
-							label Edit Date
-								input(type="checkbox" ng-model="editDate")
-							.input-group(ng-show="editDate")
-								input.form-control(type="text" ng-focus="releaseOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.voteCutoff" is-open="releaseOpen")
-								span.input-group-btn
-									button.btn.btn-default(type="button" ng-click="releaseOpen = !releaseOpen")
-										i.fa.fa-calendar
-						.form-group
-							label Release Results:
-								span(ng-hide="showRelease")  after voting (check box for custom)
-								input(type="checkbox" ng-model="showRelease" ng-click="sameTime()")
-								small.text-muted(ng-show="showRelease && ballot.resultsRelease")  {{ballot.resultsRelease | date: dateFormat }}
-							div(ng-show="showRelease")
-								.input-group
-									input.form-control(type="text" ng-focus="cutoffOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.resultsRelease" is-open="cutoffOpen")
-									span.input-group-btn
-										button.btn.btn-default(type="button" ng-click="cutoffOpen = !cutoffOpen")
-											i.fa.fa-calendar
-								uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
-						input.btn.btn-info(type="submit" value="Submit")
-					div(ng-show='updated && !candidates')
-						form(name='entriesForm' ng-submit='addEntry()')
-							.form-group
-								label New Entry (use ENTER to add)
-								input.form-control(name="entryInput" ng-model="entryInput")
-								span(ng-show='errorEntry && !entryInput') {{errorEntry}}
-							button.btn.btn-info(type='submit') Add Entry
-							button.btn.btn-default(type='button' ng-click="submitEntries()") Submit
-						h2 Current Entry List
-							h5(ng-repeat="entry in entries track by $index")
-								strong {{$index + 1}}&nbsp;
-								| {{entry}}&nbsp;
-								i.fa.fa-close.pointer(ng-click="removeEntry($index)")
-				div(ng-if='candidates')
-					h2 Order by Preference
-					h3 {{ballot.positions}} position{{ballot.positions == 1 ? "" : "s"}} available
-					form(name='voteForm' ng-submit='submitVote()')
-						ul#sortable(ui-sortable ng-model='candidates')
-							li(ng-repeat='item in candidates track by $index') {{item}}
-								i.fa.fa-close(ng-click="removeCandidate($index)")
-						button.btn.btn-primary.clearfix(type='submit') Vote!
-						button.btn.btn-default(type="button" ng-click='resetCandidates()') Reset
-			div(ng-show="congrats")
-				h3 Thank you for creating a ballot!
-				h4 Send this url to people for voting:
-				h4.text-success http://stvcalculator.com/{{ballot.key}}
-				a.pointer(ng-click="voteNow()") Click here to vote yourself
-			div(ng-show="thanks || final")
-				h3(ng-hide="final") Thank you for voting!
-				button.btn.btn-primary(ng-click="getResults()" ng-hide="final") See Results
-				div(ng-show="final")
-					h2 The winner{{elected.length == 1 ? "" : "s"}}:
-						span(ng-repeat="result in elected")  {{result}}
-							span(ng-if="!$last") ,&nbsp;
-					button.btn.btn-default.hidden-xs(ng-click="showText = !showText") {{!showText ? "Show" : "Hide"}} details
-			table(ng-hide="true")
-				tr(ng-repeat="x in names")
-					td {{x.Name}}
-					td {{x.Country}}
-			div(ng-show="showText" ng-bind-html="bodyText")
-		script(type="text/javascript") function onSignIn(googleUser) {
-			| console.log('test');
-			| var profile = googleUser.getBasicProfile();
-			| console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-			| console.log('Name: ' + profile.getName());
-			| console.log('Image URL: ' + profile.getImageUrl());
-			| console.log('Email: ' + profile.getEmail());
-			| };
+			h2 Single Transferable Vote Calculator
+			h5 A better way of voting
+			include partials/navbar
+			.panel.panel-default(ng-show="activeLink == 'register'")
+				.panel-body
+					include pages/register.html
+			.panel.panel-default(ng-show="activeLink == 'home'")
+				.panel-body
+					include pages/home
+			.panel.panel-default(ng-show="activeLink == 'about'")
+				.panel-body
+					include pages/about
+			.panel.panel-default(ng-show="activeLink != 'about' && activeLink != 'home'")
+				.panel-body
+					a.hidden(href='#' ng-click='signOut()') Sign out
+					.g-signin2.hidden(data-onsuccess='onSignIn')
+					div(ng-hide="thanks || congrats")
+						div(ng-hide="voteBallot || createBallot || resultsBallot || editBallot")
+							button.btn.btn-primary(ng-click="voteBallot = true") Vote
+							button.btn.btn-success(ng-click="createBallot = true; generateRandomKey()") Create New Ballot
+							button.btn.btn-info(ng-click="editBallot = true") Edit Ballot
+						div(ng-show="editBallot")
+							select.form-control(ng-model="ballot" ng-options="item as item.name for item in allBallots track by item.id" ng-change="changeEditBallot()")
+						h1 Ballot: {{ballot.name}}
+						div(ng-show="createBallot")
+							include partials/form
+							div(ng-show='updated && !candidates')
+								include partials/new-entries
+						div(ng-if='candidates')
+							h2 Order by Preference
+							h3 {{ballot.positions}} position{{ballot.positions == 1 ? "" : "s"}} available
+							form(name='voteForm' ng-submit='submitVote()')
+								ul#sortable(ui-sortable ng-model='candidates')
+									li(ng-repeat='item in candidates track by $index') {{item}}
+										i.fa.fa-close(ng-click="removeCandidate($index)")
+								button.btn.btn-primary.clearfix(type='submit') Vote!
+								button.btn.btn-default(type="button" ng-click='resetCandidates()') Reset
+					div(ng-show="congrats")
+						include partials/congrats
+					div(ng-show="thanks || final")
+						h3(ng-hide="final") Thank you for voting!
+						button.btn.btn-primary(ng-click="getResults()" ng-hide="final") See Results
+						div(ng-show="final")
+							h2 The winner{{elected.length == 1 ? "" : "s"}}:
+								span(ng-repeat="result in elected")  {{result}}
+									span(ng-if="!$last") ,&nbsp;
+							button.btn.btn-default.hidden-xs(ng-click="showText = !showText") {{!showText ? "Show" : "Hide"}} details
+					table(ng-hide="true")
+						tr(ng-repeat="x in names")
+							td {{x.Name}}
+							td {{x.Country}}
+					div(ng-show="showText" ng-bind-html="bodyText")
 		@@javascriptReplaceFiles

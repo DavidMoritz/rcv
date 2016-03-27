@@ -1,0 +1,12 @@
+form(name='entriesForm' ng-submit='addEntry()')
+	.form-group
+		label New Entry (use ENTER to add)
+		input.form-control(name="entryInput" ng-model="entryInput")
+		span(ng-show='errorEntry && !entryInput') {{errorEntry}}
+	button.btn.btn-info(type='submit') Add Entry
+	button.btn.btn-default(type='button' ng-click="submitEntries()") Submit
+h2 Current Entry List
+	h5(ng-repeat="entry in entries track by $index")
+		strong {{$index + 1}}&nbsp;
+		| {{entry}}&nbsp;
+		i.fa.fa-close.pointer(ng-click="removeEntry($index)")

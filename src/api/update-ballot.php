@@ -7,7 +7,7 @@ $data = array();
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 // checking for blank values.
-if(empty($_POST['id']) || empty($_POST['key']))
+if (empty($_POST['id']) || empty($_POST['key']))
 	$errors['key'] = 'Key is required';
 
 if (empty($_POST['name']))

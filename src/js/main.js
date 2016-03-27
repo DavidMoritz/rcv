@@ -42,6 +42,31 @@ mainApp.controller('MainCtrl', [
 				positions: 1,
 				createdBy: 'guest'
 			},
+			navItems: [
+				{
+					link: 'home',
+					text: 'Home'
+				},{
+					link: 'about',
+					text: 'About'
+				},{
+					link: 'create',
+					text: 'Create a new Ballot!'
+				},{
+					link: 'edit',
+					text: 'Edit Ballot'
+				},{
+					link: 'results',
+					text: 'Results'
+				},{
+					link: 'register',
+					text: 'Register'
+				},{
+					link: 'vote',
+					text: 'Vote!'
+				}
+			],
+			activeLink: 'home',
 			errors: {},
 			success: {},
 			entries: [],
@@ -76,6 +101,14 @@ mainApp.controller('MainCtrl', [
 		// 	console.log('Image URL: ' + profile.getImageUrl());
 		// 	console.log('Email: ' + profile.getEmail());
 		// };
+
+		$s.navigate = function(link) {
+			if($('.navbar-collapse').hasClass('in')) {
+				$('.navbar-collapse').collapse('hide');
+			}
+
+			$s.activeLink = link;
+		};
 
 		$s.signOut = function() {
 			var auth2 = gapi.auth2.getAuthInstance();
