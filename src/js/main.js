@@ -24,7 +24,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		var getVoteParam = function() {
-			return $loc.$$url.split('/')[1];
+			return $loc.$$absUrl.split("/").pop();
 		};
 
 		var updateTime = function(dateObj) {
@@ -340,6 +340,7 @@ mainApp.controller('MainCtrl', [
 		$s.generateRandomKey();
 
 		if($s.shortcode) {
+			$s.activeLink = 'vote';
 			$s.getCandidates();
 		}
 	}
