@@ -1,7 +1,7 @@
 div(ng-hide='candidates')
 	h1 Vote!
 	include ../partials/shortcode
-div(ng-if='candidates')
+div(ng-if='candidates' ng-hide="thanks")
 	h1 Ballot: {{ballot.name}}
 	h2 Order by Preference
 	h3 {{ballot.positions}} position{{ballot.positions == 1 ? "" : "s"}} available
@@ -11,3 +11,6 @@ div(ng-if='candidates')
 				i.fa.fa-close(ng-click="removeCandidate($index)")
 		button.btn.btn-primary.clearfix(type='submit') Vote!
 		button.btn.btn-default(type="button" ng-click='resetCandidates()') Reset
+div(ng-show="thanks")
+	h1 Ballot: {{ballot.name}}
+	h3 Thank you for voting!

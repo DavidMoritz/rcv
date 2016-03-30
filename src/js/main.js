@@ -12,19 +12,8 @@ mainApp.controller('MainCtrl', [
 		//during development
 		window.$s = $s;
 
-		var getParam = function(param) {
-			var queryArray = $loc.$$url.split('/');
-			var index = queryArray.indexOf(param);
-
-			if(index) {
-				return queryArray[index + 1];
-			}
-
-			return false;
-		};
-
 		var getVoteParam = function() {
-			return $loc.$$absUrl.split("/").pop();
+			return $loc.$$absUrl.split('/').pop();
 		};
 
 		var updateTime = function(dateObj) {
@@ -109,6 +98,7 @@ mainApp.controller('MainCtrl', [
 				$('.navbar-collapse').collapse('hide');
 			}
 
+			$s.shortcode = '';
 			$s.activeLink = link;
 		};
 
@@ -143,7 +133,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.getResults = function() {
-			var key = $s.ballot.key || $s.shortcode;
+			var key = $s.shortcode || $s.ballot.key;
 			$http.get('/api/get-votes.php?key=' + key)
 				.then(function(resp) {
 					$s.votes = resp.data.map(function(result) {

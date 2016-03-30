@@ -26,31 +26,8 @@ html(ng-app='mainApp')
 			.panel.panel-default(ng-show="activeLink == 'results'")
 				.panel-body
 					include pages/results
-			.panel.panel-default(ng-show="activeLink != 'about' && activeLink != 'home' && activeLink != 'vote' && activeLink != 'create'")
-				.panel-body
-					div(ng-hide="thanks || congrats")
-						div(ng-show="editBallot")
-							select.form-control(ng-model="ballot" ng-options="item as item.name for item in allBallots track by item.id" ng-change="changeEditBallot()")
-						h1 Ballot: {{ballot.name}}
-						div(ng-show="createBallot")
-							div(ng-show='updated && !candidates')
-								include partials/new-entries
-					div(ng-show="congrats")
-						include partials/congrats
-					div(ng-show="thanks || final")
-						h3(ng-hide="final") Thank you for voting!
-						button.btn.btn-primary(ng-click="getResults()" ng-hide="final") See Results
-						div(ng-show="final")
-							h2 The winner{{elected.length == 1 ? "" : "s"}}:
-								span(ng-repeat="result in elected")  {{result}}
-									span(ng-if="!$last") ,&nbsp;
-							button.btn.btn-default.hidden-xs(ng-click="showText = !showText") {{!showText ? "Show" : "Hide"}} details
-					table(ng-hide="true")
-						tr(ng-repeat="x in names")
-							td {{x.Name}}
-							td {{x.Country}}
-			.panel.panel-default(ng-show="showText")
-				.panel.heading
+			.panel.panel-default(ng-show="activeLink == 'results' && showText")
+				.panel-heading
 					h3.panel-title Detailed Results
 				.panel-body(ng-bind-html="bodyText")
 			include partials/footer
