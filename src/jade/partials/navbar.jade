@@ -7,10 +7,10 @@ nav.nav.navbar.navbar-inverse
 			span.icon-bar
 			span.icon-bar
 			span.icon-bar
-		a.navbar-brand(href="#") STV
+		a.navbar-brand(href="/home") STV
 		//- Collect the nav links, forms, and other content for toggle
 	div.collapse.navbar-collapse#bs-example-navbar-collapse-1
 		ul.nav.navbar-nav
 			li(ng-repeat="nav in navItems" ng-class="{'active': nav.link == activeLink}")
-				a(href="/{{nav.link}}") {{nav.text}}
+				a(href="/{{nav.link}}" ng-click="navigate(nav.link)") {{nav.text}}
 					span.sr-only(ng-if="nav.link == activeLink") (current)

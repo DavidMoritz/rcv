@@ -121,10 +121,10 @@ mainApp.controller('MainCtrl', [
 
 			$s.shortcode = '';
 			$s.activeLink = link;
-			window.history.pushState({
-				title: title,
-				link: link
-			}, title, link);
+			// window.history.pushState({
+			// 	title: title,
+			// 	link: link
+			// }, title, link);
 		};
 
 		$s.signOut = function() {
