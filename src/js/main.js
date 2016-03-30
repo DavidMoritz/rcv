@@ -11,6 +11,7 @@ mainApp.controller('MainCtrl', [
 
 		//during development
 		window.$s = $s;
+		$s.user = $s.user || {}
 
 		var getVoteParam = function() {
 			var param = $loc.$$absUrl.split('/').pop();
@@ -58,7 +59,6 @@ mainApp.controller('MainCtrl', [
 		//	initialize scoped variables
 		_.assign($s, {
 			activeLink: 'home',
-			user: $s.user || {},
 			navItems: [
 				{
 					link: 'home',
