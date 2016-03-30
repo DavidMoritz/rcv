@@ -108,17 +108,20 @@ mainApp.controller('MainCtrl', [
 		// };
 
 		$s.navigate = function(link) {
+			var nav = _.find($s.navItems, {link: link});
+
 			if($('.navbar-collapse').hasClass('in')) {
 				$('.navbar-collapse').collapse('hide');
 			}
 
-			switch(link) {
+			switch(nav.link) {
 				case 'create':
 					$s.ballot = resetBallot();
 			}
 
+			window.history.pushState(nav, nav.text, nav.link);
 			$s.shortcode = '';
-			$s.activeLink = link;
+			$s.activeLink = nav.link;
 		};
 
 		$s.signOut = function() {
