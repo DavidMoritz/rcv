@@ -82,7 +82,6 @@ mainApp.controller('MainCtrl', [
 			pickerOptions: {
 				showWeeks: false
 			},
-			shortcode: getVoteParam(),
 		});
 
 		_.extend($s, VF);
@@ -347,6 +346,7 @@ mainApp.controller('MainCtrl', [
 
 		$s.ballot.voteCutoff = roundResultsRelease();
 		$s.generateRandomKey();
+		$s.shortcode= getVoteParam();
 
 		if($s.shortcode) {
 			$s.activeLink = 'vote';
