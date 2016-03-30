@@ -1,2 +1,13 @@
-h1 Vote!
-include ../partials/shortcode
+div(ng-hide='candidates')
+	h1 Vote!
+	include ../partials/shortcode
+div(ng-if='candidates')
+	h1 Ballot: {{ballot.name}}
+	h2 Order by Preference
+	h3 {{ballot.positions}} position{{ballot.positions == 1 ? "" : "s"}} available
+	form(name='voteForm' ng-submit='submitVote()')
+		ul#sortable(ui-sortable ng-model='candidates')
+			li(ng-repeat='item in candidates track by $index') {{item}}
+				i.fa.fa-close(ng-click="removeCandidate($index)")
+		button.btn.btn-primary.clearfix(type='submit') Vote!
+		button.btn.btn-default(type="button" ng-click='resetCandidates()') Reset

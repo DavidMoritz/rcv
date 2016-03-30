@@ -133,6 +133,7 @@ mainApp.controller('MainCtrl', [
 
 							return entry.candidate;
 						});
+						$s.activeLink = 'vote';
 						$s.resetCandidates();
 					} else {
 						console.log('something went wrong');

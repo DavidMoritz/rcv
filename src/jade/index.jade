@@ -26,7 +26,7 @@ html(ng-app='mainApp')
 			.panel.panel-default(ng-show="activeLink == 'results'")
 				.panel-body
 					include pages/results
-			.panel.panel-default(ng-show="activeLink != 'about' && activeLink != 'home' && activeLink != 'create'")
+			.panel.panel-default(ng-show="activeLink != 'about' && activeLink != 'home' && activeLink != 'vote' && activeLink != 'create'")
 				.panel-body
 					div(ng-hide="thanks || congrats")
 						div(ng-show="editBallot")
@@ -35,15 +35,6 @@ html(ng-app='mainApp')
 						div(ng-show="createBallot")
 							div(ng-show='updated && !candidates')
 								include partials/new-entries
-						div(ng-if='candidates')
-							h2 Order by Preference
-							h3 {{ballot.positions}} position{{ballot.positions == 1 ? "" : "s"}} available
-							form(name='voteForm' ng-submit='submitVote()')
-								ul#sortable(ui-sortable ng-model='candidates')
-									li(ng-repeat='item in candidates track by $index') {{item}}
-										i.fa.fa-close(ng-click="removeCandidate($index)")
-								button.btn.btn-primary.clearfix(type='submit') Vote!
-								button.btn.btn-default(type="button" ng-click='resetCandidates()') Reset
 					div(ng-show="congrats")
 						include partials/congrats
 					div(ng-show="thanks || final")
