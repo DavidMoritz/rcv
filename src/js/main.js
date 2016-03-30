@@ -246,6 +246,7 @@ mainApp.controller('MainCtrl', [
 			}
 			$s.ballot.resultsRelease = updateTime($s.ballot.resultsRelease);
 			$s.ballot.voteCutoff = updateTime($s.ballot.voteCutoff);
+			$s.ballot.createdBy = $s.user.email ? $s.user.email : 'guest';
 			$http({
 				method: 'POST',
 				url: '/api/' + ($s.editBallot ? 'update' : 'new') + '-ballot.php',
