@@ -11,7 +11,7 @@ mainApp.controller('MainCtrl', [
 
 		//during development
 		window.$s = $s;
-		$s.user = $s.user || {}
+		$s.user = $s.user || {};
 
 		var getVoteParam = function() {
 			var param = $loc.$$absUrl.split('/').pop();
