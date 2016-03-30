@@ -108,20 +108,23 @@ mainApp.controller('MainCtrl', [
 		// };
 
 		$s.navigate = function(link) {
-			var nav = _.find($s.navItems, {link: link});
+			var title = _.find($s.navItems, {link: link}).text;
 
 			if($('.navbar-collapse').hasClass('in')) {
 				$('.navbar-collapse').collapse('hide');
 			}
 
-			switch(nav.link) {
+			switch(link) {
 				case 'create':
 					$s.ballot = resetBallot();
 			}
 
-			window.history.pushState(nav, nav.text, nav.link);
 			$s.shortcode = '';
-			$s.activeLink = nav.link;
+			$s.activeLink = link;
+			window.history.pushState({
+				title: title,
+				link: link
+			}, title, link);
 		};
 
 		$s.signOut = function() {
