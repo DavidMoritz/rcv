@@ -15,6 +15,10 @@ mainApp.controller('MainCtrl', [
 		var getVoteParam = function() {
 			var param = $loc.$$absUrl.split('/').pop();
 
+			if(!param) {
+				navigate('home');
+			}
+
 			if(_.find($s.navItems, {link: param})) {
 				$s.navigate(param);
 
@@ -58,25 +62,32 @@ mainApp.controller('MainCtrl', [
 			navItems: [
 				{
 					link: 'home',
-					text: 'Home'
+					text: 'Home',
+					show: true
 				},{
 					link: 'about',
-					text: 'About'
+					text: 'About',
+					show: true
 				},{
 					link: 'create',
-					text: 'Create a new Ballot!'
-				// },{
-				// 	link: 'edit',
-				// 	text: 'Edit Ballot'
+					text: 'Create a new Ballot!',
+					show: true
+				},{
+					link: 'edit',
+					text: 'Edit a Ballot',
+					show: 'user.email'
 				},{
 					link: 'results',
-					text: 'Results'
+					text: 'Results',
+					show: true
 				},{
 					link: 'register',
-					text: 'Register'
+					text: 'Register',
+					show: '!user.email'
 				},{
 					link: 'vote',
-					text: 'Vote!'
+					text: 'Vote!',
+					show: true
 				}
 			],
 			ballot: {},
@@ -121,6 +132,9 @@ mainApp.controller('MainCtrl', [
 			switch(link) {
 				case 'create':
 					$s.ballot = resetBallot();
+					break;
+				case 'edit':
+					$s.editBallot = true;
 			}
 
 			$s.shortcode = '';

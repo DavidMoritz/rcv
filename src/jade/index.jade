@@ -17,9 +17,9 @@ html(ng-app='mainApp')
 			.panel.panel-default(ng-show="activeLink == 'about'")
 				.panel-body
 					include pages/about
-			.panel.panel-default(ng-show="activeLink == 'create'")
+			.panel.panel-default(ng-show="activeLink == 'create' || activeLink == 'edit'")
 				.panel-body
-					include pages/create
+					include pages/create-edit
 			.panel.panel-default(ng-show="activeLink == 'vote'")
 				.panel-body
 					include pages/vote
