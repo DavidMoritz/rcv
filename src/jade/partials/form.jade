@@ -18,7 +18,7 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='updated')
 	.form-group(ng-hide="user.name")
 		label Created By
 			small.text-muted(ng-show="ballot.createdBy == 'guest'")  using default "guest" will restrict future editing. Please&nbsp;
-				a.btn-link(ng-click="navigate('register')") Sign in
+				a.btn-link(href="register" ng-click="navigate('register')") Sign in
 				|  to allow future editing.
 		input.form-control(name="createdBy" ng-model="ballot.createdBy" readonly)
 		span.text-danger(ng-show='errors.createdBy') {{errors.createdBy}}

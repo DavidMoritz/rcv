@@ -12,6 +12,10 @@ mainApp.controller('MainCtrl', [
 		//during development
 		window.$s = $s;
 
+		$s.$watch(function() {
+			return window.location.pathname;
+		}, getVoteParam);
+
 		var getVoteParam = function() {
 			var param = $loc.$$absUrl.split('/').pop();
 
@@ -216,7 +220,7 @@ mainApp.controller('MainCtrl', [
 			;
 		};
 
-		$s.checkAvailability = function() {
+		$s.checkAvailability = _.debounce(function() {
 			$http.get('/api/get-key-ballot.php?key=' + $s.ballot.key)
 				.then(function(resp) {
 					if(resp.data.length) {
@@ -232,7 +236,7 @@ mainApp.controller('MainCtrl', [
 					}
 				})
 			;
-		};
+		}, 250);
 
 		$s.removeEntry = function(idx) {
 			$s.entries.splice(idx, 1);
