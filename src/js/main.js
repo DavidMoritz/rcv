@@ -75,7 +75,7 @@ mainApp.controller('MainCtrl', [
 				},{
 					link: 'edit',
 					text: 'Edit a Ballot',
-					show: 'user.email'
+					show: $s.user.email
 				},{
 					link: 'results',
 					text: 'Results',
@@ -83,7 +83,7 @@ mainApp.controller('MainCtrl', [
 				},{
 					link: 'register',
 					text: 'Register',
-					show: '!user.email'
+					show: !$s.user.email
 				},{
 					link: 'vote',
 					text: 'Vote!',
