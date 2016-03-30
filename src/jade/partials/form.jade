@@ -15,10 +15,12 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='updated')
 		label Positions to be Elected
 		input.form-control(type="number" name="positions" ng-model="ballot.positions")
 		span.text-danger(ng-show='errors.positions') {{errors.positions}}
-	.form-group
+	.form-group(ng-hide="user.name")
 		label Created By
-			small.text-muted(ng-show="ballot.createdBy == 'guest'")  using default "guest" will restrict future editing
-		input.form-control(name="createdBy" ng-model="ballot.createdBy")
+			small.text-muted(ng-show="ballot.createdBy == 'guest'")  using default "guest" will restrict future editing. Please&nbsp;
+				a.btn-link(ng-click="navigate('register')") Sign in
+				|  to allow future editing.
+		input.form-control(name="createdBy" ng-model="ballot.createdBy" readonly)
 		span.text-danger(ng-show='errors.createdBy') {{errors.createdBy}}
 	.form-group(ng-show="editBallot")
 		label Delete all votes and reset Ballot

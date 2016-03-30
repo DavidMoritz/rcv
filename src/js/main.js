@@ -13,7 +13,15 @@ mainApp.controller('MainCtrl', [
 		window.$s = $s;
 
 		var getVoteParam = function() {
-			return $loc.$$absUrl.split('/').pop();
+			var param = $loc.$$absUrl.split('/').pop();
+
+			if(_.find($s.navItems, {link: param})) {
+				$s.navigate(param);
+
+				return '';
+			}
+
+			return param;
 		};
 
 		var updateTime = function(dateObj) {
@@ -28,14 +36,19 @@ mainApp.controller('MainCtrl', [
 			return mom.format('YYYY-MM-DD HH:mm:ss');
 		};
 
+		var resetBallot = function() {
+			return {
+				positions: 1,
+				createdBy: $s.user ? $s.user.email : 'guest',
+				maxVotes: 1
+			}
+		};
+
 		//	initialize scoped variables
 		_.assign($s, {
+			user: $s.user || {},
 			timePresets: ['10 minutes', '30 minutes', '1 hour', '24 hours', 'Custom'],
-			ballot: {
-				positions: 1,
-				createdBy: 'guest',
-				maxVotes: 1
-			},
+			ballot: resetBallot(),
 			navItems: [
 				{
 					link: 'home',
@@ -96,6 +109,11 @@ mainApp.controller('MainCtrl', [
 		$s.navigate = function(link) {
 			if($('.navbar-collapse').hasClass('in')) {
 				$('.navbar-collapse').collapse('hide');
+			}
+
+			switch(link) {
+				case 'create':
+					$s.ballot = resetBallot();
 			}
 
 			$s.shortcode = '';
