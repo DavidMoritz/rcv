@@ -62,32 +62,25 @@ mainApp.controller('MainCtrl', [
 			navItems: [
 				{
 					link: 'home',
-					text: 'Home',
-					show: true
+					text: 'Home'
 				},{
 					link: 'about',
-					text: 'About',
-					show: true
+					text: 'About'
 				},{
 					link: 'create',
-					text: 'Create a new Ballot!',
-					show: true
+					text: 'Create a new Ballot!'
 				},{
 					link: 'edit',
-					text: 'Edit a Ballot',
-					show: $s.user.email
+					text: 'Edit a Ballot'
 				},{
 					link: 'results',
-					text: 'Results',
-					show: true
+					text: 'Results'
 				},{
 					link: 'register',
-					text: 'Register',
-					show: !$s.user.email
+					text: 'Register'
 				},{
 					link: 'vote',
-					text: 'Vote!',
-					show: true
+					text: 'Vote!'
 				}
 			],
 			ballot: {},
