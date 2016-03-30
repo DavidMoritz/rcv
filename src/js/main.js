@@ -41,7 +41,7 @@ mainApp.controller('MainCtrl', [
 				positions: 1,
 				createdBy: $s.user ? $s.user.email : 'guest',
 				maxVotes: 1
-			}
+			};
 		};
 
 		//	initialize scoped variables
