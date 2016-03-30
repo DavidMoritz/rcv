@@ -32,9 +32,6 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='updated')
 		label Edit Time
 			input(type="checkbox" ng-model="editTime")
 		uib-timepicker(ng-show="editTime" ng-model="ballot.voteCutoff" minute-step="1")
-		//- label(ng-repeat="time in timePresets track by $index")
-		//- 	input(type="radio" ng-value="time" name="resultRadio" ng-model="ballot.preset" ng-change="adjustTime(time)")
-		//- 	| {{time}}
 		label Edit Date
 			input(type="checkbox" ng-model="editDate")
 		.input-group(ng-show="editDate")

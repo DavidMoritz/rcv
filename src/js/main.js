@@ -37,18 +37,20 @@ mainApp.controller('MainCtrl', [
 		};
 
 		var resetBallot = function() {
+			$s.generateRandomKey();
+
 			return {
 				positions: 1,
-				createdBy: $s.user ? $s.user.email : 'guest',
-				maxVotes: 1
+				createdBy: $s.user.email ? $s.user.email : 'guest',
+				maxVotes: 1,
+				voteCutoff: roundResultsRelease()
 			};
 		};
 
 		//	initialize scoped variables
 		_.assign($s, {
+			activeLink: 'home',
 			user: $s.user || {},
-			timePresets: ['10 minutes', '30 minutes', '1 hour', '24 hours', 'Custom'],
-			ballot: resetBallot(),
 			navItems: [
 				{
 					link: 'home',
@@ -73,7 +75,7 @@ mainApp.controller('MainCtrl', [
 					text: 'Vote!'
 				}
 			],
-			activeLink: 'home',
+			ballot: {},
 			errors: {},
 			success: {},
 			entries: [],
@@ -344,8 +346,6 @@ mainApp.controller('MainCtrl', [
 			}
 		};
 
-		$s.ballot.voteCutoff = roundResultsRelease();
-		$s.generateRandomKey();
 		$s.shortcode= getVoteParam();
 
 		if($s.shortcode) {
