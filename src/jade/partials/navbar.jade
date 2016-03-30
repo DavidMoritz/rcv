@@ -12,5 +12,5 @@ nav.nav.navbar.navbar-inverse
 	div.collapse.navbar-collapse#bs-example-navbar-collapse-1
 		ul.nav.navbar-nav
 			li(ng-repeat="nav in navItems" ng-class="{'active': nav.link == activeLink}")
-				a(href="#" ng-click="navigate(nav.link)") {{nav.text}}
+				a(href="/{{nav.link}}") {{nav.text}}
 					span.sr-only(ng-if="nav.link == activeLink") (current)

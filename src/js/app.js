@@ -3,6 +3,10 @@ var mainApp = angular.module('mainApp', [
 	'ui.bootstrap'
 ]);
 
+mainApp.config(function($locationProvider) {
+	$locationProvider.html5mode(true);
+});
+
 mainApp.run(function runWithDependencies($rootScope) {
 	$rootScope._ = _;
 	$rootScope.moment = moment;
