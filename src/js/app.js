@@ -4,7 +4,7 @@ var mainApp = angular.module('mainApp', [
 ]);
 
 mainApp.config(function($locationProvider) {
-	$locationProvider.html5mode(true);
+	$locationProvider.html5Mode(true);
 });
 
 mainApp.run(function runWithDependencies($rootScope) {
