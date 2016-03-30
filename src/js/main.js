@@ -12,10 +12,6 @@ mainApp.controller('MainCtrl', [
 		//during development
 		window.$s = $s;
 
-		$s.$watch(function() {
-			return window.location.pathname;
-		}, getVoteParam);
-
 		var getVoteParam = function() {
 			var param = $loc.$$absUrl.split('/').pop();
 
@@ -50,6 +46,10 @@ mainApp.controller('MainCtrl', [
 				voteCutoff: roundResultsRelease()
 			};
 		};
+
+		$s.$watch(function() {
+			return window.location.pathname;
+		}, getVoteParam);
 
 		//	initialize scoped variables
 		_.assign($s, {
