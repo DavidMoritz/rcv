@@ -16,7 +16,7 @@ if(!empty($key)) {
 		WHERE
 			b.key = '$key'
 		AND
-			b.resultsRelease <= NOW();";
+			b.voteCutoff >= NOW();";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
