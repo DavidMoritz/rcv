@@ -11,6 +11,6 @@ nav.nav.navbar.navbar-inverse
 		//- Collect the nav links, forms, and other content for toggle
 	div.collapse.navbar-collapse#bs-example-navbar-collapse-1
 		ul.nav.navbar-nav
-			li(ng-repeat="nav in navItems" ng-class="{'active': nav.link == activeLink}" ng-show="nav.show")
+			li(ng-repeat="nav in navItems" ng-class="{'active': nav.link == activeLink}" ng-hide="nav.hide")
 				a(href="/{{nav.link}}") {{nav.text}}
 					span.sr-only(ng-if="nav.link == activeLink") (current)

@@ -17,7 +17,7 @@ mainApp.controller('MainCtrl', [
 			var param = $loc.$$absUrl.split('/').pop();
 
 			if(!param) {
-				navigate('home');
+				$s.navigate('home');
 			}
 
 			if(_.find($s.navItems, {link: param})) {
@@ -71,7 +71,8 @@ mainApp.controller('MainCtrl', [
 					text: 'Create a new Ballot!'
 				},{
 					link: 'edit',
-					text: 'Edit a Ballot'
+					text: 'Edit a Ballot',
+					hide: true
 				},{
 					link: 'results',
 					text: 'Results'
@@ -86,7 +87,6 @@ mainApp.controller('MainCtrl', [
 			ballot: {},
 			errors: {},
 			success: {},
-			entries: [],
 			dateFormat: 'MMM d, y h:mm a',
 			pickerFormat: 'fullDate',
 			pickerOptions: {
@@ -276,6 +276,7 @@ mainApp.controller('MainCtrl', [
 					if(!$s.editBallot) {
 						$s.ballot.id = resp;
 					}
+					$s.entries = [];
 					$s.updated = true;
 				}
 			});
