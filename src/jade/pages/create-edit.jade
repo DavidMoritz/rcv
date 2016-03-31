@@ -5,5 +5,5 @@ h1
 	span(ng-show="editBallot") Edit&nbsp;
 	| Ballot: {{ballot.name}}
 include ../partials/form
-div(ng-if="entries")
+div(ng-show="entries")
 	include ../partials/new-entries

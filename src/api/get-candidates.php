@@ -12,16 +12,18 @@ if(!empty($key)) {
 		JOIN
 			ballots b
 		ON
-			e.ballotId = b.id  
+			e.ballotId = b.id
 		WHERE
-			b.key = '$key';";
+			b.key = '$key'
+		AND
+			b.resultsRelease <= NOW();";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
 	if(empty($results))
-		echo "Shortcode is incorrect";
-	else 
+		echo "Either shortcode is incorrect or results aren't ready to be released";
+	else
 		print json_encode($results);
 } else {
 	echo "failed to supply Shortcode";
