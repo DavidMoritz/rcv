@@ -283,14 +283,16 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.submitEntries = function() {
+			if($s.entries.length < 2) {
+				return $s.errorEntry = "Must have at least 2 entries";
+			}
 			if($s.editBallot) {
-				$http.get('/api/delete-entries.php?ballotId=' + $s.ballot.id)
+				return $http.get('/api/delete-entries.php?ballotId=' + $s.ballot.id)
 					.then(function(resp) {
 						$s.editBallot = false;
 						$s.submitEntries();
 					})
 				;
-				return;
 			}
 			$http({
 				method: 'POST',
@@ -356,12 +358,14 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.addEntry = function() {
-			if($s.entryInput.length) {
+			if(!$s.entryInput.length) {
+				$s.errorEntry = 'Entries must not be blank';
+			} else if($s.entries.indexOf($s.entryInput) !== -1) {
+				$s.errorEntry = 'No duplicate entries allowed';
+			} else {
 				$s.errorEntry = '';
 				$s.entries.push($s.entryInput);
 				$s.entryInput = '';
-			} else {
-				$s.errorEntry = 'Entries must not be blank';
 			}
 		};
 
