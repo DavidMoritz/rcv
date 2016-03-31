@@ -7,7 +7,7 @@ $data = array();
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 // checking for blank values.
-$ballotId = parseInt($_POST['ballotId']);
+$ballotId = intval($_POST['ballotId']);
 
 if (!empty($_POST['entries'])) {
 	$total = count($_POST['entries']);
@@ -26,10 +26,10 @@ if (!empty($errors)) {
 	echo json_encode($data);
 } else {
 	$query = "
-		INSERT INTO 
+		INSERT INTO
 			entries (`ballotId`, `name`)
 		VALUES ";
-	for ($i=0; $i < $total; $i++) { 
+	for ($i=0; $i < $total; $i++) {
 		$query .= "($ballotId,'". $_POST['entries'][$i] ."'),";
 	}
 	$query = substr($query, 0, -1) . ";";
