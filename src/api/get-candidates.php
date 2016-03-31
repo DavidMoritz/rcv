@@ -22,7 +22,7 @@ if(!empty($key)) {
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
 	if(empty($results))
-		echo "Either shortcode is incorrect or results aren't ready to be released";
+		echo "Either shortcode is incorrect or voting has already been cutoff";
 	else
 		print json_encode($results);
 } else {
