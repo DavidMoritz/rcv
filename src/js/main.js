@@ -284,15 +284,18 @@ mainApp.controller('MainCtrl', [
 
 		$s.submitEntries = function() {
 			if($s.entries.length < 2) {
-				return $s.errorEntry = "Must have at least 2 entries";
+				$s.errorEntry = 'Must have at least 2 entries';
+
+				return;
 			}
 			if($s.editBallot) {
-				return $http.get('/api/delete-entries.php?ballotId=' + $s.ballot.id)
+				$http.get('/api/delete-entries.php?ballotId=' + $s.ballot.id)
 					.then(function(resp) {
 						$s.editBallot = false;
 						$s.submitEntries();
 					})
 				;
+				return;
 			}
 			$http({
 				method: 'POST',
