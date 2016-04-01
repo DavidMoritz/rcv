@@ -43,6 +43,7 @@ mainApp.controller('MainCtrl', [
 
 		var resetBallot = function() {
 			$s.generateRandomKey();
+			$s.entries = null;
 
 			return {
 				positions: 1,
@@ -126,8 +127,11 @@ mainApp.controller('MainCtrl', [
 				case 'create':
 					$s.ballot = resetBallot();
 					$s.editBallot = false;
+					$s.congrats = false;
 					break;
 				case 'edit':
+					$s.entries = null;
+					$s.congrats = false;
 					$s.editBallot = true;
 			}
 
@@ -274,7 +278,6 @@ mainApp.controller('MainCtrl', [
 						$s.ballot.id = resp;
 					}
 					$s.entries = [];
-					$s.updated = true;
 				}
 			});
 		};
