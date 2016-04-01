@@ -125,6 +125,7 @@ mainApp.controller('MainCtrl', [
 			switch(link) {
 				case 'create':
 					$s.ballot = resetBallot();
+					$s.editBallot = false;
 					break;
 				case 'edit':
 					$s.editBallot = true;
@@ -132,10 +133,6 @@ mainApp.controller('MainCtrl', [
 
 			$s.shortcode = '';
 			$s.activeLink = link;
-			// window.history.pushState({
-			// 	title: title,
-			// 	link: link
-			// }, title, link);
 		};
 
 		$s.signOut = function() {

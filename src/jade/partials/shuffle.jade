@@ -1,0 +1,9 @@
+div(ng-hide="thanks || congrats")
+	div(ng-show="editBallot")
+		select.form-control(ng-model="ballot" ng-options="item as item.name for item in allBallots track by item.id" ng-change="changeEditBallot()")
+	h1 Ballot: {{ballot.name}}
+	div(ng-show="createBallot")
+		div(ng-show='updated && !candidates')
+			include partials/new-entries
+div(ng-show="congrats")
+	include partials/congrats
