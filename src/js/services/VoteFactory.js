@@ -159,7 +159,7 @@ mainApp.factory('VoteFactory', [
 				var model = this;
 				var tieArray = [];
 				var randomize = function(string) {
-					string = model.votes.length + string + model.roundnum;
+					string = model.votes.length + string.replace(/\W/g, "") + model.roundnum;
 					// algorithm supplied by http://indiegamr.com/generate-repeatable-random-numbers-in-js/
 					return (parseInt(string, 36) * 9301 + 49297) % 233280;
 				}
