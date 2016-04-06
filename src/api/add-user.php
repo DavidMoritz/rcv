@@ -9,18 +9,14 @@ $columns = "";
 $values = "";
 $update = "";
 
-function checkLen() {
-	if(!empty($columns)) {
+foreach ($_POST as $key => $val) {
+	if(!in_array($key, $acceptableFields))
+		continue;
+	else if(!empty($columns)) {
 		$columns .= ", ";
 		$values .= ", ";
 		$update .= ", ";
 	}
-}
-
-foreach ($_POST as $key => $val) {
-	if(!in_array($key, $acceptableFields)) continue;
-
-	checkLen();
 	$columns .= "`$key`";
 	$values .= "'$val'";
 	$update .= "`$key` = VALUES(`$key`)";
