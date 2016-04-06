@@ -7,7 +7,7 @@ if(!empty($key)) {
 // checking for blank values.
 	$query = "
 		SELECT
-			vote, ballots.positions
+			vote, ballots.positions, ballots.resultsRelease
 		FROM
 			votes
 		JOIN
@@ -15,9 +15,7 @@ if(!empty($key)) {
 		ON
 			votes.ballotId = ballots.id
 		WHERE
-			ballots.key = '$key'
-		AND
-			ballots.resultsRelease <= NOW();";
+			ballots.key = '$key';";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);

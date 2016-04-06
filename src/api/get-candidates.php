@@ -6,7 +6,7 @@ $key = $_GET['key'];
 if(!empty($key)) {
 	$query = "
 		SELECT
-			b.key, b.name, b.positions, e.name AS 'candidate'
+			b.key, b.name, b.positions, b.voteCutoff, e.name AS 'candidate'
 		FROM
 			entries e
 		JOIN
@@ -14,9 +14,7 @@ if(!empty($key)) {
 		ON
 			e.ballotId = b.id
 		WHERE
-			b.key = '$key'
-		AND
-			b.voteCutoff >= NOW();";
+			b.key = '$key';";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
