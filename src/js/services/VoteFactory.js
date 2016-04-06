@@ -159,6 +159,7 @@ mainApp.factory('VoteFactory', [
 				var model = this;
 				var tieArray = [];
 				var randomize = function(string) {
+					string = model.votes + string + model.roundnum;
 					// algorithm supplied by http://indiegamr.com/generate-repeatable-random-numbers-in-js/
 					return (parseInt(string, 36) * 9301 + 49297) % 233280;
 				}
@@ -167,7 +168,7 @@ mainApp.factory('VoteFactory', [
 					if(val == value) {
 						tieArray.push({
 							index: idx,
-							rand: randomize(model.names[idx])
+							rand: randomize(model.names[idx] + idx)
 						});
 					}
 				});
