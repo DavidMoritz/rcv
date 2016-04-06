@@ -1,7 +1,7 @@
 <?php
 require_once("config.php");
 
-$key = $_GET['key'];
+$key = apiGet('key');
 
 if(!empty($key)) {
 	$query = "

@@ -1,16 +1,16 @@
 <?php
 require_once("config.php");
 
-$key = $_GET['key'];
+$key = apiGet('key');
 
 if(!empty($key)) {
 // checking for blank values.
 	$query = "
 		SELECT
 			`key`
-		FROM 
-			`ballots` 
-		WHERE 
+		FROM
+			`ballots`
+		WHERE
 			`key` = '$key'
 		LIMIT
 			1;";

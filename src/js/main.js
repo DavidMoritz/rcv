@@ -107,15 +107,6 @@ mainApp.controller('MainCtrl', [
 			return new Date(now.setMinutes(offset));
 		}
 
-		// $s.onSignIn = function(googleUser) {
-		// 	console.log('test');
-		// 	var profile = googleUser.getBasicProfile();
-		// 	console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-		// 	console.log('Name: ' + profile.getName());
-		// 	console.log('Image URL: ' + profile.getImageUrl());
-		// 	console.log('Email: ' + profile.getEmail());
-		// };
-
 		$s.navigate = function(link) {
 			var title = _.find($s.navItems, {link: link}).text;
 
@@ -148,6 +139,15 @@ mainApp.controller('MainCtrl', [
 
 		$s.sameTime = function() {
 			$s.ballot.resultsRelease = new Date($s.ballot.voteCutoff.getTime());
+		};
+
+		$s.updateUser = function() {
+			$http({
+				method: 'POST',
+				url: '/api/add-user.php',
+				data: $s.user,
+				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+			});
 		};
 
 		$s.getCandidates = function(key) {
@@ -188,11 +188,14 @@ mainApp.controller('MainCtrl', [
 
 		$s.getBallots = function() {
 			// we need to get ballots based on user signin
-			$http.get('/api/get-ballots.php?createdBy=' + $s.user)
-				.then(function(resp) {
-					$s.allBallots = resp.data;
-				})
-			;
+			$http({
+				method: 'POST',
+				url: '/api/get-ballots.php',
+				data: $s.user,
+				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).then(function(resp) {
+				$s.allBallots = resp.data;
+			});
 		};
 
 		$s.generateRandomKey = function(len) {

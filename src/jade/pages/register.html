@@ -3,13 +3,10 @@
 	<div class="g-signin2" data-onsuccess="onSignIn"></div>
 
 	<script type="text/javascript">
-	function setUser(name, email, image) {
+	function setUser(user) {
 		if(window.$s) {
-			window.$s.user = {
-				name: name,
-				email: email,
-				image: image
-			};
+			window.$s.user = user;
+			window.$s.updateUser();
 			$s.navItems.map(function(item) {
 				if(item.link == 'edit') {
 					item.hide = false;
@@ -20,7 +17,7 @@
 			window.$s.$apply();
 		} else {
 			setTimeout(function() {
-				setUser(name, email, image);
+				setUser(user);
 			}, 500);
 		}
 	}
@@ -28,8 +25,12 @@
 		var profile = googleUser.getBasicProfile();
 		console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
 		jQuery("#status").text("Thanks for logging in with Google, " + profile.getName() + "!");
-		setUser(profile.getName(), profile.getEmail(), profile.getImageUrl());
-		;
+		setUser({
+			id: profile.getId(),
+			name: profile.getName(),
+			email: profile.getEmail(),
+			image: profile.getImageUrl()
+		});
 	}
 	</script>
 	<a href="#" onclick="signOut();">Sign out</a>
@@ -82,7 +83,7 @@
 		function testAPI() {
 			console.log('Welcome!  Fetching your information.... ');
 			FB.api('/me', function(response) {
-				setUser(response.name, response.email, response.image);
+				setUser(response);
 				console.log('Successful login for: ' + response.name);
 				document.getElementById('status').innerHTML =
 					'Thanks for logging in with Facebook, ' + response.name + '!';

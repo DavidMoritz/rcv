@@ -3,15 +3,15 @@ require_once("config.php");
 
 $_POST = json_decode(file_get_contents('php://input'), true);
 
-$ballotId = $_POST['id'];
-$createdBy = $_POST['createdBy'];
+$ballotId = apiPost('id');
+$createdBy = apiPost('createdBy');
 
 if(!empty($ballotId)) {
 // checking for blank values.
 	$query = "
-		DELETE FROM 
-			`votes` 
-		WHERE 
+		DELETE FROM
+			`votes`
+		WHERE
 			`ballotId` = $ballotId;";
 	$sth = $dbh->prepare($query);
 	$sth->execute();

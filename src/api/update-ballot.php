@@ -7,29 +7,29 @@ $data = array();
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 // checking for blank values.
-if (empty($_POST['id']) || empty($_POST['key']))
+if (empty(apiPost('id')) || empty(apiPost('key')))
 	$errors['key'] = 'Key is required';
 
-if (empty($_POST['name']))
+if (empty(apiPost('name')))
 	$errors['name'] = 'Name is required.';
 
-if (empty($_POST['positions']))
+if (empty(apiPost('positions')))
 	$errors['positions'] = 'Positions is required.';
-else if (intval($_POST['positions']) < 1)
+else if (intval(apiPost('positions')) < 1)
 	$errors['positions'] = 'Positions must be a valid number.';
 
-if (empty($_POST['createdBy']))
+if (empty(apiPost('createdBy')))
 	$errors['createdBy'] = 'Created By is required.';
 
-if (empty($_POST['voteCutoff']))
+if (empty(apiPost('voteCutoff')))
 	$cutoff = "NULL";
 else
-	$cutoff = "'". $_POST['voteCutoff'] ."'";
+	$cutoff = "'". apiPost('voteCutoff') ."'";
 
-if (empty($_POST['resultsRelease']))
+if (empty(apiPost('resultsRelease')))
 	$release = "NULL";
 else
-	$release = "'". $_POST['resultsRelease'] ."'";
+	$release = "'". apiPost('resultsRelease') ."'";
 
 if (!empty($errors)) {
 	$data['errors']  = $errors;
@@ -40,15 +40,15 @@ if (!empty($errors)) {
 		UPDATE
 			ballots
 		SET
-			name = '". $_POST['name'] ."',
-			positions = ". $_POST['positions'] .",
-			createdBy = '". $_POST['createdBy'] ."',
+			name = '". apiPost('name') ."',
+			positions = ". apiPost('positions') .",
+			createdBy = '". apiPost('createdBy') ."',
 			resultsRelease = $release,
 			voteCutoff = $cutoff
 		WHERE
-			`key` = '". $_POST['key'] ."'
+			`key` = '". apiPost('key') ."'
 		AND
-			id = ". $_POST['id'] .";";
+			id = ". apiPost('id') .";";
 
 	$sth = $dbh->prepare($query);
 	$sth->execute();

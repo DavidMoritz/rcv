@@ -1,15 +1,16 @@
 <?php
 require_once("config.php");
 
-$createdBy = $_GET['createdBy'];
+$_POST = json_decode(file_get_contents('php://input'), true);
+$createdBy = apiPost('id');
 
 if(!empty($createdBy)) {
 	$query = "
 		SELECT
 			*
-		FROM 
+		FROM
 			ballots
-		WHERE 
+		WHERE
 			createdBy = '$createdBy';";
 	$sth = $dbh->prepare($query);
 	$sth->execute();

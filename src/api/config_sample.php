@@ -12,4 +12,7 @@ try {
 	die($e->getMessage());
 }
 
+function apiGet($key) {return isset($_GET[$key]) ? $_GET[$key] : false;}
+function apiPost($key) {return isset($_POST[$key]) ? $_POST[$key] : false;}
+
 ?>

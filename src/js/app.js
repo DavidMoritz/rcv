@@ -19,7 +19,12 @@ function onSignIn(googleUser) {
 	console.log('Name: ' + profile.getName());
 	console.log('Image URL: ' + profile.getImageUrl());
 	console.log('Email: ' + profile.getEmail());
-	setUser(profile.getName(), profile.getEmail(), profile.getImageUrl());
+	setUser({
+		id: profile.getId(),
+		name: profile.getName(),
+		email: profile.getEmail(),
+		image: profile.getImageUrl()
+	});
 }
 
 window.fbAsyncInit = function() {
