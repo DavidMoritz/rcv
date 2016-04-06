@@ -7,10 +7,10 @@ $data = array();
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 // checking for blank values.
-$ballotId = intval(apiPost('ballotId'));
+$ballotId = intval($_POST['ballotId']);
 
-if (!empty(apiPost('entries'))) {
-	$total = count(apiPost('entries'));
+if (!empty($_POST['entries'])) {
+	$total = count($_POST['entries']);
 	if ($total < 2)
 		$errors['entryInput'] = 'At least two entries are required.';
 } else {
@@ -30,7 +30,7 @@ if (!empty($errors)) {
 			entries (`ballotId`, `name`)
 		VALUES ";
 	for ($i=0; $i < $total; $i++) {
-		$query .= "($ballotId,'". apiPost('entries')[$i] ."'),";
+		$query .= "($ballotId,'". $_POST['entries'][$i] ."'),";
 	}
 	$query = substr($query, 0, -1) . ";";
 	$sth = $dbh->prepare($query);

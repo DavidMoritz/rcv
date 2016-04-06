@@ -7,34 +7,34 @@ $data = array();
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 // checking for blank values.
-if (empty(apiPost('name')))
+if (empty($_POST['name']))
 	$errors['name'] = 'Name is required.';
 
-if (empty(apiPost('key')))
+if (empty($_POST['key']))
 	$errors['key'] = 'Key is required.';
 
-if (empty(apiPost('positions')))
+if (empty($_POST['positions']))
 	$errors['positions'] = 'Positions is required.';
-else if (intval(apiPost('positions')) < 1)
+else if (intval($_POST['positions']) < 1)
 	$errors['positions'] = 'Positions must be a valid number.';
 
-if (empty(apiPost('createdBy')))
+if (empty($_POST['createdBy']))
 	$errors['createdBy'] = 'Created By is required.';
 
-if (empty(apiPost('password')))
+if (empty($_POST['password']))
 	$password = "NULL";
 else
-	$password = "'". apiPost('password') ."'";
+	$password = "'". $_POST['password'] ."'";
 
-if (empty(apiPost('voteCutoff')))
+if (empty($_POST['voteCutoff']))
 	$cutoff = "NULL";
 else
-	$cutoff = "'". apiPost('voteCutoff') ."'";
+	$cutoff = "'". $_POST['voteCutoff'] ."'";
 
-if (empty(apiPost('resultsRelease')))
+if (empty($_POST['resultsRelease']))
 	$release = "NULL";
 else
-	$release = "'". apiPost('resultsRelease') ."'";
+	$release = "'". $_POST['resultsRelease'] ."'";
 
 if (!empty($errors)) {
 	$data['errors']  = $errors;
@@ -45,7 +45,7 @@ if (!empty($errors)) {
 		INSERT INTO
 			ballots (`name`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`)
 		VALUES
-			('". apiPost('name') ."','". apiPost('key') ."',". apiPost('positions') .",'". apiPost('createdBy') ."', ". $release .", ". $cutoff .");";
+			('". $_POST['name'] ."','". $_POST['key'] ."',". $_POST['positions'] .",'". $_POST['createdBy'] ."', ". $release .", ". $cutoff .");";
 
 	$sth = $dbh->prepare($query);
 	$sth->execute();

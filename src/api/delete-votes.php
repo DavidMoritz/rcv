@@ -3,8 +3,8 @@ require_once("config.php");
 
 $_POST = json_decode(file_get_contents('php://input'), true);
 
-$ballotId = apiPost('id');
-$createdBy = apiPost('createdBy');
+$ballotId = $_POST['id'];
+$createdBy = $_POST['createdBy'];
 
 if(!empty($ballotId)) {
 // checking for blank values.

@@ -2,7 +2,7 @@
 require_once("config.php");
 
 $_POST = json_decode(file_get_contents('php://input'), true);
-$createdBy = apiPost('id');
+$createdBy = $_POST['id'];
 
 if(!empty($createdBy)) {
 	$query = "

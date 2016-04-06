@@ -1,7 +1,7 @@
 <?php
 require_once("config.php");
 
-$key = apiGet('key');
+$key = $_GET['key'];
 
 if(!empty($key)) {
 // checking for blank values.
