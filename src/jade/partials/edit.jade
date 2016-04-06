@@ -1,29 +1,19 @@
-form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
+form(name='ballotForm' ng-submit='editBallot()')
 	.form-group
 		label Ballot Name
 		input.form-control(name="name" ng-model="ballot.name")
 		span.text-danger(ng-show='errors.name') {{errors.name}}
 	.form-group
-		label Shortcode (for link stvcalculator.com/{{ballot.key}})
-		.input-group
-			input.form-control(name="key" ng-model="ballot.key" ng-pattern-restrict pattern="\\w*" ng-change="checkAvailability()" maxlength=16 ng-readonly="editBallot")
-			span.input-group-btn
-				button.btn.btn-secondary(type="button" ng-click="generateRandomKey()" ng-disabled="editBallot") New Shortcode
-		span.text-danger(ng-show='errors.key') {{errors.key}}
-		span.text-success(ng-show='success.key') {{success.key}}
-	.form-group
 		label Positions to be Elected
 		input.form-control(type="number" name="positions" ng-model="ballot.positions")
 		span.text-danger(ng-show='errors.positions') {{errors.positions}}
-	.form-group(ng-hide="user.email")
-		label Created By
-			small.text-muted(ng-show="ballot.createdBy == 'guest'")  using default "guest" will restrict future editing. Please&nbsp;
-				a.btn-link(href="register") Sign in
-				|  to allow future editing.
-		input.form-control(name="createdBy" ng-model="ballot.createdBy" readonly)
-		span.text-danger(ng-show='errors.createdBy') {{errors.createdBy}}
 	.form-group
-		h4 Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}} {{ballot.voteCutoff | date: "h:mm a" }}
+		label Delete all votes and reset Ballot
+			input(type="checkbox" ng-model="showDelete")
+		input.btn.btn-danger(ng-show="showDelete" type="button" value="Are you sure?" ng-click="deleteVotes()")
+		span.text-warning(ng-show='deleted') Votes have been deleted.
+	.form-group
+		h4 Voting Cutoff: {{ballot.voteCutoff | date: "MMM d, y"}} {{ballot.voteCutoff | date: "h:mm a" }}
 		label Edit Time
 			input(type="checkbox" ng-model="editTime")
 		uib-timepicker(ng-show="editTime" ng-model="ballot.voteCutoff" minute-step="1")

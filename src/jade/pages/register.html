@@ -33,21 +33,15 @@
 		});
 	}
 	</script>
-	<a href="#" onclick="signOut();">Sign out</a>
+	<a href="#" onclick="signOut();">Sign out of Google</a>
 	<script type="text/javascript">
 		function signOut() {
 			var auth2 = gapi.auth2.getAuthInstance();
 			auth2.signOut().then(function () {
-				console.log('User signed out.');
+				console.log('User signed out of Google.');
 			});
 		}
 	</script>
-	<div
-		class="fb-like"
-		data-share="true"
-		data-width="450"
-		data-show-faces="true">
-	</div>
 	<script>
 		function statusChangeCallback(response) {
 			console.log('statusChangeCallback');

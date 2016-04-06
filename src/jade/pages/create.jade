@@ -1,0 +1,6 @@
+h1 Ballot: {{ballot.name}}
+include ../partials/form
+div(ng-show="entries && !congrats")
+	include ../partials/new-entries
+div(ng-show="congrats")
+	include ../partials/congrats

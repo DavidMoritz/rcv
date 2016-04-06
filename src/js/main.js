@@ -47,10 +47,22 @@ mainApp.controller('MainCtrl', [
 
 			return {
 				positions: 1,
-				createdBy: $s.user.email ? $s.user.email : 'guest',
+				createdBy: $s.user.id || 'guest',
 				maxVotes: 1,
 				voteCutoff: roundResultsRelease()
 			};
+		};
+
+		var getBallots = function() {
+			// we need to get ballots based on user signin
+			$http({
+				method: 'POST',
+				url: '/api/get-ballots.php',
+				data: $s.user,
+				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).then(function(resp) {
+				$s.allBallots = resp.data;
+			});
 		};
 
 		$s.$watch(function() {
@@ -71,8 +83,8 @@ mainApp.controller('MainCtrl', [
 					link: 'create',
 					text: 'Create a new Ballot!'
 				},{
-					link: 'edit',
-					text: 'Edit a Ballot',
+					link: 'profile',
+					text: 'Profile',
 					hide: true
 				},{
 					link: 'results',
@@ -117,13 +129,10 @@ mainApp.controller('MainCtrl', [
 			switch(link) {
 				case 'create':
 					$s.ballot = resetBallot();
-					$s.editBallot = false;
 					$s.congrats = false;
 					break;
-				case 'edit':
-					$s.entries = null;
-					$s.congrats = false;
-					$s.editBallot = true;
+				case 'profile':
+					getBallots();
 			}
 
 			$s.shortcode = '';
@@ -184,18 +193,6 @@ mainApp.controller('MainCtrl', [
 					$s.final = true;
 				})
 			;
-		};
-
-		$s.getBallots = function() {
-			// we need to get ballots based on user signin
-			$http({
-				method: 'POST',
-				url: '/api/get-ballots.php',
-				data: $s.user,
-				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
-			}).then(function(resp) {
-				$s.allBallots = resp.data;
-			});
 		};
 
 		$s.generateRandomKey = function(len) {
@@ -267,7 +264,7 @@ mainApp.controller('MainCtrl', [
 			}
 			$s.ballot.resultsRelease = updateTime($s.ballot.resultsRelease);
 			$s.ballot.voteCutoff = updateTime($s.ballot.voteCutoff);
-			$s.ballot.createdBy = $s.user.email ? $s.user.email : 'guest';
+			$s.ballot.createdBy = $s.user.id || 'guest';
 			$http({
 				method: 'POST',
 				url: '/api/' + ($s.editBallot ? 'update' : 'new') + '-ballot.php',
