@@ -154,38 +154,27 @@ mainApp.factory('VoteFactory', [
 				this.anotherRound();
 			},
 
-			// Analyses which candidates are marginally stronger for the purpose of breaking ties
+			// creative way to achieve repeatable randomizing
 			breakTie: function(value) {
 				var model = this;
 				var tieArray = [];
-				var i;
-				// length of longest vote array
-				var voteSize = this.votes.reduce(function(voteSize, vote) {
-					return Math.max(voteSize, vote.length);
-				}, 0);
-				var calculateValue = function(voteArr, idx) {
-					var tie = _.find(tieArray, {name: voteArr[i]});
-					if(tie) {
-						// 2nd place votes are exponentially greater than 3rd place votes etc.
-						tie.value += model.voteweight[idx] / Math.pow(10, i);
-					}
-				};
+				var randomize = function(string) {
+					// algorithm supplied by http://indiegamr.com/generate-repeatable-random-numbers-in-js/
+					return (parseInt(string, 36) * 9301 + 49297) % 233280;
+				}
 				// populate tieArray only with tie breakers
 				this.votenum.map(function(val, idx) {
 					if(val == value) {
 						tieArray.push({
 							index: idx,
-							name: model.names[idx],
-							value: 0
+							rand: randomize(model.names[idx])
 						});
 					}
 				});
-				for(i = 1; i < voteSize; i++) {
-					this.votes.map(calculateValue);
-				}
-				// sort by ascending vote value
+
+				// sort by ascending random value
 				tieArray.sort(function(a, b) {
-					return a.value > b.value;
+					return a.rand > b.rand;
 				});
 
 				return tieArray[0].index;

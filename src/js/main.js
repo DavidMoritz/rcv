@@ -55,14 +55,18 @@ mainApp.controller('MainCtrl', [
 
 		var getBallots = function() {
 			// we need to get ballots based on user signin
-			$http({
-				method: 'POST',
-				url: '/api/get-ballots.php',
-				data: $s.user,
-				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
-			}).then(function(resp) {
-				$s.allBallots = resp.data;
-			});
+			if($s.user) {
+				$http({
+					method: 'POST',
+					url: '/api/get-ballots.php',
+					data: $s.user,
+					headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+				}).then(function(resp) {
+					$s.allBallots = resp.data;
+				});
+			} else {
+				setTimeout(getBallots, 500);
+			}
 		};
 
 		$s.$watch(function() {
@@ -150,7 +154,16 @@ mainApp.controller('MainCtrl', [
 			$s.ballot.resultsRelease = new Date($s.ballot.voteCutoff.getTime());
 		};
 
-		$s.updateUser = function() {
+		$s.updateUser = function(user) {
+			$s.user = user;
+			$s.navItems.map(function(item) {
+				if(item.link == 'profile') {
+					item.hide = false;
+				} else if (item.link == 'register') {
+					item.hide = true;
+				}
+			});
+			$s.$apply();
 			$http({
 				method: 'POST',
 				url: '/api/add-user.php',

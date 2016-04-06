@@ -5,16 +5,7 @@
 	<script type="text/javascript">
 	function setUser(user) {
 		if(window.$s) {
-			window.$s.user = user;
-			window.$s.updateUser();
-			$s.navItems.map(function(item) {
-				if(item.link == 'edit') {
-					item.hide = false;
-				} else if (item.link == 'register') {
-					item.hide = true;
-				}
-			});
-			window.$s.$apply();
+			window.$s.updateUser(user);
 		} else {
 			setTimeout(function() {
 				setUser(user);
