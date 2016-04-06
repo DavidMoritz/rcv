@@ -17,7 +17,7 @@ html(ng-app='mainApp')
 			.panel.panel-default(ng-show="activeLink == 'about'")
 				.panel-body
 					include pages/about
-			.panel.panel-default(ng-show="activeLink == 'create' || activeLink == 'edit'")
+			.panel.panel-default(ng-show="activeLink == 'create'")
 				.panel-body
 					include pages/create-edit
 			.panel.panel-default(ng-show="activeLink == 'vote'")
@@ -26,6 +26,9 @@ html(ng-app='mainApp')
 			.panel.panel-default(ng-show="activeLink == 'results'")
 				.panel-body
 					include pages/results
+			.panel.panel-default(ng-show="activeLink == 'profile'")
+				.panel-body
+					include pages/profile
 			.panel.panel-default(ng-show="activeLink == 'results' && showText")
 				.panel-heading
 					h3.panel-title Detailed Results

@@ -1,0 +1,7 @@
+h1 Profile
+h3 Name: {{user.name}}
+h3 Email: {{user.email}}
+h3 Current Ballots
+ul
+	li(ng-repeat="ballot in allBallots track by item.id")
+		{{ballot.key}}: {{ballot.name}}

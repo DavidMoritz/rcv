@@ -53,6 +53,18 @@ mainApp.controller('MainCtrl', [
 			};
 		};
 
+		var getBallots = function() {
+			if(!$s.user.email) {
+				return $s.navigate('home');
+			}
+			// we need to get ballots based on user signin
+			$http.get('/api/get-ballots.php?createdBy=' + $s.user.email)
+				.then(function(resp) {
+					$s.allBallots = resp.data;
+				})
+			;
+		};
+
 		$s.$watch(function() {
 			return window.location.pathname;
 		}, getVoteParam);
@@ -71,8 +83,8 @@ mainApp.controller('MainCtrl', [
 					link: 'create',
 					text: 'Create a new Ballot!'
 				},{
-					link: 'edit',
-					text: 'Edit a Ballot',
+					link: 'profile',
+					text: 'Profile',
 					hide: true
 				},{
 					link: 'results',
@@ -126,13 +138,10 @@ mainApp.controller('MainCtrl', [
 			switch(link) {
 				case 'create':
 					$s.ballot = resetBallot();
-					$s.editBallot = false;
 					$s.congrats = false;
 					break;
-				case 'edit':
-					$s.entries = null;
-					$s.congrats = false;
-					$s.editBallot = true;
+				case 'profile':
+					getBallots();
 			}
 
 			$s.shortcode = '';
@@ -182,15 +191,6 @@ mainApp.controller('MainCtrl', [
 					$s.runTheCode();
 					$s.bodyText = $sce.trustAsHtml($s.outputstring);
 					$s.final = true;
-				})
-			;
-		};
-
-		$s.getBallots = function() {
-			// we need to get ballots based on user signin
-			$http.get('/api/get-ballots.php?createdBy=' + $s.user)
-				.then(function(resp) {
-					$s.allBallots = resp.data;
 				})
 			;
 		};
