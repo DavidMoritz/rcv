@@ -10,7 +10,7 @@ form(name='ballotForm' ng-submit='editBallot()')
 	.form-group
 		label Delete all votes and reset Ballot
 			input(type="checkbox" ng-model="showDelete")
-		input.btn.btn-danger(ng-show="showDelete" type="button" value="Are you sure?" ng-click="deleteVotes()")
+		input.btn.btn-danger(ng-show="showDelete" type="button" value="Are you sure?" ng-click="deleteVotes(ballot)")
 		span.text-warning(ng-show='deleted') Votes have been deleted.
 	.form-group
 		h4 Voting Cutoff: {{ballot.voteCutoff | date: "MMM d, y"}} {{ballot.voteCutoff | date: "h:mm a" }}

@@ -126,7 +126,7 @@ mainApp.factory('VoteFactory', [
 
 				if(count > 1) {
 					chosen = this.breakTie(apex);
-					this.outputstring += '<br>The tiebreaker '+ data.text.tie +' is <span class="'+ data.class +'">' + this.names[chosen] + '</span>\'s.';
+					this.outputstring += '<br>The random tiebreaker '+ data.text.tie +' is <span class="'+ data.class +'">' + this.names[chosen] + '</span>\'s.';
 				}
 
 				this.outputstring += '<br><span class="'+ data.class +'">' + this.names[chosen] + '</span> '+ data.text.result +'.';
@@ -159,10 +159,10 @@ mainApp.factory('VoteFactory', [
 				var model = this;
 				var tieArray = [];
 				var randomize = function(string) {
-					string = model.votes.length + string.replace(/\W/g, "") + model.roundnum;
+					string = model.votes.length + string.replace(/\W/g, '') + model.roundnum;
 					// algorithm supplied by http://indiegamr.com/generate-repeatable-random-numbers-in-js/
 					return (parseInt(string, 36) * 9301 + 49297) % 233280;
-				}
+				};
 				// populate tieArray only with tie breakers
 				this.votenum.map(function(val, idx) {
 					if(val == value) {

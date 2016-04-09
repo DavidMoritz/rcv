@@ -1,7 +1,25 @@
 h1 Profile
-h3 Name: {{user.name}}
-h3 Email: {{user.email}}
-h3 Current Ballots
-ul
-	li(ng-repeat="ballot in allBallots track by ballot.id")
-		{{ballot.key}}: {{ballot.name}}
+img(ng-if='user.image' src='user.image')
+h3(ng-show='user.name') Name: {{user.name}}
+h3(ng-show='user.email') Email: {{user.email}}
+div(ng-show='allBallots.length')
+	h3 Current Ballots
+	table.table.ballots
+		thead
+			tr
+				th Shortcode
+				th Name
+				th Vote Cutoff
+				th Total votes
+				th Admin Tools
+		tbody
+			tr(ng-repeat="ballot in allBallots track by ballot.id")
+				td {{ballot.key}}
+				td {{ballot.name}}
+				td {{ballot.voteCutoff | date:"MMM d, y - h:mm a"}}
+				td {{ballot.totalVotes}}
+				td
+					a.fa.fa-list-ol.pointer(href="/results#{{ballot.key}}" tooltip-placement="top-left" uib-tooltip="See Results")
+					i.fa.fa-refresh.pointer(ng-click="deleteVotes(ballot)" tooltip-placement="top" uib-tooltip="Reset Votes")
+					i.fa.fa-pencil.pointer(ng-click="editBallot(ballot)" tooltip-placement="top" uib-tooltip="Edit Ballot")
+					i.fa.fa-trash.pointer(ng-click="deleteBallot(ballot)" tooltip-placement="top-right" uib-tooltip="Delete Ballot")

@@ -13,15 +13,18 @@ mainApp.controller('MainCtrl', [
 		window.$s = $s;
 		$s.user = $s.user || {};
 
-		var getVoteParam = function() {
-			var param = $loc.$$absUrl.split('/').pop();
+		var getVoteParam = function(param) {
+			var temp = $loc.$$absUrl.split('/').pop();
 
-			if(!param) {
+			if(!temp) {
 				$s.navigate('home');
+			} else {
+				temp = temp.split('#');
+				param = temp[0];
 			}
 
 			if(_.find($s.navItems, {link: param})) {
-				$s.navigate(param);
+				$s.navigate(param, temp[1]);
 
 				return '';
 			}
@@ -41,6 +44,17 @@ mainApp.controller('MainCtrl', [
 			return mom.format('YYYY-MM-DD HH:mm:ss');
 		};
 
+		var deleteThis = function(data, item) {
+			$http({
+				method: 'POST',
+				url: '/api/delete-'+ item +'.php',
+				data: data,
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).success(function(resp) {
+				$s.deleted = true;
+			});
+		};
+
 		var resetBallot = function() {
 			$s.generateRandomKey();
 			$s.entries = null;
@@ -55,14 +69,19 @@ mainApp.controller('MainCtrl', [
 
 		var getBallots = function() {
 			// we need to get ballots based on user signin
-			if($s.user) {
+			if($s.user.id) {
 				$http({
 					method: 'POST',
 					url: '/api/get-ballots.php',
 					data: $s.user,
 					headers : {'Content-Type': 'application/x-www-form-urlencoded'}
 				}).then(function(resp) {
-					$s.allBallots = resp.data;
+					$s.now = new Date();
+					$s.allBallots = resp.data.map(function(ballot) {
+						ballot.voteCutoff = new Date(ballot.voteCutoff);
+						ballot.resultsRelease = new Date(ballot.resultsRelease);
+						return ballot;
+					});
 				});
 			} else {
 				setTimeout(getBallots, 500);
@@ -123,8 +142,9 @@ mainApp.controller('MainCtrl', [
 			return new Date(now.setMinutes(offset));
 		}
 
-		$s.navigate = function(link) {
+		$s.navigate = function(link, shortcode) {
 			var title = _.find($s.navItems, {link: link}).text;
+			$s.activeLink = link;
 
 			if($('.navbar-collapse').hasClass('in')) {
 				$('.navbar-collapse').collapse('hide');
@@ -139,8 +159,12 @@ mainApp.controller('MainCtrl', [
 					getBallots();
 			}
 
-			$s.shortcode = '';
-			$s.activeLink = link;
+			if(shortcode) {
+				$s.shortcode = shortcode;
+				$s.submitShortcode();
+			} else {
+				$s.shortcode = '';
+			}
 		};
 
 		$s.signOut = function() {
@@ -172,21 +196,23 @@ mainApp.controller('MainCtrl', [
 			});
 		};
 
-		$s.getCandidates = function(key) {
+		$s.getCandidates = function() {
 			$http.get('/api/get-candidates.php?key=' + $s.shortcode)
 				.then(function(resp) {
-					if(typeof resp.data == 'object') {
-						$s.originalCandidates = resp.data.map(function(entry) {
-							$s.ballot = entry;
-							$s.ballot.positions = parseInt($s.ballot.positions);
+					if(typeof resp.data == 'string') {
+						$s.errors.shortcode = resp.data;
 
-							return entry.candidate;
-						});
-						$s.activeLink = 'vote';
-						$s.resetCandidates();
-					} else {
-						console.log('something went wrong');
+						return;
 					}
+
+					$s.originalCandidates = resp.data.map(function(entry) {
+						$s.ballot = entry;
+						$s.ballot.positions = parseInt($s.ballot.positions);
+
+						return entry.candidate;
+					});
+					$s.activeLink = 'vote';
+					$s.resetCandidates();
 				})
 			;
 		};
@@ -195,6 +221,12 @@ mainApp.controller('MainCtrl', [
 			var key = $s.shortcode || $s.ballot.key;
 			$http.get('/api/get-votes.php?key=' + key)
 				.then(function(resp) {
+					if(typeof resp.data == 'string') {
+						$s.errors.shortcode = resp.data;
+
+						return;
+					}
+
 					$s.votes = resp.data.map(function(result) {
 						$s.seats = parseInt(result.positions);
 
@@ -342,15 +374,18 @@ mainApp.controller('MainCtrl', [
 			});
 		};
 
-		$s.deleteVotes = function() {
-			$http({
-				method: 'POST',
-				url: '/api/delete-votes.php',
-				data: $s.ballot,
-				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-			}).success(function(resp) {
-				$s.deleted = true;
-			});
+		$s.deleteBallot = function(ballot) {
+			if(confirm('Delete '+ ballot.name +' ballot?\nThis action cannot be undone')) {
+				deleteThis(ballot, 'ballot');
+				_.remove($s.allBallots, ballot);
+			}
+		};
+
+		$s.deleteVotes = function(ballot) {
+			if(confirm('Delete all '+ ballot.name +' votes?\nThis action cannot be undone')) {
+				deleteThis(ballot, 'votes');
+				ballot.totalVotes = 0;
+			}
 		};
 
 		$s.voteNow = function() {

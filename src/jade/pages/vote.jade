@@ -4,7 +4,7 @@ div(ng-hide='candidates')
 div(ng-if='candidates' ng-hide="thanks")
 	h1 Ballot: {{ballot.name}}
 	h2 Order by Preference
-	h3 {{ballot.positions}} position{{ballot.positions == 1 ? "" : "s"}} available
+	h3(ng-show='ballot.positions > 1') {{ballot.positions}} positions available
 	form(name='voteForm' ng-submit='submitVote()')
 		ul#sortable(ui-sortable ng-model='candidates')
 			li(ng-repeat='item in candidates track by $index') {{item}}

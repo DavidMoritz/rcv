@@ -21,20 +21,21 @@ else if (intval($_POST['positions']) < 1)
 if (empty($_POST['createdBy']))
 	$errors['createdBy'] = 'Created By is required.';
 
-if (empty($_POST['password']))
-	$password = "NULL";
+if (empty($_POST['requireSignIn']))
+	$requireSignIn = "0";
 else
-	$password = "'". $_POST['password'] ."'";
+	$requireSignIn = "1";
+
+if (empty($_POST['maxVotes']))
+	$maxVotes = "NULL";
+else
+	$maxVotes = intval($_POST['maxVotes']);
 
 if (empty($_POST['voteCutoff']))
-	$cutoff = "NULL";
-else
-	$cutoff = "'". $_POST['voteCutoff'] ."'";
+	$errors['voteCutoff'] = 'VoteCutoff is required.';
 
 if (empty($_POST['resultsRelease']))
-	$release = "NULL";
-else
-	$release = "'". $_POST['resultsRelease'] ."'";
+	$errors['resultsRelease'] = 'ResultsRelease is required.';
 
 if (!empty($errors)) {
 	$data['errors']  = $errors;
@@ -43,9 +44,9 @@ if (!empty($errors)) {
 } else {
 	$query = "
 		INSERT INTO
-			ballots (`name`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`)
+			ballots (`name`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `maxVotes`)
 		VALUES
-			('". $_POST['name'] ."','". $_POST['key'] ."',". $_POST['positions'] .",'". $_POST['createdBy'] ."', ". $release .", ". $cutoff .");";
+			('". $_POST['name'] ."','". $_POST['key'] ."',". $_POST['positions'] .",'". $_POST['createdBy'] ."', '". $_POST['resultsRelease'] ."', '". $_POST['voteCutoff'] ."', $requireSignIn, $maxVotes);";
 
 	$sth = $dbh->prepare($query);
 	$sth->execute();

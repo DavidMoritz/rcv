@@ -14,7 +14,9 @@ if(!empty($key)) {
 		ON
 			e.ballotId = b.id
 		WHERE
-			b.key = '$key';";
+			b.key = '$key'
+		AND
+			NOW() < b.voteCutoff;";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
@@ -24,6 +26,6 @@ if(!empty($key)) {
 	else
 		print json_encode($results);
 } else {
-	echo "failed to supply Shortcode";
+	echo "Failed to supply Shortcode";
 }
 ?>

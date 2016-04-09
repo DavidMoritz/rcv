@@ -15,7 +15,9 @@ if(!empty($key)) {
 		ON
 			votes.ballotId = ballots.id
 		WHERE
-			ballots.key = '$key';";
+			ballots.key = '$key'
+		AND
+			NOW() > ballots.resultsRelease;";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
@@ -25,6 +27,6 @@ if(!empty($key)) {
 	else
 		print json_encode($results);
 } else {
-	echo "failed to supply key";
+	echo "Failed to supply key";
 }
 ?>

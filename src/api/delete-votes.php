@@ -12,7 +12,16 @@ if(!empty($ballotId)) {
 		DELETE FROM
 			`votes`
 		WHERE
-			`ballotId` = $ballotId;";
+			`ballotId` = (
+			SELECT
+				id
+			FROM
+				ballots
+			WHERE
+				`createdBy` = $createdBy
+			AND 
+				`id` = $ballotId
+		);";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
