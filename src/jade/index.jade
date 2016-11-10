@@ -5,9 +5,10 @@ html(ng-app='mainApp')
 	include partials/head
 	body(ng-cloak ng-controller='MainCtrl')
 		.container
-			h2 Single Transferable Vote Calculator
+			h2 Ranked Choice Vote Calculator
 			h5 A better way of voting
-			include partials/navbar
+		include partials/navbar
+		.container
 			.panel.panel-default(ng-show="activeLink == 'register'")
 				.panel-body
 					include pages/register.html
