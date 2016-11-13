@@ -34,11 +34,11 @@ module.exports = function exportCopy(grunt) {
 					dest: '<%= distRoot %>/api'
 				},
 
-				// copy favicon & apple-icon
+				// copy favicon & apple-icon & htaccess
 				{
 					expand: true,
 					cwd: 'src/',
-					src: ['favicon.ico', 'apple-touch-icon.png'],
+					src: ['favicon.ico', 'apple-touch-icon.png', '.htaccess'],
 					dest: '<%= distRoot %>/'
 				}
 			]
