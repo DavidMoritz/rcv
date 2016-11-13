@@ -5,11 +5,44 @@ RewriteCond %{HTTP_HOST} ^chasemoritz\.com$ [OR]
 RewriteCond %{HTTP_HOST} ^www\.chasemoritz\.com$
 RewriteRule ^/?$ "http\:\/\/moritzfamily\.org\/" [R=301,L]
 
-RewriteCond %{HTTP_HOST} ^.*?stvcalculator\.com
-RewriteRule ^/?rcv/(.*)$ "http:\/\/stvcalculator\.com\/#$1" [L]
+RewriteCond %{HTTP_HOST} ^harmonymoritz\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.harmonymoritz\.com$
+RewriteRule ^/?$ "http\:\/\/moritzfamily\.org\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^clockworkfinancialconsultants\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.clockworkfinancialconsultants\.com$
+RewriteRule ^/?$ "http\:\/\/clockworkfinancial\.com\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^clockworkprocess\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.clockworkprocess\.com$
+RewriteRule ^/?$ "http\:\/\/clockworkfinancial\.com\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^ipmusicals\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.ipmusicals\.com$
+RewriteRule ^/?$ "http\:\/\/iptheater\.com\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^iptheatre\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.iptheatre\.com$
+RewriteRule ^/?$ "http\:\/\/iptheater\.com\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^musicalmindy\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.musicalmindy\.com$
+RewriteRule ^/?$ "http\:\/\/mindymoritz\.com\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^rhythmcityjr\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.rhythmcityjr\.com$
+RewriteRule ^/?$ "http\:\/\/rhythmcity\.org\/jr\.php" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^rhythmcityjunior\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.rhythmcityjunior\.com$
+RewriteRule ^/?$ "http\:\/\/rhythmcity\.org\/jr\.php" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^rhythmcity\.info$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.rhythmcity\.info$
+RewriteRule ^/?$ "http\:\/\/rhythmcity\.org\/" [R=301,L]
 
 RewriteCond %{HTTP_HOST} ^.*?rankedchoices\.com
-RewriteRule ^/?rcv/(.*)$ "http:\/\/rankedchoices\.com\/#$1" [L]
+RewriteRule ^/?rcv/(.*)$ "http:\/\/rankedchoices\.com\\#$1" [L]
 
 <Files 403.shtml>
 order allow,deny
