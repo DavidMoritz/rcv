@@ -1,0 +1,18 @@
+suPHP_ConfigPath /home/rhythmci/public_html
+RewriteEngine on
+
+RewriteCond %{HTTP_HOST} ^chasemoritz\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.chasemoritz\.com$
+RewriteRule ^/?$ "http\:\/\/moritzfamily\.org\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*?stvcalculator\.com
+RewriteRule ^/?rcv/(.*)$ "http:\/\/stvcalculator\.com\/#$1" [L]
+
+RewriteCond %{HTTP_HOST} ^.*?rankedchoices\.com
+RewriteRule ^/?rcv/(.*)$ "http:\/\/rankedchoices\.com\/#$1" [L]
+
+<Files 403.shtml>
+order allow,deny
+allow from all
+</Files>
+
