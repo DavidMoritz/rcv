@@ -12,46 +12,50 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
 		span.text-danger(ng-show='errors.key') {{errors.key}}
 		span.text-success(ng-show='success.key') {{success.key}}
 	.form-group
-		label Positions to be Elected
-		input.form-control(type="number" name="positions" ng-model="ballot.positions")
-		span.text-danger(ng-show='errors.positions') {{errors.positions}}
-	.form-group(ng-hide="user.id")
-		label Created By
-			small.text-muted(ng-show="ballot.createdBy == 'guest'")  using default "guest" will restrict future editing. Please&nbsp;
-				a.btn-link(href="register") Sign in
-				|  to allow future editing.
-		input.form-control(name="createdBy" ng-model="ballot.createdBy" readonly)
-		span.text-danger(ng-show='errors.createdBy') {{errors.createdBy}}
-	.form-group
-		h4 Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}} {{ballot.voteCutoff | date: "h:mm a" }}
-		label Edit Time
-			input(type="checkbox" ng-model="editTime")
-		uib-timepicker(ng-show="editTime" ng-model="ballot.voteCutoff" minute-step="1")
-		label Edit Date
-			input(type="checkbox" ng-model="editDate")
-		.input-group(ng-show="editDate")
-			input.form-control(type="text" ng-focus="releaseOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.voteCutoff" is-open="releaseOpen")
-			span.input-group-btn
-				button.btn.btn-default(type="button" ng-click="releaseOpen = !releaseOpen")
-					i.fa.fa-calendar
-	.form-group
-		label Release Results:
-			span(ng-hide="showRelease")  after voting (check box for custom)
-			input(type="checkbox" ng-model="showRelease" ng-click="sameTime()")
-			small.text-muted(ng-show="showRelease && ballot.resultsRelease")  {{ballot.resultsRelease | date: dateFormat }}
-		div(ng-show="showRelease")
-			.input-group
-				input.form-control(type="text" ng-focus="cutoffOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.resultsRelease" is-open="cutoffOpen")
+		label Advanced Options
+			input(type="checkbox" ng-model="advancedOptions")
+	div(ng-show="advancedOptions")
+		.form-group
+			label Positions to be Elected
+			input.form-control(type="number" name="positions" ng-model="ballot.positions")
+			span.text-danger(ng-show='errors.positions') {{errors.positions}}
+		.form-group(ng-hide="user.id")
+			label Created By
+				small.text-muted(ng-show="ballot.createdBy == 'guest'")  using default "guest" will restrict future editing. Please&nbsp;
+					a.btn-link(href="register") Sign in
+					|  to allow future editing.
+			input.form-control(name="createdBy" ng-model="ballot.createdBy" readonly)
+			span.text-danger(ng-show='errors.createdBy') {{errors.createdBy}}
+		.form-group
+			h4 Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}} {{ballot.voteCutoff | date: "h:mm a" }}
+			label Edit Time
+				input(type="checkbox" ng-model="editTime")
+			uib-timepicker(ng-show="editTime" ng-model="ballot.voteCutoff" minute-step="1")
+			label Edit Date
+				input(type="checkbox" ng-model="editDate")
+			.input-group(ng-show="editDate")
+				input.form-control(type="text" ng-focus="releaseOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.voteCutoff" is-open="releaseOpen")
 				span.input-group-btn
-					button.btn.btn-default(type="button" ng-click="cutoffOpen = !cutoffOpen")
+					button.btn.btn-default(type="button" ng-click="releaseOpen = !releaseOpen")
 						i.fa.fa-calendar
-			uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
-	.form-group
-		label Require Voter Sign-in:
-			span(ng-hide="ballot.requireSignIn")  (with either Google or Facebook)
-			input(type="checkbox" ng-model="ballot.requireSignIn")
-		div(ng-show="ballot.requireSignIn")
-			.input-group
-				span.input-group-addon Max votes per person
-				input.form-control(type="number" ng-model="ballot.maxVotes")
+		.form-group
+			label Release Results:
+				span(ng-hide="showRelease")  after voting (check box for custom)
+				input(type="checkbox" ng-model="showRelease" ng-click="sameTime()")
+				small.text-muted(ng-show="showRelease && ballot.resultsRelease")  {{ballot.resultsRelease | date: dateFormat }}
+			div(ng-show="showRelease")
+				.input-group
+					input.form-control(type="text" ng-focus="cutoffOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.resultsRelease" is-open="cutoffOpen")
+					span.input-group-btn
+						button.btn.btn-default(type="button" ng-click="cutoffOpen = !cutoffOpen")
+							i.fa.fa-calendar
+				uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
+		.form-group
+			label Require Voter Sign-in:
+				span(ng-hide="ballot.requireSignIn")  (with either Google or Facebook)
+				input(type="checkbox" ng-model="ballot.requireSignIn")
+			div(ng-show="ballot.requireSignIn")
+				.input-group
+					span.input-group-addon Max votes per person
+					input.form-control(type="number" ng-model="ballot.maxVotes")
 	input.btn.btn-info(type="submit" value="Submit")
