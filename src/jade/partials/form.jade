@@ -19,7 +19,7 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
 			label Positions to be Elected
 			input.form-control(type="number" name="positions" ng-model="ballot.positions")
 			span.text-danger(ng-show='errors.positions') {{errors.positions}}
-		.form-group(ng-hide="user.id")
+		.form-group.hidden
 			label Created By
 				small.text-muted(ng-show="ballot.createdBy == 'guest'")  using default "guest" will restrict future editing. Please&nbsp;
 					a.btn-link(href="register") Sign in

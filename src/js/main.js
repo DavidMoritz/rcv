@@ -112,9 +112,9 @@ mainApp.controller('MainCtrl', [
 				},{
 					link: 'results',
 					text: 'Results'
-				},{
-					link: 'register',
-					text: 'Register'
+				// },{
+					// link: 'register',
+					// text: 'Register'
 				},{
 					link: 'vote',
 					text: 'Vote!'
@@ -183,8 +183,8 @@ mainApp.controller('MainCtrl', [
 			$s.navItems.map(function(item) {
 				if(item.link == 'profile') {
 					item.hide = false;
-				} else if (item.link == 'register') {
-					item.hide = true;
+				// } else if (item.link == 'register') {
+				// 	item.hide = true;
 				}
 			});
 			$s.$apply();
