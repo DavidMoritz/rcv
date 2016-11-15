@@ -6,7 +6,7 @@ form(name='entriesForm' ng-submit='addEntry()')
 	button.btn.btn-info(type='submit') Add Entry
 	button.btn.btn-default(type='button' ng-click="submitEntries()") Submit All Entries
 h2 Current Entry List
-	h5(ng-repeat="entry in entries track by $index")
-		strong {{$index + 1}}&nbsp;
-		| {{entry}}&nbsp;
-		i.fa.fa-close.pointer(ng-click="removeEntry($index)")
+h5(ng-repeat="entry in entries track by $index")
+	strong {{$index + 1}}&nbsp;
+	| {{entry}}&nbsp;
+	i.fa.fa-close.pointer(ng-click="removeEntry($index)")
