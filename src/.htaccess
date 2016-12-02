@@ -1,4 +1,3 @@
-suPHP_ConfigPath /home/rhythmci/public_html
 RewriteEngine on
 
 RewriteCond %{REQUEST_FILENAME} -f
