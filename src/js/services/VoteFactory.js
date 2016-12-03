@@ -154,6 +154,44 @@ mainApp.factory('VoteFactory', [
 				this.anotherRound();
 			},
 
+			// Analyses which candidates are marginally stronger for the purpose of breaking ties
+			breakTie: function(value) {
+				var model = this;
+				var tieArray = [];
+				var i;
+				// length of longest vote array
+				var voteSize = this.votes.reduce(function(voteSize, vote) {
+					return Math.max(voteSize, vote.length);
+				}, 0);
+				var calculateValue = function(voteArr, idx) {
+					var tie = _.find(tieArray, {name: voteArr[i]});
+					if(tie) {
+						// 2nd place votes are exponentially greater than 3rd place votes etc.
+						tie.value += model.voteweight[idx] / Math.pow(10, i);
+					}
+				};
+				// populate tieArray only with tie breakers
+				this.votenum.map(function(val, idx) {
+					if(val == value) {
+						tieArray.push({
+							index: idx,
+							name: model.names[idx],
+							value: 0
+						});
+					}
+				});
+				for(i = 1; i < voteSize; i++) {
+					this.votes.map(calculateValue);
+				}
+				// sort by ascending vote value
+				tieArray.sort(function(a, b) {
+					return a.value > b.value;
+				});
+
+				return tieArray[0].index;
+			},
+
+			/* SWITCHED BACK TO MARGINAL VOTING BY PREFERENCE RATHER THAN RANDOM
 			// creative way to achieve repeatable randomizing
 			breakTie: function(value) {
 				var model = this;
@@ -180,6 +218,7 @@ mainApp.factory('VoteFactory', [
 
 				return tieArray[0].index;
 			},
+			*/
 
 			// Finish election and announce the winner(s).
 			finishElection: function() {

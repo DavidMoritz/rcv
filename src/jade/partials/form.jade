@@ -27,7 +27,8 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
 			input.form-control(name="createdBy" ng-model="ballot.createdBy" readonly)
 			span.text-danger(ng-show='errors.createdBy') {{errors.createdBy}}
 		.form-group
-			h4 Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}} {{ballot.voteCutoff | date: "h:mm a" }}
+			h4(ng-hide="editDate || editTime") Voting Cutoff: never (check box for custom)
+			h4(ng-show="editDate || editTime") Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}} {{ballot.voteCutoff | date: "h:mm a" }}
 			label Edit Time
 				input(type="checkbox" ng-model="editTime")
 			uib-timepicker(ng-show="editTime" ng-model="ballot.voteCutoff" minute-step="1")
@@ -40,7 +41,8 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
 						i.fa.fa-calendar
 		.form-group
 			label Release Results:
-				span(ng-hide="showRelease")  after voting (check box for custom)
+				span(ng-hide="showRelease || editDate || editTime")  immediately (check box for custom)
+				span(ng-hide="showRelease || (!editDate && !editTime)")  after voting (check box for custom)
 				input(type="checkbox" ng-model="showRelease" ng-click="sameTime()")
 				small.text-muted(ng-show="showRelease && ballot.resultsRelease")  {{ballot.resultsRelease | date: dateFormat }}
 			div(ng-show="showRelease")
@@ -50,7 +52,7 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
 						button.btn.btn-default(type="button" ng-click="cutoffOpen = !cutoffOpen")
 							i.fa.fa-calendar
 				uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
-		.form-group
+		.form-group(ng-hide="true")
 			label Require Voter Sign-in:
 				span(ng-hide="ballot.requireSignIn")  (with either Google or Facebook)
 				input(type="checkbox" ng-model="ballot.requireSignIn")
@@ -58,4 +60,4 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
 				.input-group
 					span.input-group-addon Max votes per person
 					input.form-control(type="number" ng-model="ballot.maxVotes")
-	input.btn.btn-info(type="submit" value="Submit")
+	input.btn.btn-info(type="submit" value="Submit" ng-disabled="errors.key")

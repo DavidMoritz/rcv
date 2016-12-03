@@ -304,11 +304,18 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.newBallot = function() {
-			if(!$s.showRelease) {
+			if(!$s.editTime && !$s.editDate) {
+				$s.ballot.resultsRelease = updateTime(new Date());
+				$s.ballot.voteCutoff = updateTime(new Date('2199-12-31T23:59:59'));
+			} else {
 				$s.sameTime();
+				$s.ballot.voteCutoff = updateTime($s.ballot.voteCutoff);
 			}
-			$s.ballot.resultsRelease = updateTime($s.ballot.resultsRelease);
-			$s.ballot.voteCutoff = updateTime($s.ballot.voteCutoff);
+
+			if($s.showRelease) {
+				$s.ballot.resultsRelease = updateTime($s.ballot.resultsRelease);
+			}
+
 			$s.ballot.createdBy = $s.user.id || 'guest';
 			$http({
 				method: 'POST',
