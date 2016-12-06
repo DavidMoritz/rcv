@@ -232,6 +232,7 @@ mainApp.controller('MainCtrl', [
 
 						return JSON.parse(result.vote);
 					});
+					$('.ballot-name').text(' for ' + resp.data[0].name);
 					$s.names = _.uniq(_.flatten($s.votes));
 					$s.runTheCode();
 					$s.bodyText = $sce.trustAsHtml($s.outputstring);
