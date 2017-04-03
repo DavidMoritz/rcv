@@ -16,3 +16,7 @@ With Ranked Choice Voting, there is no issue with voting for your first choice f
 Another thing it works really well for voting for more than one position. Everyone’s vote is still counted as one vote, but if their first choice is elected, then a portion of their vote goes to second place. To better illustrate this point, there is a video that describes the use of ranked choice voting in the Animal Kingdom:
 
 Click here to watch <https://youtu.be/l8XOZJkozfI>
+
+## Contributing
+
+If you are interested in joining the cause and contributing, give me a shout @
