@@ -112,6 +112,7 @@ mainApp.factory('VoteFactory', [
 
 			// Show results for either winning candidate or losing candidate.
 			determineOutcome: function(data) {
+				// TODO: Eliminate every candidate with zero votes in the first round.
 				// apex = votes needed to either be elected or be eliminated
 				var apex = this.votenum.reduce(function(prev, current) {
 					return current ? Math[data.math](prev, current) : prev;
