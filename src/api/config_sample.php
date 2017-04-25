@@ -1,4 +1,5 @@
 <?php
+####	Rename this file to "config.php" after putting in your credentials	#####
 
 define('SERVER', 'myServer');
 define('USERNAME', 'myUser');
