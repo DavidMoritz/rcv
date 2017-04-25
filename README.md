@@ -17,6 +17,13 @@ Another thing it works really well for voting for more than one position. Everyo
 
 Click here to watch <https://youtu.be/l8XOZJkozfI>
 
+## Consuming
+npm install
+grunt
+open dist/index.html
+rename "config_sample.php" to "config.php"
+input credentials to MYSQL database
+
 ## Contributing
 
 If you are interested in joining the cause and contributing, give me a shout @
