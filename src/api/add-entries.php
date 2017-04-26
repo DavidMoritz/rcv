@@ -30,7 +30,8 @@ if (!empty($errors)) {
 			entries (`ballotId`, `name`)
 		VALUES ";
 	for ($i=0; $i < $total; $i++) {
-		$query .= "($ballotId,'". $_POST['entries'][$i] ."'),";
+		$name = preg_replace('/[\'"\\\]/', '', $_POST['entries'][$i]);
+		$query .= "($ballotId,'". $name ."'),";
 	}
 	$query = substr($query, 0, -1) . ";";
 	$sth = $dbh->prepare($query);
