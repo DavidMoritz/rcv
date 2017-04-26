@@ -52,6 +52,15 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
 						button.btn.btn-default(type="button" ng-click="cutoffOpen = !cutoffOpen")
 							i.fa.fa-calendar
 				uib-timepicker(ng-model="ballot.resultsRelease" minute-step="15")
+		.form-group
+			label Tie-Break Method:
+			div
+				label.radio-inline(title="Randomly determine the order of candidates being eliminated") Random (official)
+					input(type="radio" value="random" name="tie-break-method" ng-model="ballot.tieBreak")
+				label.radio-inline(title="Observe the preference of secondary choices to determine") Weighted
+					input(type="radio" value="weighted" name="tie-break-method" ng-model="ballot.tieBreak")
+				label.radio-inline(title="All candidates in a tie are simultaneously eliminated") No Winner
+					input(type="radio" value="none" name="tie-break-method" ng-model="ballot.tieBreak")
 		.form-group(ng-hide="true")
 			label Require Voter Sign-in:
 				span(ng-hide="ballot.requireSignIn")  (with either Google or Facebook)

@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS `ballots` (
   `positions` varchar(10) NOT NULL,
   `createdBy` varchar(64) NOT NULL,
   `requireSignIn` tinyint(1) NOT NULL,
+  `tieBreak` varchar(16) NOT NULL,
   `maxVotes` smallint(6) NOT NULL,
   `voteCutoff` datetime NOT NULL,
   `resultsRelease` datetime NOT NULL,

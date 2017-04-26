@@ -63,6 +63,7 @@ mainApp.controller('MainCtrl', [
 				positions: 1,
 				createdBy: $s.user.id || 'guest',
 				maxVotes: 1,
+				tieBreak: 'random',
 				voteCutoff: roundResultsRelease()
 			};
 		};

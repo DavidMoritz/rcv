@@ -26,6 +26,11 @@ if (empty($_POST['requireSignIn']))
 else
 	$requireSignIn = "1";
 
+if (empty($_POST['tieBreak']))
+	$tieBreak = $_POST['tieBreak'];
+else
+	$tieBreak = "random";
+
 if (empty($_POST['maxVotes']))
 	$maxVotes = "NULL";
 else
@@ -44,9 +49,9 @@ if (!empty($errors)) {
 } else {
 	$query = "
 		INSERT INTO
-			ballots (`name`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `maxVotes`)
+			ballots (`name`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `maxVotes`)
 		VALUES
-			('". $_POST['name'] ."','". $_POST['key'] ."',". $_POST['positions'] .",'". $_POST['createdBy'] ."', '". $_POST['resultsRelease'] ."', '". $_POST['voteCutoff'] ."', $requireSignIn, $maxVotes);";
+			('". $_POST['name'] ."','". $_POST['key'] ."',". $_POST['positions'] .",'". $_POST['createdBy'] ."', '". $_POST['resultsRelease'] ."', '". $_POST['voteCutoff'] ."', $requireSignIn, '$tieBreak', $maxVotes);";
 
 	$sth = $dbh->prepare($query);
 	$sth->execute();

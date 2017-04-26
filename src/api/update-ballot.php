@@ -31,6 +31,11 @@ if (empty($_POST['resultsRelease']))
 else
 	$release = "'". $_POST['resultsRelease'] ."'";
 
+if (empty($_POST['tieBreak']))
+	$tieBreak = "tieBreak = '" . $_POST['tieBreak'] . "',";
+else
+	$tieBreak = "";
+
 if (!empty($errors)) {
 	$data['errors']  = $errors;
 	$data['post'] = $_POST;
@@ -44,6 +49,7 @@ if (!empty($errors)) {
 			positions = ". $_POST['positions'] .",
 			createdBy = '". $_POST['createdBy'] ."',
 			resultsRelease = $release,
+			$tieBreak
 			voteCutoff = $cutoff
 		WHERE
 			`key` = '". $_POST['key'] ."'
