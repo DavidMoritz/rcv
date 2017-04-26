@@ -18,11 +18,20 @@ Another thing it works really well for voting for more than one position. Everyo
 Click here to watch <https://youtu.be/l8XOZJkozfI>
 
 ## Consuming
-1) npm install
-2) grunt
-3) open dist/index.html
-4) rename "config_sample.php" to "config.php"
-5) input credentials to MYSQL database
+This project is designed to create the files necessary to run the site from a PHP server with MySQL database (e.g. LAMP). The database can be externally located without any issue. Make sure you specify the location of the database in the *api/config.php* file.
+
+The project uses Nodejs and Grunt to build a *dist/* folder whose contents will be copied into the root http folder of the server.
+
+The following steps assume that you have Nodejs and Grunt-cli installed:
+
+1) run `npm install`
+2) create "api/config.php" from "api/config_sample.php"
+3) input credentials to the MySQL database in config
+4) use "Schema.sql" to build the MySQL database
+5) run `grunt`
+6) copy contents of dist/ to public_html/ on server
+
+Let me know if you have any issues!
 
 ## Contributing
 
