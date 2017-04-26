@@ -231,6 +231,7 @@ mainApp.controller('MainCtrl', [
 
 					$s.votes = resp.data.map(function(result) {
 						$s.seats = parseInt(result.positions);
+						$s.tieBreakMethod = result.tieBreakMethod;
 
 						return JSON.parse(result.vote);
 					});

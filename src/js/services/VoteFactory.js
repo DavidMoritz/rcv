@@ -126,7 +126,7 @@ mainApp.factory('VoteFactory', [
 				this.outputstring += '<br>Number of candidates with the '+ data.text.total +' votes = ' + count + '.';
 
 				if(count > 1) {
-					chosen = this.breakTie(apex);
+					chosen = this.tieBreakMethod == "weighted" ? this.breakTieWeighted : this.breakTieRandom(apex);
 					this.outputstring += '<br>The random tiebreaker '+ data.text.tie +' is <span class="'+ data.class +'">' + this.names[chosen] + '</span>\'s.';
 				}
 
@@ -156,7 +156,7 @@ mainApp.factory('VoteFactory', [
 			},
 
 			// Analyses which candidates are marginally stronger for the purpose of breaking ties
-			breakTie: function(value) {
+			breakTieWeighted: function(value) {
 				var model = this;
 				var tieArray = [];
 				var i;
@@ -192,9 +192,8 @@ mainApp.factory('VoteFactory', [
 				return tieArray[0].index;
 			},
 
-			/* SWITCHED BACK TO MARGINAL VOTING BY PREFERENCE RATHER THAN RANDOM
 			// creative way to achieve repeatable randomizing
-			breakTie: function(value) {
+			breakTieRandom: function(value) {
 				var model = this;
 				var tieArray = [];
 				var randomize = function(string) {
@@ -219,7 +218,6 @@ mainApp.factory('VoteFactory', [
 
 				return tieArray[0].index;
 			},
-			*/
 
 			// Finish election and announce the winner(s).
 			finishElection: function() {
