@@ -38,7 +38,7 @@ module.exports = function exportCopy(grunt) {
 				{
 					expand: true,
 					cwd: 'src/',
-					src: ['favicon.ico', 'apple-touch-icon.png', '.htaccess'],
+					src: ['favicon.ico', 'apple-touch-icon.png', 'github-fork.png', '.htaccess'],
 					dest: '<%= distRoot %>/'
 				}
 			]

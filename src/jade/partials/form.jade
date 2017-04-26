@@ -4,7 +4,7 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
 		input.form-control(name="name" ng-model="ballot.name")
 		span.text-danger(ng-show='errors.name') {{errors.name}}
 	.form-group
-		label Shortcode (for link rankedchoices.com/{{ballot.key}})
+		label Shortcode (for link {{hostname}}/{{ballot.key}})
 		.input-group
 			input.form-control(name="key" ng-model="ballot.key" ng-pattern-restrict pattern="\\w*" ng-change="checkAvailability()" maxlength=16 ng-readonly="editBallot")
 			span.input-group-btn

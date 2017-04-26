@@ -128,6 +128,7 @@ mainApp.controller('MainCtrl', [
 			pickerOptions: {
 				showWeeks: false
 			},
+			hostname: window.location.hostname
 		});
 
 		_.extend($s, VF);
