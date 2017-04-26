@@ -14,5 +14,8 @@
     "ng-pattern-restrict": "~0.2.1",
     "touch-punch": "https://github.com/furf/jquery-ui-touch-punch.git",
     "angular-animate": "^1.5.3"
+  },
+  "resolutions": {
+    "angular": "1.5.3"
   }
 }
