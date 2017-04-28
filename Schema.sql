@@ -13,8 +13,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `iptheate_rcv`
 --
-CREATE DATABASE IF NOT EXISTS `iptheate_rcv` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `iptheate_rcv`;
+CREATE DATABASE IF NOT EXISTS `rcv_db` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `rcv_db`;
 
 -- --------------------------------------------------------
 
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `ballots` (
   `resultsRelease` datetime NOT NULL,
   `timeCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=71 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `entries` (
   `name` varchar(128) NOT NULL,
   `entry_id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`entry_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=275 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -79,4 +79,4 @@ CREATE TABLE IF NOT EXISTS `votes` (
   `ipAddress` varchar(64) NOT NULL,
   `vote_id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`vote_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=166 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

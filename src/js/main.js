@@ -211,7 +211,10 @@ mainApp.controller('MainCtrl', [
 						$s.ballot = entry;
 						$s.ballot.positions = parseInt($s.ballot.positions);
 
-						return entry.candidate;
+						return {
+							name: entry.candidate,
+							id: entry.entry_id
+						};
 					});
 					$s.activeLink = 'vote';
 					$s.resetCandidates();
@@ -233,10 +236,12 @@ mainApp.controller('MainCtrl', [
 						$s.seats = parseInt(result.positions);
 						$s.tieBreakMethod = result.tieBreakMethod;
 
-						return JSON.parse(result.vote);
+						if(result.vote) return JSON.parse(result.vote);
+						// THIS DOESN'T WORK YET
+						$s.names = result;
 					});
 					$('.ballot-name').text(' for ' + resp.data[0].name);
-					$s.names = _.uniq(_.flatten($s.votes));
+					//$s.names = _.uniq(_.flatten($s.votes));
 					$s.runTheCode();
 					$s.bodyText = $sce.trustAsHtml($s.outputstring);
 					$s.final = true;
@@ -375,7 +380,7 @@ mainApp.controller('MainCtrl', [
 				method: 'POST',
 				url: '/api/vote.php',
 				data: {
-					vote: JSON.stringify($s.candidates),
+					vote: JSON.stringify($s.candidates.map(cand => cand.entry_id)),
 					key: $s.ballot.key
 				},
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
