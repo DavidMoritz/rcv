@@ -1,5 +1,5 @@
 # Steps with Ubuntu
-**Note**: The `$` and `mysql>` portions within the commands are ***not*** part of the command, but are simply used to denote the difference between the bash prompt and the mysql CLI.
+**Note**: The `$` and `mysql>` portions within the commands are ***not*** part of the command, but are simply used to denote the difference between the bash prompt and the MySQL CLI.
 
 ## Install MySQL
 ```
