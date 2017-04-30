@@ -20,7 +20,7 @@ Click here to watch <https://youtu.be/l8XOZJkozfI>
 ## Consuming
 This project is designed to create the files necessary to run the site from a PHP server with MySQL database (e.g. LAMP). The database can be externally located without any issue. Make sure you specify the location of the database in the *src/api/config.php* file.
 
-The project uses Nodejs and Grunt to build a *dist/* folder whose contents will be copied into the root http folder of the server.
+The project uses Nodejs and Grunt to build a *dist/* folder whose contents will be copied into the root http folder of the server. If you don't have PHP or MySQL installed, please review <https://github.com/DavidMoritz/rcv/blob/master/UBUNTU.md>.
 
 The following steps assume that you have PHP, MySQL, Nodejs and Grunt-cli installed:
 
