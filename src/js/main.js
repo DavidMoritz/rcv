@@ -16,14 +16,14 @@ mainApp.controller('MainCtrl', [
 		var getVoteParam = function(param) {
 			var temp = $loc.$$absUrl.split('/').pop();
 
-			if(!temp) {
+			if (!temp) {
 				$s.navigate('home');
 			} else {
 				temp = temp.split('#');
 				param = temp[0];
 			}
 
-			if(_.find($s.navItems, {link: param})) {
+			if (_.find($s.navItems, {link: param})) {
 				$s.navigate(param, temp[1]);
 
 				return '';
@@ -35,7 +35,7 @@ mainApp.controller('MainCtrl', [
 		var updateTime = function(dateObj) {
 			var mom = moment(dateObj);
 
-			if(mom.isDST()) {
+			if (mom.isDST()) {
 				mom.utcOffset(-5);
 			} else {
 				mom.utcOffset(-6);
@@ -47,7 +47,7 @@ mainApp.controller('MainCtrl', [
 		var deleteThis = function(data, item) {
 			$http({
 				method: 'POST',
-				url: '/api/delete-'+ item +'.php',
+				url: '/api/delete-' + item + '.php',
 				data: data,
 				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
@@ -70,17 +70,18 @@ mainApp.controller('MainCtrl', [
 
 		var getBallots = function() {
 			// we need to get ballots based on user signin
-			if($s.user.id) {
+			if ($s.user.id) {
 				$http({
 					method: 'POST',
 					url: '/api/get-ballots.php',
 					data: $s.user,
-					headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+					headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 				}).then(function(resp) {
 					$s.now = new Date();
 					$s.allBallots = resp.data.map(function(ballot) {
 						ballot.voteCutoff = new Date(ballot.voteCutoff);
 						ballot.resultsRelease = new Date(ballot.resultsRelease);
+
 						return ballot;
 					});
 				});
@@ -129,7 +130,7 @@ mainApp.controller('MainCtrl', [
 			pickerOptions: {
 				showWeeks: false
 			},
-			hostname: window.location.hostname
+			origin: window.location.origin
 		});
 
 		_.extend($s, VF);
@@ -137,7 +138,7 @@ mainApp.controller('MainCtrl', [
 		function roundResultsRelease() {
 			var now = new Date();
 			var m = now.getMinutes();
-			var offset = parseInt((m+25)/15) * 15;
+			var offset = parseInt((m + 25) / 15) * 15;
 			now = new Date(now.setSeconds(0));
 
 			// vote ends 15 minutes after it starts round to the nearest quarter
@@ -148,11 +149,11 @@ mainApp.controller('MainCtrl', [
 			var title = _.find($s.navItems, {link: link}).text;
 			$s.activeLink = link;
 
-			if($('.navbar-collapse').hasClass('in')) {
+			if ($('.navbar-collapse').hasClass('in')) {
 				$('.navbar-collapse').collapse('hide');
 			}
 
-			switch(link) {
+			switch (link) {
 				case 'create':
 					$s.ballot = resetBallot();
 					$s.congrats = false;
@@ -161,7 +162,7 @@ mainApp.controller('MainCtrl', [
 					getBallots();
 			}
 
-			if(shortcode) {
+			if (shortcode) {
 				$s.shortcode = shortcode;
 				$s.submitShortcode();
 			} else {
@@ -171,7 +172,7 @@ mainApp.controller('MainCtrl', [
 
 		$s.signOut = function() {
 			var auth2 = gapi.auth2.getAuthInstance();
-			auth2.signOut().then(function () {
+			auth2.signOut().then(function() {
 				console.log('User signed out.');
 			});
 		};
@@ -183,10 +184,10 @@ mainApp.controller('MainCtrl', [
 		$s.updateUser = function(user) {
 			$s.user = user;
 			$s.navItems.map(function(item) {
-				if(item.link == 'profile') {
+				if (item.link == 'profile') {
 					item.hide = false;
-				// } else if (item.link == 'register') {
-				// 	item.hide = true;
+					// } else if (item.link == 'register') {
+					// 	item.hide = true;
 				}
 			});
 			$s.$apply();
@@ -194,14 +195,14 @@ mainApp.controller('MainCtrl', [
 				method: 'POST',
 				url: '/api/add-user.php',
 				data: $s.user,
-				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			});
 		};
 
 		$s.getCandidates = function() {
 			$http.get('/api/get-candidates.php?key=' + $s.shortcode)
 				.then(function(resp) {
-					if(typeof resp.data == 'string') {
+					if (typeof resp.data == 'string') {
 						$s.errors.shortcode = resp.data;
 
 						return;
@@ -226,7 +227,7 @@ mainApp.controller('MainCtrl', [
 			var key = $s.shortcode || $s.ballot.key;
 			$http.get('/api/get-votes.php?key=' + key)
 				.then(function(resp) {
-					if(typeof resp.data == 'string') {
+					if (typeof resp.data == 'string') {
 						$s.errors.shortcode = resp.data;
 
 						return;
@@ -236,7 +237,9 @@ mainApp.controller('MainCtrl', [
 						$s.seats = parseInt(result.positions);
 						$s.tieBreakMethod = result.tieBreakMethod;
 
-						if(result.vote) return JSON.parse(result.vote);
+						if (result.vote) {
+							return JSON.parse(result.vote);
+						}
 						// THIS DOESN'T WORK YET
 						$s.names = result;
 					});
@@ -254,7 +257,7 @@ mainApp.controller('MainCtrl', [
 			var key = Math.random().toString(36).substr(2, len);
 			$http.get('/api/get-key-ballot.php?key=' + key)
 				.then(function(resp) {
-					if(resp.data.length) {
+					if (resp.data.length) {
 						$s.generateRandomKey(++len);
 					} else {
 						$s.errors.key = null;
@@ -273,7 +276,7 @@ mainApp.controller('MainCtrl', [
 
 			$http.get('/api/get-candidates.php?key=' + $s.ballot.key)
 				.then(function(resp) {
-					if(resp.data) {
+					if (resp.data) {
 						$s.entries = resp.data.map(function(entry) {
 							return entry.candidate;
 						});
@@ -285,9 +288,10 @@ mainApp.controller('MainCtrl', [
 		$s.checkAvailability = _.debounce(function() {
 			$http.get('/api/get-key-ballot.php?key=' + $s.ballot.key)
 				.then(function(resp) {
-					if(resp.data.length) {
+					if (resp.data.length) {
 						$s.success.key = null;
-						if($s.ballot.key) {
+
+						if ($s.ballot.key) {
 							$s.errors.key = $s.ballot.key + ' is already in use';
 						} else {
 							$s.errors.key = 'Shortcode is required';
@@ -313,7 +317,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.newBallot = function() {
-			if(!$s.editTime && !$s.editDate) {
+			if (!$s.editTime && !$s.editDate) {
 				$s.ballot.resultsRelease = updateTime(new Date());
 				$s.ballot.voteCutoff = updateTime(new Date('2199-12-31T23:59:59'));
 			} else {
@@ -321,7 +325,7 @@ mainApp.controller('MainCtrl', [
 				$s.ballot.voteCutoff = updateTime($s.ballot.voteCutoff);
 			}
 
-			if($s.showRelease) {
+			if ($s.showRelease) {
 				$s.ballot.resultsRelease = updateTime($s.ballot.resultsRelease);
 			}
 
@@ -330,12 +334,12 @@ mainApp.controller('MainCtrl', [
 				method: 'POST',
 				url: '/api/' + ($s.editBallot ? 'update' : 'new') + '-ballot.php',
 				data: $s.ballot,
-				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
-			}).success(function(resp){
-				if(resp.errors) {
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).success(function(resp) {
+				if (resp.errors) {
 					$s.errors = resp.errors;
 				} else {
-					if(!$s.editBallot) {
+					if (!$s.editBallot) {
 						$s.ballot.id = resp;
 					}
 					$s.entries = [];
@@ -344,18 +348,20 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.submitEntries = function() {
-			if($s.entries.length < 2) {
+			if ($s.entries.length < 2) {
 				$s.errorEntry = 'Must have at least 2 entries';
 
 				return;
 			}
-			if($s.editBallot) {
+
+			if ($s.editBallot) {
 				$http.get('/api/delete-entries.php?ballotId=' + $s.ballot.id)
 					.then(function(resp) {
 						$s.editBallot = false;
 						$s.submitEntries();
 					})
 				;
+
 				return;
 			}
 			$http({
@@ -363,11 +369,11 @@ mainApp.controller('MainCtrl', [
 				url: '/api/add-entries.php',
 				data: {
 					entries: $s.entries,
-					'ballotId': $s.ballot.id
+					ballotId: $s.ballot.id
 				},
-				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
-				if(resp.errors) {
+				if (resp.errors) {
 					$s.errors = resp.errors;
 				} else {
 					$s.congrats = true;
@@ -380,10 +386,12 @@ mainApp.controller('MainCtrl', [
 				method: 'POST',
 				url: '/api/vote.php',
 				data: {
-					vote: JSON.stringify($s.candidates.map(cand => cand.entry_id)),
+					vote: JSON.stringify($s.candidates.map(function(cand) {
+						return cand.entry_id;
+					})),
 					key: $s.ballot.key
 				},
-				headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
 				$s.thanks = true;
 				console.log(resp);
@@ -391,14 +399,14 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.deleteBallot = function(ballot) {
-			if(confirm('Delete '+ ballot.name +' ballot?\nThis action cannot be undone')) {
+			if (confirm('Delete ' + ballot.name + ' ballot?\nThis action cannot be undone')) {
 				deleteThis(ballot, 'ballot');
 				_.remove($s.allBallots, ballot);
 			}
 		};
 
 		$s.deleteVotes = function(ballot) {
-			if(confirm('Delete all '+ ballot.name +' votes?\nThis action cannot be undone')) {
+			if (confirm('Delete all ' + ballot.name + ' votes?\nThis action cannot be undone')) {
 				deleteThis(ballot, 'votes');
 				ballot.totalVotes = 0;
 			}
@@ -417,7 +425,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.submitShortcode = function() {
-			if($s.activeLink == 'results') {
+			if ($s.activeLink == 'results') {
 				$s.getResults();
 			} else {
 				$s.getCandidates();
@@ -425,9 +433,9 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.addEntry = function() {
-			if(!$s.entryInput.length) {
+			if (!$s.entryInput.length) {
 				$s.errorEntry = 'Entries must not be blank';
-			} else if($s.entries.indexOf($s.entryInput) !== -1) {
+			} else if ($s.entries.indexOf($s.entryInput) !== -1) {
 				$s.errorEntry = 'No duplicate entries allowed';
 			} else {
 				$s.errorEntry = '';
@@ -436,9 +444,9 @@ mainApp.controller('MainCtrl', [
 			}
 		};
 
-		$s.shortcode= getVoteParam();
+		$s.shortcode = getVoteParam();
 
-		if($s.shortcode) {
+		if ($s.shortcode) {
 			$s.activeLink = 'vote';
 			$s.getCandidates();
 		}
