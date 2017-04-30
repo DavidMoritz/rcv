@@ -18,15 +18,15 @@ Another thing it works really well for voting for more than one position. Everyo
 Click here to watch <https://youtu.be/l8XOZJkozfI>
 
 ## Consuming
-This project is designed to create the files necessary to run the site from a PHP server with MySQL database (e.g. LAMP). The database can be externally located without any issue. Make sure you specify the location of the database in the *api/config.php* file.
+This project is designed to create the files necessary to run the site from a PHP server with MySQL database (e.g. LAMP). The database can be externally located without any issue. Make sure you specify the location of the database in the *src/api/config.php* file.
 
 The project uses Nodejs and Grunt to build a *dist/* folder whose contents will be copied into the root http folder of the server.
 
 The following steps assume that you have PHP, MySQL, Nodejs and Grunt-cli installed:
 
 1) run `npm install`
-2) create "api/config.php" from "api/config_sample.php"
-3) input credentials to the MySQL database in config
+2) create "src/api/config.php" from "src/api/config_sample.php"
+3) input your credentials to the MySQL database in "src/api/config.php"
 4) use "schema.sql" to build the MySQL database
 5) run `grunt`
 6) run `cd dist/`
