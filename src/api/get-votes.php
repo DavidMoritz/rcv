@@ -12,8 +12,8 @@ if(!empty($key)) {
 			votes
 		JOIN
 			ballots
-		ON
-			votes.ballotId = ballots.id
+			ON
+				votes.ballotId = ballots.id
 		WHERE
 			ballots.key = '$key'
 		AND
@@ -21,6 +21,18 @@ if(!empty($key)) {
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
+
+	$query2 = "
+		SELECT
+			name
+		FROM
+			entries
+		WHERE
+			ballotId = '$key'";
+	$sth2 = $dbh->prepare($query2);
+	$sth2->execute();
+	// THIS DOESN'T WORK YET
+	array_push($results, $sth->fetchAll(PDO::FETCH_ASSOC));
 
 	if(empty($results))
 		echo "Either shortcode is incorrect or results aren't ready to be released";

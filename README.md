@@ -22,14 +22,16 @@ This project is designed to create the files necessary to run the site from a PH
 
 The project uses Nodejs and Grunt to build a *dist/* folder whose contents will be copied into the root http folder of the server.
 
-The following steps assume that you have Nodejs and Grunt-cli installed:
+The following steps assume that you have PHP, MySQL, Nodejs and Grunt-cli installed:
 
 1) run `npm install`
 2) create "api/config.php" from "api/config_sample.php"
 3) input credentials to the MySQL database in config
-4) use "Schema.sql" to build the MySQL database
+4) use "schema.sql" to build the MySQL database
 5) run `grunt`
-6) copy contents of dist/ to public_html/ on server
+6) run `cd dist/`
+7) run `php -S localhost:1337`
+8) go to "localhost:1337" in your browser
 
 Let me know if you have any issues!
 

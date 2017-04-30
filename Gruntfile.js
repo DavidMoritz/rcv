@@ -30,8 +30,8 @@ module.exports = function(grunt) {
 	grunt.loadTasks('grunt');
 
 	// default is just dev
-	grunt.registerTask('default', [
-		'dev',
+	grunt.registerTask('dev', [
+		'default',
 		'watch'
 	]);
 
@@ -39,7 +39,7 @@ module.exports = function(grunt) {
 	// This is safe to run on bamboo
 	// Note: all subtasks of the sass and autoprefixer tasks will run. This will generate a minified and unminified version of the css.
 	// If you run this task all of the example html files and generated documentation will reference the unminified version of Edge UI's css and js
-	grunt.registerTask('dev', [
+	grunt.registerTask('default', [
 		'jade',
 		'less:dev',
 		'copy',
@@ -53,7 +53,6 @@ module.exports = function(grunt) {
 	// Note: all subtasks of the sass and autoprefixer tasks will run. This will generate a minified and unminified version of the css.
 	// If you run this task all of the example html files and generated documentation will reference the minified version of Edge UI's css and js
 	grunt.registerTask('prod', [
-		'jscs',
 		'jade',
 		'less:prod',
 		'copy',

@@ -6,7 +6,7 @@ $key = $_GET['key'];
 if(!empty($key)) {
 	$query = "
 		SELECT
-			b.key, b.name, b.positions, b.voteCutoff, e.name AS 'candidate'
+			b.key, b.name, b.positions, b.voteCutoff, e.entry_id, e.name AS 'candidate'
 		FROM
 			entries e
 		JOIN

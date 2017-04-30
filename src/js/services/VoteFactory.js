@@ -25,16 +25,18 @@ mainApp.factory('VoteFactory', [
 					model.outputstring += '<tr><th>Vote ' + (idx + 1) + ':</th>';
 					var colspan = model.names.length - vote.length;
 					_.each(vote, function(name, idx2) {
-						if(idx2 === 0) {
+						if (idx2 === 0) {
 							model.outputstring += '<td><span class="next-vote">' + name + '</span></td>';
 						} else {
 							model.outputstring += '<td>' + name + '</td>';
 						}
 					});
-					if(colspan) {
+
+					if (colspan) {
 						model.outputstring += '<td colspan=' + colspan + '></td>';
 					}
-					if(model.seats > 1) {
+
+					if (model.seats > 1) {
 						model.outputstring += '<td>vote-value = ' + _.round(model.voteweight[idx], 4) + '</td></tr>';
 					}
 				});
@@ -42,7 +44,7 @@ mainApp.factory('VoteFactory', [
 			},
 
 			createHeader: function() {
-				if(this.seats > 1) {
+				if (this.seats > 1) {
 					return '<strong>Candidates: ' + this.names.length + ' Seats: ' + this.seats + ' Votes: ' + this.votes.length + ' Quota: ' + this.quota + '</strong><br>';
 				} else {
 					return '<strong>Candidates: ' + this.names.length + ' Votes: ' + this.votes.length + '</strong><br>';
@@ -82,7 +84,7 @@ mainApp.factory('VoteFactory', [
 			},
 
 			buildDataForOutcome: function(data) {
-				if(data) {
+				if (data) {
 					data = {
 						math: 'max',
 						class: 'elected',
@@ -122,32 +124,33 @@ mainApp.factory('VoteFactory', [
 				}).length;
 				var chosen = this.votenum.indexOf(apex);
 
-				this.outputstring += '<br>'+ data.text.count +' by a candidate = ' + _.round(apex, 4) + '.';
-				this.outputstring += '<br>Number of candidates with the '+ data.text.total +' votes = ' + count + '.';
+				this.outputstring += '<br>' + data.text.count + ' by a candidate = ' + _.round(apex, 4) + '.';
+				this.outputstring += '<br>Number of candidates with the ' + data.text.total + ' votes = ' + count + '.';
 
-				if(count > 1) {
-					chosen = this.tieBreakMethod == "weighted" ? this.breakTieWeighted : this.breakTieRandom(apex);
-					this.outputstring += '<br>The random tiebreaker '+ data.text.tie +' is <span class="'+ data.class +'">' + this.names[chosen] + '</span>\'s.';
+				if (count > 1) {
+					chosen = this.tieBreakMethod == 'weighted' ? this.breakTieWeighted : this.breakTieRandom(apex);
+					this.outputstring += '<br>The random tiebreaker ' + data.text.tie + ' is <span class="' + data.class + '">' + this.names[chosen] + '</span>\'s.';
 				}
 
-				this.outputstring += '<br><span class="'+ data.class +'">' + this.names[chosen] + '</span> '+ data.text.result +'.';
+				this.outputstring += '<br><span class="' + data.class + '">' + this.names[chosen] + '</span> ' + data.text.result + '.';
 				this.removeChosen(chosen, data.class, data.elect);
 			},
 
 			// remove either the elected or eliminated candidates from votes
 			removeChosen: function(chosen, className, elect) {
-				if(elect) {
+				if (elect) {
 					this.elected[this.wincount++] = this.names[chosen];
 				}
 				var model = this;
 				_.each(this.votes, function(vote, index) {
 					var found = vote.indexOf(model.names[chosen]);
-					if(found !== -1) {
-						if(found === 0) {
-							if(elect) {
+
+					if (found !== -1) {
+						if (found === 0) {
+							if (elect) {
 								model.voteweight[index] *= 1 - model.quota / model.votenum[chosen];
 							}
-							vote.push('<span class="'+ className +'">'+ vote[found] +'</span>');
+							vote.push('<span class="' + className + '">' + vote[found] + '</span>');
 						}
 						vote.splice(found, 1);
 					}
@@ -166,14 +169,15 @@ mainApp.factory('VoteFactory', [
 				}, 0);
 				var calculateValue = function(voteArr, idx) {
 					var tie = _.find(tieArray, {name: voteArr[i]});
-					if(tie) {
+
+					if (tie) {
 						// 2nd place votes are exponentially greater than 3rd place votes etc.
 						tie.value += model.voteweight[idx] / Math.pow(10, i);
 					}
 				};
 				// populate tieArray only with tie breakers
 				this.votenum.map(function(val, idx) {
-					if(val == value) {
+					if (val == value) {
 						tieArray.push({
 							index: idx,
 							name: model.names[idx],
@@ -181,7 +185,8 @@ mainApp.factory('VoteFactory', [
 						});
 					}
 				});
-				for(i = 1; i < voteSize; i++) {
+
+				for (i = 1; i < voteSize; i++) {
 					this.votes.map(calculateValue);
 				}
 				// sort by ascending vote value
@@ -203,7 +208,7 @@ mainApp.factory('VoteFactory', [
 				};
 				// populate tieArray only with tie breakers
 				this.votenum.map(function(val, idx) {
-					if(val == value) {
+					if (val == value) {
 						tieArray.push({
 							index: idx,
 							rand: randomize(model.names[idx] + idx)
