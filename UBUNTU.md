@@ -1,12 +1,13 @@
 # Steps with Ubuntu
-**Note**: The `$` and `mysql>` portions within the commands are ***not*** part of the command, but are simply used to denote the difference between the bash prompt and the mysql CLI.
+**Note**: The `$` and `mysql>` portions within the commands are ***not*** part of the command, but are simply used to denote the difference between the bash prompt and the MySQL CLI.
 
 ## Install MySQL
 ```
 $ sudo apt-get install mysql-server
 ```
 
-## Install PHP
+
+# Install PHP
 ```
 $ sudo apt-get install php
 ```
