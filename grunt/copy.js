@@ -1,6 +1,6 @@
 module.exports = function exportCopy(grunt) {
 	grunt.config('copy', {
-		copy: {
+		main: {
 			files: [
 				// copy all bootstrap fonts
 				{
@@ -40,6 +40,17 @@ module.exports = function exportCopy(grunt) {
 					cwd: 'src/',
 					src: ['favicon.ico', 'apple-touch-icon.png', 'github-fork.png', '.htaccess'],
 					dest: '<%= distRoot %>/'
+				}
+			]
+		},
+		noMySql: {
+			files: [
+				// copy all no-mysql api files
+				{
+					expand: true,
+					cwd: 'src/api/no-mysql',
+					src: ['**'],
+					dest: '<%= distRoot %>/api'
 				}
 			]
 		}

@@ -35,6 +35,12 @@ module.exports = function(grunt) {
 		'watch'
 	]);
 
+	// default is just dev
+	grunt.registerTask('nomysql', [
+		'default',
+		'copy:noMySql'
+	]);
+
 	// Register task for generating unminified output files
 	// This is safe to run on bamboo
 	// Note: all subtasks of the sass and autoprefixer tasks will run. This will generate a minified and unminified version of the css.
@@ -42,7 +48,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('default', [
 		'jade',
 		'less:dev',
-		'copy',
+		'copy:main',
 		'replace:dev',
 		'pleeease:dev',
 		'concat',
@@ -55,7 +61,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('prod', [
 		'jade',
 		'less:prod',
-		'copy',
+		'copy:main',
 		'replace:prod',
 		'pleeease:prod',
 		'concat',

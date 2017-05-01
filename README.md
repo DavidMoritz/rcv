@@ -34,7 +34,7 @@ The following steps assume that you have PHP, MySQL, Nodejs and Grunt-cli instal
 2) create "src/api/config.php" from "src/api/config_sample.php"
 3) input your credentials to the MySQL database in "src/api/config.php"
 4) use "Schema.sql" to build the MySQL database
-5) run `grunt`
+5) run `grunt` (if you don't have  MySQL installed, run `grunt nomysql`)
 6) run `cd dist/`
 7) run `php -S localhost:1337`
 8) go to "localhost:1337" in your browser
