@@ -11,6 +11,8 @@ Here are a few advantages to RCV:
 
 For a short, 1-minute explaination of RCV; check out this video: <https://youtu.be/oHRPMJmzBBw>
 
+[![RCV video](https://img.youtube.com/vi/oHRPMJmzBBw/0.jpg)](https://youtu.be/oHRPMJmzBBw)
+
 Ranked Choice voting is about representing the people in the best way possible. The key is allowing the voter to choose more than just their favorite candidate. The problem with only voting for one choice, is that if that choice does not come in first or second, it could be considered a “wasted vote.” Therefore, people are more likely to vote for their second or third choice on the idea that it has a higher chance of winning and it’s better than their last choice.
 
 With Ranked Choice Voting, there is no issue with voting for your first choice first, second choice second, and third choice third. Because if your first choice doesn’t win, then your vote automatically gets transferred to your second choice! And that is the beauty of the system.
@@ -18,6 +20,8 @@ With Ranked Choice Voting, there is no issue with voting for your first choice f
 Another thing it works really well for voting for more than one position. Everyone’s vote is still counted as one vote, but if their first choice is elected, then a portion of their vote goes to second place. To better illustrate this point, there is a video that describes the use of ranked choice voting in the Animal Kingdom:
 
 Click here to watch <https://youtu.be/l8XOZJkozfI>
+
+[![STV animal video](https://img.youtube.com/vi/l8XOZJkozfI/0.jpg)](https://youtu.be/l8XOZJkozfI)
 
 ## Consuming
 This project is designed to create the files necessary to run the site from a PHP server with MySQL database (e.g. LAMP). The database can be externally located without any issue. Make sure you specify the location of the database in the *src/api/config.php* file.
