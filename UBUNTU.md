@@ -6,7 +6,8 @@
 $ sudo apt-get install mysql-server
 ```
 
-## Install PHP
+
+# Install PHP
 ```
 $ sudo apt-get install php
 ```
