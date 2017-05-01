@@ -37,6 +37,16 @@ The following steps assume that you have PHP, MySQL, Nodejs and Grunt-cli instal
 
 Let me know if you have any issues!
 
+## Docker Compose Consumption
+
+The provided docker file is meant for development / getting up and running quickly.
+
+1. create "src/api/config.php" from "src/api/config_sample.php"
+2. Install docker and docker-compose; [Follow these instructions per your OS](https://docs.docker.com/compose/install/)
+3. If you have docker compose installed cd to the project root and run `docker-compose up`
+4. go to "localhost:1337" in your browser
+5. profit
+
 ## Contributing
 
 If you are interested in joining the cause and contributing, give me a shout @

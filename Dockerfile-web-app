@@ -1,0 +1,40 @@
+#TODO: probably shouldn't run as root user, but eh.
+FROM alpine:edge
+
+# update alpine; trying out php7
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories &&\
+    apk update && apk upgrade
+
+# Install system deps
+RUN apk add --update \ 
+        git \
+        nodejs \
+        nodejs-npm \
+        php7-mcrypt \
+        php7-json \
+        php7 \
+        php7-pdo_mysql &&\
+    npm install npm@latest -g && \
+    npm install -g bower grunt-cli
+
+# make app dir
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+# install app deps
+# keep this separate so we can cache.
+COPY package.json /usr/src/app
+COPY bower.json /usr/src/app
+COPY .bowerrc /usr/src/app
+RUN npm install &&\
+    bower install --allow-root
+
+# copy the app source over.
+COPY . /usr/src/app
+
+# build the app
+RUN grunt
+WORKDIR dist
+
+EXPOSE 1337
+CMD ["php", "-S", "0.0.0.0:1337"]
