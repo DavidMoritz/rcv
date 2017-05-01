@@ -41,7 +41,7 @@ Let me know if you have any issues!
 
 The provided docker file is meant for development / getting up and running quickly.
 
-1. create "src/api/config.php" from "src/api/config_sample.php"
+1. create "src/api/config.php" from "src/api/config_sample.php" (make sure the MySQL location is "db" instead of "localhost")
 2. Install docker and docker-compose; [Follow these instructions per your OS](https://docs.docker.com/compose/install/)
 3. If you have docker compose installed cd to the project root and run `docker-compose up`
 4. go to "localhost:1337" in your browser
@@ -49,4 +49,4 @@ The provided docker file is meant for development / getting up and running quick
 
 ## Contributing
 
-If you are interested in joining the cause and contributing, give me a shout @
+If you are interested in joining the cause and contributing, I am very appreciative! One area that I would like focused efforts on is the ability for someone to register and manage their different ballots. There was work toward this efforts, but not finished. Please contact me before putting in significant effort to avoid duplicate work. Thanks!
