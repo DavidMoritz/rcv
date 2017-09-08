@@ -90,6 +90,16 @@ mainApp.controller('MainCtrl', [
 			}
 		};
 
+		var resetNav = function(hide) {
+			$s.navItems.map(function(item) {
+				if (item.link == 'profile') {
+					item.hide = !hide;
+				} else if (item.link == 'register') {
+					item.hide = !!hide;
+				}
+			});
+		};
+
 		$s.$watch(function() {
 			return window.location.pathname;
 		}, getVoteParam);
@@ -114,9 +124,9 @@ mainApp.controller('MainCtrl', [
 				},{
 					link: 'results',
 					text: 'Results'
-				// },{
-					// link: 'register',
-					// text: 'Register'
+				},{
+					link: 'register',
+					text: 'Register'
 				},{
 					link: 'vote',
 					text: 'Vote!'
@@ -174,6 +184,7 @@ mainApp.controller('MainCtrl', [
 			var auth2 = gapi.auth2.getAuthInstance();
 			auth2.signOut().then(function() {
 				console.log('User signed out.');
+				resetNav();
 			});
 		};
 
@@ -183,13 +194,7 @@ mainApp.controller('MainCtrl', [
 
 		$s.updateUser = function(user) {
 			$s.user = user;
-			$s.navItems.map(function(item) {
-				if (item.link == 'profile') {
-					item.hide = false;
-					// } else if (item.link == 'register') {
-					// 	item.hide = true;
-				}
-			});
+			resetNav(true);
 			$s.$apply();
 			$http({
 				method: 'POST',
@@ -241,10 +246,10 @@ mainApp.controller('MainCtrl', [
 							return JSON.parse(result.vote);
 						}
 						// THIS DOESN'T WORK YET
-						$s.names = result;
+						//$s.names = result;
 					});
 					$('.ballot-name').text(' for ' + resp.data[0].name);
-					//$s.names = _.uniq(_.flatten($s.votes));
+					$s.names = _.uniq(_.flatten($s.votes));
 					$s.runTheCode();
 					$s.bodyText = $sce.trustAsHtml($s.outputstring);
 					$s.final = true;
@@ -387,7 +392,7 @@ mainApp.controller('MainCtrl', [
 				url: '/api/vote.php',
 				data: {
 					vote: JSON.stringify($s.candidates.map(function(cand) {
-						return cand.entry_id;
+						return cand.name;
 					})),
 					key: $s.ballot.key
 				},

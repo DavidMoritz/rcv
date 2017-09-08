@@ -64,7 +64,6 @@ module.exports = function(grunt) {
 		'copy:main',
 		'replace:prod',
 		'pleeease:prod',
-		'concat',
-		'uglify'
+		'concat'
 	]);
 };

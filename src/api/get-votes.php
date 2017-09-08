@@ -22,17 +22,17 @@ if(!empty($key)) {
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
-	$query2 = "
-		SELECT
-			name
-		FROM
-			entries
-		WHERE
-			ballotId = '$key'";
-	$sth2 = $dbh->prepare($query2);
-	$sth2->execute();
-	// THIS DOESN'T WORK YET
-	array_push($results, $sth->fetchAll(PDO::FETCH_ASSOC));
+	// $query2 = "
+	// 	SELECT
+	// 		name
+	// 	FROM
+	// 		entries
+	// 	WHERE
+	// 		ballotId = '$key'";
+	// $sth2 = $dbh->prepare($query2);
+	// $sth2->execute();
+	// // THIS DOESN'T WORK YET
+	// array_push($results, $sth->fetchAll(PDO::FETCH_ASSOC));
 
 	if(empty($results))
 		echo "Either shortcode is incorrect or results aren't ready to be released";

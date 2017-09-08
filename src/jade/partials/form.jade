@@ -19,9 +19,11 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
 			label Positions to be Elected
 			input.form-control(type="number" name="positions" ng-model="ballot.positions")
 			span.text-danger(ng-show='errors.positions') {{errors.positions}}
-		.form-group.hidden
+		.form-group(ng-show="user.name")
+			label Created By {{user.name}}
+		.form-group(ng-show="ballot.createdBy == 'guest'")
 			label Created By
-				small.text-muted(ng-show="ballot.createdBy == 'guest'")  using default "guest" will restrict future editing. Please&nbsp;
+				small.text-muted  using default "guest" will restrict future editing. Please&nbsp;
 					a.btn-link(href="register") Sign in
 					|  to allow future editing.
 			input.form-control(name="createdBy" ng-model="ballot.createdBy" readonly)
@@ -55,12 +57,15 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
 		.form-group
 			label Tie-Break Method:
 			div
-				label.radio-inline(title="Randomly determine the order of candidates being eliminated") Random (official)
+				label.radio-inline(title="Randomly determine the order of candidates being eliminated")
 					input(type="radio" value="random" name="tie-break-method" ng-model="ballot.tieBreak")
-				label.radio-inline(title="Observe the preference of secondary choices to determine") Weighted
+					| Random (official)
+				label.radio-inline(title="Observe the preference of secondary choices to determine")
 					input(type="radio" value="weighted" name="tie-break-method" ng-model="ballot.tieBreak")
-				label.radio-inline(title="All candidates in a tie are simultaneously eliminated") No Winner
+					| Weighted
+				label.radio-inline(title="All candidates in a tie are simultaneously eliminated")
 					input(type="radio" value="none" name="tie-break-method" ng-model="ballot.tieBreak")
+					| No Winner
 		.form-group(ng-hide="true")
 			label Require Voter Sign-in:
 				span(ng-hide="ballot.requireSignIn")  (with either Google or Facebook)
