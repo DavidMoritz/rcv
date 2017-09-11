@@ -17,7 +17,7 @@ form(name='ballotForm' ng-submit='newBallot()' ng-hide='entries')
 	div(ng-show="advancedOptions")
 		.form-group
 			label Positions to be Elected
-			input.form-control(type="number" name="positions" ng-model="ballot.positions")
+			input.form-control(type="number" name="positions" min="1" ng-model="ballot.positions")
 			span.text-danger(ng-show='errors.positions') {{errors.positions}}
 		.form-group(ng-show="user.name")
 			label Created By {{user.name}}
