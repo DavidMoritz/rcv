@@ -47,6 +47,26 @@ Let me know if you have any issues!
 The provided docker file is meant for development / getting up and running quickly.
 
 1. create "src/api/config.php" from "src/api/config_sample.php" (make sure the MySQL location is "db" instead of "localhost")
+An example that should work with the default docker-compose file as written;
+
+```php
+<?php
+####	Rename this file to "config.php" after putting in your credentials	#####
+
+define('SERVER', 'db:3306');
+define('USERNAME', 'root');
+define('PASSWORD', 'superSecretPassword');
+define('DB', 'rcv_db');
+
+####	CONNECT TO THE DATABASE		######
+try {
+	$dbh = new PDO('mysql:host=' . SERVER . ';dbname=' . DB, USERNAME, PASSWORD, array(PDO::ATTR_PERSISTENT => true));
+} catch (PDOException $e) {
+	die($e->getMessage());
+}
+
+?>
+```
 2. Install docker and docker-compose; [Follow these instructions per your OS](https://docs.docker.com/compose/install/)
 3. If you have docker compose installed cd to the project root and run `docker-compose up`
 4. go to "localhost:1337" in your browser
