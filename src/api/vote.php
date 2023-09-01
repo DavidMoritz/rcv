@@ -3,7 +3,7 @@ require_once("config.php");
 
 $errors = array();
 $data = array();
-// Getting posted data and decodeing json
+// Getting posted data and decoding json
 $_POST = json_decode(file_get_contents('php://input'), true);
 $key = $_POST['key'];
 

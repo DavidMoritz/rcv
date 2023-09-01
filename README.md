@@ -10,7 +10,7 @@ Here are a few advantages to RCV:
 * Great for multi-seat elections
 * Easy to use
 
-For a short, 1-minute explaination of RCV; check out this video: <https://youtu.be/oHRPMJmzBBw>
+For a short, 1-minute explanation of RCV; check out this video: <https://youtu.be/oHRPMJmzBBw>
 
 [![RCV video](https://img.youtube.com/vi/oHRPMJmzBBw/0.jpg)](https://youtu.be/oHRPMJmzBBw)
 
