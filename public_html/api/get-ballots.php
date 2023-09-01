@@ -5,6 +5,7 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 $createdBy = $_POST['id'];
 $graph = '';
 
+/* graph provided by RCVis! */
 if($_GET['graph'] == 'true') {
   $graph = 'WHERE `showGraph` = 1';
 }
