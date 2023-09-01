@@ -1,0 +1,24 @@
+#sortable .candidate-item {
+  background: #eee;
+}
+@media screen and (max-width: 992px) {
+  #sortable {max-width: 92%;}
+}
+.fork-me-on-github {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+  z-index: 9;
+}
+.choice-image {
+  margin-right: 5px;
+  max-height: 150px;
+  max-width: 100px;
+  float: left;
+}
+#sortable li:after {
+  clear: both;
+  display: block;
+  content: '';
+}

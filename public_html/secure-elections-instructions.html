@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html ng-app="mainApp">
+<head>
+  <style>
+    li {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Secure Elections</h1>
+  <p>Thanks for stopping by! These instructions are for those who are looking for a way to make a ranked choice ballot fast, easy, inexpensive, and secure while using RankedChoices.com!</p>
+  <p>
+    I recommend registering an account first, then the organizer can easily remove any fraudulent votes.
+  </p>
+  <h4>Open Election:</h4>
+  <p>
+    Everyone's vote is public. The only concern here is if a different person voted under someone else's name, it would be hard to identify who the real vote is vs the fake.
+  </p>
+  <ol>
+    <li>Make a list of randomly generated numbers.</li>
+    <li>Assign a number to each person not showing others.</li>
+    <li>Choose "Voter Names Required" from the advanced options.</li>
+    <li>Instruct each voter to enter that number next to their name.</li>
+    <li>Use advanced options to release results after voting is cut-off.</li>
+  </ol>
+  <p>
+    By taking this approach, the organizer can verify that the name of the voter and their assigned number match if there are any disputes.
+  </p>
+  <h4>Blind Election:</h4>
+  <p>
+    Everyone's vote is hidden from other voters, but not the organizer. The concern here is not allowing someone to anonymously vote twice.
+  </p>
+  <h5>
+    Option 1:
+  </h5>
+  <ol>
+    <li>Choose "Voter Names Required" from the advanced options.</li>
+    <li>Choose "Hide voter names when displaying results (except from owner)" from the advanced options.</li>
+  </ol>
+  <h5>
+    Option 2:
+  </h5>
+  <ol>
+    <li>Make a list of randomly generated numbers.</li>
+    <li>Assign a number to each person not showing others.</li>
+    <li>Choose "Voter Names Required" from the advanced options.</li>
+    <li>Use advanced options to release results after voting is cut-off.</li>
+    <li>Instruct each voter to enter that number INSTEAD OF their name.</li>
+  </ol>
+  <p>
+    By taking this approach, the organizer can verify that every vote is legitmate because if an entered number does not match the list of generated numebrs, the vote can be thrown out.
+  </p>
+  <h4>Double-Blind Election:</h4>
+  <p>
+    Everyone's vote is hidden from other voters, including the organizer. The concern here is not allowing someone to anonymously vote twice nor allowing any way to trace a vote back to the voter.
+  </p>
+  <ol>
+    <li>Make a list of randomly generated numbers.</li>
+    <li>Copy the list of randomly generated numbers and separate them (e.g. cut them out and place them into a bowl).</li>
+    <li>Allow each voter to secretly receive their number without others knowing (e.g. discretely drawing from a bowl).</li>
+    <li>The voter keeps this number a secret during the entire election and beyond.</li>
+    <li>Choose "Voter Names Required" from the advanced options.</li>
+    <li>Use advanced options to release results after voting is cut-off.</li>
+    <li>Instruct each voter to enter that number INSTEAD OF their name.</li>
+  </ol>
+  <p>
+    By taking this approach, the organizer can verify that every vote is legitmate because if an entered number does not match the list of generated numbers, the vote can be thrown out.</p>
+  <p>
+    Also, the organizer has no way of tracing a number back to a voter without that voter's concent.
+  </p>
+</body>
+</html>

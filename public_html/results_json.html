@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html ng-app="mainApp">
+
+<head>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <meta charset="UTF-8">
+  <meta name="description" content="RCV Calculator App">
+  <meta name="author" content="Moritz Company">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="google-signin-client_id" content="828084230115-98814hb54sbrs34jjiecfirgak4svths.apps.googleusercontent.com">
+  <title>Ranked Choice Vote Calculator App</title>
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" href="inc/main.css?a=1">
+  <link rel="stylesheet" href="inc/ranked-choices.css?b=4">
+  <script src="inc/angular.js"></script>
+  <script src="inc/lib.js?v=7"></script>
+  <script src="inc/timezone-picker.js?v=8"></script>
+  <script src="inc/main.js?v=36"></script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-97773273-1"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'UA-97773273-1');
+  </script>
+  <base href="/">
+  <script type="text/javascript"></script>
+</head>
+
+<body ng-cloak ng-controller="MainCtrl">
+  <iframe width="100%" height="730px" src="https://rcvis.com/vo/test-bbi-presidential-election-rcv-straw-poll-2/bar" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+  <div ng-bind-html="bodyText" class="panel-body"></div>
+</body>
+</html>

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html ng-app="mainApp">
+
+<head>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <meta charset="UTF-8">
+  <meta name="description" content="Free RCV Calculator App">
+  <meta name="author" content="Moritz Company">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="google-signin-client_id" content="828084230115-98814hb54sbrs34jjiecfirgak4svths.apps.googleusercontent.com">
+  <title>Ranked Choice Free Voting App</title>
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" href="inc/main.css?a=1">
+  <link rel="stylesheet" href="inc/ranked-choices.css?b=4">
+  <script src="inc/angular.js"></script>
+  <script src="inc/lib.js?v=7"></script>
+  <script src="inc/timezone-picker.js?v=8"></script>
+  <script src="inc/main.js?v=243"></script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-97773273-1"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'UA-97773273-1');
+  </script>
+  <base href="/">
+<script type="text/javascript"></script></head>
+
+<body ng-cloak ng-controller="MainCtrl"><a href="https://github.com/davidmoritz/rcv"><img class="fork-me-on-github" src="github-fork.png" alt="Fork me on GitHub" data-test="true" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+  <div class="container">
+    <h2>Ranked Choice Voting App</h2>
+    <h5>A better way of voting</h5>
+  </div>
+  <nav role="navigation" class="navbar-fairvote navbar">
+    <div class="container">
+      <div class="row">
+        <div class="navbar-header">
+          <button type="button" data-toggle="collapse" data-target="#navbar" aria-expanded="false" class="navbar-toggle collapsed"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li ng-repeat="nav in navItems" ng-class="{'active': nav.link == activeLink}" ng-hide="nav.hide"><a href="/{{nav.link}}">{{nav.text}}<span ng-if="nav.link == activeLink" class="sr-only">(current)</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div ng-show="activeLink == 'register'" class="panel panel-default">
+      <div class="panel-body">
+        <h1>Register</h1>
+        <div class="row hidden" ng-hide="user.id">
+          <div class="col-sm-6">
+            <h2>Google</h2>
+            <div class="g-signin2" data-onsuccess="onSignIn"></div>
+            <script type="text/javascript">
+            function setUser(user, nav) {
+              if (window.$s) {
+                window.$s.updateUser(user, nav);
+              } else {
+                setTimeout(function() {
+                  setUser(user);
+                }, 500);
+              }
+            }
+
+            function onSignIn(googleUser) {
+              var profile = googleUser.getBasicProfile();
+              console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+              jQuery("#status").text("Thanks for logging in with Google, " + profile.getName() + "!");
+              setUser({
+                id: profile.getId(),
+                name: profile.getName(),
+                email: profile.getEmail(),
+                image: profile.getImageUrl()
+              });
+            }
+            </script>
+            <a href="#" onclick="signOut();">Sign out of Google</a>
+            <script type="text/javascript">
+            function signOut() {
+              var auth2 = gapi.auth2.getAuthInstance();
+              auth2.signOut().then(function() {
+                console.log('User signed out of Google.');
+              });
+            }
+            </script>
+          </div>
+          <div class="col-sm-6">
+            <h2>Facebook</h2>
+            <script>
+            function statusChangeCallback(response) {
+              console.log('statusChangeCallback');
+              console.log(response);
+              // The response object is returned with a status field that lets the
+              // app know the current login status of the person.
+              // Full docs on the response object can be found in the documentation
+              // for FB.getLoginStatus().
+              if (response.status === 'connected') {
+                // Logged into your app and Facebook.
+                testAPI();
+              } else if (response.status === 'not_authorized') {
+                // The person is logged into Facebook, but not your app.
+                document.getElementById('status').innerHTML = 'Please log ' +
+                  'into this app.';
+              } else {
+                // The person is not logged into Facebook, so we're not sure if
+                // they are logged into this app or not.
+                document.getElementById('status').innerHTML = 'Please log ' +
+                  'into Facebook.';
+              }
+            }
+            // This function is called when someone finishes with the Login
+            // Button.  See the onlogin handler attached to it in the sample
+            // code below.
+            function checkLoginState() {
+              FB.getLoginStatus(function(response) {
+                statusChangeCallback(response);
+              });
+            }
+            // Here we run a very simple test of the Graph API after login is
+            // successful.  See statusChangeCallback() for when this call is made.
+            function testAPI() {
+              console.log('Welcome!  Fetching your information.... ');
+              FB.api('/me', function(response) {
+                setUser(response);
+                console.log('Successful login for: ' + response.name);
+                document.getElementById('status').innerHTML =
+                  'Thanks for logging in with Facebook, ' + response.name + '!';
+              });
+            }
+            </script>
+            <!--
+      Below we include the Login Button social plugin. This button uses
+      the JavaScript SDK to present a graphical Login button that triggers
+      the FB.login() function when clicked.
+    -->
+            <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+            </fb:login-button>
+            <div id="status">
+            </div>
+          </div>
+        </div>
+        <div class="row" ng-hide="user.id">
+          <div class="col-sm-6">
+            <h2>
+              Login
+            </h2>
+            <div class="reg-login col-md-7">
+              <div class="form-group">
+                <label for="login-username">Username</label>
+                <input class="form-control" id="login-username" ng-model="login.username">
+              </div>
+              <div class="form-group">
+                <label for="login-password">Password</label>
+                <input class="form-control" id="login-password" type="password" ng-model="login.password">
+              </div>
+              <div class="form-group">
+                <label>
+                  Remember me (30 days) <input type="checkbox" ng-model="login.remember">
+                </label>
+              </div>
+              <div class="btn btn-primary" ng-click="loginForm()">
+                Login
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <h2>
+              Create New Account
+            </h2>
+            <div class="reg-login col-md-7">
+              <div class="form-group">
+                <label for="create-username">Username</label>
+                <input class="form-control" id="create-username" ng-model="newAccount.username">
+              </div>
+              <div class="form-group">
+                <label for="create-password">Password
+                  <br><small>(no password recovery at this time,<br>so don't forget)</small>
+                </label>
+                <input class="form-control" id="create-password" type="password" ng-model="newAccount.password">
+              </div>
+              <div class="btn btn-primary" ng-click="createNewAccount()">
+                Create
+              </div>
+            </div>
+          </div>
+        </div>
+        <div ng-show="user.name">
+          Thank you for signing in as {{user.name}}.
+        </div>
+      </div>
+    </div>
+    <div ng-show="activeLink == 'home'" class="panel panel-default">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-6 text-center">
+            <h1>RCV</h1>
+            <h2 class="hidden-xs hidden-sm">Ranked Choice Vote</h2>
+            <h3 class="hidden-md hidden-lg">Ranked Choice Vote</h3>
+            <p>Always-free RCV! A better way to vote. Whether voting for one position or multiple, ranked choice voting allows for the greatest representation of the voters. Click "About" to learn more!</p><a href="create" class="btn btn-primary">Create a Ballot</a>
+          </div>
+          <div class="col-sm-6"><a href="create"><img src="img/every-vote-counts.png" class="img img-responsive vote-button"></a></div>
+        </div>
+        <div class="row hide hidden">
+          <div class="col-sm-6 text-center">
+            <p>If you've found value from this free app, please consider a small donation. Thanks!</p><a href="https://paypal.me/rankedchoices" target="_blank" class="btn btn-primary">🧸 Buy me a bear</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div ng-show="activeLink == 'about'" class="panel panel-default">
+      <div class="panel-body">
+        <h2>About</h2>
+        <h3>
+          It is my belief that RCV offers several benefits:
+        </h3>
+        <ul>
+          <li>Better representation</li>
+          <li>No “Settling”</li>
+          <li>No wasted votes</li>
+          <li>Vote by preference</li>
+          <li>Great for multi-seat elections</li>
+          <li>Easy to use</li>
+        </ul>
+        <p>Proponents of Ranked Choice voting believe this system is about representing the people in the best way possible. The key is allowing the voter to choose more than just their favorite candidate. The problem with only voting for one choice, is that if that choice does not come in first or second, it could be considered a “wasted vote.” Therefore, people are more likely to vote for their second or third choice on the idea that it has a higher chance of winning and it’s better than their last choice.</p>
+        <p>With Ranked Choice Voting, there is no issue with voting for your first choice first, second choice second, and third choice third. Because if your first choice doesn’t win, then your vote automatically gets transferred to your second choice! And that is the beauty of the system.</p>
+        <p>Another thing RCV works really well for is implementing a fair method in voting for more multiple positions at once. Everyone’s vote is still counted as one vote, but after their first choice is elected, the unused portion of their vote (equal to the amount not absolutely necessary to get their 1st choice elected) goes to their second choice candidate. To better illustrate this point, there is a video that describes the use of ranked choice voting in the Animal Kingdom:</p><a href="https://youtu.be/l8XOZJkozfI" target="_blank">Click here to watch</a>
+        <h3>
+          Feedback
+        </h3>
+        <p>
+          I welcome questions, concerns, suggestions, and accolades!<br>Please send an email to <a href="mailto:davidmoritz@gmail.com">davidmoritz@gmail.com</a>
+        </p>
+        <h3>
+          Secure Elections
+        </h3>
+        <p>
+          If you would like to use this site for a secure election, please review: <a href="https://rankedchoices.com/secure-elections-instructions.html" target="_blank">Secure Election Instructions</a>
+        </p>
+        <h3>
+          Support
+        </h3>
+        <p>
+          I built this free app to help raise awareness of ranked choice voting. If you would like to show your appreciation, please send contributions to <a href="https://paypal.me/rankedchoices" target="_blank">paypal.me/rankedchoices</a>. Thank you so much!
+        </p>
+        <h3>
+          Terms of Service
+        </h3>
+        <p>
+          Please view our terms of service to understand proper use of this site: <a href="https://rankedchoices.com/terms-of-service.html" target="_blank">Terms of Service</a>
+        </p>
+      </div>
+    </div>
+    <div ng-show="activeLink == 'create'" class="panel panel-default">
+      <div class="panel-body">
+        <h1><span ng-show="editBallot">Edit </span>Ballot: {{ballot.name}}</h1>
+        <div ng-show="editBallot" class="form-group">
+          <label class="radio-inline">
+            <input type="radio" ng-model="editBallot_Options" value="true"> Options
+          </label>
+          <label class="radio-inline">
+            <input type="radio" ng-model="editBallot_Options" value="false"> Entries
+          </label>
+        </div>
+        <form name="ballotForm" ng-submit="newBallot()" ng-hide="entries && editBallot_Options != 'true'">
+          <div class="form-group">
+            <label>Ballot Name</label>
+            <input name="name" ng-model="ballot.name" class="form-control"><span ng-show="errors.name" class="text-danger">{{errors.name}}</span>
+          </div>
+          <div class="form-group">
+            <label>Shortcode (for link {{origin}}/{{ballot.key}})</label>
+            <div class="input-group">
+              <input name="key" ng-model="ballot.key" ng-pattern-restrict pattern="\w*" ng-change="checkAvailability()" maxlength="16" class="form-control"><span class="input-group-btn">
+                  <button type="button" ng-click="generateRandomKey()" class="btn btn-primary">New Shortcode</button></span>
+            </div><span ng-show="errors.key" class="text-danger">{{errors.key}}</span><span ng-show="success.key" class="text-success">{{success.key}}</span>
+          </div>
+          <div class="form-group">
+            <label>Advanced Options
+              <input type="checkbox" ng-model="advancedOptions">
+            </label>
+          </div>
+          <div ng-show="advancedOptions">
+            <div class="form-group">
+              <label>Positions to be Elected</label>
+              <input type="number" name="positions" ng-model="ballot.positions" class="form-control"><span ng-show="errors.positions" class="text-danger">{{errors.positions}}</span>
+            </div>
+            <div ng-show="user.name" class="form-group">
+              <label>Created By {{user.name}}</label>
+            </div>
+            <div ng-show="ballot.createdBy == 'guest'" class="form-group">
+              <label>Created By<small class="text-muted"> using default "guest" will restrict future editing. Please&nbsp;<a href="register" class="btn-link">Sign in</a> to allow future editing.</small></label>
+              <input name="createdBy" ng-model="ballot.createdBy" readonly class="form-control"><span ng-show="errors.createdBy" class="text-danger">{{errors.createdBy}}</span>
+            </div>
+            <div class="form-group">
+              <label>Voters Names:</label>
+              <div>
+                <label title="Putting in names is optional" class="radio-inline">
+                  <input type="radio" value="0" name="voter-register" ng-model="ballot.register" checked="true">Optional
+                </label>
+                <label title="At least 3 characters must be present to vote" class="radio-inline">
+                  <input type="radio" value="1" name="voter-register" ng-model="ballot.register">Required
+                </label>
+                <label title="Does not ask for name" class="radio-inline">
+                  <input type="radio" value="2" name="voter-register" ng-model="ballot.register">Anonymous
+                </label>
+                <label title="Uses code instead of name" class="radio-inline" ng-hide="true">
+                  <input type="radio" value="3" name="voter-register" ng-model="ballot.register">Code
+                </label>
+              </div>
+            </div>
+            <div class="form-group" ng-show="user.name">
+              <label>
+                Hide voter names when displaying results (except from owner, while logged in):
+                <input type="checkbox" ng-model="ballot.hideNames">
+              </label>
+            </div>
+            <div class="form-group">
+              <label>
+                Allow users to contribute custom entries:
+                <input type="checkbox" ng-model="ballot.allowCustom">
+              </label>
+            </div>
+            <div class="form-group">
+              <h4 ng-hide="editDate || editTime">Voting Cutoff: never (check box for custom)</h4>
+              <h4 ng-show="editDate || editTime">Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}} {{ballot.voteCutoff | date: "h:mm a" }}</h4>
+              <label>Edit Time
+                <input type="checkbox" ng-model="editTime">
+              </label>
+              <small ng-show="editTime">(Current Time: {{rightNow.format('LT')}})</small>
+              <div class="row" ng-show="editTime">
+                <div class="col-sm-6">
+                  <uib-timepicker ng-model="ballot.voteCutoff" minute-step="1"></uib-timepicker>
+                </div>
+                <div class="col-sm-6">
+                  <label>Timezone:</label>
+                  <select class="form-control js-timezone-picker" ng-model="ballot.voteTimezone"></select>
+                </div>
+              </div>
+              <label>Edit Date
+                <input type="checkbox" ng-model="editDate">
+              </label>
+              <div ng-show="editDate" class="input-group">
+                <input type="text" ng-focus="releaseOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.voteCutoff" is-open="releaseOpen" class="form-control"><span class="input-group-btn">
+                    <button type="button" ng-click="releaseOpen = !releaseOpen" class="btn btn-default"><i class="fa fa-calendar"></i></button></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>
+                Visual display of results provided by <a href="https://rcvis.com/" target="_blank">RCVis</a>:
+                <input type="checkbox" ng-model="ballot.showGraph" ng-disabled="!editDate && !editTime"><br>
+                <small class="text-muted">NOTE: This graph is only available if a Voting Cutoff time is chosen above.</small>
+              </label>
+            </div>
+            <div class="form-group">
+              <label>Release Results:<span ng-hide="showRelease || editDate || editTime"> immediately (check box for custom)</span><span ng-hide="showRelease || (!editDate &amp;&amp; !editTime)"> after voting (check box for custom)</span>
+                <input type="checkbox" ng-model="showRelease" ng-click="sameTime()"><small ng-show="showRelease &amp;&amp; ballot.resultsRelease" class="text-muted"> {{ballot.resultsRelease | date: dateFormat }}</small>
+              </label>
+              <div ng-show="showRelease">
+                <div class="input-group">
+                  <input type="text" ng-focus="cutoffOpen = true" uib-datepicker-popup="{{pickerFormat}}" datepicker-options="pickerOptions" ng-model="ballot.resultsRelease" is-open="cutoffOpen" class="form-control"><span class="input-group-btn">
+                      <button type="button" ng-click="cutoffOpen = !cutoffOpen" class="btn btn-default"><i class="fa fa-calendar"></i></button></span>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <uib-timepicker ng-model="ballot.resultsRelease" minute-step="15"></uib-timepicker>
+                  </div>
+                  <div class="col-sm-6">
+                    <label>Timezone:</label>
+                    <select class="form-control js-timezone-picker" ng-model="ballot.resultTimezone"></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Tie-Break Method:</label>
+              <div>
+                <label title="Randomly determine the order of candidates being eliminated" class="radio-inline">
+                  <input type="radio" value="random" name="tie-break-method" ng-model="ballot.tieBreak">Random (official)
+                </label>
+                <label title="Observe the preference of secondary choices to determine" class="radio-inline">
+                  <input type="radio" value="weighted" name="tie-break-method" ng-model="ballot.tieBreak">Weighted (factor in subsequant choices)
+                </label>
+                <label title="All candidates in a tie are simultaneously eliminated" class="radio-inline hide">
+                  <input type="radio" value="none" name="tie-break-method" ng-model="ballot.tieBreak">No Winner
+                </label>
+              </div>
+            </div>
+            <div ng-hide="true" class="form-group">
+              <label>Require Voter Sign-in:<span ng-hide="ballot.requireSignIn"> (with either Google or Facebook)</span>
+                <input type="checkbox" ng-model="ballot.requireSignIn">
+              </label>
+              <div ng-show="ballot.requireSignIn">
+                <div class="input-group"><span class="input-group-addon">Max votes per person</span>
+                  <input type="number" ng-model="ballot.maxVotes" class="form-control" value=2>
+                </div>
+              </div>
+            </div>
+          </div>
+          <input type="submit" value="Submit" ng-disabled="errors.key" class="btn btn-info">
+        </form>
+        <div ng-show="entries &amp;&amp; !congrats">
+          <div ng-show="!editBallot || editBallot_Options == 'false'">
+            <form name="entriesForm" ng-submit="addEntry()">
+              <div class="form-group">
+                <label>New Entry (use ENTER to add)</label>
+                <input name="entryInput" ng-model="entryInput" class="form-control"><span ng-show="errorEntry">{{errorEntry}}</span>
+              </div>
+              <button type="submit" class="btn btn-info">Add Entry</button>
+              <button type="button" ng-click="submitEntries()" class="btn btn-default">Submit All Entries</button>
+            </form>
+            <h2>Current Entry List</h2>
+            <h5 ng-repeat="entry in entries track by $index"><strong>{{$index + 1}}&nbsp;</strong>{{entry}}&nbsp;{{images[$index]}}<i ng-click="addImageModal($index)" ng-hide="images[$index]" class="fa fa-image pointer" style="margin-right: 5px"></i><i ng-click="removeEntry($index)" class="fa fa-close pointer"></i></h5>
+          </div>
+        </div>
+        <div ng-show="congrats">
+          <h3>Thank you for creating a ballot!</h3>
+          <h4>Send this url to people for voting:</h4>
+          <h4 class="text-success">{{origin}}/{{ballot.key}}</h4><a href="{{origin}}/vote#{{ballot.key}}">Click here to vote yourself</a>
+        </div>
+      </div>
+    </div>
+    <div ng-show="activeLink == 'code'" class="panel panel-default">
+      <div class="panel-body">
+        <div ng-hide="candidates">
+          <h1>Please register before voting!</h1>
+          <form ng-submit="submitShortcode()">
+            <div class="row" ng-hide="uniqueCodeValid">
+              <div class="form-group col-sm-6 col-md-4 col-lg-3">
+                <label>Enter Unique Code</label>
+                <input ng-blur="validateCode()" name="uniqueCode" ng-model="uniqueCode" class="form-control"><span ng-show="errors.uniqueCode" class="text-danger">{{errors.uniqueCode}}</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6 col-md-4 col-lg-3">
+                <label>Enter Voter Zip Code</label>
+                <input ng-blur="validateZip()" name="zipCode" ng-model="zipCode" class="form-control" required="true" maxlength="5"><span ng-show="errors.zipCode" class="text-danger">{{errors.zipCode}}</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6 col-md-4 col-lg-3">
+                <label>Choose Party Affiliation:</label><br/>
+                <label>
+                  <input ng-change="validateZip()" type="radio" ng-model="partyAffiliation" value="r">
+                  Republican
+                </label><br/>
+                <label>
+                  <input ng-change="validateZip()" type="radio" ng-model="partyAffiliation" value="d">
+                  Democrat
+                </label><br/>
+                <label>
+                  <input ng-change="validateZip()" type="radio" ng-model="partyAffiliation" value="l">
+                  Libertarian
+                </label><br/>
+                <label>
+                  <input ng-change="validateZip()" type="radio" ng-model="partyAffiliation" value="g">
+                  Green
+                </label><br/>
+                <label>
+                  <input ng-change="validateZip()" type="radio" ng-model="partyAffiliation" value="i">
+                  Independent
+                </label><br/>
+                <label>
+                  <input ng-change="validateZip()" type="radio" ng-model="partyAffiliation" value="u">
+                  Unaffiliated
+                </label><br/>
+                <label>
+                  <input ng-change="validateZip()" type="radio" ng-model="partyAffiliation" value="o">
+                  Other
+                </label><br/>
+              </div>
+            </div>
+            <input type="submit" value="Vote" class="btn btn-success" ng-show="ballot.voterName">
+          </form>
+        </div>
+        <div ng-if="candidates" ng-hide="thanks">
+          <h1>Ballot: {{ballot.name}}</h1>
+          <div>
+            <h2>Order by Preference <small>(remove any undesired using <i class="fa fa-trash"></i>)</small></h2>
+            <h3>(Drag &amp; Drop)</h3>
+            <h3 class="hide" ng-show="ballot.positions &gt; 1">{{ballot.positions}} positions available</h3>
+            <form name="voteForm" ng-submit="submitVote()">
+              <ul id="sortable" ui-sortable ng-model="candidates">
+                <li ng-repeat="item in candidates track by $index" data-id="{{item.id}}"
+                  class="candidate-item" style="background-color: #{{item.color}}">
+                  <i ng-click="removeCandidate($index)" class="fa fa-trash"></i>
+                  <img class="choice-image" src="{{item.image}}" ng-if="item.image">{{item.name}}
+                </li>
+              </ul>
+              <button type="submit" ng-disabled="candidates.length === 0" class="btn btn-primary clearfix">Vote!</button>
+              <button type="button" ng-click="resetCandidates()" class="btn btn-default">Reset</button>
+            </form>
+          </div>
+        </div>
+        <div ng-show="thanks">
+          <h1>Ballot: {{ballot.name}}</h1>
+          <h3>Thank you for voting!</h3>
+          <a onclick="location.reload()">RESET</a>
+        </div>
+      </div>
+    </div>
+    <div ng-show="activeLink == 'vote'" class="panel panel-default">
+      <div class="panel-body">
+        <div ng-hide="candidates">
+          <h1>Vote!</h1>
+          <form ng-submit="submitShortcode()">
+            <div class="row">
+              <div class="form-group col-sm-6 col-md-4 col-lg-3">
+                <label>Enter Ballot Shortcode</label>
+                <input name="ballot" ng-model="shortcode" class="form-control"><span ng-show="errors.shortcode" class="text-danger">{{errors.shortcode}}</span>
+              </div>
+            </div>
+            <input type="submit" value="Submit" class="btn btn-success">
+          </form>
+        </div>
+        <div ng-if="candidates" ng-hide="thanks">
+          <h1>Ballot: {{ballot.name}}</h1>
+          <div class="row" ng-hide="ballot.register == 2">
+            <label class="control-label col-sm-3 col-md-2">Your Name<span ng-show="ballot.register == 1">*</span>:</label>
+            <div class="col-sm-9 col-md-10">
+              <input type="text" name="voterName" ng-model="ballot.voterName" class="form-control"
+                placeholder="{{ ballot.register == 0 ? 'Your Name Here - Optional' : 'First & Last Name'}}" ng-required="ballot.register == 1">
+            </div>
+          </div>
+          <div class="row" style="margin-top: 5px;" ng-hide="ballot.allowCustom == 0">
+            <label class="control-label col-sm-3 col-md-2">New Entry?:</label>
+            <div class="col-sm-9 col-md-10">
+              <div class="input-group">
+                <input type="text" name="customEntry" ng-model="ballot.customEntry" class="form-control" placeholder="Optional">
+                <span class="input-group-btn">
+                  <button type="button" ng-click="addCustomCandidate()" class="btn btn-secondary">Add</button>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div ng-show="ballot.register == 1 && (ballot.voterName || '').length <= 2" class="alert alert-info" style="margin-top: 5px;">Enter Your Name to View the Candidates.</div>
+          <div ng-show="ballot.register != 1 || (ballot.voterName || '').length > 2">
+            <h2>Order by Preference <small>(remove any undesired using <i class="fa fa-trash"></i>)</small></h2>
+            <h3>(Drag &amp; Drop)</h3>
+            <h3 class="hide" ng-show="ballot.positions &gt; 1">{{ballot.positions}} positions available</h3>
+            <form name="voteForm" ng-submit="submitVote()">
+              <ul id="sortable" ui-sortable ng-model="candidates">
+                <li ng-repeat="item in candidates track by $index" data-id="{{item.id}}"
+                  class="candidate-item">
+                  <i ng-click="removeCandidate($index)" class="fa fa-trash"></i>
+                  <img class="choice-image" src="{{item.image}}" ng-if="item.image">{{item.name}}
+                </li>
+              </ul>
+              <button type="submit" ng-disabled="candidates.length === 0" class="btn btn-primary clearfix">Vote!</button>
+              <button type="button" ng-click="resetCandidates()" class="btn btn-default">Reset</button>
+            </form>
+          </div>
+          <h4>Voting URL: {{origin}}/{{ballot.key}}</h4>
+        </div>
+        <div ng-show="thanks">
+          <h1>Ballot: {{ballot.name}}</h1>
+          <h3>Thank you for voting!</h3>
+          <h4>
+              <a href="/results#{{shortcode}}">Click here to see the results</a>
+            </h4>
+          <h5>
+            Voting URL: {{origin}}/{{ballot.key}}
+          </h5>
+        </div>
+      </div>
+    </div>
+    <div ng-show="activeLink == 'results'" class="panel panel-default">
+      <div class="panel-body">
+        <h1>Results<span class="ballot-name"></span></h1>
+        <div ng-hide="final">
+          <form ng-submit="submitShortcode()">
+            <div class="row">
+              <div class="form-group col-sm-6 col-md-4 col-lg-3">
+                <label>Enter Ballot Shortcode</label>
+                <input name="ballot" ng-model="shortcode" class="form-control"><span ng-show="errors.shortcode" class="text-danger">{{errors.shortcode}}</span>
+              </div>
+            </div>
+            <input type="submit" value="Submit" class="btn btn-success">
+          </form>
+        </div>
+        <div ng-show="final">
+          <h2 ng-show="elected.length == 1">
+            The winner<span ng-if="!voteClosed"> (so far)</span>: {{elected[0]}}
+          </h2>
+          <div ng-show="elected.length > 1">
+            <h2>The winners, in order of most votes<span ng-if="!voteClosed"> (so far)</span>:</h2>
+            <ol>
+              <li ng-repeat="result in elected">{{result}}</li>
+            </ol>
+          </div>
+          <div ng-if="showGraph">
+            <div id="iframe-disclaimer" ng-if="!rcvisSlug">
+              <h3>
+                A graph of the results will be made available after voting has been cut off.
+              </h3>
+            </div>
+            <div id="iframe-house"></div>
+          </div>
+          <div>
+            <button ng-click="showText = !showText" class="btn btn-default hidden-xs">{{!showText ? "Show" : "Hide"}} details</button>
+          </div>
+          <h4>
+            Voting URL: {{origin}}/{{shortcode}}
+          </h4>
+          <div ng-if="showGraphTease">
+            <form ng-submit="submitCreateGraph()">
+              <h4>
+                A visual display of the results, provided by <a href="https://rcvis.com/" target="_blank">RCVis</a>, is ready once voting is completed. <button type="submit" class="btn btn-primary clearfix">Graph!</button>
+              </h4>
+            </form>
+          </div>
+          <span ng-show="errors.shortcode" class="text-danger">{{errors.shortcode}}</span>
+        </div>
+      </div>
+    </div>
+    <div ng-show="activeLink == 'profile'" class="panel panel-default">
+      <div class="panel-body">
+        <h1>Profile</h1>
+        <h3 ng-show="user.name">Name: {{user.name}}</h3>
+        <div ng-show="allBallots.length">
+          <h3>Current Ballots</h3>
+          <table class="table ballots">
+            <thead>
+              <tr>
+                <th>Shortcode</th>
+                <th>Name</th>
+                <th>Vote Cutoff ({{moment.tz(moment.tz.guess()).format('z')}})</th>
+                <th>Total votes</th>
+                <th>Admin Tools</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="ballot in allBallots track by ballot.id">
+                <td>{{ballot.key}}</td>
+                <td>{{ballot.name}}</td>
+                <td>{{ballot.voteCutoff.year() > 2100 ? 'never' : ballot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a')}}<span class="hide hidden d-none">{{ballot.voteCutoff}}</span></td>
+                <td>{{ballot.totalVotes}}</td>
+                <td><a href="/results#{{ballot.key}}" tooltip-placement="top-left" target="_blank" uib-tooltip="See Results" class="fa fa-list-ol pointer"></a>
+                  <i ng-click="copyToClipboard(origin + '/' + ballot.key)" tooltip-placement="top" uib-tooltip="Copy URL" class="fa fa-link pointer"></i>
+                  <i ng-click="deleteVotes(ballot)" tooltip-placement="top" uib-tooltip="Reset Votes" class="fa fa-refresh pointer"></i>
+                  <i ng-click="changeBallot(ballot)" tooltip-placement="top" uib-tooltip="Edit Ballot" class="fa fa-pencil pointer"></i>
+                  <i ng-click="duplicateBallot(ballot)" tooltip-placement="top-right" uib-tooltip="Duplicate Ballot" class="fa fa-clone pointer"></i>
+                  <i ng-click="deleteBallot(ballot)" tooltip-placement="top-right" uib-tooltip="Delete Ballot" class="fa fa-trash pointer"></i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div ng-show="activeLink == 'results' &amp;&amp; showText" class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Detailed Results</h3>
+      </div>
+      <div ng-bind-html="bodyText" class="panel-body"></div>
+    </div>
+    <footer>
+      <a class="float-right pull-right" href="https://paypal.me/rankedchoices" target="_blank">🧸 Buy me a bear?</a>
+      <small>&copy; 2016-2023 Ranked Choices Vote Calculator &bull; <a href="https://rankedchoices.com/terms-of-service.html" target="_blank">Terms of Service</a></small>
+    </footer>
+  </div>
+  <div class="modal" id="image-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h2 class="modal-title">Add Image URL</h2>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>URL must point to an image (e.g. ending with png or jpg)</label>
+            <input name="image" class="form-control">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" ng-click="addImage()">Add</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="dup-ballot-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h2 class="modal-title">Duplicate Ballot {{dupBallotName}}</h2>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>New Ballot Name</label>
+            <input name="name" ng-model="dupBallot.name" class="form-control"><span ng-show="errors.name" class="text-danger">{{errors.name}}</span>
+          </div>
+          <div class="form-group">
+            <label>Please enter a new Shortcode</label>
+            <div class="input-group">
+              <input name="key" ng-model="dupBallot.key" ng-pattern-restrict pattern="\w*" ng-change="checkAvailability()" maxlength="16" class="form-control">
+              <span class="input-group-btn">
+                  <button type="button" ng-click="generateRandomKey(4, true)" ng-disabled="editBallot" class="btn btn-secondary">New Shortcode</button>
+                </span>
+            </div>
+            <span ng-show="errors.key" class="text-danger">{{errors.key}}</span>
+            <span ng-show="success.key" class="text-success">{{success.key}}</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" ng-click="duplicateBallotSubmit()">Duplicate</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
