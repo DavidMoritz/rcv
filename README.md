@@ -42,6 +42,11 @@ The following steps assume that you have PHP, MySQL, Nodejs and Grunt-cli instal
 
 Let me know if you have any issues!
 
+After years of editing the dist folder on the live site, this repo became very far removed from the end product. Look at the `dist` folder to see what is currently in production.
+If someone would like to convert the current site back into source code, I would welcome a pull request.
+
+Good luck!
+
 ## Docker Compose Consumption
 
 The provided docker file is meant for development / getting up and running quickly.
