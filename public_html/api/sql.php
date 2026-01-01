@@ -8,7 +8,7 @@ require_once("config.php");
     FROM
 			entries
     WHERE
-      ballotId = 27713
+      ballotId = 36913
   ";
 
 // 	$query = "

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!-- saved from url=(0026)http://moviemink.com/wrap/ -->
+<html style="--rotate:212deg;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<meta name="description" content="Wrapping Paper App">
+    <link rel="shortcut icon" href="./It&#39;s a Wrap!_files/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="./It&#39;s a Wrap!_files/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="./It&#39;s a Wrap!_files/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="./It&#39;s a Wrap!_files/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="./It&#39;s a Wrap!_files/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="./It&#39;s a Wrap!_files/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="./It&#39;s a Wrap!_files/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="./It&#39;s a Wrap!_files/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="./It&#39;s a Wrap!_files/apple-touch-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./It&#39;s a Wrap!_files/apple-touch-icon-180x180.png" />
+		<meta name="theme-color" content="#333333">
+		<meta name="author" content="Moritz Company">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-touch-fullscreen" content="yes">
+		<link rel="stylesheet" href="./It&#39;s a Wrap!_files/bootstrap.min.css">
+		<script src="./It&#39;s a Wrap!_files/jquery.slim.min.js"></script>
+		<script src="./It&#39;s a Wrap!_files/tether.min.js"></script>
+		<script src="./It&#39;s a Wrap!_files/bootstrap.min.js"></script>
+		<title>It's a Wrap!</title>
+		<link rel="stylesheet" href="./It&#39;s a Wrap!_files/wrap.css">
+	</head>
+	<body>
+		<div id="snow" class="container-fluid">
+			<h5>Roll Width</h5>
+			<div class="btn-group inch btn-group-justified" data-toggle="buttons">
+				<label class="btn btn-secondary js-roll col"><input type="radio" name="roll-length" value="24">24 in.</label>
+				<label class="btn btn-secondary js-roll col active"><input type="radio" name="roll-length" value="30" checked="">30 in.</label>
+				<label class="btn btn-secondary js-roll col"><input type="radio" name="roll-length" value="40">40 in.</label>
+			</div>
+			<div class="radio-group cm" hidden="">
+				<label class="radio"><input type="radio" name="roll-length" value="46">46 cm.</label>
+				<label class="radio"><input type="radio" name="roll-length" value="61">61 cm.</label>
+				<label class="radio"><input type="radio" name="roll-length" value="76">76 cm.</label>
+			</div>
+			<h5>Package Dimensions</h5>
+
+			<div class="form-inline">
+<!-- 				<div class="input-group" for="height"> -->
+<!-- 					<button class="plus double">+ +</button>
+					<button class="plus">+</button> -->
+					<input class="form-control col text-center" type="text" pattern="\d*" step="any" name="height">&nbsp;x&nbsp;
+<!-- 					<button class="minus">-</button>
+					<button class="minus double">- -</button> -->
+<!-- 				</div>
+				<div class="input-group" for="length"> -->
+<!-- 					<button class="plus double">+ +</button>
+					<button class="plus">+</button> -->
+					<input class="form-control col text-center" type="text" pattern="\d*" step="any" name="length">&nbsp;x&nbsp;
+<!-- 					<button class="minus">-</button>
+					<button class="minus double">- -</button> -->
+<!-- 				</div>
+				<div class="input-group" for="depth"> -->
+<!-- 					<button class="plus double">+ +</button>
+					<button class="plus">+</button> -->
+					<input class="form-control col text-center" type="text" pattern="\d*" step="any" name="depth">
+<!-- 					<button class="minus">-</button>
+					<button class="minus double">- -</button> -->
+<!-- 				</div> -->
+			</div>
+			<div class="row">
+				<div class="col text-center">
+					<h5>Wrapping</h5>
+					<p id="result"></p>
+				</div>
+				<div class="col text-center">
+					<h5>Ribbon</h5>
+					<p id="ribbon-result"></p>
+				</div>
+			</div>
+			<div class="holder">
+				<div class="base">
+					<div class="top"></div>
+					<div class="down"></div>
+					<div class="right"></div>
+					<div class="left"></div>
+					<div class="aux">
+						<div class="front"></div>
+						<div class="back"></div>
+					</div>
+				</div>
+			</div>
+			<!-- <label for="height">height</label>
+			<input class="dem" type="number" id="height" value="200" />
+			<label for="width">width</label>
+			<input class="dem" type="number" id="width" value="300" />
+			<label for="depth">depth</label>
+			<input class="dem" type="number" id="depth" value="120" /> -->
+			<!-- <label for="rotate">rotate</label>
+			<input class="dem" type="number" id="rotate" value="190" /> -->
+			<div class="fixed-bottom p-3">
+				<h5>Rotate</h5>
+				<div class="btn-group inch btn-group-justified" data-toggle="buttons">
+					<label class="btn btn-secondary col rotate-left">Left</label>
+					<label class="btn btn-secondary col rotate-stop active">Stop</label>
+					<label class="btn btn-secondary col rotate-right">Right</label>
+				</div>	
+			</div>
+		</div>
+		<script src="./It&#39;s a Wrap!_files/wrap.js"></script>
+		<script>
+			if('serviceWorker' in navigator) {
+				navigator.serviceWorker
+								 .register('./sw.js')
+								 .then(function() { console.log("Service Worker Registered"); });
+			}
+		</script>
+	
+
+</body></html>

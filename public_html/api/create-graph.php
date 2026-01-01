@@ -9,7 +9,8 @@ if ($key) {
 			ballots
 		SET
 			showGraph = 1,
-      voteCutoff = NOW()
+      voteCutoff = NOW(),
+      graphUpdated = NOW()
 		WHERE
 			`key` = '$key';";
 

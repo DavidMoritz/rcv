@@ -9,6 +9,7 @@ lib
 *.log
 
 # Config files
+**/config.php
 /src/api/config.php
 .ftppass
 

@@ -15,7 +15,8 @@ if(!empty($_GET['key']) && !$badSlug && !empty($_GET['id'])) {
       ballots
     SET
       rcvisSlug = '$slug',
-      rcvisId = '$id'
+      rcvisId = '$id',
+      graphUpdated = NOW()
 		WHERE
 			`key` = '$key'
   ";

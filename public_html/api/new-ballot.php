@@ -3,7 +3,7 @@ require_once("config.php");
 
 $errors = array();
 $data = array();
-// Getting posted data and decodeing json
+// Getting posted data and decoding json
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 // checking for blank values.
@@ -46,6 +46,11 @@ if (!empty($_POST['hideNames']))
 else
 	$hideNames = 0;
 
+if (!empty($_POST['hideDetails']))
+	$hideDetails = intval($_POST['hideDetails']);
+else
+	$hideDetails = 0;
+
 if (!empty($_POST['showGraph']))
 	$showGraph = intval($_POST['showGraph']);
 else
@@ -71,9 +76,9 @@ if (!empty($errors)) {
 	$sth->execute();
 	$query = "
 		INSERT INTO
-			ballots (`name`, `timeCreated`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `register`, `allowCustom`, `hideNames`, `showGraph`, `maxVotes`)
+			ballots (`name`, `timeCreated`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `register`, `allowCustom`, `hideNames`, `hideDetails`, `showGraph`, `maxVotes`)
 		VALUES
-			('". addslashes($_POST['name']) ."', NOW(), '". addslashes($_POST['key']) ."',". $_POST['positions'] .",'". $_POST['createdBy'] ."', '". $_POST['sqlResultsRelease'] ."', '". $_POST['sqlVoteCutoff'] ."', $requireSignIn, '$tieBreak', $register, $allowCustom, $hideNames, $showGraph, $maxVotes);";
+			('". addslashes($_POST['name']) ."', NOW(), '". addslashes($_POST['key']) ."',". $_POST['positions'] .",'". $_POST['createdBy'] ."', '". $_POST['sqlResultsRelease'] ."', '". $_POST['sqlVoteCutoff'] ."', $requireSignIn, '$tieBreak', $register, $allowCustom, $hideNames, $hideDetails, $showGraph, $maxVotes);";
 
 	$sth = $dbh->prepare($query);
 //   echo $query;

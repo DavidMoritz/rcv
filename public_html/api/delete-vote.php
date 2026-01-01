@@ -13,7 +13,7 @@ if(!empty($voteId)) {
   $specificVote = "AND votes.vote_id = $voteId";
 
   if(!empty($ballotShortcode)) {
-  // checking for blank values.
+  // remove specific vote.
     $query = "
       DELETE FROM
         `votes`
@@ -38,6 +38,18 @@ if(!empty($voteId)) {
     $sth = $dbh->prepare($query);
     $sth->execute();
     $results=$sth->fetchAll(PDO::FETCH_ASSOC);
+  // Update graph.
+    $query2 = "
+      UPDATE
+        `ballots`
+      SET
+        `graphUpdated` = '2022-02-02 12:12:12'
+      WHERE
+        `key` = '$ballotShortcode'
+    ;";
+    $sth2 = $dbh->prepare($query2);
+    $sth2->execute();
+    $results2=$sth2->fetchAll(PDO::FETCH_ASSOC);
     echo $query;
   } else {
     echo "failed to supply ballotId";

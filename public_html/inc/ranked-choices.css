@@ -11,6 +11,9 @@
   border: 0;
   z-index: 9;
 }
+.choice-hyperlink i {
+  position: static !important;
+}
 .choice-image {
   margin-right: 5px;
   max-height: 150px;

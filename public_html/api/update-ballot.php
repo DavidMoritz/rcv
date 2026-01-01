@@ -3,7 +3,7 @@ require_once("config.php");
 
 $errors = array();
 $data = array();
-// Getting posted data and decodeing json
+// Getting posted data and decoding json
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 // checking for blank values.
@@ -56,6 +56,11 @@ if (!empty($_POST['hideNames']))
 else
 	$hideNames = "";
 
+if (!empty($_POST['hideDetails']))
+	$hideDetails = "hideDetails = " . $_POST['hideDetails'] . ",";
+else
+	$hideDetails = "";
+
 if (!empty($_POST['tieBreak']))
 	$tieBreak = "tieBreak = '" . $_POST['tieBreak'] . "',";
 else
@@ -82,6 +87,7 @@ if (!empty($errors)) {
 			$tieBreak
 			$register
       $hideNames
+      $hideDetails
       $allowCustom
       $requireSignIn
       $showGraph

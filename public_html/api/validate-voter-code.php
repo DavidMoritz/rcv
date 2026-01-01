@@ -18,7 +18,7 @@ if(!empty($_GET['code'])) {
          FROM
             votes
          WHERE
-            ballotId = 27713
+            ballotId = 36913
       )
   ";
 	$sth = $dbh->prepare($query);

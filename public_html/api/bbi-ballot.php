@@ -15,7 +15,7 @@ if(!$code) {
     FROM
 			votes
 		WHERE
-			ballotId = 27713
+			ballotId = 36913
     AND
       `name` LIKE '$code%'
   ";

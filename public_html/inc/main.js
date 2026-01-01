@@ -86,26 +86,52 @@ var mainApp = angular.module('mainApp', [
 	'ui.bootstrap'
 ]);
 
+/**
+ * bbiBallots from 2023 straw poll
+ * const bbiBallots = {
+ *   a: {
+ *     contest: "Pulse of Iowa – Presidential Straw Poll",
+ *     id: 5827,
+ *     slug: "bbi-presidential-election-rcv-straw-poll-1"
+ *   },
+ *   r: {
+ *     contest: "Pulse of Iowa – Presidential Straw Poll - Republican",
+ *     id: 5824,
+ *     slug: "bbi-presidential-election-rcv-straw-poll-republican"
+ *   },
+ *   d: {
+ *     contest: "Pulse of Iowa – Presidential Straw Poll - Democrat",
+ *     id: 5825,
+ *     slug: "bbi-presidential-election-rcv-straw-poll-democrat"
+ *   },
+ *   o: {
+ *     contest: "Pulse of Iowa – Presidential Straw Poll - Other",
+ *     id: 5826,
+ *     slug: "bbi-presidential-election-rcv-straw-poll-other"
+ *   }
+ * }
+ */
+
 const bbiBallots = {
   a: {
     contest: "Pulse of Iowa – Presidential Straw Poll",
-    id: 5827,
-    slug: "bbi-presidential-election-rcv-straw-poll-1"
+    id: 11410,
+    slug: "bbi-presidential-election-rcv-straw-poll-24"
   },
   r: {
     contest: "Pulse of Iowa – Presidential Straw Poll - Republican",
-    id: 5824,
-    slug: "bbi-presidential-election-rcv-straw-poll-republican"
+    id: 11411,
+    slug: "bbi-presidential-election-rcv-straw-poll-24-republican"
   },
   d: {
     contest: "Pulse of Iowa – Presidential Straw Poll - Democrat",
-    id: 5825,
-    slug: "bbi-presidential-election-rcv-straw-poll-democrat"
+    id: 11412,
+    slug: "bbi-presidential-election-rcv-straw-poll-24-democrat"
   },
   o: {
     contest: "Pulse of Iowa – Presidential Straw Poll - Other",
-    id: 5826,
-    slug: "bbi-presidential-election-rcv-straw-poll-other"
+    id: 11413,
+    slug: "bbi-presidential-election-rcv-straw-poll-24-other"
   }
 }
 
@@ -233,7 +259,8 @@ mainApp.controller('MainCtrl', [
 		var resetBallot = function() {
 			$s.generateRandomKey();
 			$s.entries = null;
-			$s.images = null
+			$s.images = [];
+			$s.hyperlinks = [];
 			$s.entryColors = null;
 
 			return {
@@ -248,6 +275,15 @@ mainApp.controller('MainCtrl', [
         resultTimezone: moment.tz.guess()
 			};
 		};
+    
+    var getContributions = function() {
+      $http({
+        method: 'GET',
+        url: '/api/get-contributions.php',
+      }).then(function(resp) {
+        $s.contributions = resp.data;
+      });
+    }
 
 		var getBallots = function() {
 			// we need to get ballots based on user signin
@@ -303,6 +339,10 @@ mainApp.controller('MainCtrl', [
 					text: 'Profile',
 					hide: true
 				},{
+					link: 'hall_of_fame',
+					text: 'Hall of Fame',
+					hide: true
+				},{
 					link: 'code',
 					text: 'Code',
 					hide: true
@@ -329,6 +369,7 @@ mainApp.controller('MainCtrl', [
       bbiBallot: false,
       bbiGroup: false,
       uniqueCodeValid: false,
+      hideDetails: false,
       rcvisSlug: '',
       uniqueCode: '',
       zipCode: '',
@@ -377,6 +418,9 @@ mainApp.controller('MainCtrl', [
           $s.codeKey = $loc.$$search.key;
           $s.ballot.voterName = $loc.$$search.hash;
           shortcode = $loc.$$search.hash ? $s.codeKey : '';
+          break;
+        case 'hall_of_fame':
+          getContributions();
           break;
         case 'json':
           shortcode = $loc.$$search.key;
@@ -523,7 +567,7 @@ mainApp.controller('MainCtrl', [
 			$http.get('/api/get-candidates.php?key=' + $s.shortcode + '&t=' + Date.now())
 				.then(function(resp) {
 					if (typeof resp.data == 'string') {
-						$s.errors.shortcode = resp.data;
+						$s.navigate('results', $s.shortcode);
 
 						return;
 					}
@@ -532,17 +576,23 @@ mainApp.controller('MainCtrl', [
 						$s.ballot = entry;
             $s.ballot.voterName = voterName || $loc.$$search.hash;
 						$s.ballot.register = parseInt($s.ballot.register);
-						$s.ballot.allowCustom = parseInt($s.ballot.allowCustom);
+						$s.ballot.allowCustom = !!parseInt($s.ballot.allowCustom);
+						$s.ballot.hideNames = !!parseInt($s.ballot.hideNames);
+						$s.ballot.hideDetails = !!parseInt($s.ballot.hideDetails);
+						$s.ballot.showGraph = !!parseInt($s.ballot.showGraph);
 						$s.ballot.positions = parseInt($s.ballot.positions);
 
 						return {
 							name: entry.candidate,
               image: entry.image,
+              hyperlink: decodeURIComponent(entry.hyperlink),
               color: entry.color,
 							id: entry.entry_id
 						};
 					});
 					$s.activeLink = $loc.$$search.key ? 'code' : 'vote';
+          var resultsDate = moment.tz(resp.data[0].resultsRelease, 'Zulu');
+          $s.resultsReady = resultsDate < moment();
         
           if ($s.ballot.register == 3) {
             if (!voterName) {
@@ -560,20 +610,21 @@ mainApp.controller('MainCtrl', [
 		};
     
     $s.displayRcvisIframe = function() {
-      const iframe = document.createElement('iframe');
-      const cacheBust = Date.now();
-
-      iframe.id = 'iframe-' + cacheBust;
-      iframe.width = '100%';
-      iframe.height = (299 + ( 30 * $s.names.length)) + 'px';
-      iframe.frameborder = '0';
-      iframe.style = "border: 0";
-      iframe.allowfullscreen = 'allowfullscreen';
-      iframe.src = $sce.trustAsResourceUrl(`https://rcvis.com/vo/${$s.rcvisSlug}/bar?increment=` + cacheBust);
-
-
       setTimeout(function() {
+        const iframe = document.createElement('iframe');
+        const cacheBust = $s.graphUpdated ? $s.graphUpdated.replace(/\D/g,'') : Date.now();
+        const listSize = $s.jsonObj.results.length ? Object.keys($s.jsonObj.results[0].tally).length : 0;
+        const dynamicHeight = listSize || $s.roundnum || $s.names.length;
         const house = document.getElementById('iframe-house');
+
+        iframe.id = 'iframe-' + cacheBust;
+        iframe.width = '100%';
+        iframe.height = (449 + ( 20 * dynamicHeight)) + 'px';
+        iframe.frameborder = '0';
+        iframe.style = "border: 0";
+        iframe.allowfullscreen = 'allowfullscreen';
+        iframe.src = $sce.trustAsResourceUrl(`https://rcvis.com/ve/${$s.rcvisSlug}?vistype=barchart-interactive&increment=` + cacheBust);
+
         house.appendChild(iframe);
 //         document.getElementById('iframe-' + cacheBust).contentWindow.location.reload();
         const disclaimer = document.getElementById('iframe-disclaimer');
@@ -607,9 +658,12 @@ mainApp.controller('MainCtrl', [
         }
 
           var hideNames = resp.data[0].hideNames == 1;
+          var hideDetails = resp.data[0].hideDetails == 1;
           var allowCustom = resp.data[0].allowCustom == 1;
           $s.voterNames = [];
           $s.voterIds = [];
+          let mostRecentVote = resp.data[0].date_created;
+          $s.graphUpdated = resp.data[0].graphUpdated;
           window.rawVotes = resp.data;
 					$s.votes = resp.data.map(function(result) {
 						$s.seats = parseInt(result.positions);
@@ -619,9 +673,14 @@ mainApp.controller('MainCtrl', [
 						$s.showGraph = result.showGraph == '1';
 						$s.allowCustom = result.allowCustom;
 						$s.tieBreak = result.tieBreak;
+            if (mostRecentVote < result.date_created) {
+              mostRecentVote = result.date_created;
+            }
             if (!hideNames || loggedIn) {
 						  $s.voterNames.push(result.name);
             }
+
+						$s.hideDetails = hideDetails && !loggedIn;
 						$s.voterIds.push(result.vote_id);
 
 						if (result.vote) {
@@ -632,13 +691,15 @@ mainApp.controller('MainCtrl', [
 					});
 					$s.names = _.uniq(_.flatten($s.votes));
           $s.mutableVotes = JSON.parse(JSON.stringify($s.votes));
+          
         
           if ($s.showGraph) {
             if($s.voteClosed) {
-              $s.patchRcvis = !$s.rcvisSlug;
+              $s.patchRcvis = !$s.rcvisSlug || $s.graphUpdated < mostRecentVote;
               $s.ballotName = resp.data[0].ballotName;
+              $s.ballotId = resp.data[0].ballotId;
 
-              if ($s.rcvisSlug) {
+              if (!$s.patchRcvis) {
                 $s.displayRcvisIframe();
               }
             }
@@ -665,6 +726,7 @@ mainApp.controller('MainCtrl', [
                 id: resp.data[0].entry_id,
                 name: customEntry,
                 image: '',
+                hyperlink: '',
                 color: null
               })
             }
@@ -701,8 +763,16 @@ mainApp.controller('MainCtrl', [
 			$s.ballot.positions = parseInt($s.ballot.positions);
 			$s.ballot.resultsRelease = new Date($s.ballot.resultsRelease);
 			$s.ballot.voteCutoff = new Date($s.ballot.voteCutoff);
+      $s.editTime = true;
+      $s.editDate = true;
+      $s.showRelease = true;
+      $s.advancedOptions = true;
+      $s.ballot.hideNames = ballot.hideNames == 1;
+      $s.ballot.hideDetails = ballot.hideDetails == 1;
+      $s.ballot.allowCustom = ballot.allowCustom == 1;
+      $s.ballot.showGraph = ballot.showGraph == 1;
 
-			$http.get('/api/get-candidates.php?edit=true&key=' + $s.ballot.key)
+			$http.get('/api/get-candidates.php?edit=true&key=' + $s.ballot.key + '&t=' + Date.now())
 				.then(function(resp) {
 					if (resp.data) {
 						$s.entries = resp.data.map(function(entry) {
@@ -710,6 +780,9 @@ mainApp.controller('MainCtrl', [
 						});
 						$s.images = resp.data.map(function(entry) {
 							return entry.image;
+						});
+						$s.hyperlinks = resp.data.map(function(entry) {
+							return entry.hyperlink;
 						});
 						$s.entryColors = resp.data.map(function(entry) {
 							return entry.color;
@@ -752,9 +825,26 @@ mainApp.controller('MainCtrl', [
       $('#image-modal').modal('hide');
     };
 
+    $s.addHyperlinkModal = function(idx) {
+      $('#hyperlink-modal').find('input').data('idx', idx).val();
+      $('#hyperlink-modal').modal('show');
+    };
+
+    $s.addHyperlink = function() {
+      var idx = $('#hyperlink-modal').find('input').data('idx');
+      var href = $('#hyperlink-modal').find('input').val();
+      if (href && !href.match(/^(http|https):\/\//i)) {
+        href = 'http://' + href;
+      }
+      $s.hyperlinks[idx] = encodeURIComponent(href);
+      $('#hyperlink-modal').find('input').val('');
+      $('#hyperlink-modal').modal('hide');
+    };
+
 		$s.removeEntry = function(idx) {
 			$s.entries.splice(idx, 1);
 			$s.images.splice(idx, 1);
+			$s.hyperlinks.splice(idx, 1);
 			$s.entryColors.splice(idx, 1);
 		};
 
@@ -809,6 +899,7 @@ mainApp.controller('MainCtrl', [
             $s.ballot.id = resp;
             $s.entries = [];
             $s.images = [];
+            $s.hyperlinks = [];
             $s.entryColors = [];
           }
         });
@@ -829,6 +920,11 @@ mainApp.controller('MainCtrl', [
         postRCV();
       }
 		};
+    
+    $s.generateQRCode = function(shortCode) {
+      var url = "https://rankedchoices.com/" + shortCode;
+      new QRCode(document.getElementById("qrcode"), url);
+    };
 
 		$s.submitEntries = function() {
 			if ($s.entries.length < 2) {
@@ -856,6 +952,7 @@ mainApp.controller('MainCtrl', [
 				data: {
 					entries: $s.entries,
           images: $s.images,
+          hyperlinks: $s.hyperlinks,
           colors: $s.entryColors,
 					ballotId: $s.ballot.id
 				},
@@ -865,6 +962,7 @@ mainApp.controller('MainCtrl', [
 					$s.errors = resp.errors;
 				} else {
 					$s.congrats = true;
+          $s.generateQRCode($s.ballot.key);
 				}
 			});
 		};
@@ -886,6 +984,7 @@ mainApp.controller('MainCtrl', [
 						return cand.id;
 					})).replace(/"/g, ''),
 					key: $s.ballot.key,
+          id: $s.ballot.id,
           name: $s.ballot.voterName
 				},
 				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -1014,6 +1113,7 @@ mainApp.controller('MainCtrl', [
 				$s.errorEntry = '';
 				$s.entries.push($s.entryInput);
 				$s.images.push('');
+				$s.hyperlinks.push('');
 				$s.entryColors.push('');
 				$s.entryInput = '';
 			}
@@ -1114,8 +1214,8 @@ mainApp.factory('VoteFactory', [
           config: {
             contest,
             date: $s.rightNow.format('YYYY-MM-DD'),
-            jurisdiction : "BBI Straw Poll",
-            office : "President",
+            jurisdiction : "https://RankedChoices.com",
+            office : "Assorted",
             threshold : this.quota
           },
           results : []
@@ -1197,7 +1297,7 @@ mainApp.factory('VoteFactory', [
           var newRoundNum = ++this.roundnum;
           this.jsonObj.results.push({ round: newRoundNum, tally: this.initTally(), tallyResults: [{}]});
 
-          if (this.votes.length < 100) {
+          if (this.votes.length < 100 || loggedIn) {
             this.outputstring += '</p><table class="table"><thead>Round ' + (newRoundNum) + ' votes</thead>';
             this.displayVotes(loggedIn);
           } else {
@@ -1237,7 +1337,7 @@ mainApp.factory('VoteFactory', [
 				});
 
 				_.sortBy(displaySet,'vote').reverse().forEach(function(cand) {
-          if(cand.vote > 0 && $s.patchRcvis) {
+          if(cand.vote > 0) {
             model.jsonObj.results[model.roundnum - 1].tally[cand.name] = cand.vote + '';
           }
 
@@ -1304,16 +1404,14 @@ mainApp.factory('VoteFactory', [
 				}
         
         if (data.class == 'eliminated') {
-          if ($s.patchRcvis) {
-            this.jsonObj.results[this.roundnum - 1].tallyResults[0].eliminated = this.names[chosen];
-          }
+          this.jsonObj.results[this.roundnum - 1].tallyResults[0].eliminated = this.names[chosen];
           this.votenum.reverse().forEach((vote, index) => {
             if (vote == 0) {
               var trueIndex = this.votenum.length - 1 - index;
               this.removeChosen(trueIndex, data.class);
             }
           })
-        } else if ($s.patchRcvis) {
+        } else {
           this.jsonObj.results[this.roundnum - 1].tallyResults[0].elected = this.names[chosen];
         }
 
@@ -1471,9 +1569,10 @@ mainApp.factory('VoteFactory', [
               })
             }
           }
+          this.jsonObj.config.threshold = this.quota;
           if ($s.bbiBallot) {
             $.ajax({
-              url: '/api/rcvis_patch.php?t=45&id=' + bbiBallots[$s.bbiGroup].id,
+              url: '/api/rcvis_patch.php?t=45&bbi=true&id=' + bbiBallots[$s.bbiGroup].id,
               type: 'POST',
               data: dataFromObj(this.jsonObj),
               cache: false,
@@ -1515,10 +1614,30 @@ mainApp.factory('VoteFactory', [
                 alert( 'error on upload' ); 
               }
             });
-          } else {
-            this.jsonObj.config.threshold = this.quota;
+          } else if ($s.rcvisId && $s.rcvisSlug) {
             $.ajax({
-              url: '/api/rcvis_new.php',
+              url: '/api/rcvis_patch.php?t=451&id=' + $s.rcvisId,
+              type: 'POST',
+              data: dataFromObj(this.jsonObj),
+              cache: false,
+              processData: false,
+              contentType: false, 
+              success: function( data , textStatus , jqXHR )
+              {               
+                  if( typeof data.error === 'undefined' ) {
+                    $s.displayRcvisIframe();
+                  } else {                   
+                    alert( 'ERRORS: ' + data.error );
+                  }
+              },
+              error: function(jqXHR, textStatus, errorThrown) { 
+                debugger;
+                alert( 'error on upload' ); 
+              }
+            });
+          } else {
+            $.ajax({
+              url: '/api/rcvis_new.php?id=' + $s.ballotId,
               type: 'POST',
               data: dataFromObj(this.jsonObj),
               cache: false,
@@ -1530,7 +1649,13 @@ mainApp.factory('VoteFactory', [
                     const lessOne = data.length -1;
                     const finalChar = data.charAt(lessOne);
                     const jsonStr = finalChar === '}' ? data : data.substr(0, lessOne);
-                    const respObj = JSON.parse(jsonStr);
+                    let respObj;
+                    
+                    try {
+                      respObj = JSON.parse(jsonStr);
+                    } catch(e) {
+                      return;
+                    }
                     
                     if (!respObj.id || !respObj.slug) return;
 
@@ -1540,12 +1665,11 @@ mainApp.factory('VoteFactory', [
                     
                     $.get('/api/rcvis_slug.php?key=' + $s.shortcode + '&slug=' + $s.rcvisSlug + '&id=' + $s.rcvisId);
                   } else {                   
-                    alert( 'ERRORS: ' + data.error );
+                    alert( 'Error: Please refresh to see results.' );
                   }
               },
               error: function(jqXHR, textStatus, errorThrown) { 
-                debugger;
-                alert( 'error on upload' ); 
+                alert( 'Error: Please refresh to see results.' ); 
               }
             });
           }

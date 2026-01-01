@@ -26,8 +26,8 @@ if(!empty($key)) {
     
     $query = "
       INSERT INTO
-        entries (`ballotId`, `name`, `image`)
-      VALUES ('$id', '$entry', '');
+        entries (`ballotId`, `name`, `image`, `hyperlink`)
+      VALUES ('$id', '$entry', '', '');
     ";
 
     $sth = $dbh->prepare($query);

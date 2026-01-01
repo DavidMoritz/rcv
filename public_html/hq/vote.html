@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html ng-app="mainApp">
+  <head>
+    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyC8QdEVs7xPHYwqHY9czN8jvH0-u1HylFI",
+        authDomain: "voting-hq.firebaseapp.com",
+        databaseURL: "https://voting-hq.firebaseio.com",
+        projectId: "voting-hq",
+        storageBucket: "voting-hq.appspot.com",
+        messagingSenderId: "813185634153"
+      };
+      firebase.initializeApp(config);
+    </script>
+  <script type="text/javascript"></script></head>
+  <body>
+    <h1>
+      HQ Voting
+    </h1>
+    <h2>
+      Code: <span class="display-code"></span>
+    </h2>
+    <div class="enter-code">
+      <label>Enter Code
+        <input id="code-input">
+      </label>
+      <button type="submit" onclick="startHome()">
+        Enter
+      </button>
+    </div>
+    <button onclick="startAdmin()">
+      Generate Code
+    </button>
+    <script src="./vote.js"></script>
+  </body>
+</html>

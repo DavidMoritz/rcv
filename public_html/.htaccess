@@ -1,0 +1,11 @@
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^.*$ - [L]
+
+RewriteRule ^/?([^/]+)/?$ #$1 [L,QSA]
+
+<Files 403.shtml>
+order allow,deny
+allow from all
+</Files>

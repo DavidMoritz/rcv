@@ -5,8 +5,6 @@ define('SERVER', 'localhost:3306');
 define('USERNAME', 'root');
 define('PASSWORD', 'myRootPassword');
 define('DB', 'rcv_db');
-define('APIKEY', 'abcd1234');
-define('BBIKey', 'abcd1234');
 
 ####	CONNECT TO THE DATABASE		######
 try {
