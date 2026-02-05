@@ -141,7 +141,6 @@ INSERT INTO contributions (name, message, value, date) VALUES
 
 -- Success message
 SELECT 'Seed data inserted successfully!' AS message;
-SELECT '---' AS separator;
 SELECT 'Users: 5' AS summary UNION ALL
 SELECT 'Ballots: 5' UNION ALL
 SELECT 'Entries: 27' UNION ALL
