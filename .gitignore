@@ -10,6 +10,7 @@ lib
 
 # Config files
 **/config.php
+**/config.prod.php
 /src/api/config.php
 .ftppass
 

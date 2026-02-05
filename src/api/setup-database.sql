@@ -2,14 +2,14 @@
 -- Run this file as MySQL root user: mysql -u root -p < setup-database.sql
 
 -- Create database
-CREATE DATABASE IF NOT EXISTS rcv_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- CREATE DATABASE IF NOT EXISTS rcv_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- Create user
-CREATE USER IF NOT EXISTS 'rcv_user'@'localhost' IDENTIFIED BY 'rcv_password';
+-- -- Create user
+-- CREATE USER IF NOT EXISTS 'rcv_user'@'localhost' IDENTIFIED BY 'rcv_password';
 
--- Grant privileges
-GRANT ALL PRIVILEGES ON rcv_db.* TO 'rcv_user'@'localhost';
-FLUSH PRIVILEGES;
+-- -- Grant privileges
+-- GRANT ALL PRIVILEGES ON rcv_db.* TO 'rcv_user'@'localhost';
+-- FLUSH PRIVILEGES;
 
 -- Switch to database
 USE rcv_db;

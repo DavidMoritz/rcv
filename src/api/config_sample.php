@@ -2,8 +2,8 @@
 ####	Rename this file to "config.php" after putting in your credentials	#####
 
 define('SERVER', 'localhost:3306');
-define('USERNAME', 'root');
-define('PASSWORD', 'myRootPassword');
+define('USERNAME', 'rcv_user');
+define('PASSWORD', 'rcv_password');
 define('DB', 'rcv_db');
 
 ####	CONNECT TO THE DATABASE		######
