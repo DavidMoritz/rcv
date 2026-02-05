@@ -1,9 +1,0 @@
-h1 Results
-	span.ballot-name
-div(ng-hide="final")
-	include ../partials/shortcode
-div(ng-show="final")
-	h2 The winner{{elected.length == 1 ? "" : "s"}}:
-		span(ng-repeat="result in elected")  {{result}}
-			span(ng-if="!$last") ,&nbsp;
-	button.btn.btn-default.hidden-xs(ng-click="showText = !showText") {{!showText ? "Show" : "Hide"}} details

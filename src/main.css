@@ -1,0 +1,11 @@
+/* Main CSS entry point for Vite */
+
+/* Import vendor CSS */
+@import 'font-awesome/css/font-awesome.css';
+@import './inc/jquery-ui.min.css';
+
+/* Import production CSS (already includes Bootstrap and custom styles) */
+@import './inc/main.css';
+
+/* Import ranked choices CSS */
+@import './inc/ranked-choices.css';
