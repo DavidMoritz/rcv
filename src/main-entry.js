@@ -19,8 +19,6 @@ import './inc/timezone-picker.js';
 
 // Import application code
 import './js/app.js';
-import './js/services/VoteFactory.js';
-import './js/services/mc.js';
 import './js/main.js';
 
 console.log('RCV App initialized with Vite');
