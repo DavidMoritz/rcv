@@ -24,6 +24,17 @@ export default defineConfig({
           }
           // Everything else at root or respective directories
           return '[name][extname]';
+        },
+        // Split vendor code (libraries) from app code for better caching
+        manualChunks: (id) => {
+          // Put all node_modules dependencies into vendor chunk
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+          // Put timezone-picker and other libs into vendor chunk too
+          if (id.includes('/inc/') && !id.includes('/js/')) {
+            return 'vendor';
+          }
         }
       }
     }
