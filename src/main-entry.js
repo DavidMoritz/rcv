@@ -1,23 +1,9 @@
 // Main entry point for Vite bundling
-// This replaces the multiple script tags in index.html
+// Vendor libraries (jQuery, Angular, lodash, etc.) are loaded via CDN in index.html
+// This file only imports our application code and remaining dependencies
 
-// Import vendor libraries (these replace inc/lib.js)
-import $ from 'jquery';
-import _ from 'lodash';
-import moment from 'moment';
-import angular from 'angular';
-
-// IMPORTANT: Assign to window BEFORE importing plugins that depend on them
-window.jQuery = window.$ = $;
-window._ = _;
-window.moment = moment;
-window.angular = angular;
-
-// Now import jQuery plugins (they need window.jQuery to exist)
-import 'jquery-ui-dist/jquery-ui.min.js';
+// Import remaining jQuery/Angular plugins that aren't on CDN
 import 'jquery-ui-touch-punch';
-import 'bootstrap';
-import 'angular-animate';
 import 'angular-ui-bootstrap';
 import 'angular-ui-sortable';
 import 'ng-pattern-restrict';
@@ -25,7 +11,7 @@ import 'ng-pattern-restrict';
 // Import timezone picker
 import './inc/timezone-picker.js';
 
-// Import application code
+// Import application code (creates mainApp module and controllers)
 import './js/app.js';
 import './js/main.js';
 

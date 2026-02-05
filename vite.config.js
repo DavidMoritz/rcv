@@ -6,6 +6,24 @@ export default defineConfig({
   root: 'src',
   base: '/',
 
+  // Optimize dependencies - pre-bundle these for better performance
+  optimizeDeps: {
+    include: [
+      'jquery',
+      'lodash',
+      'moment',
+      'angular',
+      'bootstrap',
+      'angular-animate',
+      'angular-ui-bootstrap'
+    ]
+  },
+
+  // Define global constants that will be replaced at build time
+  define: {
+    'global': 'window',
+  },
+
   build: {
     outDir: '../dist',
     emptyOutDir: true,
