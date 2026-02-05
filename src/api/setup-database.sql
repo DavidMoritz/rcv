@@ -83,6 +83,15 @@ CREATE TABLE IF NOT EXISTS random_codes (
   INDEX idx_code (code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Contributions table (For donations/contributions)
+CREATE TABLE IF NOT EXISTS contributions (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) DEFAULT NULL,
+  message TEXT,
+  value FLOAT DEFAULT NULL,
+  date DATE DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- Insert test user (password: testpass123)
 INSERT INTO users (username, email, password)
 VALUES ('testuser', 'test@example.com', 'testpass123')

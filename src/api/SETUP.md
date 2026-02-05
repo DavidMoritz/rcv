@@ -132,6 +132,17 @@ CREATE TABLE random_codes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
+#### Contributions Table (For donations/contributions)
+```sql
+CREATE TABLE contributions (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) DEFAULT NULL,
+  message TEXT,
+  value FLOAT DEFAULT NULL,
+  date DATE DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+```
+
 ### 7. Exit MySQL
 
 ```sql
@@ -176,6 +187,7 @@ You should see:
 | Tables_in_rcv_db |
 +------------------+
 | ballots          |
+| contributions    |
 | entries          |
 | random_codes     |
 | users            |
@@ -226,6 +238,7 @@ Make sure you create tables in this order:
 3. entries (depends on ballots)
 4. votes (depends on ballots)
 5. random_codes (no dependencies)
+6. contributions (no dependencies)
 
 ### Connection Issues
 
