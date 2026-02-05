@@ -13,13 +13,13 @@ TRUNCATE TABLE random_codes;
 TRUNCATE TABLE contributions;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Insert Users
-INSERT INTO users (id, username, email, password, created_at) VALUES
-(1, 'admin', 'admin@rcv.local', 'admin123', NOW()),
-(2, 'alice', 'alice@rcv.local', 'password123', NOW()),
-(3, 'bob', 'bob@rcv.local', 'password123', NOW()),
-(4, 'charlie', 'charlie@rcv.local', 'password123', NOW()),
-(5, 'testuser', 'test@example.com', 'testpass123', NOW());
+-- Insert Users (production schema has no created_at column)
+INSERT INTO users (id, username, email, password) VALUES
+(1, 'admin', 'admin@rcv.local', 'admin123'),
+(2, 'alice', 'alice@rcv.local', 'password123'),
+(3, 'bob', 'bob@rcv.local', 'password123'),
+(4, 'charlie', 'charlie@rcv.local', 'password123'),
+(5, 'testuser', 'test@example.com', 'testpass123');
 
 -- Insert Ballots
 INSERT INTO ballots (id, name, timeCreated, `key`, positions, createdBy, resultsRelease, voteCutoff, requireSignIn, tieBreak, register, allowCustom, hideNames, hideDetails, showGraph, maxVotes) VALUES
@@ -116,17 +116,18 @@ INSERT INTO votes (ballotId, date_created, vote, voteIds, ipAddress, name) VALUE
 (5, NOW(), 'Blue Bottle', '26', '192.168.1.142', '');
 
 -- Insert Random Codes (for secure voting)
-INSERT INTO random_codes (code, created_at) VALUES
-('ABC123', NOW()),
-('DEF456', NOW()),
-('GHI789', NOW()),
-('JKL012', NOW()),
-('MNO345', NOW()),
-('PQR678', NOW()),
-('STU901', NOW()),
-('VWX234', NOW()),
-('YZA567', NOW()),
-('BCD890', NOW());
+-- Production schema has no created_at column
+INSERT INTO random_codes (code) VALUES
+('ABC123'),
+('DEF456'),
+('GHI789'),
+('JKL012'),
+('MNO345'),
+('PQR678'),
+('STU901'),
+('VWX234'),
+('YZA567'),
+('BCD890');
 
 -- Insert Contributions (donations)
 INSERT INTO contributions (name, message, value, date) VALUES
