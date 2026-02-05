@@ -17,9 +17,10 @@ if(!$code) {
 		WHERE
 			ballotId = 36913
     AND
-      `name` LIKE '$code%'
+      `name` LIKE :code
   ";
 	$sth = $dbh->prepare($query);
+	$sth->bindValue(':code', $code . '%', PDO::PARAM_STR);
 	$sth->execute();
   $results=$sth->fetchAll(PDO::FETCH_ASSOC);
 

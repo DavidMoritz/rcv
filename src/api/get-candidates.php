@@ -18,10 +18,11 @@ if(!empty($key)) {
 		ON
 			e.ballotId = b.id
 		WHERE
-			b.key = '$key'
+			b.key = :key
 		$editText
   ";
 	$sth = $dbh->prepare($query);
+	$sth->bindValue(':key', $key, PDO::PARAM_STR);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 

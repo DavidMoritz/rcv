@@ -23,10 +23,11 @@ if(!empty($createdBy)) {
 		FROM
 			ballots
 		WHERE
-			createdBy = '$createdBy'
+			createdBy = :createdBy
 		ORDER BY
 			ballots.id DESC;";
 	$sth = $dbh->prepare($query);
+	$sth->bindValue(':createdBy', $createdBy, PDO::PARAM_STR);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 

@@ -11,10 +11,11 @@ $selectGraph = "
   FROM
     ballots
   WHERE
-    id = '$id'
+    id = :id
   AND
     rcvisId IS NULL;";
 $sth = $dbh->prepare($selectGraph);
+$sth->bindValue(':id', $id, PDO::PARAM_STR);
 $sth->execute();
 $results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
@@ -27,8 +28,9 @@ if (empty($results)) {
     SET
       rcvisId = 123
     WHERE
-      id = '$id';";
+      id = :id;";
   $sth = $dbh->prepare($updateGraph);
+  $sth->bindValue(':id', $id, PDO::PARAM_STR);
   $sth->execute();
 
   // // Create a file

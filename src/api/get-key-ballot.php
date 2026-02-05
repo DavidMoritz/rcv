@@ -11,10 +11,11 @@ if(!empty($key)) {
 		FROM
 			`ballots`
 		WHERE
-			`key` = '$key'
+			`key` = :key
 		LIMIT
 			1;";
 	$sth = $dbh->prepare($query);
+	$sth->bindValue(':key', $key, PDO::PARAM_STR);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 	print json_encode($results);

@@ -16,19 +16,22 @@ if(!empty($userId) && !empty($username) && !empty($password)) {
 			FROM
 				users
 			WHERE
-				`username` = '$username'
-			AND 
-				`password` = '$password'
+				`username` = :username
+			AND
+				`password` = :password
 			LIMIT
 				1
 		);
 		DELETE FROM
 			`users`
 		WHERE
-			`id` = '$userId'
-		AND 
+			`id` = :userId
+		AND
 			`clearance` <= @clearance;";
 	$sth = $dbh->prepare($query);
+	$sth->bindValue(':username', $username, PDO::PARAM_STR);
+	$sth->bindValue(':password', $password, PDO::PARAM_STR);
+	$sth->bindValue(':userId', $userId, PDO::PARAM_INT);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 	if(count(results) = 0) {

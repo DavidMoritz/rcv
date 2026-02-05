@@ -10,9 +10,10 @@ if(!empty($_GET['user'])) {
     FROM
 			users
 		WHERE
-			username = '$user'
+			username = :username
   ";
 	$sth = $dbh->prepare($query);
+	$sth->bindValue(':username', $user, PDO::PARAM_STR);
 	$sth->execute();
   $results=$sth->fetchAll(PDO::FETCH_ASSOC);
 

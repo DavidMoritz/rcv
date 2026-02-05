@@ -7,10 +7,8 @@ $ballotShortcode = $_POST['shortcode'];
 $createdBy = $_POST['createdBy'];
 $username = $_POST['username'];
 $voteId = $_POST['voteId'];
-$specificVote = '';
 
 if(!empty($voteId)) {
-  $specificVote = "AND votes.vote_id = $voteId";
 
   if(!empty($ballotShortcode)) {
   // remove specific vote.
@@ -27,15 +25,19 @@ if(!empty($voteId)) {
           users
           ON users.id = ballots.createdBy
         WHERE
-          `createdBy` = $createdBy
-        AND 
-          `key` = '$ballotShortcode'
+          `createdBy` = :createdBy
         AND
-          `username` = '$username'
+          `key` = :ballotShortcode
+        AND
+          `username` = :username
       )
-      $specificVote
+      AND votes.vote_id = :voteId
     ;";
     $sth = $dbh->prepare($query);
+    $sth->bindValue(':createdBy', $createdBy, PDO::PARAM_INT);
+    $sth->bindValue(':ballotShortcode', $ballotShortcode, PDO::PARAM_STR);
+    $sth->bindValue(':username', $username, PDO::PARAM_STR);
+    $sth->bindValue(':voteId', $voteId, PDO::PARAM_INT);
     $sth->execute();
     $results=$sth->fetchAll(PDO::FETCH_ASSOC);
   // Update graph.
@@ -45,9 +47,10 @@ if(!empty($voteId)) {
       SET
         `graphUpdated` = '2022-02-02 12:12:12'
       WHERE
-        `key` = '$ballotShortcode'
+        `key` = :ballotShortcode
     ;";
     $sth2 = $dbh->prepare($query2);
+    $sth2->bindValue(':ballotShortcode', $ballotShortcode, PDO::PARAM_STR);
     $sth2->execute();
     $results2=$sth2->fetchAll(PDO::FETCH_ASSOC);
     echo $query;

@@ -10,7 +10,7 @@ if(!empty($_GET['code'])) {
     FROM
 			random_codes
 		WHERE
-			`code` = '$code'
+			`code` = :code
     AND
       `code` NOT IN (
          SELECT
@@ -22,6 +22,7 @@ if(!empty($_GET['code'])) {
       )
   ";
 	$sth = $dbh->prepare($query);
+	$sth->bindValue(':code', $code, PDO::PARAM_STR);
 	$sth->execute();
   $results=$sth->fetchAll(PDO::FETCH_ASSOC);
 

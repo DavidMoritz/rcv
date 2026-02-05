@@ -24,14 +24,13 @@ if (empty($_POST['name'])) {
 }
 
 if (empty($id)) {
-  $id = "(
-    SELECT
-      id
-    FROM
-      ballots
-    WHERE
-      `key` = '$key'
-  )";
+  // Need to fetch ballot id from key using secure parameterized query
+  $subQuery = "SELECT id FROM ballots WHERE `key` = :key";
+  $subSth = $dbh->prepare($subQuery);
+  $subSth->bindValue(':key', $key, PDO::PARAM_STR);
+  $subSth->execute();
+  $result = $subSth->fetch(PDO::FETCH_ASSOC);
+  $id = $result['id'];
 }
 
 if (!empty($errors)) {
@@ -43,10 +42,18 @@ if (!empty($errors)) {
 		INSERT INTO
 			votes (`ballotId`, `date_created`, `vote`, `voteIds`, `ipAddress`$inName)
 		VALUES
-			($id,NOW(),'". $_POST['vote'] ."','". $_POST['voteIds'] ."','". $_SERVER['REMOTE_ADDR'] ."'$name)
+			(:ballotId, NOW(), :vote, :voteIds, :ipAddress" . (empty($_POST['name']) ? "" : ", :name") . ")
     ;
   ";
 	$sth = $dbh->prepare($query);
+	$sth->bindValue(':ballotId', $id, PDO::PARAM_INT);
+	$sth->bindValue(':vote', $_POST['vote'], PDO::PARAM_STR);
+	$sth->bindValue(':voteIds', $_POST['voteIds'], PDO::PARAM_STR);
+	$sth->bindValue(':ipAddress', $_SERVER['REMOTE_ADDR'], PDO::PARAM_STR);
+	if (!empty($_POST['name'])) {
+		$sanitizedName = substr(preg_replace(array('/[^a-zA-Z0-9-]/', '/ +/', '/^-|-$/'), array(' ', ' ', ''), $_POST['name']), 0, 40);
+		$sth->bindValue(':name', $sanitizedName, PDO::PARAM_STR);
+	}
 	$sth->execute();
 }
 ?>

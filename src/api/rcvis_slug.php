@@ -14,13 +14,16 @@ if(!empty($_GET['key']) && !$badSlug && !empty($_GET['id'])) {
 		UPDATE
       ballots
     SET
-      rcvisSlug = '$slug',
-      rcvisId = '$id',
+      rcvisSlug = :slug,
+      rcvisId = :id,
       graphUpdated = NOW()
 		WHERE
-			`key` = '$key'
+			`key` = :key
   ";
 	$sth = $dbh->prepare($query);
+	$sth->bindValue(':slug', $slug, PDO::PARAM_STR);
+	$sth->bindValue(':id', $id, PDO::PARAM_STR);
+	$sth->bindValue(':key', $key, PDO::PARAM_STR);
 	$sth->execute();
   $results=$sth->fetchAll(PDO::FETCH_ASSOC);
 

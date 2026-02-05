@@ -18,13 +18,15 @@ if(!empty($username)) {
 				FROM
 					`users`
 				WHERE
-					`username` = '$username'
+					`username` = :username
 				AND
-					`password` = '$password'
+					`password` = :password
 				LIMIT
 					1
 			)";
 	$sth = $dbh->prepare($query);
+	$sth->bindValue(':username', $username, PDO::PARAM_STR);
+	$sth->bindValue(':password', $password, PDO::PARAM_STR);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 	print json_encode($results);
