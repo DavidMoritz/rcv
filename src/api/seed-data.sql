@@ -32,46 +32,46 @@ INSERT INTO ballots (id, name, timeCreated, `key`, positions, createdBy, results
 -- Insert Entries (Candidates/Options)
 
 -- Pizza ballot entries
-INSERT INTO entries (ballotId, name, image, hyperlink) VALUES
-(1, 'Pepperoni', '', ''),
-(1, 'Margherita', '', ''),
-(1, 'Hawaiian', '', ''),
-(1, 'Meat Lovers', '', ''),
-(1, 'Vegetarian', '', ''),
-(1, 'BBQ Chicken', '', ''),
-(1, 'Four Cheese', '', '');
+INSERT INTO entries (ballotId, name, image, color, hyperlink) VALUES
+(1, 'Pepperoni', '', NULL, ''),
+(1, 'Margherita', '', NULL, ''),
+(1, 'Hawaiian', '', NULL, ''),
+(1, 'Meat Lovers', '', NULL, ''),
+(1, 'Vegetarian', '', NULL, ''),
+(1, 'BBQ Chicken', '', NULL, ''),
+(1, 'Four Cheese', '', NULL, '');
 
 -- Programming language entries
-INSERT INTO entries (ballotId, name, image, hyperlink) VALUES
-(2, 'JavaScript', '', 'https://javascript.com'),
-(2, 'Python', '', 'https://python.org'),
-(2, 'TypeScript', '', 'https://typescriptlang.org'),
-(2, 'Ruby', '', 'https://ruby-lang.org'),
-(2, 'Go', '', 'https://golang.org');
+INSERT INTO entries (ballotId, name, image, color, hyperlink) VALUES
+(2, 'JavaScript', '', NULL, 'https://javascript.com'),
+(2, 'Python', '', NULL, 'https://python.org'),
+(2, 'TypeScript', '', NULL, 'https://typescriptlang.org'),
+(2, 'Ruby', '', NULL, 'https://ruby-lang.org'),
+(2, 'Go', '', NULL, 'https://golang.org');
 
 -- City council entries
-INSERT INTO entries (ballotId, name, image, hyperlink) VALUES
-(3, 'Jane Smith', 'https://via.placeholder.com/150', ''),
-(3, 'John Davis', 'https://via.placeholder.com/150', ''),
-(3, 'Maria Garcia', 'https://via.placeholder.com/150', ''),
-(3, 'Robert Johnson', 'https://via.placeholder.com/150', ''),
-(3, 'Lisa Chen', 'https://via.placeholder.com/150', ''),
-(3, 'Michael Brown', 'https://via.placeholder.com/150', '');
+INSERT INTO entries (ballotId, name, image, color, hyperlink) VALUES
+(3, 'Jane Smith', 'https://via.placeholder.com/150', NULL, ''),
+(3, 'John Davis', 'https://via.placeholder.com/150', NULL, ''),
+(3, 'Maria Garcia', 'https://via.placeholder.com/150', NULL, ''),
+(3, 'Robert Johnson', 'https://via.placeholder.com/150', NULL, ''),
+(3, 'Lisa Chen', 'https://via.placeholder.com/150', NULL, ''),
+(3, 'Michael Brown', 'https://via.placeholder.com/150', NULL, '');
 
 -- Movie entries
-INSERT INTO entries (ballotId, name, image, hyperlink) VALUES
-(4, 'The Shawshank Redemption', '', ''),
-(4, 'Inception', '', ''),
-(4, 'Pulp Fiction', '', ''),
-(4, 'The Matrix', '', ''),
-(4, 'Forrest Gump', '', '');
+INSERT INTO entries (ballotId, name, image, color, hyperlink) VALUES
+(4, 'The Shawshank Redemption', '', NULL, ''),
+(4, 'Inception', '', NULL, ''),
+(4, 'Pulp Fiction', '', NULL, ''),
+(4, 'The Matrix', '', NULL, ''),
+(4, 'Forrest Gump', '', NULL, '');
 
 -- Coffee shop entries
-INSERT INTO entries (ballotId, name, image, hyperlink) VALUES
-(5, 'Starbucks', '', ''),
-(5, 'Peet\'s Coffee', '', ''),
-(5, 'Blue Bottle', '', ''),
-(5, 'Philz Coffee', '', '');
+INSERT INTO entries (ballotId, name, image, color, hyperlink) VALUES
+(5, 'Starbucks', '', NULL, ''),
+(5, 'Peet\'s Coffee', '', NULL, ''),
+(5, 'Blue Bottle', '', NULL, ''),
+(5, 'Philz Coffee', '', NULL, '');
 
 -- Insert Votes
 

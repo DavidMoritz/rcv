@@ -2,7 +2,7 @@
 require_once("config.php");
 
 $key = $_GET['key'];
-$edit = $_GET['edit'];
+$edit = $_GET['edit'] ?? false;
 $editText = $edit ? '' : 'AND NOW() < b.voteCutoff;';
 
 if(!empty($key)) {

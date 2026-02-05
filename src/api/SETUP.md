@@ -101,6 +101,7 @@ CREATE TABLE entries (
   name VARCHAR(500) NOT NULL,
   image VARCHAR(500),
   hyperlink VARCHAR(500),
+  color VARCHAR(7),
   FOREIGN KEY (ballotId) REFERENCES ballots(id) ON DELETE CASCADE,
   INDEX idx_ballotId (ballotId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
