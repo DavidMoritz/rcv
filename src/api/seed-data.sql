@@ -15,20 +15,20 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- Insert Users (production schema has no created_at column)
 INSERT INTO users (id, username, email, password) VALUES
-(1, 'admin', 'admin@rcv.local', 'admin123'),
-(2, 'alice', 'alice@rcv.local', 'password123'),
-(3, 'bob', 'bob@rcv.local', 'password123'),
-(4, 'charlie', 'charlie@rcv.local', 'password123'),
-(5, 'testuser', 'test@example.com', 'testpass123');
+(1, 'admin', 'admin@rcv.local', '76730050'), -- admin123
+(2, 'alice', 'alice@rcv.local', '-865218290'), -- password123
+(3, 'bob', 'bob@rcv.local', '-865218290'), -- password123
+(4, 'charlie', 'charlie@rcv.local', '-865218290'), -- password123
+(5, 'testuser', 'test@example.com', '-865218290'); -- password123
 
 -- Insert Ballots
 -- Production schema: resultsRelease, voteCutoff, maxVotes are NOT NULL
 INSERT INTO ballots (id, name, timeCreated, `key`, positions, createdBy, resultsRelease, voteCutoff, requireSignIn, tieBreak, register, allowCustom, hideNames, hideDetails, showGraph, maxVotes) VALUES
-(1, 'Best Pizza Flavor', NOW(), 'pizza', '1', '1', DATE_ADD(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), 0, 'random', 0, 0, 0, 0, 1, 0),
-(2, 'Favorite Programming Language', NOW(), 'codelang', '1', '2', DATE_ADD(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), 0, 'random', 0, 1, 0, 0, 1, 0),
-(3, 'City Council Election', NOW(), 'council2024', '3', '1', DATE_ADD(NOW(), INTERVAL 8 DAY), DATE_ADD(NOW(), INTERVAL 7 DAY), 1, 'weighted', 1, 0, 1, 0, 1, 0),
-(4, 'Movie Night Pick', NOW(), 'movie', '1', '3', DATE_ADD(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), 0, 'random', 0, 0, 0, 0, 1, 0),
-(5, 'Best Coffee Shop', NOW(), 'coffee', '1', '2', DATE_ADD(NOW(), INTERVAL 3 DAY), DATE_ADD(NOW(), INTERVAL 2 DAY), 0, 'random', 0, 1, 0, 1, 1, 1);
+(1, 'Best Pizza Flavor', NOW(), 'pizza', '1', '1', DATE_SUB(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), 0, 'random', 0, 0, 0, 0, 1, 0),
+(2, 'Favorite Programming Language', NOW(), 'codelang', '1', '2', DATE_SUB(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), 0, 'random', 0, 1, 0, 0, 1, 0),
+(3, 'City Council Election', NOW(), 'council2024', '3', '1', DATE_SUB(NOW(), INTERVAL 8 DAY), DATE_ADD(NOW(), INTERVAL 7 DAY), 1, 'weighted', 1, 0, 1, 0, 1, 0),
+(4, 'Movie Night Pick', NOW(), 'movie', '1', '3', DATE_SUB(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), 0, 'random', 0, 0, 0, 0, 1, 0),
+(5, 'Best Coffee Shop', NOW(), 'coffee', '1', '2', DATE_SUB(NOW(), INTERVAL 3 DAY), DATE_ADD(NOW(), INTERVAL 2 DAY), 0, 'random', 0, 1, 0, 1, 1, 1);
 
 -- Insert Entries (Candidates/Options)
 
@@ -76,45 +76,45 @@ INSERT INTO entries (ballotId, name, image, color, hyperlink) VALUES
 
 -- Insert Votes
 
--- Pizza votes (ballot 1)
+-- Pizza votes (ballot 1) - using JSON array format like production
 INSERT INTO votes (ballotId, date_created, vote, voteIds, ipAddress, name) VALUES
-(1, NOW(), 'Pepperoni,Margherita,Hawaiian,BBQ Chicken,Meat Lovers,Vegetarian,Four Cheese', '1,2,3,6,4,5,7', '192.168.1.100', 'voter001'),
-(1, NOW(), 'Margherita,Vegetarian,Four Cheese,Pepperoni,Hawaiian', '2,5,7,1,3', '192.168.1.101', 'voter002'),
-(1, NOW(), 'Meat Lovers,Pepperoni,BBQ Chicken,Margherita', '4,1,6,2', '192.168.1.102', 'voter003'),
-(1, NOW(), 'Hawaiian,BBQ Chicken,Pepperoni', '3,6,1', '192.168.1.103', 'voter004'),
-(1, NOW(), 'Pepperoni,Meat Lovers,Four Cheese,Margherita', '1,4,7,2', '192.168.1.104', 'voter005'),
-(1, NOW(), 'Vegetarian,Margherita,Four Cheese,Hawaiian', '5,2,7,3', '192.168.1.105', 'voter006'),
-(1, NOW(), 'BBQ Chicken,Pepperoni,Meat Lovers', '6,1,4', '192.168.1.106', 'voter007'),
-(1, NOW(), 'Pepperoni,BBQ Chicken,Hawaiian,Margherita', '1,6,3,2', '192.168.1.107', 'voter008'),
-(1, NOW(), 'Margherita,Pepperoni,Vegetarian', '2,1,5', '192.168.1.108', 'voter009'),
-(1, NOW(), 'Four Cheese,Margherita,Pepperoni,Hawaiian', '7,2,1,3', '192.168.1.109', 'voter010');
+(1, NOW(), '["Pepperoni","Margherita","Hawaiian","BBQ Chicken","Meat Lovers","Vegetarian","Four Cheese"]', '[1,2,3,6,4,5,7]', '192.168.1.100', 'voter001'),
+(1, NOW(), '["Margherita","Vegetarian","Four Cheese","Pepperoni","Hawaiian"]', '[2,5,7,1,3]', '192.168.1.101', 'voter002'),
+(1, NOW(), '["Meat Lovers","Pepperoni","BBQ Chicken","Margherita"]', '[4,1,6,2]', '192.168.1.102', 'voter003'),
+(1, NOW(), '["Hawaiian","BBQ Chicken","Pepperoni"]', '[3,6,1]', '192.168.1.103', 'voter004'),
+(1, NOW(), '["Pepperoni","Meat Lovers","Four Cheese","Margherita"]', '[1,4,7,2]', '192.168.1.104', 'voter005'),
+(1, NOW(), '["Vegetarian","Margherita","Four Cheese","Hawaiian"]', '[5,2,7,3]', '192.168.1.105', 'voter006'),
+(1, NOW(), '["BBQ Chicken","Pepperoni","Meat Lovers"]', '[6,1,4]', '192.168.1.106', 'voter007'),
+(1, NOW(), '["Pepperoni","BBQ Chicken","Hawaiian","Margherita"]', '[1,6,3,2]', '192.168.1.107', 'voter008'),
+(1, NOW(), '["Margherita","Pepperoni","Vegetarian"]', '[2,1,5]', '192.168.1.108', 'voter009'),
+(1, NOW(), '["Four Cheese","Margherita","Pepperoni","Hawaiian"]', '[7,2,1,3]', '192.168.1.109', 'voter010');
 
--- Programming language votes (ballot 2)
+-- Programming language votes (ballot 2) - using JSON array format like production
 INSERT INTO votes (ballotId, date_created, vote, voteIds, ipAddress, name) VALUES
-(2, NOW(), 'Python,JavaScript,TypeScript,Go', '9,8,10,12', '192.168.1.110', 'coder001'),
-(2, NOW(), 'TypeScript,JavaScript,Python', '10,8,9', '192.168.1.111', 'coder002'),
-(2, NOW(), 'JavaScript,TypeScript,Ruby,Python', '8,10,11,9', '192.168.1.112', 'coder003'),
-(2, NOW(), 'Go,Python,TypeScript', '12,9,10', '192.168.1.113', 'coder004'),
-(2, NOW(), 'Python,Go,JavaScript', '9,12,8', '192.168.1.114', 'coder005');
+(2, NOW(), '["Python","JavaScript","TypeScript","Go"]', '[9,8,10,12]', '192.168.1.110', 'coder001'),
+(2, NOW(), '["TypeScript","JavaScript","Python"]', '[10,8,9]', '192.168.1.111', 'coder002'),
+(2, NOW(), '["JavaScript","TypeScript","Ruby","Python"]', '[8,10,11,9]', '192.168.1.112', 'coder003'),
+(2, NOW(), '["Go","Python","TypeScript"]', '[12,9,10]', '192.168.1.113', 'coder004'),
+(2, NOW(), '["Python","Go","JavaScript"]', '[9,12,8]', '192.168.1.114', 'coder005');
 
--- City council votes (ballot 3) - with voter names for secure election
+-- City council votes (ballot 3) - with voter names for secure election - using JSON array format like production
 INSERT INTO votes (ballotId, date_created, vote, voteIds, ipAddress, name) VALUES
-(3, NOW(), 'Jane Smith,Maria Garcia,Lisa Chen,Robert Johnson', '13,15,17,16', '192.168.1.120', 'ABC123'),
-(3, NOW(), 'Maria Garcia,Jane Smith,Lisa Chen,John Davis', '15,13,17,14', '192.168.1.121', 'DEF456'),
-(3, NOW(), 'Lisa Chen,Maria Garcia,Jane Smith', '17,15,13', '192.168.1.122', 'GHI789'),
-(3, NOW(), 'Jane Smith,Lisa Chen,Maria Garcia,Michael Brown', '13,17,15,18', '192.168.1.123', 'JKL012');
+(3, NOW(), '["Jane Smith","Maria Garcia","Lisa Chen","Robert Johnson"]', '[13,15,17,16]', '192.168.1.120', 'ABC123'),
+(3, NOW(), '["Maria Garcia","Jane Smith","Lisa Chen","John Davis"]', '[15,13,17,14]', '192.168.1.121', 'DEF456'),
+(3, NOW(), '["Lisa Chen","Maria Garcia","Jane Smith"]', '[17,15,13]', '192.168.1.122', 'GHI789'),
+(3, NOW(), '["Jane Smith","Lisa Chen","Maria Garcia","Michael Brown"]', '[13,17,15,18]', '192.168.1.123', 'JKL012');
 
--- Movie votes (ballot 4)
+-- Movie votes (ballot 4) - using JSON array format like production
 INSERT INTO votes (ballotId, date_created, vote, voteIds, ipAddress, name) VALUES
-(4, NOW(), 'The Matrix,Inception,Pulp Fiction', '22,20,21', '192.168.1.130', 'movie_fan1'),
-(4, NOW(), 'Inception,The Matrix,The Shawshank Redemption', '20,22,19', '192.168.1.131', 'movie_fan2'),
-(4, NOW(), 'The Shawshank Redemption,Forrest Gump,Inception', '19,23,20', '192.168.1.132', 'movie_fan3');
+(4, NOW(), '["The Matrix","Inception","Pulp Fiction"]', '[22,20,21]', '192.168.1.130', 'movie_fan1'),
+(4, NOW(), '["Inception","The Matrix","The Shawshank Redemption"]', '[20,22,19]', '192.168.1.131', 'movie_fan2'),
+(4, NOW(), '["The Shawshank Redemption","Forrest Gump","Inception"]', '[19,23,20]', '192.168.1.132', 'movie_fan3');
 
--- Coffee votes (ballot 5) - maxVotes=1 (only one choice)
+-- Coffee votes (ballot 5) - maxVotes=1 (only one choice) - using JSON array format like production
 INSERT INTO votes (ballotId, date_created, vote, voteIds, ipAddress, name) VALUES
-(5, NOW(), 'Blue Bottle', '26', '192.168.1.140', ''),
-(5, NOW(), 'Philz Coffee', '27', '192.168.1.141', ''),
-(5, NOW(), 'Blue Bottle', '26', '192.168.1.142', '');
+(5, NOW(), '["Blue Bottle"]', '[26]', '192.168.1.140', ''),
+(5, NOW(), '["Philz Coffee"]', '[27]', '192.168.1.141', ''),
+(5, NOW(), '["Blue Bottle"]', '[26]', '192.168.1.142', '');
 
 -- Insert Random Codes (for secure voting)
 -- Production schema has no created_at column
