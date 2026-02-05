@@ -29,7 +29,7 @@ This project is designed to create the files necessary to run the site from a PH
 
 The project uses Nodejs and Grunt to build a *dist/* folder whose contents will be copied into the root http folder of the server. If you don't have PHP or MySQL installed, please review <https://github.com/DavidMoritz/rcv/blob/master/UBUNTU.md>.
 
-The following steps assume that you have PHP, MySQL, Nodejs and Grunt-cli installed and cwd is the project root:
+The following steps assume that you have PHP, MySQL, Nodejs and Grunt-cli installed and cwd is the project root (guess):
 
 1) run `npm install`
 2) create "src/api/config.php" from "src/api/config_sample.php"
