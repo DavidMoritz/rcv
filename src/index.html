@@ -23,7 +23,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-  <!-- Now load our bundled app code -->
+  <!-- Load timezone-picker as regular script (needs moment to be available) -->
+  <script src="/inc/timezone-picker.js"></script>
+
+  <!-- Now load our bundled app code (deferred until all sync scripts finish) -->
   <script type="module" src="/main-entry.js"></script>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
