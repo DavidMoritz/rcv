@@ -22,12 +22,13 @@ INSERT INTO users (id, username, email, password) VALUES
 (5, 'testuser', 'test@example.com', 'testpass123');
 
 -- Insert Ballots
+-- Production schema: resultsRelease, voteCutoff, maxVotes are NOT NULL
 INSERT INTO ballots (id, name, timeCreated, `key`, positions, createdBy, resultsRelease, voteCutoff, requireSignIn, tieBreak, register, allowCustom, hideNames, hideDetails, showGraph, maxVotes) VALUES
-(1, 'Best Pizza Flavor', NOW(), 'pizza', 1, 1, NULL, NULL, 0, 'random', 0, 0, 0, 0, 1, NULL),
-(2, 'Favorite Programming Language', NOW(), 'codelang', 1, 2, NULL, NULL, 0, 'random', 0, 1, 0, 0, 1, NULL),
-(3, 'City Council Election', NOW(), 'council2024', 3, 1, NULL, DATE_ADD(NOW(), INTERVAL 7 DAY), 1, 'weighted', 1, 0, 1, 0, 1, NULL),
-(4, 'Movie Night Pick', NOW(), 'movie', 1, 3, NULL, NULL, 0, 'random', 0, 0, 0, 0, 1, NULL),
-(5, 'Best Coffee Shop', NOW(), 'coffee', 1, 2, DATE_ADD(NOW(), INTERVAL 3 DAY), DATE_ADD(NOW(), INTERVAL 2 DAY), 0, 'random', 0, 1, 0, 1, 1, 1);
+(1, 'Best Pizza Flavor', NOW(), 'pizza', '1', '1', DATE_ADD(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), 0, 'random', 0, 0, 0, 0, 1, 0),
+(2, 'Favorite Programming Language', NOW(), 'codelang', '1', '2', DATE_ADD(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), 0, 'random', 0, 1, 0, 0, 1, 0),
+(3, 'City Council Election', NOW(), 'council2024', '3', '1', DATE_ADD(NOW(), INTERVAL 8 DAY), DATE_ADD(NOW(), INTERVAL 7 DAY), 1, 'weighted', 1, 0, 1, 0, 1, 0),
+(4, 'Movie Night Pick', NOW(), 'movie', '1', '3', DATE_ADD(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), 0, 'random', 0, 0, 0, 0, 1, 0),
+(5, 'Best Coffee Shop', NOW(), 'coffee', '1', '2', DATE_ADD(NOW(), INTERVAL 3 DAY), DATE_ADD(NOW(), INTERVAL 2 DAY), 0, 'random', 0, 1, 0, 1, 1, 1);
 
 -- Insert Entries (Candidates/Options)
 
