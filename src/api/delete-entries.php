@@ -20,7 +20,8 @@ if(!empty($ballotId)) {
 			WHERE
 				`id` = $ballotId
 			AND
-				`createdBy` = '$createdBy';";
+				`createdBy` = '$createdBy'
+		);";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);

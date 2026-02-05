@@ -8,6 +8,23 @@ $createdBy = $_POST['createdBy'];
 
 if(!empty($ballotId)) {
 // checking for blank values.
+	$query2 = "
+		DELETE FROM
+			`entries`
+    WHERE
+      `ballotId` = (
+      SELECT
+        `id`
+      FROM
+        `ballots`
+      WHERE
+        `createdBy` = $createdBy
+      AND 
+        `id` = $ballotId
+    );";
+	$sth2 = $dbh->prepare($query2);
+	$sth2->execute();
+  echo $query2;
 	$query = "
 		DELETE FROM
 			`ballots`
@@ -17,7 +34,6 @@ if(!empty($ballotId)) {
 			`id` = $ballotId;";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
-	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 } else {
 	echo "failed to supply ballotId";
 }

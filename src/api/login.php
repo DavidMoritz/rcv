@@ -16,16 +16,18 @@ if (!empty($errors)) {
 	echo json_encode($data);
 } else {
 // checking for blank values.
-	$query = "
-		SELECT *
+  $query = "
+    SELECT *
     FROM users
-		WHERE
-      username = '". $_POST['username'] ."'
+    WHERE
+      username = :username
     AND
-      password = '". $_POST['password'] ."';";
-	$sth = $dbh->prepare($query);
-	$sth->execute();
-	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
+      password = :password";
+  $sth = $dbh->prepare($query);
+  $sth->bindValue(':username', $_POST['username'], PDO::PARAM_STR);
+  $sth->bindValue(':password', $_POST['password'], PDO::PARAM_STR);
+  $sth->execute();
+  $results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
 	if(empty($results))
 		echo "Incorrect username and/or password";

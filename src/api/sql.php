@@ -3,12 +3,7 @@ require_once("config.php");
 
 // checking for blank values.
 	$query = "
-		SELECT
-      *
-    FROM
-			entries
-    WHERE
-      ballotId = 36913
+		 SELECT CURRENT_USER;
   ";
 
 // 	$query = "

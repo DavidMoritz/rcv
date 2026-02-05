@@ -3,7 +3,7 @@ require_once("config.php");
 
 $_POST = json_decode(file_get_contents('php://input'), true);
 
-$acceptableFields = array("id", "name", "email", "image");
+$acceptableFields = array("id", "username", "email", "image", "password");
 
 $columns = "";
 $values = "";
@@ -29,11 +29,18 @@ if(!empty($columns)) {
 			users ($columns)
 		VALUES
 			($values)
-		ON DUPLICATE KEY UPDATE
-			$update";
+		ON DUPLICATE KEY UPDATE id=id
+  ";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 } else {
 	echo "failed to supply info";
+	$query = "
+		show tables;";
+	$sth = $dbh->prepare($query);
+	$sth->execute();
+  $results=$sth->fetchAll(PDO::FETCH_ASSOC);
+
+	print json_encode($results);
 }
 ?>

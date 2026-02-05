@@ -7,7 +7,7 @@ if(!empty($key)) {
 // checking for blank values.
 	$query = "
 		SELECT
-			vote, ballots.positions, ballots.resultsRelease, ballots.name, ballots.tieBreak
+			vote_id, vote, votes.name, votes.date_created, votes.ballotId, ballots.rcvisId, ballots.rcvisSlug, ballots.showGraph, ballots.createdBy, ballots.hideNames, ballots.hideDetails, ballots.positions, ballots.resultsRelease, ballots.voteCutoff, ballots.name AS 'ballotName', ballots.tieBreak, ballots.graphUpdated
 		FROM
 			votes
 		JOIN
@@ -15,9 +15,7 @@ if(!empty($key)) {
 			ON
 				votes.ballotId = ballots.id
 		WHERE
-			ballots.key = '$key'
-		AND
-			NOW() > ballots.resultsRelease;";
+			ballots.key = '$key';";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
@@ -35,7 +33,7 @@ if(!empty($key)) {
 	// array_push($results, $sth->fetchAll(PDO::FETCH_ASSOC));
 
 	if(empty($results))
-		echo "Either shortcode is incorrect or results aren't ready to be released";
+		echo "Either shortcode is incorrect or no one has voted yet.";
 	else
 		print json_encode($results);
 } else {

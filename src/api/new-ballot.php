@@ -26,20 +26,45 @@ if (empty($_POST['requireSignIn']))
 else
 	$requireSignIn = "1";
 
-if (empty($_POST['tieBreak']))
+if (!empty($_POST['tieBreak']))
 	$tieBreak = $_POST['tieBreak'];
 else
 	$tieBreak = "random";
+
+if (!empty($_POST['register']))
+	$register = intval($_POST['register']);
+else
+	$register = 0;
+
+if (!empty($_POST['allowCustom']))
+	$allowCustom = intval($_POST['allowCustom']);
+else
+	$allowCustom = 0;
+
+if (!empty($_POST['hideNames']))
+	$hideNames = intval($_POST['hideNames']);
+else
+	$hideNames = 0;
+
+if (!empty($_POST['hideDetails']))
+	$hideDetails = intval($_POST['hideDetails']);
+else
+	$hideDetails = 0;
+
+if (!empty($_POST['showGraph']))
+	$showGraph = intval($_POST['showGraph']);
+else
+	$showGraph = 0;
 
 if (empty($_POST['maxVotes']))
 	$maxVotes = "NULL";
 else
 	$maxVotes = intval($_POST['maxVotes']);
 
-if (empty($_POST['voteCutoff']))
+if (empty($_POST['sqlVoteCutoff']))
 	$errors['voteCutoff'] = 'VoteCutoff is required.';
 
-if (empty($_POST['resultsRelease']))
+if (empty($_POST['sqlResultsRelease']))
 	$errors['resultsRelease'] = 'ResultsRelease is required.';
 
 if (!empty($errors)) {
@@ -47,13 +72,16 @@ if (!empty($errors)) {
 	$data['post'] = $_POST;
 	echo json_encode($data);
 } else {
+	$sth = $dbh->prepare("SET time_zone = '+0:00'");
+	$sth->execute();
 	$query = "
 		INSERT INTO
-			ballots (`name`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `maxVotes`)
+			ballots (`name`, `timeCreated`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `register`, `allowCustom`, `hideNames`, `hideDetails`, `showGraph`, `maxVotes`)
 		VALUES
-			('". $_POST['name'] ."','". $_POST['key'] ."',". $_POST['positions'] .",'". $_POST['createdBy'] ."', '". $_POST['resultsRelease'] ."', '". $_POST['voteCutoff'] ."', $requireSignIn, '$tieBreak', $maxVotes);";
+			('". addslashes($_POST['name']) ."', NOW(), '". addslashes($_POST['key']) ."',". $_POST['positions'] .",'". $_POST['createdBy'] ."', '". $_POST['sqlResultsRelease'] ."', '". $_POST['sqlVoteCutoff'] ."', $requireSignIn, '$tieBreak', $register, $allowCustom, $hideNames, $hideDetails, $showGraph, $maxVotes);";
 
 	$sth = $dbh->prepare($query);
+//   echo $query;
 	$sth->execute();
 	echo $dbh->lastInsertId();
 }

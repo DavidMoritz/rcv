@@ -5,7 +5,7 @@ $username="iptheate_rcv";
 $password="sotu49KQtv7$";
 $database="iptheate_rcv";
 $mysqli = new mysqli("localhost", $username, $password, $database); @mysql_select_db($database) or die( "Unable to select database");
-$query2="SELECT * FROM tablename";
+$query2="SELECT * FROM contributions";
 $result=$mysqli->query($query2);
 $num=$mysqli->mysqli_num_rows($result);?>
 <table border="0" cellspacing="2" cellpadding="2">

@@ -19630,3 +19630,945 @@ Stack trace:
 #0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
 #1 {main}
   thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Jan-2026 22:10:03 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_select_db() in /home/customer/www/rankedchoices.com/public_html/api/unsecure.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/unsecure.php on line 7
+[01-Jan-2026 22:10:29 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_select_db() in /home/customer/www/rankedchoices.com/public_html/api/unsecure.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/unsecure.php on line 7
+[01-Jan-2026 22:10:34 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_select_db() in /home/customer/www/rankedchoices.com/public_html/api/unsecure.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/unsecure.php on line 7
+[03-Jan-2026 04:29:45 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '54942-[359996,359997,359992,359-Pino-108.204.85.181-2026-01-02 2' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[06-Jan-2026 17:20:45 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''S26Q\'' at line 10 in /home/customer/www/rankedchoices.com/public_html/api/get-votes.php:20
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/get-votes.php(20): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/get-votes.php on line 20
+[07-Jan-2026 00:43:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kingofthechill' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[07-Jan-2026 00:43:39 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kingofthechill' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[07-Jan-2026 00:43:45 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kingofthechill' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[07-Jan-2026 00:43:56 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kingofthechill' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[07-Jan-2026 20:29:22 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55052-[360995,360997,360990,360--104.28.103.78-2026-01-07 14:29:' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[08-Jan-2026 03:48:14 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'imax' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[08-Jan-2026 03:48:16 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'imax' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[08-Jan-2026 03:48:19 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'imax' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[08-Jan-2026 03:48:25 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'imax' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[08-Jan-2026 03:48:33 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'imax' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[08-Jan-2026 03:48:37 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'imax' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[08-Jan-2026 18:45:54 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 's Favorites', '', '')' at line 3 in /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php:34
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php(34): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php on line 34
+[08-Jan-2026 18:46:52 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 's Hammer', '', '')' at line 3 in /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php:34
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php(34): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php on line 34
+[10-Jan-2026 04:26:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '2pxr' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[10-Jan-2026 04:26:22 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '2pxr' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[10-Jan-2026 04:26:36 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '2pxr' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[10-Jan-2026 04:26:55 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '2pxr' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[10-Jan-2026 04:27:01 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '2pxr' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[10-Jan-2026 09:29:42 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '54999-[361126,361128,361127,361--73.140.228.157-2026-01-10 03:29' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[10-Jan-2026 21:49:17 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'dtfc' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[10-Jan-2026 22:35:11 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55154-[361600,361599,361602]-Quintessence-90.203.87.4-2026-01-10' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[13-Jan-2026 01:55:06 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'ri6f' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 17:48:36 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '2026cosplay' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 17:48:42 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '2026cosplay' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 17:48:51 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '2026cosplay' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 17:48:56 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '2026cosplay' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 17:49:42 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '2026cosplay' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 17:49:44 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '2026cosplay' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 18:11:01 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'yeehaw' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 18:11:11 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'yeehaw' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 18:11:13 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'yeehaw' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 18:11:18 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'yeehaw' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 18:11:18 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'yeehaw' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 18:11:18 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'yeehaw' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 18:11:19 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'yeehaw' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 18:11:19 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'yeehaw' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 18:11:19 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'yeehaw' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[13-Jan-2026 18:11:30 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'yeehaw' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[15-Jan-2026 11:36:13 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''testdanny\'' at line 10 in /home/customer/www/rankedchoices.com/public_html/api/get-votes.php:20
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/get-votes.php(20): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/get-votes.php on line 20
+[15-Jan-2026 18:39:52 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55289-[362452,362440,362446,362--172.58.164.100-2026-01-15 12:39' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[15-Jan-2026 18:55:03 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'pini' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[15-Jan-2026 18:55:08 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'pini' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[15-Jan-2026 18:55:12 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'pini' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[16-Jan-2026 03:00:02 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'bookclub67' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[16-Jan-2026 03:00:04 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'bookclub67' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[16-Jan-2026 03:00:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'bookclub67' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[16-Jan-2026 03:00:19 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'bookclub67' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[16-Jan-2026 14:44:22 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55318-[362617,362618,362616,362--64.150.15.38-2026-01-16 08:44:2' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[16-Jan-2026 15:29:48 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'EOCday' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[16-Jan-2026 15:29:59 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'EOCday' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[16-Jan-2026 15:30:30 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'EOCday' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[17-Jan-2026 18:56:44 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'Summer2026' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[17-Jan-2026 18:56:52 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'Summer2026' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[17-Jan-2026 18:57:13 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'Summer2026' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[17-Jan-2026 18:57:22 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'Summer2026' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[19-Jan-2026 03:54:23 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'UUMarch' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[19-Jan-2026 03:54:25 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'UUMarch' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[19-Jan-2026 03:54:30 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'UUMarch' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[19-Jan-2026 15:47:36 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'househuntpoly1' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[19-Jan-2026 15:47:42 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'househuntpoly1' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[19-Jan-2026 15:47:57 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'househuntpoly1' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[19-Jan-2026 15:48:04 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'househuntpoly1' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[19-Jan-2026 15:48:04 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'househuntpoly1' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[19-Jan-2026 15:48:04 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'househuntpoly1' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[19-Jan-2026 18:08:55 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55394-[363024,363020,363023,363--104.28.116.133-2026-01-19 12:08' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[19-Jan-2026 18:08:55 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55394-[363024,363020,363023,363--104.28.116.133-2026-01-19 12:08' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[20-Jan-2026 20:45:58 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '920068053'' at line 6 in /home/customer/www/rankedchoices.com/public_html/api/login.php:27
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/login.php(27): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/login.php on line 27
+[20-Jan-2026 20:46:46 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''' at line 6 in /home/customer/www/rankedchoices.com/public_html/api/login.php:27
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/login.php(27): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/login.php on line 27
+[20-Jan-2026 20:46:55 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''' at line 6 in /home/customer/www/rankedchoices.com/public_html/api/login.php:27
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/login.php(27): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/login.php on line 27
+[20-Jan-2026 20:47:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''' at line 6 in /home/customer/www/rankedchoices.com/public_html/api/login.php:27
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/login.php(27): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/login.php on line 27
+[20-Jan-2026 20:47:43 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''' at line 6 in /home/customer/www/rankedchoices.com/public_html/api/login.php:27
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/login.php(27): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/login.php on line 27
+[20-Jan-2026 20:48:01 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[21000]: Cardinality violation: 1222 The used SELECT statements have a different number of columns in /home/customer/www/rankedchoices.com/public_html/api/login.php:27
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/login.php(27): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/login.php on line 27
+[20-Jan-2026 20:48:33 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[21000]: Cardinality violation: 1222 The used SELECT statements have a different number of columns in /home/customer/www/rankedchoices.com/public_html/api/login.php:27
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/login.php(27): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/login.php on line 27
+[20-Jan-2026 20:48:40 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[21000]: Cardinality violation: 1222 The used SELECT statements have a different number of columns in /home/customer/www/rankedchoices.com/public_html/api/login.php:27
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/login.php(27): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/login.php on line 27
+[21-Jan-2026 17:27:18 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kc2p' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[21-Jan-2026 17:27:21 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kc2p' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[23-Jan-2026 07:11:13 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'a0zn' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:12:18 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:12:26 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:12:34 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:14:35 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:14:44 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:14:54 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:14:55 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:14:55 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:14:55 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:15:04 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:15:04 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:15:05 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[24-Jan-2026 03:15:05 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '01_23' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:56:55 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:56:59 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:57:01 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:57:06 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:57:07 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:57:22 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:57:26 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:57:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:57:28 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:57:29 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:57:38 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:57:42 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[25-Jan-2026 20:57:42 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'tuftsanimes26' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[26-Jan-2026 03:12:01 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'huheye' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[26-Jan-2026 03:12:12 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'huheye' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[26-Jan-2026 03:12:25 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'huheye' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[26-Jan-2026 03:12:43 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'huheye' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[26-Jan-2026 03:12:45 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'huheye' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[28-Jan-2026 03:43:17 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'ballotId' cannot be null in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 03:43:19 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'ballotId' cannot be null in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 03:43:20 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'ballotId' cannot be null in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 03:43:26 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'ballotId' cannot be null in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 03:43:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'ballotId' cannot be null in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 03:43:30 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'ballotId' cannot be null in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 11:18:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55638-[364925,364908,364915,364-Crofix-122.11.246.133-2026-01-28' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 11:18:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55638-[364925,364908,364915,364-Crofix-122.11.246.133-2026-01-28' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 11:18:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55638-[364925,364908,364915,364-Crofix-122.11.246.133-2026-01-28' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 11:18:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55638-[364925,364908,364915,364-Crofix-122.11.246.133-2026-01-28' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 11:18:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55638-[364925,364908,364915,364-Crofix-122.11.246.133-2026-01-28' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 11:18:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55638-[364925,364908,364915,364-Crofix-122.11.246.133-2026-01-28' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 11:18:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55638-[364925,364908,364915,364-Crofix-122.11.246.133-2026-01-28' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 11:18:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55638-[364925,364908,364915,364-Crofix-122.11.246.133-2026-01-28' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 11:20:00 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55638-[364925,364908,364915,364--119.56.77.115-2026-01-28 05:20:' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 13:39:31 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55640-[364933,364948,364954,364--172.224.240.53-2026-01-28 07:39' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 13:39:31 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55640-[364933,364948,364954,364--172.224.240.53-2026-01-28 07:39' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[28-Jan-2026 19:00:56 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 't know that non voted entries would be posted to the poll. sorry?', '', '')' at line 3 in /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php:34
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php(34): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php on line 34
+[28-Jan-2026 19:10:37 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 't know that non voted entries would be posted to the ballot. sorry?', '', '')' at line 3 in /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php:34
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php(34): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php on line 34
+[30-Jan-2026 03:12:57 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:12:59 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:03 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:05 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:09 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:10 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:10 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:17 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:19 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:26 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:28 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:29 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:49 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:52 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:13:59 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:00 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:00 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:00 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:01 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:01 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:02 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:02 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:03 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:03 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:04 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:04 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:07 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:11 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:11 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 03:14:58 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'LitHappens6' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[30-Jan-2026 20:32:32 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55695-[365358,365362,365359,365--213.143.49.15-2026-01-30 14:32:' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Feb-2026 00:14:22 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'jordansbach' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[01-Feb-2026 00:14:28 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'jordansbach' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[01-Feb-2026 00:14:52 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'jordansbach' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85
+[01-Feb-2026 01:23:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55725-[365502,365499,365504,365--76.159.17.75-2026-01-31 19:23:2' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Feb-2026 01:23:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55725-[365502,365499,365504,365--76.159.17.75-2026-01-31 19:23:2' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Feb-2026 01:23:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55725-[365502,365499,365504,365--76.159.17.75-2026-01-31 19:23:2' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Feb-2026 01:23:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55725-[365502,365499,365504,365--76.159.17.75-2026-01-31 19:23:2' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Feb-2026 01:23:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55725-[365502,365499,365504,365--76.159.17.75-2026-01-31 19:23:2' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Feb-2026 01:23:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55725-[365502,365499,365504,365--76.159.17.75-2026-01-31 19:23:2' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Feb-2026 01:23:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55725-[365502,365499,365504,365--76.159.17.75-2026-01-31 19:23:2' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Feb-2026 01:23:27 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55725-[365502,365499,365504,365--76.159.17.75-2026-01-31 19:23:2' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Feb-2026 08:45:59 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55740-[365631,365633,365630,365--72.159.77.89-2026-02-01 02:45:5' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Feb-2026 13:50:01 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55640-[364929,364935,364936,364--132.147.95.123-2026-02-01 07:50' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[01-Feb-2026 13:52:32 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55640-[364935,364942,364952,364--132.147.95.123-2026-02-01 07:52' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[02-Feb-2026 12:04:09 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55750-[365775,365774,365777,365-humhum-67.209.182.128-2026-02-02' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[03-Feb-2026 09:05:44 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55819-[366458,366460,366456,366--136.152.214.43-2026-02-03 03:05' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[03-Feb-2026 09:05:44 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55819-[366457,366460,366465,366--136.152.214.72-2026-02-03 03:05' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[03-Feb-2026 09:06:20 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55819-[366462,366464,366457,366--136.152.209.70-2026-02-03 03:06' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[03-Feb-2026 09:06:20 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55819-[366462,366464,366457,366--136.152.209.70-2026-02-03 03:06' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[03-Feb-2026 09:06:20 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55819-[366462,366464,366457,366--136.152.209.70-2026-02-03 03:06' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[03-Feb-2026 18:57:38 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55753-[365783,365787,365782,365-Hillary H-172.59.41.118-2026-02-' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[03-Feb-2026 18:57:38 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55753-[365783,365787,365782,365-Hillary H-172.59.41.118-2026-02-' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[03-Feb-2026 18:57:38 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '55753-[365783,365787,365782,365-Hillary H-172.59.41.118-2026-02-' for key 'votes.NoDuplicates' in /home/customer/www/rankedchoices.com/public_html/api/vote.php:50
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/vote.php(50): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/vote.php on line 50
+[03-Feb-2026 21:41:13 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 't vote this)', '', '')' at line 3 in /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php:34
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php(34): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/add-custom-entry.php on line 34
+[05-Feb-2026 15:10:34 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'x625f' for key 'ballots.key' in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php:85
+Stack trace:
+#0 /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php(85): PDOStatement->execute()
+#1 {main}
+  thrown in /home/customer/www/rankedchoices.com/public_html/api/new-ballot.php on line 85

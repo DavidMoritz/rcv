@@ -21,20 +21,55 @@ else if (intval($_POST['positions']) < 1)
 if (empty($_POST['createdBy']))
 	$errors['createdBy'] = 'Created By is required.';
 
-if (empty($_POST['voteCutoff']))
+if (empty($_POST['sqlVoteCutoff']))
 	$cutoff = "NULL";
 else
-	$cutoff = "'". $_POST['voteCutoff'] ."'";
+	$cutoff = "'". $_POST['sqlVoteCutoff'] ."'";
 
-if (empty($_POST['resultsRelease']))
+if (empty($_POST['sqlResultsRelease']))
 	$release = "NULL";
 else
-	$release = "'". $_POST['resultsRelease'] ."'";
+	$release = "'". $_POST['sqlResultsRelease'] ."'";
 
-if (empty($_POST['tieBreak']))
+if (!empty($_POST['register']))
+	$register = "register = " . $_POST['register'] . ",";
+else
+	$register = "";
+
+if (!empty($_POST['allowCustom']))
+	$allowCustom = "allowCustom = " . $_POST['allowCustom'] . ",";
+else
+	$allowCustom = "";
+
+if (!empty($_POST['showGraph']))
+	$showGraph = "showGraph = " . $_POST['showGraph'] . ",";
+else
+	$showGraph = "";
+
+if (!empty($_POST['requireSignIn']))
+	$requireSignIn = "requireSignIn = " . $_POST['requireSignIn'] . ",";
+else
+	$requireSignIn = "";
+
+if (!empty($_POST['hideNames']))
+	$hideNames = "hideNames = " . $_POST['hideNames'] . ",";
+else
+	$hideNames = "";
+
+if (!empty($_POST['hideDetails']))
+	$hideDetails = "hideDetails = " . $_POST['hideDetails'] . ",";
+else
+	$hideDetails = "";
+
+if (!empty($_POST['tieBreak']))
 	$tieBreak = "tieBreak = '" . $_POST['tieBreak'] . "',";
 else
 	$tieBreak = "";
+
+if (!empty($_POST['key']))
+	$key = "`key` = '" . $_POST['key'] . "',";
+else
+	$key = "";
 
 if (!empty($errors)) {
 	$data['errors']  = $errors;
@@ -47,12 +82,18 @@ if (!empty($errors)) {
 		SET
 			name = '". $_POST['name'] ."',
 			positions = ". $_POST['positions'] .",
-			createdBy = '". $_POST['createdBy'] ."',
 			resultsRelease = $release,
+			$key
 			$tieBreak
+			$register
+      $hideNames
+      $hideDetails
+      $allowCustom
+      $requireSignIn
+      $showGraph
 			voteCutoff = $cutoff
 		WHERE
-			`key` = '". $_POST['key'] ."'
+			createdBy = '". $_POST['createdBy'] ."'
 		AND
 			id = ". $_POST['id'] .";";
 
