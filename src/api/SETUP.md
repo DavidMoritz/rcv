@@ -195,30 +195,44 @@ You should see:
 +------------------+
 ```
 
-## Test Data (Optional)
+## Test Data (Recommended)
 
-### Create a Test User
+### Load Complete Seed Data
 
-```sql
-INSERT INTO users (username, email, password)
-VALUES ('testuser', 'test@example.com', 'testpass123');
+We've provided a comprehensive seed file with realistic test data:
+
+```bash
+mysql -u rcv_user -p'rcv_password' rcv_db < seed-data.sql
 ```
 
-### Create a Test Ballot
+This will populate all tables with:
+- **5 users** (admin, alice, bob, charlie, testuser)
+- **5 ballots** including:
+  - 🍕 "Best Pizza Flavor" (code: `pizza`) - 7 pizza options, 10 votes
+  - 💻 "Favorite Programming Language" (code: `codelang`) - 5 languages, 5 votes
+  - 🏛️ "City Council Election" (code: `council2024`) - 6 candidates, 4 votes (multi-winner, secure voting)
+  - 🎬 "Movie Night Pick" (code: `movie`) - 5 movies, 3 votes
+  - ☕ "Best Coffee Shop" (code: `coffee`) - 4 shops, 3 votes (single-choice poll)
+- **27 entries** (candidates/options across all ballots)
+- **25 votes** (distributed across ballots)
+- **10 random codes** (for secure voting verification)
+- **8 contributions** (sample donation records)
 
-```sql
-INSERT INTO ballots (name, timeCreated, `key`, positions, createdBy, resultsRelease, voteCutoff)
-VALUES ('Test Election', NOW(), 'test123', 1, 1, NULL, NULL);
-```
+### Login Credentials
 
-### Add Candidates to Test Ballot
+All test users have simple passwords for development:
+- **Username:** `admin` / **Password:** `admin123`
+- **Username:** `alice` / **Password:** `password123`
+- **Username:** `bob` / **Password:** `password123`
+- **Username:** `charlie` / **Password:** `password123`
+- **Username:** `testuser` / **Password:** `testpass123`
 
-```sql
-INSERT INTO entries (ballotId, name, image, hyperlink) VALUES
-(1, 'Candidate A', '', ''),
-(1, 'Candidate B', '', ''),
-(1, 'Candidate C', '', '');
-```
+### Quick Test Ballot
+
+The pizza ballot is ready to use:
+- Visit: `http://localhost:8000/?key=pizza`
+- Vote on your favorite pizza flavors!
+- See live results with ranked choice calculation
 
 ## Troubleshooting
 
