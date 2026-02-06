@@ -78,10 +78,23 @@ if (!empty($errors)) {
 		INSERT INTO
 			ballots (`name`, `timeCreated`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `register`, `allowCustom`, `hideNames`, `hideDetails`, `showGraph`, `maxVotes`)
 		VALUES
-			('". addslashes($_POST['name']) ."', NOW(), '". addslashes($_POST['key']) ."',". $_POST['positions'] .",'". $_POST['createdBy'] ."', '". $_POST['sqlResultsRelease'] ."', '". $_POST['sqlVoteCutoff'] ."', $requireSignIn, '$tieBreak', $register, $allowCustom, $hideNames, $hideDetails, $showGraph, $maxVotes);";
+			(:name, NOW(), :key, :positions, :createdBy, :resultsRelease, :voteCutoff, :requireSignIn, :tieBreak, :register, :allowCustom, :hideNames, :hideDetails, :showGraph, :maxVotes)";
 
 	$sth = $dbh->prepare($query);
-//   echo $query;
+	$sth->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
+	$sth->bindValue(':key', $_POST['key'], PDO::PARAM_STR);
+	$sth->bindValue(':positions', $_POST['positions'], PDO::PARAM_INT);
+	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_STR);
+	$sth->bindValue(':resultsRelease', $_POST['sqlResultsRelease'], PDO::PARAM_STR);
+	$sth->bindValue(':voteCutoff', $_POST['sqlVoteCutoff'], PDO::PARAM_STR);
+	$sth->bindValue(':requireSignIn', $requireSignIn, PDO::PARAM_INT);
+	$sth->bindValue(':tieBreak', $tieBreak, PDO::PARAM_STR);
+	$sth->bindValue(':register', $register, PDO::PARAM_INT);
+	$sth->bindValue(':allowCustom', $allowCustom, PDO::PARAM_INT);
+	$sth->bindValue(':hideNames', $hideNames, PDO::PARAM_INT);
+	$sth->bindValue(':hideDetails', $hideDetails, PDO::PARAM_INT);
+	$sth->bindValue(':showGraph', $showGraph, PDO::PARAM_INT);
+	$sth->bindValue(':maxVotes', $maxVotes, ($maxVotes === "NULL" ? PDO::PARAM_NULL : PDO::PARAM_INT));
 	$sth->execute();
 	echo $dbh->lastInsertId();
 }

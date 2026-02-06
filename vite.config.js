@@ -49,10 +49,6 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             return 'vendor';
           }
-          // Put timezone-picker and other libs into vendor chunk too
-          if (id.includes('/inc/') && !id.includes('/js/')) {
-            return 'vendor';
-          }
         }
       }
     }
@@ -80,6 +76,11 @@ export default defineConfig({
         {
           src: 'hq',
           dest: '.'
+        },
+        // Copy timezone-picker.js (loaded as script tag, not bundled)
+        {
+          src: 'inc/timezone-picker.js',
+          dest: 'inc'
         },
         // Copy static files
         {

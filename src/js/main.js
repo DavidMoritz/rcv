@@ -468,18 +468,27 @@ mainApp.controller('MainCtrl', [
           if (resp.data.length) {
             alert($s.newAccount.username + ' is already taken');
           } else {
-            $s.newAccount.id = mc.randomDigits(100000000000);
+            // Hash password on client (will be migrated to backend later)
             $s.newAccount.password = ($s.newAccount.password + "My RCV salt").hashCode();
+            // Don't send ID - server generates it
             $http({
               method: 'POST',
               url: '/api/add-user.php',
               data: $s.newAccount,
               headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            }).then(function(response) {
+              // Only log in user if registration succeeded
+              if (response.data && response.data.id) {
+                setUser({
+                  id: response.data.id,
+                  name: $s.newAccount.username
+                }, 'create');
+              } else {
+                alert('Registration failed: ' + (response.data.error || 'Unknown error'));
+              }
+            }).catch(function(error) {
+              alert('Registration failed: ' + (error.statusText || 'Network error'));
             });
-            setUser({
-              id: $s.newAccount.id,
-              name: $s.newAccount.username
-            }, 'create');
           }
       });
     }

@@ -32,9 +32,10 @@ if (!empty($errors)) {
 		INSERT INTO
 			entries (`ballotId`, `name`, `image`, `hyperlink`)
 		VALUES ";
+	$params = array();
 	for ($i=0; $i < $total; $i++) {
     $name = $_POST['entries'][$i];
-    // 1) Normalize and decode HTML entities so “&quot;” becomes a real character.
+    // 1) Normalize and decode HTML entities so "&quot;" becomes a real character.
     $name = html_entity_decode($name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     // 2) Remove common ASCII + Unicode quote characters.
     $name = preg_replace(
@@ -42,11 +43,15 @@ if (!empty($errors)) {
         '',
         $name
     );
-		$query .= "($ballotId,'". $name ."','". $_POST['images'][$i] ."','". $_POST['hyperlinks'][$i] ."'),";
+		$query .= "(?, ?, ?, ?),";
+		$params[] = $ballotId;
+		$params[] = $name;
+		$params[] = $_POST['images'][$i];
+		$params[] = $_POST['hyperlinks'][$i];
 	}
 	$query = substr($query, 0, -1) . ";";
 	$sth = $dbh->prepare($query);
-	$sth->execute();
+	$sth->execute($params);
 	echo "Success";
 }
 ?>

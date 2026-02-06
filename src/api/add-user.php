@@ -3,44 +3,43 @@ require_once("config.php");
 
 $_POST = json_decode(file_get_contents('php://input'), true);
 
-$acceptableFields = array("id", "username", "email", "image", "password");
+$acceptableFields = array("username", "email", "image", "password");
 
-$columns = "";
-$values = "";
-$update = "";
+$columns = array();
+$placeholders = array();
+$params = array();
+
+// Generate ID server-side (1-2 billion range to fit in MySQL INT)
+$userId = random_int(1, 2000000000);
+$columns[] = "`id`";
+$placeholders[] = "?";
+$params[] = $userId;
 
 foreach ($_POST as $key => $val) {
 	if(!in_array($key, $acceptableFields))
 		continue;
-	else if(!empty($columns)) {
-		$columns .= ", ";
-		$values .= ", ";
-		$update .= ", ";
-	}
-	$columns .= "`$key`";
-	$values .= "'$val'";
-	$update .= "`$key` = VALUES(`$key`)";
+	$columns[] = "`$key`";
+	$placeholders[] = "?";
+	$params[] = $val;
 }
 
 if(!empty($columns)) {
 // checking for blank values.
+	$columnsList = implode(", ", $columns);
+	$placeholdersList = implode(", ", $placeholders);
 	$query = "
 		INSERT INTO
-			users ($columns)
+			users ($columnsList)
 		VALUES
-			($values)
+			($placeholdersList)
 		ON DUPLICATE KEY UPDATE id=id
   ";
 	$sth = $dbh->prepare($query);
-	$sth->execute();
-} else {
-	echo "failed to supply info";
-	$query = "
-		show tables;";
-	$sth = $dbh->prepare($query);
-	$sth->execute();
-  $results=$sth->fetchAll(PDO::FETCH_ASSOC);
+	$sth->execute($params);
 
-	print json_encode($results);
+	// Return the user ID to the client
+	echo json_encode(array('id' => $userId));
+} else {
+	echo json_encode(array('error' => 'failed to supply info'));
 }
 ?>

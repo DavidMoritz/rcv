@@ -24,19 +24,13 @@ if (!empty($errors)) {
 		INSERT INTO
 			entries (`ballotId`, `name`, `image`)
      SELECT
-		 	$ballotId,
+		 	?,
 			`name`,
       `image`
      FROM entries
-		 WHERE `ballotId` = $duplicateBallotId
-		";
-	for ($i=0; $i < $total; $i++) {
-		$name = preg_replace('/[\'"\\\]/', '', $_POST['entries'][$i]);
-		$query .= "($ballotId,'". $name ."', '". $_POST['images'][$i] ."'),";
-	}
-	$query = substr($query, 0, -1) . ";";
+		 WHERE `ballotId` = ?";
 	$sth = $dbh->prepare($query);
-	$sth->execute();
-	echo $query;
+	$sth->execute(array($ballotId, $duplicateBallotId));
+	echo "Success";
 }
 ?>
