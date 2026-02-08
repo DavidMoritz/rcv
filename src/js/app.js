@@ -10,7 +10,7 @@ mainApp.config(function($locationProvider) {
 mainApp.run(function runWithDependencies($rootScope) {
 	$rootScope._ = _;
 	$rootScope.moment = moment;
-	$rootScope.mc = mc;
+	// Note: $rootScope.mc is set in main.js after mc is defined
 });
 
 function onSignIn(googleUser) {

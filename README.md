@@ -34,9 +34,26 @@ This project uses:
 
 ## Development Setup
 
+### Quick Start: Verify Your Environment
+
+**Before starting**, run the verification script to check your environment:
+
+```bash
+bash verify-setup.sh
+```
+
+This will automatically check:
+- ✓ Required tools (Node.js, npm, PHP, MySQL)
+- ✓ Service status (MySQL running)
+- ✓ Port availability (3000, 8000)
+- ✓ Project files (config.php, node_modules)
+- ✓ Database connection
+
+The script will tell you exactly what's missing and how to fix it.
+
 ### Prerequisites
 
-- Node.js (for running the development server)
+- Node.js 18+ (for running the development server)
 - PHP 7.4+ (for the backend API)
 - MySQL 5.6+ (for the database)
 
@@ -62,9 +79,24 @@ If you don't have PHP or MySQL installed, please review the [Ubuntu setup guide]
    ```
 
 3. **Set up the database**
+
+   Follow the complete guide in [src/api/SETUP.md](src/api/SETUP.md) or use this quick setup:
+
    ```bash
-   mysql -u your_username -p < Schema.sql
+   # Connect to MySQL as root
+   mysql -u root -p
    ```
+
+   Then run these SQL commands:
+   ```sql
+   CREATE DATABASE IF NOT EXISTS rcv_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE USER 'rcv_user'@'localhost' IDENTIFIED BY 'rcv_password';
+   GRANT ALL PRIVILEGES ON rcv_db.* TO 'rcv_user'@'localhost';
+   FLUSH PRIVILEGES;
+   EXIT;
+   ```
+
+   See [src/api/SETUP.md](src/api/SETUP.md) for table creation and test data.
 
 4. **Start the development servers**
 

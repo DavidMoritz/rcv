@@ -81,10 +81,9 @@ String.prototype.hashCode = function() {
     return hash;
 }
 
-var mainApp = angular.module('mainApp', [
-	'ui.sortable',
-	'ui.bootstrap'
-]);
+// Note: mainApp module is defined in app.js
+// Retrieve the existing module instead of redefining it
+var mainApp = angular.module('mainApp');
 
 /**
  * bbiBallots from 2023 straw poll
@@ -135,15 +134,11 @@ const bbiBallots = {
   }
 }
 
-mainApp.config(function($locationProvider) {
-	$locationProvider.html5Mode(true);
-});
-
-mainApp.run(function runWithDependencies($rootScope) {
-	$rootScope._ = _;
-	$rootScope.moment = moment;
+// Note: mainApp.config and initial .run() are defined in app.js
+// This runs after mc is defined to add it to $rootScope
+mainApp.run(function runWithMc($rootScope) {
 	$rootScope.mc = mc;
-  if (getCookie('loginId')) {    
+  if (getCookie('loginId')) {
     setUser({
       id: getCookie('loginId'),
       name: getCookie('loginName'),
