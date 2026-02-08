@@ -1,14 +1,17 @@
 # RCV - Ranked Choice Voting
+
 ### [RankedChoices.com](https://rankedchoices.com)
+
 This Ranked Choice Voting app is free to use, free to improve, and free to share with the general public!
 
 Here are a few advantages to RCV:
-* Better representation
-* No “Settling”
-* No wasted votes
-* Vote by preference
-* Great for multi-seat elections
-* Easy to use
+
+- Better representation
+- No “Settling”
+- No wasted votes
+- Vote by preference
+- Great for multi-seat elections
+- Easy to use
 
 For a short, 1-minute explanation of RCV; check out this video: <https://youtu.be/oHRPMJmzBBw>
 
@@ -27,6 +30,7 @@ Click here to watch <https://youtu.be/l8XOZJkozfI>
 ## Tech Stack
 
 This project uses:
+
 - **Frontend**: AngularJS 1.5, Bootstrap 3, jQuery
 - **Backend**: PHP with MySQL database
 - **Build Tool**: Vite (modern ES modules bundler)
@@ -43,6 +47,7 @@ bash verify-setup.sh
 ```
 
 This will automatically check:
+
 - ✓ Required tools (Node.js, npm, PHP, MySQL)
 - ✓ Service status (MySQL running)
 - ✓ Port availability (3000, 8000)
@@ -60,12 +65,14 @@ The script will tell you exactly what's missing and how to fix it.
 #### Installing Prerequisites
 
 **macOS:**
+
 ```bash
 brew install node php mysql
 brew services start mysql
 ```
 
 **Ubuntu/Debian:**
+
 ```bash
 sudo apt-get update
 sudo apt-get install nodejs npm php php-mysql mysql-server
@@ -73,6 +80,7 @@ sudo systemctl start mysql
 ```
 
 **Windows:**
+
 - Node.js: [nodejs.org/download](https://nodejs.org/en/download/)
 - PHP: [windows.php.net](https://windows.php.net/download/)
 - MySQL: [dev.mysql.com/downloads/installer](https://dev.mysql.com/downloads/installer/)
@@ -82,15 +90,19 @@ sudo systemctl start mysql
 ### Local Development (Recommended)
 
 1. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Configure the database**
+
    ```bash
    cp src/api/config_sample.php src/api/config.php
    ```
+
    Then edit `src/api/config.php` and input your MySQL credentials:
+
    ```php
    define('SERVER', 'localhost:3306');
    define('USERNAME', 'your_username');
@@ -108,6 +120,7 @@ sudo systemctl start mysql
    ```
 
    Then run these SQL commands:
+
    ```sql
    CREATE DATABASE IF NOT EXISTS rcv_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    CREATE USER 'rcv_user'@'localhost' IDENTIFIED BY 'rcv_password';
@@ -123,16 +136,20 @@ sudo systemctl start mysql
    You need to run two servers simultaneously (use two terminal windows):
 
    **Terminal 1 - Frontend (Vite dev server):**
+
    ```bash
    npm run dev
    ```
+
    This starts the frontend at `http://localhost:3000`
 
    **Terminal 2 - Backend (PHP server):**
+
    ```bash
    cd src
    php -S localhost:8000
    ```
+
    This starts the API backend at `http://localhost:8000`
 
 5. **Open your browser**
@@ -161,44 +178,6 @@ Or serve the `dist/` folder with PHP:
 cd dist
 php -S localhost:8080
 ```
-
-## Docker Development (Alternative)
-
-Docker Compose provides a quick way to get the full stack running without manually installing PHP and MySQL.
-
-1. **Configure the database for Docker**
-   ```bash
-   cp src/api/config_sample.php src/api/config.php
-   ```
-
-   Edit `src/api/config.php` with Docker-specific settings:
-   ```php
-   <?php
-   define('SERVER', 'db:3306');
-   define('USERNAME', 'root');
-   define('PASSWORD', 'superSecretPassword');
-   define('DB', 'rcv_db');
-
-   try {
-       $dbh = new PDO('mysql:host=' . SERVER . ';dbname=' . DB, USERNAME, PASSWORD, array(PDO::ATTR_PERSISTENT => true));
-   } catch (PDOException $e) {
-       die($e->getMessage());
-   }
-   ?>
-   ```
-
-2. **Install Docker and Docker Compose**
-
-   [Follow the installation instructions for your OS](https://docs.docker.com/compose/install/)
-
-3. **Start the application**
-   ```bash
-   docker-compose up
-   ```
-
-4. **Access the application**
-
-   Navigate to `http://localhost:1337`
 
 ## Project Structure
 
@@ -246,42 +225,56 @@ Contributions are welcome and appreciated! Here's how you can help:
 
 ### Areas for Contribution
 
-- User registration and ballot management features
-- Mobile responsiveness improvements
+- Mobile responsiveness improvements (Maybe an app in the App Store?)
 - Accessibility enhancements
 - Test coverage
 - Modernization of AngularJS code
 
 ## Troubleshooting
 
+### First Step: Run the Verification Script
+
+When encountering any issues, always start here:
+
+```bash
+bash verify-setup.sh
+```
+
+This will diagnose common problems and provide specific fix commands.
+
 ### Common Issues
 
 **API requests failing with 404**
+
 - Make sure the PHP backend is running on port 8000
 - Check that `src/api/config.php` exists and has correct database credentials
 
 **Database connection errors**
+
 - Verify MySQL is running
 - Check database credentials in `src/api/config.php`
-- Ensure the database exists (run `Schema.sql` to create it)
+- Follow the database setup guide: [src/api/SETUP.md](src/api/SETUP.md)
 
 **Port already in use**
+
 - Change the Vite port in `vite.config.js` (default: 3000)
 - Change the PHP port: `php -S localhost:PORT` (default: 8000)
 
 **Build errors**
+
 - Delete `node_modules` and run `npm install` again
 - Clear Vite cache: `rm -rf node_modules/.vite`
 
 ## Recent Modernizations
 
 This project was recently updated with modern tooling:
+
 - **Migration from Grunt to Vite**: Faster builds and better development experience
 - **ES Module support**: Modern JavaScript module system
 - **Hot Module Replacement**: Instant updates during development without full page reloads
 - **Optimized builds**: Automatic code splitting and dependency optimization
-
-The `src/` directory now represents the active development codebase. The `public_html/` folder contains legacy production code for reference.
+- **Fixed AngularJS dependency issues**: Resolved module loading timing problems
+- **Automated environment verification**: Added `verify-setup.sh` script for easier onboarding
 
 ## License
 
