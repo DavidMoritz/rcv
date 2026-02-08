@@ -3,6 +3,7 @@ bower_components
 node_modules/
 dist/
 lib
+.ext
 
 # Extensions
 *.orig
