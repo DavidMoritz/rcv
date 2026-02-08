@@ -57,7 +57,27 @@ The script will tell you exactly what's missing and how to fix it.
 - PHP 7.4+ (for the backend API)
 - MySQL 5.6+ (for the database)
 
-If you don't have PHP or MySQL installed, please review the [Ubuntu setup guide](https://github.com/DavidMoritz/rcv/blob/master/UBUNTU.md).
+#### Installing Prerequisites
+
+**macOS:**
+```bash
+brew install node php mysql
+brew services start mysql
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get update
+sudo apt-get install nodejs npm php php-mysql mysql-server
+sudo systemctl start mysql
+```
+
+**Windows:**
+- Node.js: [nodejs.org/download](https://nodejs.org/en/download/)
+- PHP: [windows.php.net](https://windows.php.net/download/)
+- MySQL: [dev.mysql.com/downloads/installer](https://dev.mysql.com/downloads/installer/)
+
+**Other systems:** See [Node.js](https://nodejs.org/), [PHP](https://www.php.net/manual/en/install.php), and [MySQL](https://dev.mysql.com/doc/mysql-installation-excerpt/en/) official installation guides.
 
 ### Local Development (Recommended)
 
