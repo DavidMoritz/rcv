@@ -83,7 +83,7 @@ if (!empty($errors)) {
 	$sth = $dbh->prepare($query);
 	$sth->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
 	$sth->bindValue(':key', $_POST['key'], PDO::PARAM_STR);
-	$sth->bindValue(':positions', $_POST['positions'], PDO::PARAM_INT);
+	$sth->bindValue(':positions', $_POST['positions'], PDO::PARAM_STR);
 	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_STR);
 	$sth->bindValue(':resultsRelease', $_POST['sqlResultsRelease'], PDO::PARAM_STR);
 	$sth->bindValue(':voteCutoff', $_POST['sqlVoteCutoff'], PDO::PARAM_STR);

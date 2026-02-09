@@ -7,18 +7,25 @@ This guide will help you set up a local MySQL database for the RCV (Ranked Choic
 - MySQL installed and running on your machine
 - Access to MySQL root user (or another admin user)
 
-## Database Credentials
+## Quick Setup
 
-The application uses these credentials (defined in `config_sample.php`):
+The fastest way to set up your database is to run the production schema script:
 
-```
-Database: rcv_db
-Username: rcv_user
-Password: rcv_password
-Host:     localhost:3306
+```bash
+mysql -u root -p < src/api/setup-database-prod.sql
 ```
 
-## Setup Steps
+This will:
+- Create the `rcv_db` database
+- Create the `rcv_user` with password `rcv_password`
+- Grant necessary privileges
+- Create all tables matching the production schema
+
+**That's it!** Skip to the [Verify Setup](#verify-setup) section below.
+
+## Manual Setup (Alternative)
+
+If you prefer to set up step-by-step or need to customize the process:
 
 ### 1. Connect to MySQL as Root
 
@@ -45,120 +52,54 @@ GRANT ALL PRIVILEGES ON rcv_db.* TO 'rcv_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-### 5. Switch to the Database
+### 5. Create Tables
 
 ```sql
 USE rcv_db;
+SOURCE src/api/setup-database-prod.sql;
 ```
 
-### 6. Create Tables
+Or manually run the table creation commands from `setup-database-prod.sql`.
 
-#### Users Table
-```sql
-CREATE TABLE users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(255) NOT NULL UNIQUE,
-  email VARCHAR(255),
-  image VARCHAR(500),
-  password VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-```
-
-#### Ballots Table
-```sql
-CREATE TABLE ballots (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  timeCreated DATETIME NOT NULL,
-  `key` VARCHAR(50) NOT NULL UNIQUE,
-  positions INT NOT NULL DEFAULT 1,
-  createdBy INT NOT NULL,
-  resultsRelease DATETIME NULL,
-  voteCutoff DATETIME NULL,
-  requireSignIn TINYINT(1) DEFAULT 0,
-  tieBreak VARCHAR(20) DEFAULT 'random',
-  register TINYINT(1) DEFAULT 0,
-  allowCustom TINYINT(1) DEFAULT 0,
-  hideNames TINYINT(1) DEFAULT 0,
-  hideDetails TINYINT(1) DEFAULT 0,
-  showGraph TINYINT(1) DEFAULT 1,
-  maxVotes INT NULL,
-  rcvisId VARCHAR(100) NULL,
-  rcvisSlug VARCHAR(255) NULL,
-  graphUpdated DATETIME NULL,
-  FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE CASCADE,
-  INDEX idx_key (`key`),
-  INDEX idx_createdBy (createdBy)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-```
-
-#### Entries Table (Candidates/Options for ballots)
-```sql
-CREATE TABLE entries (
-  entry_id INT AUTO_INCREMENT PRIMARY KEY,
-  ballotId INT NOT NULL,
-  name VARCHAR(500) NOT NULL,
-  image VARCHAR(500),
-  hyperlink VARCHAR(500),
-  color VARCHAR(7),
-  FOREIGN KEY (ballotId) REFERENCES ballots(id) ON DELETE CASCADE,
-  INDEX idx_ballotId (ballotId)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-```
-
-#### Votes Table
-```sql
-CREATE TABLE votes (
-  vote_id INT AUTO_INCREMENT PRIMARY KEY,
-  ballotId INT NOT NULL,
-  date_created DATETIME NOT NULL,
-  vote TEXT NOT NULL,
-  voteIds TEXT NOT NULL,
-  ipAddress VARCHAR(45),
-  name VARCHAR(255),
-  FOREIGN KEY (ballotId) REFERENCES ballots(id) ON DELETE CASCADE,
-  INDEX idx_ballotId (ballotId),
-  INDEX idx_date_created (date_created)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-```
-
-#### Random Codes Table (For voter verification)
-```sql
-CREATE TABLE random_codes (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  code VARCHAR(10) NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_code (code)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-```
-
-#### Contributions Table (For donations/contributions)
-```sql
-CREATE TABLE contributions (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) DEFAULT NULL,
-  message TEXT,
-  value FLOAT DEFAULT NULL,
-  date DATE DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-```
-
-### 7. Exit MySQL
+### 6. Exit MySQL
 
 ```sql
 EXIT;
 ```
 
-### 8. Create Local Config File
+## Verify Setup
+
+Test the connection:
+
+```bash
+mysql -u rcv_user -p'rcv_password' rcv_db -e "SHOW TABLES;"
+```
+
+You should see:
+
+```
++------------------+
+| Tables_in_rcv_db |
++------------------+
+| ballots          |
+| contributions    |
+| entries          |
+| random_codes     |
+| users            |
+| votes            |
++------------------+
+```
+
+## Create Config File
 
 Copy the sample config and use it as-is (it already has the correct credentials):
 
 ```bash
-cp config_sample.php config.php
+cp src/api/config_sample.php src/api/config.php
 ```
 
 The `config.php` file should contain:
+
 ```php
 <?php
 define('SERVER', 'localhost:3306');
@@ -174,46 +115,17 @@ try {
 ?>
 ```
 
-## Verify Setup
+## Test Data (Optional but Recommended)
 
-Test the connection:
-
-```bash
-mysql -u rcv_user -p'rcv_password' rcv_db -e "SHOW TABLES;"
-```
-
-You should see:
-```
-+------------------+
-| Tables_in_rcv_db |
-+------------------+
-| ballots          |
-| contributions    |
-| entries          |
-| random_codes     |
-| users            |
-| votes            |
-+------------------+
-```
-
-## Test Data (Recommended)
-
-### Load Complete Seed Data
-
-We've provided a comprehensive seed file with realistic test data:
+Load seed data for testing:
 
 ```bash
-mysql -u rcv_user -p'rcv_password' rcv_db < seed-data.sql
+mysql -u rcv_user -p'rcv_password' rcv_db < src/api/seed-data.sql
 ```
 
-This will populate all tables with:
+This will populate the database with:
 - **5 users** (admin, alice, bob, charlie, testuser)
-- **5 ballots** including:
-  - 🍕 "Best Pizza Flavor" (code: `pizza`) - 7 pizza options, 10 votes
-  - 💻 "Favorite Programming Language" (code: `codelang`) - 5 languages, 5 votes
-  - 🏛️ "City Council Election" (code: `council2024`) - 6 candidates, 4 votes (multi-winner, secure voting)
-  - 🎬 "Movie Night Pick" (code: `movie`) - 5 movies, 3 votes
-  - ☕ "Best Coffee Shop" (code: `coffee`) - 4 shops, 3 votes (single-choice poll)
+- **5 ballots** including pizza, programming languages, city council, movies, and coffee
 - **27 entries** (candidates/options across all ballots)
 - **25 votes** (distributed across ballots)
 - **10 random codes** (for secure voting verification)
@@ -222,18 +134,20 @@ This will populate all tables with:
 ### Login Credentials
 
 All test users have simple passwords for development:
+
 - **Username:** `admin` / **Password:** `admin123`
 - **Username:** `alice` / **Password:** `password123`
 - **Username:** `bob` / **Password:** `password123`
 - **Username:** `charlie` / **Password:** `password123`
 - **Username:** `testuser` / **Password:** `testpass123`
 
-### Quick Test Ballot
+### Quick Test Ballots
 
-The pizza ballot is ready to use:
-- Visit: `http://localhost:8000/?key=pizza`
-- Vote on your favorite pizza flavors!
-- See live results with ranked choice calculation
+Try these ballot keys to see the app in action:
+
+- Visit: `http://localhost:3000/?key=pizza` - 🍕 Best Pizza Flavor
+- Visit: `http://localhost:3000/?key=codelang` - 💻 Programming Languages
+- Visit: `http://localhost:3000/?key=council2024` - 🏛️ City Council Election
 
 ## Troubleshooting
 
@@ -245,31 +159,38 @@ Make sure you ran the GRANT command and FLUSH PRIVILEGES.
 
 Make sure you created the database with CREATE DATABASE.
 
-### Foreign Key Constraint Errors
+### "Table doesn't exist" errors
 
-Make sure you create tables in this order:
-1. users (no dependencies)
-2. ballots (depends on users)
-3. entries (depends on ballots)
-4. votes (depends on ballots)
-5. random_codes (no dependencies)
-6. contributions (no dependencies)
+Make sure you ran the `setup-database-prod.sql` script to create all tables.
 
 ### Connection Issues
 
 Verify MySQL is running:
+
 ```bash
 mysqladmin -u root -p status
 ```
 
-## Next Steps
+Or check service status:
 
-Once the database is set up:
+```bash
+# macOS
+brew services list | grep mysql
 
-1. Build the project: `npm run build`
-2. Start PHP server: `php -S localhost:8000 -t dist/`
-3. Visit: http://localhost:8000
-4. Create an account and test ballot creation
+# Linux
+systemctl status mysql
+```
+
+## Database Schema Reference
+
+The complete schema is maintained in `setup-database-prod.sql`, which is synchronized with production. Key tables:
+
+- **ballots** - Ballot metadata, configuration, and settings
+- **entries** - Candidates/choices for each ballot
+- **votes** - Individual votes with rankings
+- **users** - User accounts (supports OAuth and local auth)
+- **random_codes** - Voter verification codes
+- **contributions** - Donation/contribution records
 
 ## Production Notes
 
@@ -280,3 +201,13 @@ For production:
 - Create a separate production `config.php` (NOT in version control)
 - The `config.php` file is gitignored for security
 - Never commit database credentials to git
+
+## Next Steps
+
+Once the database is set up:
+
+1. Run `npm install` to install dependencies
+2. Run `npm run dev` to start the Vite dev server
+3. In another terminal, run `cd src && php -S localhost:8000` for the PHP backend
+4. Visit `http://localhost:3000`
+5. Create an account and test ballot creation

@@ -112,24 +112,13 @@ sudo systemctl start mysql
 
 3. **Set up the database**
 
-   Follow the complete guide in [src/api/SETUP.md](src/api/SETUP.md) or use this quick setup:
+   Run the production schema script (creates database, user, and tables):
 
    ```bash
-   # Connect to MySQL as root
-   mysql -u root -p
+   mysql -u root -p < src/api/setup-database-prod.sql
    ```
 
-   Then run these SQL commands:
-
-   ```sql
-   CREATE DATABASE IF NOT EXISTS rcv_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   CREATE USER 'rcv_user'@'localhost' IDENTIFIED BY 'rcv_password';
-   GRANT ALL PRIVILEGES ON rcv_db.* TO 'rcv_user'@'localhost';
-   FLUSH PRIVILEGES;
-   EXIT;
-   ```
-
-   See [src/api/SETUP.md](src/api/SETUP.md) for table creation and test data.
+   For detailed setup instructions and test data, see [src/api/SETUP.md](src/api/SETUP.md)
 
 4. **Start the development servers**
 
