@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "less": "^4.2.0",
-    "vite": "^5.0.12",
-    "vite-plugin-static-copy": "^1.0.0"
+    "vite": "^8.0.5",
+    "vite-plugin-static-copy": "^4.0.1"
   }
 }
