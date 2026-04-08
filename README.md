@@ -168,6 +168,10 @@ cd dist
 php -S localhost:8080
 ```
 
+### Deployment
+
+The `dist/` folder is production-ready. Upload its entire contents directly to your web host's document root (e.g. `public_html/`). It includes the compiled frontend assets, PHP API files, fonts, images, and static pages — everything needed to run the site.
+
 ## Project Structure
 
 ```
@@ -184,8 +188,7 @@ rcv/
 │   ├── css/               # Stylesheets (LESS files)
 │   ├── img/               # Images
 │   └── fonts/             # Font files
-├── dist/                   # Production build output (generated)
-├── public_html/           # Legacy production code (reference only)
+├── dist/                   # Production build output (upload to host)
 ├── vite.config.js         # Vite build configuration
 ├── Schema.sql             # Database schema
 └── package.json           # Dependencies and scripts

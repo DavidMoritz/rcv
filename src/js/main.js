@@ -652,6 +652,8 @@ mainApp.controller('MainCtrl', [
         var now = moment();
         $s.voteClosed = voteCutoffDate < now;
         var createdBy = resp.data[0].createdBy;
+        $s.ballotCreatedBy = createdBy;
+        $s.ballotId = resp.data[0].ballotId;
         var loggedIn = $s.user.id == createdBy;
         if (resultsDate > now) {
 						$s.errors.shortcode = "The ballot you selected will not have the results released until " + resultsDate.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a') + " " + moment.tz.guess() + " Time";
@@ -719,6 +721,18 @@ mainApp.controller('MainCtrl', [
 			;
 		};
     
+    $s.claimBallot = function() {
+      $http.post('/api/claim-ballot.php', {
+        ballotId: $s.ballotId,
+        userId: $s.user.id
+      }).then(function(resp) {
+        if (resp.data.data && resp.data.data.success) {
+          $s.claimSuccess = true;
+          $s.ballotCreatedBy = $s.user.id;
+        }
+      });
+    };
+
     $s.addCustomCandidate = function() {
       const customEntry = $s.ballot.customEntry;
       

@@ -244,6 +244,11 @@
         <p>Proponents of Ranked Choice voting believe this system is about representing the people in the best way possible. The key is allowing the voter to choose more than just their favorite candidate. The problem with only voting for one choice, is that if that choice does not come in first or second, it could be considered a “wasted vote.” Therefore, people are more likely to vote for their second or third choice on the idea that it has a higher chance of winning and it’s better than their last choice.</p>
         <p>With Ranked Choice Voting, there is no issue with voting for your first choice first, second choice second, and third choice third. Because if your first choice doesn’t win, then your vote automatically gets transferred to your second choice! And that is the beauty of the system.</p>
         <p>Another thing RCV works really well for is implementing a fair method in voting for more multiple positions at once. Everyone’s vote is still counted as one vote, but after their first choice is elected, the unused portion of their vote (equal to the amount not absolutely necessary to get their 1st choice elected) goes to their second choice candidate. To better illustrate this point, there is a video that describes the use of ranked choice voting in the Animal Kingdom:</p><a href="https://youtu.be/l8XOZJkozfI" target="_blank">Click here to watch</a>
+        <h3>Get more from your ballot</h3>
+        <p>
+          Creating a free account lets you edit entries, manage your ballots, and view results all from one place.
+          Already created a ballot as a guest? Log in and claim it from the results page.
+        </p>
         <h3>
           Feedback
         </h3>
@@ -471,6 +476,11 @@
               <div id="qrcode"></div>
             </div>
           </div>
+          <p ng-show="!user.id" style="margin-top: 15px;">
+            Want to edit this ballot later?
+            <a href ng-click="navigate('register')">Create a free account</a>
+            to manage your ballots and unlock features like editing entries.
+          </p>
         </div>
       </div>
     </div>
@@ -656,6 +666,13 @@
           <h4>
             Voting URL: {{origin}}/{{shortcode}}
           </h4>
+          <p ng-show="user.id && ballotCreatedBy == 'guest'" class="text-muted" style="margin-top: 20px;">
+            This ballot was created as "guest".
+            <a href ng-click="claimBallot()">Click here</a> to take ownership and unlock editing.
+          </p>
+          <p ng-show="claimSuccess" class="text-success">
+            Ballot claimed! You can now edit it from your Profile tab.
+          </p>
 <!--           <div ng-if="showGraphTease">
             <form ng-submit="submitCreateGraph()">
               <h4>
