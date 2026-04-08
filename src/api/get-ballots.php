@@ -5,7 +5,7 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 $createdBy = $_POST['id'];
 $graph = '';
 
-if($_GET['graph'] == 'true') {
+if(!empty($_GET['graph']) && $_GET['graph'] == 'true') {
   $graph = 'WHERE `showGraph` = 1';
 }
 

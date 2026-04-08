@@ -136,7 +136,7 @@ const bbiBallots = {
 
 // Note: mainApp.config and initial .run() are defined in app.js
 // This runs after mc is defined to add it to $rootScope
-mainApp.run(function runWithMc($rootScope) {
+mainApp.run(['$rootScope', function($rootScope) {
 	$rootScope.mc = mc;
   if (getCookie('loginId')) {
     setUser({
@@ -146,7 +146,7 @@ mainApp.run(function runWithMc($rootScope) {
       image: getCookie('loginImage')
     }, 'profile');
   }
-});
+}]);
 
 function onSignIn(googleUser) {
 	var profile = googleUser.getBasicProfile();
@@ -245,8 +245,7 @@ mainApp.controller('MainCtrl', [
 				method: 'POST',
 				url: '/api/delete-' + item + '.php',
 				data: data,
-				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-			}).success(function(resp) {
+				}).success(function(resp) {
 				$s.deleted = true;
 			});
 		};
@@ -287,8 +286,7 @@ mainApp.controller('MainCtrl', [
 					method: 'POST',
 					url: '/api/get-ballots.php',
 					data: $s.user,
-					headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-				}).then(function(resp) {
+					}).then(function(resp) {
 					$s.now = new Date();
 					$s.allBallots = resp.data.map(function(ballot) {
 						ballot.voteCutoff = moment.tz(ballot.voteCutoff, 'Zulu');
@@ -436,7 +434,6 @@ mainApp.controller('MainCtrl', [
 				method: 'POST',
 				url: '/api/login.php',
 				data: $s.login,
-				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).then(function(resp) {
         if (typeof resp.data === 'string') {
           alert("Incorrect username and/or password");
@@ -956,8 +953,7 @@ mainApp.controller('MainCtrl', [
 					method: 'POST',
 					url: '/api/delete-entries.php',
 					data: $s.ballot,
-					headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-				}).success(function(resp) {
+					}).success(function(resp) {
 					$s.editBallot = false;
 					$s.submitEntries();
 				});
@@ -974,7 +970,6 @@ mainApp.controller('MainCtrl', [
           colors: $s.entryColors,
 					ballotId: $s.ballot.id
 				},
-				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
 				if (resp.errors) {
 					$s.errors = resp.errors;
@@ -1005,7 +1000,6 @@ mainApp.controller('MainCtrl', [
           id: $s.ballot.id,
           name: $s.ballot.voterName
 				},
-				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(resp) {
 				$s.thanks = true;
         if ($s.bbiBallot) {
@@ -1038,8 +1032,7 @@ mainApp.controller('MainCtrl', [
 								method: 'POST',
 								url: '/api/new-ballot.php',
 								data: $s.dupBallot,
-								headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-							}).success(function(resp) {
+											}).success(function(resp) {
 								if (resp.errors) {
 									$s.errors = resp.errors;
 								} else {
@@ -1050,8 +1043,7 @@ mainApp.controller('MainCtrl', [
 											ballotId: resp,
 											duplicateBallotId: tempId
 										},
-										headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-									}).success(function(resp) {
+															}).success(function(resp) {
 										console.log(resp);
 										window.location.reload();
 									});

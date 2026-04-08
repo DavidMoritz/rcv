@@ -3,15 +3,15 @@ var mainApp = angular.module('mainApp', [
 	'ui.bootstrap'
 ]);
 
-mainApp.config(function($locationProvider) {
+mainApp.config(['$locationProvider', function($locationProvider) {
 	$locationProvider.html5Mode(true);
-});
+}]);
 
-mainApp.run(function runWithDependencies($rootScope) {
+mainApp.run(['$rootScope', function($rootScope) {
 	$rootScope._ = _;
 	$rootScope.moment = moment;
 	// Note: $rootScope.mc is set in main.js after mc is defined
-});
+}]);
 
 function onSignIn(googleUser) {
 	var profile = googleUser.getBasicProfile();

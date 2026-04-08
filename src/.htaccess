@@ -1,3 +1,8 @@
+# Prevent caching of index.html so users always get the latest version
+<Files "index.html">
+  Header set Cache-Control "no-cache, must-revalidate"
+</Files>
+
 RewriteEngine on
 
 RewriteCond %{REQUEST_FILENAME} -f
