@@ -1,13 +1,68 @@
 <!DOCTYPE html>
-<html ng-app="mainApp">
+<html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Elections - Ranked Choices</title>
   <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.7;
+      color: #333;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+      background: #fff;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a1a1a;
+      border-bottom: 3px solid #337ab7;
+      padding-bottom: 12px;
+      margin-bottom: 8px;
+    }
+    h4 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+    h5 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #555;
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+    p {
+      margin-bottom: 16px;
+      color: #444;
+    }
+    ol {
+      padding-left: 24px;
+    }
     li {
-      margin-top: 10px;
+      margin-top: 12px;
+      color: #444;
+    }
+    a { color: #337ab7; }
+    @media (max-width: 600px) {
+      .container { padding: 24px 16px 40px; }
+      h1 { font-size: 24px; }
     }
   </style>
 </head>
 <body>
+<div class="container">
   <h1>Secure Elections</h1>
   <p>Thanks for stopping by! These instructions are for those who are looking for a way to make a ranked choice ballot fast, easy, inexpensive, and secure while using RankedChoices.com!</p>
   <p>
@@ -69,5 +124,6 @@
   <p>
     Also, the organizer has no way of tracing a number back to a voter without that voter's concent.
   </p>
+</div>
 </body>
 </html>

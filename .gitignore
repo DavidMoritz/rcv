@@ -15,6 +15,7 @@ lib
 .ftppass
 
 # OS / Editor Files
+.DS_Store
 Thumbs.db
 .cache
 .project
