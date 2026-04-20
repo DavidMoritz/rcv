@@ -1082,18 +1082,21 @@
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="ballot in allBallots track by ballot.id">
-                  <td>{{ballot.key}}</td>
-                  <td>{{ballot.name}}</td>
-                  <td>
+                <tr ng-repeat="ballot in allBallots track by ballot.id" id="ballot-row-{{ballot.id}}">
+                  <td ng-if="ballot.transferring" colspan="10" class="text-center text-muted">
+                    <i class="fa fa-share-square-o"></i> Transferring...
+                  </td>
+                  <td ng-if="!ballot.transferring">{{ballot.key}}</td>
+                  <td ng-if="!ballot.transferring">{{ballot.name}}</td>
+                  <td ng-if="!ballot.transferring">
                     {{ballot.voteCutoff.year() > 2100 ? 'never' :
                     ballot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a')}}<span
                       class="hide hidden d-none"
                       >{{ballot.voteCutoff}}</span
                     >
                   </td>
-                  <td>{{ballot.totalVotes}}</td>
-                  <td>
+                  <td ng-if="!ballot.transferring">{{ballot.totalVotes}}</td>
+                  <td ng-if="!ballot.transferring">
                     <a
                       href="/results#{{ballot.key}}"
                       tooltip-placement="top-left"
@@ -1124,6 +1127,12 @@
                       tooltip-placement="top-right"
                       uib-tooltip="Duplicate Ballot"
                       class="fa fa-clone pointer"
+                    ></i>
+                    <i
+                      ng-click="transferBallot(ballot)"
+                      tooltip-placement="top-right"
+                      uib-tooltip="Transfer Ownership"
+                      class="fa fa-share-square-o pointer"
                     ></i>
                     <i
                       ng-click="deleteBallot(ballot)"
@@ -1248,6 +1257,40 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" ng-click="duplicateBallotSubmit()">
               Duplicate
+            </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="transfer-ballot-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h2 class="modal-title">Transfer Ballot: {{transferBallotName}}</h2>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Username</label>
+              <input
+                name="transferUsername"
+                ng-model="transferUsername"
+                class="form-control"
+                placeholder="Enter username to transfer to"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-primary"
+              ng-click="transferBallotSubmit()"
+              ng-disabled="!transferUsername"
+            >
+              Transfer
             </button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>

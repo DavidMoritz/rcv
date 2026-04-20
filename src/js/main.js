@@ -1055,6 +1055,44 @@ mainApp.controller('MainCtrl', [
 			}
 		};
 
+		$s.transferBallot = function(ballot) {
+			$s.transferBallotName = ballot.name;
+			$s.transferBallotId = ballot.id;
+			$s.transferUsername = '';
+			$('#transfer-ballot-modal').modal('show');
+		};
+
+		$s.transferBallotSubmit = function() {
+			if ($s.transferUsername) {
+				$http({
+					method: 'POST',
+					url: '/api/transfer-ballot.php',
+					data: {
+						ballotId: $s.transferBallotId,
+						currentOwnerId: $s.user.id,
+						newOwnerUsername: $s.transferUsername
+					}
+				}).then(function(resp) {
+					if (resp.data.data && resp.data.data.success) {
+						$('#transfer-ballot-modal').modal('hide');
+						var ballot = _.find($s.allBallots, function(b) { return b.id === $s.transferBallotId; });
+						if (ballot) {
+							ballot.transferring = true;
+							setTimeout(function() {
+								$('#ballot-row-' + ballot.id).fadeOut(2000, function() {
+									$s.$apply(function() {
+										_.remove($s.allBallots, ballot);
+									});
+								});
+							}, 0);
+						}
+					} else if (resp.data.errors) {
+						alert(resp.data.errors.ballot || 'Transfer failed.');
+					}
+				});
+			}
+		};
+
 		$s.deleteBallot = function(ballot) {
 			if (confirm('Delete ' + ballot.name + ' ballot?\nThis action cannot be undone')) {
 				deleteThis(ballot, 'ballot');
