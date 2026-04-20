@@ -170,7 +170,19 @@ php -S localhost:8080
 
 ### Deployment
 
-The `dist/` folder is production-ready. Upload its entire contents directly to your web host's document root (e.g. `public_html/`). It includes the compiled frontend assets, PHP API files, fonts, images, and static pages — everything needed to run the site.
+The `dist/` folder is production-ready. There are two ways to deploy:
+
+**Automated (recommended):**
+
+```bash
+./deploy.sh
+```
+
+This builds the project and rsyncs `dist/` to the production server over SSH. Requires `.deploy-config` (gitignored) with your SFTP/SSH credentials — copy from the template and fill in host, username, SSH key path, and port.
+
+**Manual:**
+
+Upload the contents of `dist/` directly to your web host's document root (e.g. `public_html/`). It includes the compiled frontend assets, PHP API files, fonts, images, and static pages — everything needed to run the site.
 
 ## Project Structure
 

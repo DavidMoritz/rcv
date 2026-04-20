@@ -98,6 +98,10 @@ Alternatively, use Docker Compose which sets up both frontend and MySQL:
 - Run `docker-compose up`
 - Access at `localhost:1337`
 
+### Deployment
+
+Run `./deploy.sh` to build and deploy to production via rsync over SSH. Requires `.deploy-config` (gitignored) with SSH credentials. See `README.md` § "Deployment" for details.
+
 ### Production vs Development Code Split
 
 **Important context**: This repo was historically far removed from production. The `public_html/` folder contains what's currently in production and may have features/fixes not in `src/`. Recent work has modernized the build system to bridge this gap.
@@ -142,6 +146,14 @@ echo json_encode(['data' => $data, 'errors' => $errors]);
 - **Tie-Breaking**: Random (official) or Weighted (considers subsequent choices)
 - **Secure Elections**: Support for voter code validation (see `secure-elections-instructions.html`)
 
+## Security / Sensitivity
+
+**This is a public repository.** Never commit sensitive data such as passwords, API keys, credentials, or private configuration. Files like `src/api/config.php` are gitignored for this reason. When in doubt, add sensitive files to `.gitignore` before creating them.
+
+### Admin Page
+
+There is an admin page (`/admin`) protected by a password stored in `src/api/config.php` (already gitignored). This file should define `$adminPassword` alongside the database credentials. Use `src/api/config_sample.php` as a template.
+
 ## Notes for AI Assistants
 
 - The AngularJS controller uses older patterns (not components) - all logic is in `MainCtrl` controller function
@@ -149,3 +161,4 @@ echo json_encode(['data' => $data, 'errors' => $errors]);
 - Frontend state management is via AngularJS scope, no Redux/state library
 - The app uses HTML5 pushState routing but serves everything from index.html
 - QR code generation uses qrcodejs library loaded from CDN
+- **Never commit secrets** — always check that new files containing passwords/keys are gitignored

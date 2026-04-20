@@ -17,6 +17,9 @@ lib
 # Runtime cache
 **/.popular-cache.json
 
+# Deploy config
+.deploy-config
+
 # OS / Editor Files
 .DS_Store
 Thumbs.db

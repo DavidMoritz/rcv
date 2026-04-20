@@ -1,0 +1,9 @@
+# SFTP/SSH Deployment Configuration
+# Copy this to .deploy-config and fill in your credentials.
+# .deploy-config is gitignored — never commit real credentials.
+
+SFTP_HOST=ssh.your-host.com
+SFTP_USER=your-username
+SFTP_REMOTE_PATH=~/www/your-site.com/public_html
+SFTP_KEY_PATH=~/.ssh/id_rsa
+SFTP_PORT=22
