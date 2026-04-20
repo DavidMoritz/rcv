@@ -6,6 +6,8 @@ define('USERNAME', 'rcv_user');
 define('PASSWORD', 'rcv_password');
 define('DB', 'rcv_db');
 
+$adminPassword = 'b****************9';
+
 ####	CONNECT TO THE DATABASE		######
 try {
 	$dbh = new PDO('mysql:host=' . SERVER . ';dbname=' . DB, USERNAME, PASSWORD, array(PDO::ATTR_PERSISTENT => true));
