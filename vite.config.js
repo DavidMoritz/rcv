@@ -114,6 +114,10 @@ export default defineConfig({
         {
           src: 'results_json.html',
           dest: '.'
+        },
+        {
+          src: 'admin.html',
+          dest: '.'
         }
       ]
     })
