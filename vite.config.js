@@ -120,12 +120,12 @@ export default defineConfig({
   ],
 
   server: {
-    port: 3000,
+    port: 2460,
     open: true,
     proxy: {
       // Proxy API requests to PHP backend
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:2461',
         changeOrigin: true,
         secure: false
       }
