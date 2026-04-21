@@ -16,7 +16,10 @@
       content="828084230115-98814hb54sbrs34jjiecfirgak4svths.apps.googleusercontent.com"
     />
     <title>Ranked Choice Free Voting App</title>
-    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -285,6 +288,7 @@
       </div>
       <div ng-show="activeLink == 'about'" class="panel panel-default">
         <div class="panel-body">
+          <img src="img/ranked-choices-logo.png" class="about-logo" alt="Ranked Choices logo" />
           <h2>About</h2>
           <h3>It is my belief that RCV offers several benefits:</h3>
           <ul>
@@ -896,20 +900,25 @@
       <div ng-show="activeLink == 'vote'" class="panel panel-default">
         <div class="panel-body">
           <div ng-hide="candidates">
-            <h1>Vote!</h1>
-            <form ng-submit="submitShortcode()">
-              <div class="row">
-                <div class="form-group col-sm-6 col-md-4 col-lg-3">
-                  <label>Enter Ballot Shortcode</label>
-                  <input name="ballot" ng-model="shortcode" class="form-control" /><span
-                    ng-show="errors.shortcode"
-                    class="text-danger"
-                    >{{errors.shortcode}}</span
-                  >
-                </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <h1>Vote!</h1>
+                <form ng-submit="submitShortcode()">
+                  <div class="form-group">
+                    <label>Enter Ballot Shortcode</label>
+                    <input name="ballot" ng-model="shortcode" class="form-control" /><span
+                      ng-show="errors.shortcode"
+                      class="text-danger"
+                      >{{errors.shortcode}}</span
+                    >
+                  </div>
+                  <input type="submit" value="Submit" class="btn btn-success" />
+                </form>
               </div>
-              <input type="submit" value="Submit" class="btn btn-success" />
-            </form>
+              <div class="col-sm-6 text-center">
+                <img src="img/ranked-choices-logo.png" class="img img-responsive vote-button sidebar-logo" />
+              </div>
+            </div>
           </div>
           <div ng-if="candidates" ng-hide="thanks">
             <h1>Ballot: {{ballot.name}}</h1>
@@ -1007,23 +1016,29 @@
       </div>
       <div ng-show="activeLink == 'results'" class="panel panel-default">
         <div class="panel-body">
-          <h1>Results<span class="ballot-name"></span></h1>
           <div ng-hide="final">
-            <form ng-submit="submitShortcode()">
-              <div class="row">
-                <div class="form-group col-sm-6 col-md-4 col-lg-3">
-                  <label>Enter Ballot Shortcode</label>
-                  <input name="ballot" ng-model="shortcode" class="form-control" /><span
-                    ng-show="errors.shortcode"
-                    class="text-danger"
-                    >{{errors.shortcode}}</span
-                  >
-                </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <h1>Results</h1>
+                <form ng-submit="submitShortcode()">
+                  <div class="form-group">
+                    <label>Enter Ballot Shortcode</label>
+                    <input name="ballot" ng-model="shortcode" class="form-control" /><span
+                      ng-show="errors.shortcode"
+                      class="text-danger"
+                      >{{errors.shortcode}}</span
+                    >
+                  </div>
+                  <input type="submit" value="Submit" class="btn btn-success" />
+                </form>
               </div>
-              <input type="submit" value="Submit" class="btn btn-success" />
-            </form>
+              <div class="col-sm-6 text-center">
+                <img src="img/ranked-choices-logo.png" class="img img-responsive vote-button sidebar-logo" />
+              </div>
+            </div>
           </div>
           <div ng-show="final">
+            <h1>Results<span class="ballot-name"></span></h1>
             <h2 ng-show="elected.length == 1">
               The winner<span ng-if="!voteClosed"> (so far)</span>: {{elected[0]}}
             </h2>

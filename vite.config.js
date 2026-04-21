@@ -89,7 +89,27 @@ export default defineConfig({
           dest: '.'
         },
         {
+          src: 'favicon-16x16.png',
+          dest: '.'
+        },
+        {
+          src: 'favicon-32x32.png',
+          dest: '.'
+        },
+        {
+          src: 'android-chrome-192x192.png',
+          dest: '.'
+        },
+        {
+          src: 'android-chrome-512x512.png',
+          dest: '.'
+        },
+        {
           src: 'apple-touch-icon.png',
+          dest: '.'
+        },
+        {
+          src: 'site.webmanifest',
           dest: '.'
         },
         {
