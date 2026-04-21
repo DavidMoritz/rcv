@@ -34,7 +34,7 @@ echo "Version: $CURRENT_VERSION → $NEW_VERSION"
 
 # Update copyright year to current year
 CURRENT_YEAR=$(date +%Y)
-sed -i '' "s/© 2016-[0-9]\{4\}/© 2016-$CURRENT_YEAR/" src/index.html
+sed -i '' "s/2016-[0-9]\{4\}/2016-$CURRENT_YEAR/" src/index.html
 echo "Updated copyright year to $CURRENT_YEAR"
 
 # Build first
