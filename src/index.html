@@ -17,6 +17,12 @@
     />
     <title>Ranked Choice Free Voting App</title>
     <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Noto+Serif:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/main.css" />
 
     <!-- Load vendor libraries from CDN (they need to be on window before our app loads) -->
@@ -249,13 +255,13 @@
         <div class="panel-body">
           <div class="row">
             <div class="col-sm-6 text-center">
-              <h1>RCV</h1>
-              <h2 class="hidden-xs hidden-sm">Ranked Choice Vote</h2>
-              <h3 class="hidden-md hidden-lg">Ranked Choice Vote</h3>
+              <h1>Always-free RCV!</h1>
+              <hr class="accent-hr" />
               <p>
-                Always-free RCV! A better way to vote. Whether voting for one position or multiple,
-                ranked choice voting allows for the greatest representation of the voters. Click
-                "About" to learn more!
+                For over 10 years, you've used ranked choice voting for movie nights, book clubs,
+                Taco Tuesdays, and beyond. Whether voting for one position or multiple, RCV allows
+                for the greatest representation of the voters.
+                <br /><small>Click "About" to learn more!</small>
               </p>
               <a href="create" class="btn btn-primary">Create a Ballot</a>
             </div>
@@ -1082,7 +1088,10 @@
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="ballot in allBallots track by ballot.id" id="ballot-row-{{ballot.id}}">
+                <tr
+                  ng-repeat="ballot in allBallots track by ballot.id"
+                  id="ballot-row-{{ballot.id}}"
+                >
                   <td ng-if="ballot.transferring" colspan="10" class="text-center text-muted">
                     <i class="fa fa-share-square-o"></i> Transferring...
                   </td>

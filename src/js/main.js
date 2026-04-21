@@ -1304,7 +1304,7 @@ mainApp.factory('VoteFactory', [
           var dName = model.getVoterName(idx);
 					model.outputstring += '<tr><th>';
           if (loggedIn) {
-            model.outputstring += '<i class="fa fa-times text-danger btn" data-delete-vote=' + $s.voterIds[idx] + '></i>';
+            model.outputstring += '<span class="delete-vote-btn" data-delete-vote=' + $s.voterIds[idx] + '>&times;</span>';
           }
           model.outputstring += dName;
           model.outputstring += ':</th>';

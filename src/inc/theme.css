@@ -1,0 +1,332 @@
+/* ==========================================================================
+   Civic Editorial Theme — DESIGN.md Phase 1: Colors & Typography
+   Loaded last in cascade to override Bootstrap 3 + existing custom styles.
+   ========================================================================== */
+
+/* ---------- Base ---------- */
+body {
+  font-family: 'Manrope', sans-serif;
+  background-color: #F9F9FF;
+  color: #44474E;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: 'Noto Serif', serif;
+  color: #181C22;
+}
+
+a {
+  color: #1A43BF;
+}
+a:hover,
+a:focus {
+  color: #0F2E8A;
+}
+
+/* ---------- Navbar (.navbar-fairvote) ---------- */
+.navbar-fairvote {
+  background-color: #1A43BF;
+  border: none;
+}
+.navbar-fairvote .navbar-brand,
+.navbar-fairvote .navbar-nav > li > a {
+  color: #fff;
+}
+.navbar-fairvote .navbar-nav > li > a:hover,
+.navbar-fairvote .navbar-nav > li > a:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+.navbar-fairvote .navbar-nav > .active > a,
+.navbar-fairvote .navbar-nav > .active > a:hover,
+.navbar-fairvote .navbar-nav > .active > a:focus {
+  background-color: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+.navbar-fairvote .navbar-toggle {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.navbar-fairvote .navbar-toggle .icon-bar {
+  background-color: #fff;
+}
+.navbar-fairvote .navbar-toggle:hover,
+.navbar-fairvote .navbar-toggle:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.navbar-fairvote .navbar-collapse {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  border-radius: 8px;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: #1A43BF;
+  border-color: #1A43BF;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+  background-color: #0F2E8A;
+  border-color: #0F2E8A;
+}
+
+.btn-info {
+  background-color: #00D1FF;
+  border-color: #00D1FF;
+  color: #181C22;
+}
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active,
+.open > .dropdown-toggle.btn-info {
+  background-color: #00B8E0;
+  border-color: #00B8E0;
+  color: #181C22;
+}
+
+.btn-default {
+  color: #44474E;
+  border-color: #C4C5D6;
+}
+.btn-default:hover,
+.btn-default:focus,
+.btn-default:active {
+  color: #181C22;
+  background-color: #F0F0F8;
+  border-color: #A0A1B0;
+}
+
+/* ---------- Links as buttons (Bootstrap link btn) ---------- */
+.btn-link {
+  color: #1A43BF;
+}
+.btn-link:hover,
+.btn-link:focus {
+  color: #0F2E8A;
+}
+
+/* ---------- Panels ---------- */
+.panel {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 24px rgba(24, 28, 34, 0.05);
+}
+.panel-default > .panel-heading {
+  background-color: #EDF0FB;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  color: #181C22;
+}
+.panel-primary > .panel-heading {
+  background-color: #1A43BF;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+.panel-default {
+  border: none;
+}
+.panel-primary {
+  border: none;
+}
+.panel-footer {
+  border-top: none;
+  background-color: #F4F4FC;
+  border-radius: 0 0 8px 8px;
+}
+
+/* ---------- Wells ---------- */
+.well {
+  background-color: #F4F4FC;
+  border: none;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+/* ---------- Form Controls ---------- */
+.form-control {
+  border-radius: 8px;
+  border-color: #C4C5D6;
+  color: #44474E;
+}
+.form-control:focus {
+  border-color: #1A43BF;
+  box-shadow: 0 0 0 3px rgba(26, 67, 191, 0.15);
+}
+
+/* ---------- Alerts ---------- */
+.alert {
+  border: none;
+  border-radius: 8px;
+}
+.alert-info {
+  background-color: #E6FAFF;
+  color: #0A6E85;
+}
+.alert-warning {
+  background-color: #FFF3E6;
+  color: #994700;
+}
+
+/* ---------- Modals ---------- */
+.modal-content {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(24, 28, 34, 0.12);
+}
+.modal-header {
+  border-bottom-color: #F0F0F8;
+}
+.modal-footer {
+  border-top-color: #F0F0F8;
+}
+
+/* ---------- Dropdowns ---------- */
+.dropdown-menu {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(24, 28, 34, 0.1);
+}
+
+/* ---------- Labels / Badges ---------- */
+.label {
+  border-radius: 9999px;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+}
+.label-primary {
+  background-color: #1A43BF;
+}
+.label-info {
+  background-color: #00D1FF;
+  color: #181C22;
+}
+.badge {
+  border-radius: 9999px;
+  background-color: #1A43BF;
+}
+
+/* ---------- Progress Bars ---------- */
+.progress {
+  border-radius: 0.75rem;
+  background-color: #E8E8F0;
+}
+.progress-bar {
+  background-color: #00D1FF;
+  border-radius: 0.75rem;
+}
+
+/* ---------- Candidate / Sortable Items ---------- */
+#sortable .candidate-item {
+  background: #EDF0FB;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(24, 28, 34, 0.08);
+  margin-bottom: 8px;
+  padding: 10px 20px;
+  font-weight: 500;
+  color: #181C22;
+  cursor: grab;
+}
+#sortable .candidate-item:active {
+  cursor: grabbing;
+}
+
+/* ---------- Tables ---------- */
+.table > thead > tr > th {
+  border-bottom-color: #E8E8F0;
+  color: #44474E;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  letter-spacing: 0.05em;
+}
+.table > tbody > tr > td {
+  border-top-color: #F0F0F8;
+}
+
+/* ---------- Jumbotron ---------- */
+.jumbotron {
+  background-color: #EDF0FB;
+  border-radius: 8px;
+}
+.jumbotron h1, .jumbotron .h1 {
+  font-family: 'Noto Serif', serif;
+}
+
+/* ---------- Thumbnail ---------- */
+.thumbnail {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 1px 8px rgba(24, 28, 34, 0.06);
+}
+
+/* ---------- List Group ---------- */
+.list-group-item {
+  border-color: #F0F0F8;
+}
+.list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+  background-color: #1A43BF;
+  border-color: #1A43BF;
+}
+
+/* ---------- Pagination ---------- */
+.pagination > li > a,
+.pagination > li > span {
+  color: #1A43BF;
+  border-color: #E8E8F0;
+}
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover {
+  background-color: #1A43BF;
+  border-color: #1A43BF;
+}
+
+/* ---------- Breadcrumb ---------- */
+.breadcrumb {
+  background-color: #F4F4FC;
+  border-radius: 8px;
+}
+
+/* ---------- Misc ---------- */
+hr {
+  border-top-color: #E8E8F0;
+}
+.delete-vote-btn {
+  color: #d9534f;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  margin-right: 4px;
+  padding: 6px 10px;
+}
+.delete-vote-btn:hover {
+  color: #c9302c;
+}
+.fork-me-on-github {
+  filter: sepia(1) saturate(3) hue-rotate(-15deg) brightness(0.9);
+}
+.vote-button {
+  filter: hue-rotate(310deg) saturate(1.5) brightness(.95);
+}
+.accent-hr {
+  border: none;
+  height: 3px;
+  width: 150px;
+  margin: 12px auto;
+  background: linear-gradient(135deg, #FF5C00, #FFA040);
+  border-radius: 9999px;
+}

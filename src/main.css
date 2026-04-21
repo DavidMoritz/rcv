@@ -9,3 +9,6 @@
 
 /* Import ranked choices CSS */
 @import './inc/ranked-choices.css';
+
+/* Import Civic Editorial theme (must be last to override all above) */
+@import './inc/theme.css';
