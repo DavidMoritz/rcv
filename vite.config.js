@@ -15,7 +15,8 @@ export default defineConfig({
       'angular',
       'bootstrap',
       'angular-animate',
-      'angular-ui-bootstrap'
+      'angular-ui-bootstrap',
+      'jquery-ui-touch-punch'
     ]
   },
 

@@ -119,12 +119,45 @@ switch ($action) {
 
     case 'users':
         $stmt = $dbh->query("
-            SELECT u.*,
-                (SELECT COUNT(*) FROM ballots b WHERE b.createdBy = u.id) as ballotCount
+            SELECT u.id, u.username, u.email, u.role, u.clearance,
+                COUNT(b.id) as ballotCount
             FROM users u
-            ORDER BY u.username ASC
+            LEFT JOIN ballots b ON b.createdBy = u.id
+            GROUP BY u.id, u.username, u.email, u.role, u.clearance
+            ORDER BY ballotCount DESC
         ");
         $data['users'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $data['success'] = true;
+        break;
+
+    case 'user-ballots':
+        $userId = $_POST['userId'] ?? '';
+        if (empty($userId)) {
+            $errors['userId'] = 'User ID is required';
+            break;
+        }
+
+        $stmt = $dbh->prepare("
+            SELECT b.id, b.name, b.`key`, b.timeCreated,
+                COUNT(v.vote_id) as voteCount
+            FROM ballots b
+            LEFT JOIN votes v ON v.ballotId = b.id
+            WHERE b.createdBy = :userId
+              AND LOWER(b.name) NOT LIKE '%% test %%'
+              AND LOWER(b.name) NOT LIKE 'test %%'
+              AND LOWER(b.name) NOT LIKE '%% test'
+              AND LOWER(b.name) != 'test'
+            GROUP BY b.id
+            ORDER BY b.timeCreated DESC
+        ");
+        $stmt->execute([':userId' => $userId]);
+        $data['ballots'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Get user info
+        $stmt = $dbh->prepare("SELECT id, username, email, role FROM users WHERE id = :id");
+        $stmt->execute([':id' => $userId]);
+        $data['user'] = $stmt->fetch(PDO::FETCH_ASSOC);
+
         $data['success'] = true;
         break;
 
@@ -199,14 +232,16 @@ switch ($action) {
         if ($cache && !empty($cache['topBallots'])) {
             // Check new ballots since last check
             $stmt = $dbh->prepare("
-                SELECT * FROM (
-                    SELECT b.*, u.username as ownerName,
-                        (SELECT COUNT(*) FROM votes v WHERE v.ballotId = b.id) as voteCount,
-                        (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
-                    FROM ballots b
-                    LEFT JOIN users u ON b.createdBy = u.id
-                    WHERE b.timeCreated > :lastChecked
-                ) sub WHERE voteCount > 0
+                SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
+                    u.username as ownerName,
+                    COUNT(v.vote_id) as voteCount,
+                    (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
+                FROM ballots b
+                LEFT JOIN users u ON b.createdBy = u.id
+                LEFT JOIN votes v ON v.ballotId = b.id
+                WHERE b.timeCreated > :lastChecked
+                GROUP BY b.id
+                HAVING voteCount > 0
             ");
             $stmt->execute([':lastChecked' => $cache['lastChecked']]);
             $newBallots = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -222,12 +257,15 @@ switch ($action) {
                 $cachedIds = array_column($cache['topBallots'], 'id');
                 $placeholders = implode(',', array_fill(0, count($cachedIds), '?'));
                 $stmt = $dbh->prepare("
-                    SELECT b.*, u.username as ownerName,
-                        (SELECT COUNT(*) FROM votes v WHERE v.ballotId = b.id) as voteCount,
+                    SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
+                        u.username as ownerName,
+                        COUNT(v.vote_id) as voteCount,
                         (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
                     FROM ballots b
                     LEFT JOIN users u ON b.createdBy = u.id
+                    LEFT JOIN votes v ON v.ballotId = b.id
                     WHERE b.id IN ($placeholders)
+                    GROUP BY b.id
                     ORDER BY voteCount DESC
                 ");
                 $stmt->execute($cachedIds);
@@ -243,12 +281,15 @@ switch ($action) {
                 $cachedIds = array_column($cache['topBallots'], 'id');
                 $placeholders = implode(',', array_fill(0, count($cachedIds), '?'));
                 $stmt = $dbh->prepare("
-                    SELECT b.*, u.username as ownerName,
-                        (SELECT COUNT(*) FROM votes v WHERE v.ballotId = b.id) as voteCount,
+                    SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
+                        u.username as ownerName,
+                        COUNT(v.vote_id) as voteCount,
                         (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
                     FROM ballots b
                     LEFT JOIN users u ON b.createdBy = u.id
+                    LEFT JOIN votes v ON v.ballotId = b.id
                     WHERE b.id IN ($placeholders)
+                    GROUP BY b.id
                     ORDER BY voteCount DESC
                 ");
                 $stmt->execute($cachedIds);
@@ -257,13 +298,15 @@ switch ($action) {
         } else {
             // First run: full scan
             $stmt = $dbh->query("
-                SELECT * FROM (
-                    SELECT b.*, u.username as ownerName,
-                        (SELECT COUNT(*) FROM votes v WHERE v.ballotId = b.id) as voteCount,
-                        (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
-                    FROM ballots b
-                    LEFT JOIN users u ON b.createdBy = u.id
-                ) sub WHERE voteCount > 0
+                SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
+                    u.username as ownerName,
+                    COUNT(v.vote_id) as voteCount,
+                    (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
+                FROM ballots b
+                LEFT JOIN users u ON b.createdBy = u.id
+                LEFT JOIN votes v ON v.ballotId = b.id
+                GROUP BY b.id
+                HAVING voteCount > 0
                 ORDER BY voteCount DESC
                 LIMIT 10
             ");
@@ -291,6 +334,10 @@ switch ($action) {
                     (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
                 FROM ballots b
                 LEFT JOIN users u ON b.createdBy = u.id
+                WHERE LOWER(b.name) NOT LIKE '% test %'
+                  AND LOWER(b.name) NOT LIKE 'test %'
+                  AND LOWER(b.name) NOT LIKE '% test'
+                  AND LOWER(b.name) != 'test'
                 ORDER BY b.timeCreated DESC
             ) sub WHERE voteCount >= 3
             LIMIT 50

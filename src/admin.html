@@ -145,7 +145,8 @@
 
             <!-- Users Tab -->
             <div role="tabpanel" class="tab-pane" id="users-tab">
-                <div class="table-container">
+                <!-- User List -->
+                <div id="userListView" class="table-container">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
                             <thead>
@@ -158,6 +159,28 @@
                                 </tr>
                             </thead>
                             <tbody id="usersTableBody">
+                                <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- User Detail -->
+                <div id="userDetailView" class="table-container" style="display:none">
+                    <p><a href="#" onclick="showUserList(); return false;">&larr; Back to all users</a></p>
+                    <h4 id="userDetailTitle">User</h4>
+                    <p id="userDetailInfo" class="text-muted"></p>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Shortcode</th>
+                                    <th>Votes</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userBallotsBody">
                                 <tr><td colspan="5" class="text-center">Loading...</td></tr>
                             </tbody>
                         </table>
@@ -373,7 +396,7 @@
         }
         tbody.innerHTML = users.map(function(u) {
             return '<tr>' +
-                '<td>' + u.id + '</td>' +
+                '<td><a href="#" onclick="showUser(\'' + u.id + '\'); return false;">' + u.id + '</a></td>' +
                 '<td>' + escapeHtml(u.username) + '</td>' +
                 '<td>' + escapeHtml(u.email || '-') + '</td>' +
                 '<td>' + escapeHtml(u.role || '-') + '</td>' +
@@ -381,6 +404,40 @@
                 '</tr>';
         }).join('');
     }
+
+    window.showUser = function(userId) {
+        document.getElementById('userListView').style.display = 'none';
+        document.getElementById('userDetailView').style.display = 'block';
+        document.getElementById('userBallotsBody').innerHTML = '<tr><td colspan="5" class="text-center">Loading...</td></tr>';
+        apiCall('user-ballots', { userId: userId }).then(function(res) {
+            if (res.data && res.data.success) {
+                var user = res.data.user;
+                document.getElementById('userDetailTitle').textContent = user ? user.username : 'User ' + userId;
+                document.getElementById('userDetailInfo').textContent = user ? [user.email, user.role].filter(Boolean).join(' \u2022 ') : '';
+                var ballots = res.data.ballots;
+                var tbody = document.getElementById('userBallotsBody');
+                if (ballots.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No ballots found</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = ballots.map(function(b) {
+                    var created = b.timeCreated ? new Date(b.timeCreated).toLocaleDateString() : '-';
+                    return '<tr>' +
+                        '<td>' + b.id + '</td>' +
+                        '<td>' + escapeHtml(b.name) + '</td>' +
+                        '<td><code>' + escapeHtml(b.key) + '</code></td>' +
+                        '<td>' + (b.voteCount || 0) + '</td>' +
+                        '<td>' + created + '</td>' +
+                        '</tr>';
+                }).join('');
+            }
+        });
+    };
+
+    window.showUserList = function() {
+        document.getElementById('userDetailView').style.display = 'none';
+        document.getElementById('userListView').style.display = 'block';
+    };
 
     window.deleteBallot = function(id, name) {
         if (!confirm('Delete ballot "' + name + '" and all its votes/entries? This cannot be undone.')) return;
