@@ -73,5 +73,11 @@ else
     echo "Site is healthy (HTTP $HTTP_STATUS, API responding)."
 fi
 
+# Commit and push version bump
+echo "Committing version bump..."
+git add .version src/terms-of-service.html src/index.html
+git commit -m "v$NEW_VERSION"
+git push
+
 echo ""
 echo "Deploy complete!"
