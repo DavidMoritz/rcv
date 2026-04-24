@@ -307,7 +307,7 @@
             return '<tr>' +
                 '<td>' + b.id + '</td>' +
                 '<td>' + escapeHtml(b.name) + '</td>' +
-                '<td><code>' + escapeHtml(b.key) + '</code></td>' +
+                '<td><a href="/results#' + encodeURIComponent(b.key) + '" target="_blank"><code>' + escapeHtml(b.key) + '</code></a></td>' +
                 '<td>' + escapeHtml(b.ownerName || b.createdBy || '-') + '</td>' +
                 '<td>' + (b.voteCount || 0) + '</td>' +
                 '<td>' + (b.entryCount || 0) + '</td>' +
@@ -371,7 +371,7 @@
             return '<tr>' +
                 '<td>' + (showRank ? (i + 1) : b.id) + '</td>' +
                 '<td>' + escapeHtml(b.name) + '</td>' +
-                '<td><code>' + escapeHtml(b.key) + '</code></td>' +
+                '<td><a href="/results#' + encodeURIComponent(b.key) + '" target="_blank"><code>' + escapeHtml(b.key) + '</code></a></td>' +
                 '<td>' + escapeHtml(b.ownerName || b.createdBy || '-') + '</td>' +
                 '<td><strong>' + (b.voteCount || 0) + '</strong></td>' +
                 '<td>' + (b.entryCount || 0) + '</td>' +
@@ -425,7 +425,7 @@
                     return '<tr>' +
                         '<td>' + b.id + '</td>' +
                         '<td>' + escapeHtml(b.name) + '</td>' +
-                        '<td><code>' + escapeHtml(b.key) + '</code></td>' +
+                        '<td><a href="/results#' + encodeURIComponent(b.key) + '" target="_blank"><code>' + escapeHtml(b.key) + '</code></a></td>' +
                         '<td>' + (b.voteCount || 0) + '</td>' +
                         '<td>' + created + '</td>' +
                         '</tr>';
