@@ -233,6 +233,7 @@ switch ($action) {
             // Check new ballots since last check
             $stmt = $dbh->prepare("
                 SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
+                    b.oneDeviceOneVote, b.kickbackUrl, b.iframeUrl,
                     u.username as ownerName,
                     COUNT(v.vote_id) as voteCount,
                     (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
@@ -299,6 +300,7 @@ switch ($action) {
             // First run: full scan
             $stmt = $dbh->query("
                 SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
+                    b.oneDeviceOneVote, b.kickbackUrl, b.iframeUrl,
                     u.username as ownerName,
                     COUNT(v.vote_id) as voteCount,
                     (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
