@@ -554,7 +554,15 @@
                 <small ng-show="editTime">(Current Time: {{rightNow.format('LT')}})</small>
                 <div class="row" ng-show="editTime">
                   <div class="col-sm-6">
-                    <uib-timepicker ng-model="ballot.voteCutoff" minute-step="1"></uib-timepicker>
+                    <div class="form-inline">
+                      <select ng-model="cutoffTime.hour" ng-options="h as h for h in hours" ng-change="syncTimeToDate('voteCutoff', cutoffTime)" class="form-control" style="width:auto;display:inline-block"></select>
+                      <b style="padding:0 4px">:</b>
+                      <select ng-model="cutoffTime.minute" ng-options="m.value as m.label for m in minutes" ng-change="syncTimeToDate('voteCutoff', cutoffTime)" class="form-control" style="width:auto;display:inline-block"></select>
+                      <select ng-model="cutoffTime.meridian" ng-change="syncTimeToDate('voteCutoff', cutoffTime)" class="form-control" style="width:auto;display:inline-block">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                      </select>
+                    </div>
                   </div>
                   <div class="col-sm-6">
                     <label>Timezone:</label>
@@ -637,10 +645,15 @@
                   </div>
                   <div class="row">
                     <div class="col-sm-6">
-                      <uib-timepicker
-                        ng-model="ballot.resultsRelease"
-                        minute-step="15"
-                      ></uib-timepicker>
+                      <div class="form-inline">
+                        <select ng-model="releaseTime.hour" ng-options="h as h for h in hours" ng-change="syncTimeToDate('resultsRelease', releaseTime)" class="form-control" style="width:auto;display:inline-block"></select>
+                        <b style="padding:0 4px">:</b>
+                        <select ng-model="releaseTime.minute" ng-options="m.value as m.label for m in minutes" ng-change="syncTimeToDate('resultsRelease', releaseTime)" class="form-control" style="width:auto;display:inline-block"></select>
+                        <select ng-model="releaseTime.meridian" ng-change="syncTimeToDate('resultsRelease', releaseTime)" class="form-control" style="width:auto;display:inline-block">
+                          <option value="AM">AM</option>
+                          <option value="PM">PM</option>
+                        </select>
+                      </div>
                     </div>
                     <div class="col-sm-6">
                       <label>Timezone:</label>
