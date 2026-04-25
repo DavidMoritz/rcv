@@ -45,6 +45,7 @@ CREATE TABLE `ballots` (
   `showGraph` tinyint(1) NOT NULL DEFAULT '0',
   `graphUpdated` datetime DEFAULT NULL,
   `kickbackUrl` varchar(2048) DEFAULT NULL,
+  `iframeUrl` varchar(2048) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;

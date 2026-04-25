@@ -205,10 +205,15 @@
           <div class="row" ng-hide="user.id">
             <div class="col-sm-6">
               <h2>Login</h2>
-              <div class="reg-login col-md-7">
+              <form class="reg-login col-md-7" ng-submit="loginForm()">
                 <div class="form-group">
                   <label for="login-username">Username</label>
-                  <input class="form-control" id="login-username" ng-model="login.username" />
+                  <input
+                    class="form-control"
+                    id="login-username"
+                    ng-model="login.username"
+                    ng-change="loginError = false"
+                  />
                 </div>
                 <div class="form-group">
                   <label for="login-password">Password</label>
@@ -217,15 +222,19 @@
                     id="login-password"
                     type="password"
                     ng-model="login.password"
+                    ng-change="loginError = false"
                   />
+                </div>
+                <div class="alert alert-danger" ng-show="loginError">
+                  Incorrect username and/or password.
                 </div>
                 <div class="form-group">
                   <label>
                     Remember me (30 days) <input type="checkbox" ng-model="login.remember" />
                   </label>
                 </div>
-                <div class="btn btn-primary" ng-click="loginForm()">Login</div>
-              </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+              </form>
             </div>
             <div class="col-sm-6">
               <h2>Create New Account</h2>
@@ -441,7 +450,7 @@
               <div ng-show="user.name" class="form-group">
                 <label>Created By {{user.name}}</label>
               </div>
-              <div ng-show="ballot.createdBy == 'guest'" class="form-group">
+              <div ng-show="!user.name && ballot.createdBy == 'guest'" class="form-group">
                 <label
                   >Created By<small class="text-muted">
                     using default "guest" will restrict future editing. Please&nbsp;<a
@@ -514,10 +523,6 @@
                   Allow users to contribute custom entries:
                   <input type="checkbox" ng-model="ballot.allowCustom" />
                 </label>
-              </div>
-              <div class="form-group" ng-show="user.name">
-                <label>Redirect URL after voting:</label>
-                <input type="url" class="form-control" ng-model="ballot.kickbackUrl" placeholder="https://example.com/thanks" />
               </div>
               <div class="form-group">
                 <h4 ng-hide="editDate || editTime">Voting Cutoff: never (check box for custom)</h4>
@@ -667,6 +672,32 @@
                     />No Winner
                   </label>
                 </div>
+              </div>
+              <div class="form-group" ng-show="user.name">
+                <label>Redirect URL after voting:</label>
+                <input
+                  type="url"
+                  class="form-control"
+                  ng-model="ballot.kickbackUrl"
+                  placeholder="Leave blank to use the default 'Thank You' page"
+                />
+              </div>
+              <div class="form-group" ng-show="user.name">
+                <label
+                  >Iframe URL on voting page:
+                  <i
+                    class="fa fa-question-circle"
+                    style="cursor: pointer; color: #1a43bf"
+                    data-toggle="modal"
+                    data-target="#iframe-help-modal"
+                  ></i>
+                </label>
+                <input
+                  type="url"
+                  class="form-control"
+                  ng-model="ballot.iframeUrl"
+                  placeholder="Review the instructions above."
+                />
               </div>
               <div ng-hide="true" class="form-group">
                 <label
@@ -854,11 +885,16 @@
           <div ng-if="candidates" ng-hide="thanks">
             <h1>Ballot: {{ballot.name}}</h1>
             <div>
-              <h2>
+              <iframe
+                ng-if="ballot.iframeUrl"
+                ng-src="{{ballot.iframeUrl}}"
+                class="ballot-iframe"
+              ></iframe>
+              <h2 ng-if="!ballot.iframeUrl">
                 Order by Preference
                 <small>(remove any undesired using <i class="fa fa-trash"></i>)</small>
               </h2>
-              <h3>(Drag &amp; Drop)</h3>
+              <h3 ng-if="!ballot.iframeUrl">(Drag &amp; Drop)</h3>
               <h3 class="hide" ng-show="ballot.positions &gt; 1">
                 {{ballot.positions}} positions available
               </h3>
@@ -920,7 +956,10 @@
                 </form>
               </div>
               <div class="col-sm-6 text-center">
-                <img src="img/ranked-choices-logo.png" class="img img-responsive vote-button sidebar-logo" />
+                <img
+                  src="img/ranked-choices-logo.png"
+                  class="img img-responsive vote-button sidebar-logo"
+                />
               </div>
             </div>
           </div>
@@ -968,11 +1007,16 @@
               Enter Your Name to View the Candidates.
             </div>
             <div ng-show="ballot.register != 1 || (ballot.voterName || '').length > 2">
-              <h2>
+              <iframe
+                ng-if="ballot.iframeUrl"
+                ng-src="{{ballot.iframeUrl}}"
+                class="ballot-iframe"
+              ></iframe>
+              <h2 ng-if="!ballot.iframeUrl">
                 Order by Preference
                 <small>(remove any undesired using <i class="fa fa-trash"></i>)</small>
               </h2>
-              <h3>(Drag &amp; Drop)</h3>
+              <h3 ng-if="!ballot.iframeUrl">(Drag &amp; Drop)</h3>
               <h3 class="hide" ng-show="ballot.positions &gt; 1">
                 {{ballot.positions}} positions available
               </h3>
@@ -1037,7 +1081,10 @@
                 </form>
               </div>
               <div class="col-sm-6 text-center">
-                <img src="img/ranked-choices-logo.png" class="img img-responsive vote-button sidebar-logo" />
+                <img
+                  src="img/ranked-choices-logo.png"
+                  class="img img-responsive vote-button sidebar-logo"
+                />
               </div>
             </div>
           </div>
@@ -1321,6 +1368,53 @@
               Transfer
             </button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="iframe-help-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h2 class="modal-title">Iframe URL on Voting Page</h2>
+          </div>
+          <div class="modal-body">
+            <p>
+              This optional field lets you embed custom content (e.g. an image, custom instructions,
+              company promotional material, etc.) on the voting page, replacing the default "Order
+              by Preference / Drag &amp; Drop" headings. The candidate list and voting buttons
+              remain below.
+            </p>
+            <h4>Sizing the iframe</h4>
+            <p>
+              The iframe is set to 100% width. Prefer a white background for continuity. To control
+              the <strong>height</strong>, add a small script to your hosted page that sends its
+              height to the parent window:
+            </p>
+            <pre>
+&lt;script&gt;
+  window.addEventListener('load', function() {
+    parent.postMessage(
+      { iframeHeight: document.body.scrollHeight },
+      '*'
+    );
+  });
+&lt;/script&gt;</pre
+            >
+            <p>Ranked Choices will automatically resize the iframe to match.</p>
+            <h4>Requirements</h4>
+            <ul>
+              <li>The URL must use <strong>https://</strong></li>
+              <li>
+                The hosted page must allow embedding (no <code>X-Frame-Options: DENY</code> header)
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
           </div>
         </div>
       </div>

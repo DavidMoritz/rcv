@@ -30,7 +30,8 @@ npm run build
 npm preview
 
 # Start PHP backend (required for API calls during development)
-cd src && php -S localhost:8000
+# IMPORTANT: Always start this when testing locally — Vite proxies /api to localhost:2461
+cd src && php -S localhost:2461
 
 # Alternative: Use Docker Compose for full stack
 docker-compose up
@@ -88,8 +89,8 @@ Schema in `Schema.sql`. Important: Production database (`public_html/` folder) m
 3. Run `npm install`
 4. Start two terminals:
    - Terminal 1: `npm run dev` (frontend dev server on port 3000)
-   - Terminal 2: `cd src && php -S localhost:8000` (PHP backend)
-5. The Vite dev server proxies `/api` requests to `localhost:8000`
+   - Terminal 2: `cd src && php -S localhost:2461` (PHP backend)
+5. The Vite dev server proxies `/api` requests to `localhost:2461`
 
 ### Docker Development
 

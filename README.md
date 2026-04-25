@@ -50,7 +50,7 @@ This will automatically check:
 
 - ✓ Required tools (Node.js, npm, PHP, MySQL)
 - ✓ Service status (MySQL running)
-- ✓ Port availability (3000, 8000)
+- ✓ Port availability (3000, 2461)
 - ✓ Project files (config.php, node_modules)
 - ✓ Database connection
 
@@ -136,10 +136,10 @@ sudo systemctl start mysql
 
    ```bash
    cd src
-   php -S localhost:8000
+   php -S localhost:2461
    ```
 
-   This starts the API backend at `http://localhost:8000`
+   This starts the API backend at `http://localhost:2461`
 
 5. **Open your browser**
 
@@ -250,7 +250,7 @@ This will diagnose common problems and provide specific fix commands.
 
 **API requests failing with 404**
 
-- Make sure the PHP backend is running on port 8000
+- Make sure the PHP backend is running on port 2461
 - Check that `src/api/config.php` exists and has correct database credentials
 
 **Database connection errors**
@@ -262,7 +262,7 @@ This will diagnose common problems and provide specific fix commands.
 **Port already in use**
 
 - Change the Vite port in `vite.config.js` (default: 3000)
-- Change the PHP port: `php -S localhost:PORT` (default: 8000)
+- Change the PHP port: `php -S localhost:PORT` (default: 2461)
 
 **Build errors**
 

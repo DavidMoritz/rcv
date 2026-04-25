@@ -29,8 +29,9 @@ if (!empty($errors)) {
   $sth->execute();
   $results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
-	if(empty($results))
-		echo "Incorrect username and/or password";
-	else
+	if(empty($results)) {
+		http_response_code(401);
+		echo json_encode(['error' => 'Incorrect username and/or password']);
+	} else
 		print json_encode($results);
 }

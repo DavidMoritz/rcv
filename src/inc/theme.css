@@ -237,7 +237,7 @@ a:focus {
 /* ---------- Candidate / Sortable Items ---------- */
 #sortable .candidate-item {
   background: #edf0fb;
-  border: none;
+  border: 1px solid #c8ccd4;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(24, 28, 34, 0.08);
   margin-bottom: 8px;
@@ -248,6 +248,9 @@ a:focus {
 }
 #sortable .candidate-item:active {
   cursor: grabbing;
+}
+#sortable li i {
+  right: 12px;
 }
 
 /* ---------- Tables ---------- */
@@ -358,4 +361,12 @@ hr {
   margin: 12px auto;
   background: linear-gradient(135deg, #ff5c00, #ffa040);
   border-radius: 9999px;
+}
+
+/* ---------- Ballot Iframe ---------- */
+.ballot-iframe {
+  width: 100%;
+  border: none;
+  min-height: 200px;
+  margin-top: 8px;
 }

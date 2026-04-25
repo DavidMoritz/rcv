@@ -61,6 +61,11 @@ if (!empty($_POST['kickbackUrl']))
 else
 	$kickbackUrl = null;
 
+if (!empty($_POST['iframeUrl']))
+	$iframeUrl = $_POST['iframeUrl'];
+else
+	$iframeUrl = null;
+
 if (empty($_POST['maxVotes']))
 	$maxVotes = "NULL";
 else
@@ -81,9 +86,9 @@ if (!empty($errors)) {
 	$sth->execute();
 	$query = "
 		INSERT INTO
-			ballots (`name`, `timeCreated`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `register`, `allowCustom`, `hideNames`, `hideDetails`, `showGraph`, `maxVotes`, `kickbackUrl`)
+			ballots (`name`, `timeCreated`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `register`, `allowCustom`, `hideNames`, `hideDetails`, `showGraph`, `maxVotes`, `kickbackUrl`, `iframeUrl`)
 		VALUES
-			(:name, NOW(), :key, :positions, :createdBy, :resultsRelease, :voteCutoff, :requireSignIn, :tieBreak, :register, :allowCustom, :hideNames, :hideDetails, :showGraph, :maxVotes, :kickbackUrl)";
+			(:name, NOW(), :key, :positions, :createdBy, :resultsRelease, :voteCutoff, :requireSignIn, :tieBreak, :register, :allowCustom, :hideNames, :hideDetails, :showGraph, :maxVotes, :kickbackUrl, :iframeUrl)";
 
 	$sth = $dbh->prepare($query);
 	$sth->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
@@ -101,6 +106,7 @@ if (!empty($errors)) {
 	$sth->bindValue(':showGraph', $showGraph, PDO::PARAM_INT);
 	$sth->bindValue(':maxVotes', $maxVotes, ($maxVotes === "NULL" ? PDO::PARAM_NULL : PDO::PARAM_INT));
 	$sth->bindValue(':kickbackUrl', $kickbackUrl, ($kickbackUrl === null ? PDO::PARAM_NULL : PDO::PARAM_STR));
+	$sth->bindValue(':iframeUrl', $iframeUrl, ($iframeUrl === null ? PDO::PARAM_NULL : PDO::PARAM_STR));
 	$sth->execute();
 	echo $dbh->lastInsertId();
 }

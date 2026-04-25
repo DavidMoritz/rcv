@@ -55,6 +55,9 @@ if (!empty($_POST['showGraph']))
 if (isset($_POST['kickbackUrl']))
 	$setParts[] = "kickbackUrl = :kickbackUrl";
 
+if (isset($_POST['iframeUrl']))
+	$setParts[] = "iframeUrl = :iframeUrl";
+
 if (!empty($errors)) {
 	$data['errors']  = $errors;
 	$data['post'] = $_POST;
@@ -102,6 +105,9 @@ if (!empty($errors)) {
 
 	if (isset($_POST['kickbackUrl']))
 		$sth->bindValue(':kickbackUrl', empty($_POST['kickbackUrl']) ? null : $_POST['kickbackUrl'], empty($_POST['kickbackUrl']) ? PDO::PARAM_NULL : PDO::PARAM_STR);
+
+	if (isset($_POST['iframeUrl']))
+		$sth->bindValue(':iframeUrl', empty($_POST['iframeUrl']) ? null : $_POST['iframeUrl'], empty($_POST['iframeUrl']) ? PDO::PARAM_NULL : PDO::PARAM_STR);
 
 	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_INT);
 	$sth->bindValue(':id', $_POST['id'], PDO::PARAM_INT);

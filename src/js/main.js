@@ -6,6 +6,18 @@
  * revised by David Moritz
  */
 
+/* Iframe auto-resize: hosted pages can postMessage their height */
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.iframeHeight) {
+    var iframes = document.querySelectorAll('.ballot-iframe');
+    for (var i = 0; i < iframes.length; i++) {
+      if (iframes[i].contentWindow === e.source) {
+        iframes[i].style.height = e.data.iframeHeight + 'px';
+      }
+    }
+  }
+});
+
 /* JS Cookies - https://www.w3schools.com/js/js_cookies.asp */
 function setCookie(data) {
   if (data.days) {
@@ -429,14 +441,15 @@ mainApp.controller('MainCtrl', [
 		};
     
     $s.loginForm = function() {
-      $s.login.password = ($s.login.password + "My RCV salt").hashCode();
+      var payload = angular.copy($s.login);
+      payload.password = (payload.password + "My RCV salt").hashCode();
 			$http({
 				method: 'POST',
 				url: '/api/login.php',
-				data: $s.login,
+				data: payload,
 			}).then(function(resp) {
         if (typeof resp.data === 'string') {
-          alert("Incorrect username and/or password");
+          $s.loginError = true;
         } else {
           setUser({
             id: resp.data[0].id,
@@ -451,6 +464,8 @@ mainApp.controller('MainCtrl', [
             setCookie({ days: 30, name: 'loginImage', value: resp.data[0].image});
           }
         }
+      }, function() {
+        $s.loginError = true;
       });
     }
 
@@ -582,6 +597,9 @@ mainApp.controller('MainCtrl', [
 						$s.ballot.hideDetails = !!parseInt($s.ballot.hideDetails);
 						$s.ballot.showGraph = !!parseInt($s.ballot.showGraph);
 						$s.ballot.positions = parseInt($s.ballot.positions);
+						if ($s.ballot.iframeUrl) {
+							$s.ballot.iframeUrl = $sce.trustAsResourceUrl($s.ballot.iframeUrl);
+						}
 
 						return {
 							name: entry.candidate,
@@ -787,6 +805,7 @@ mainApp.controller('MainCtrl', [
       $s.ballot.allowCustom = ballot.allowCustom == 1;
       $s.ballot.showGraph = ballot.showGraph == 1;
       $s.ballot.kickbackUrl = ballot.kickbackUrl || '';
+      $s.ballot.iframeUrl = ballot.iframeUrl || '';
 
 			$http.get('/api/get-candidates.php?edit=true&key=' + $s.ballot.key + '&t=' + Date.now())
 				.then(function(resp) {
