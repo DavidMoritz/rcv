@@ -52,6 +52,9 @@ if (!empty($_POST['requireSignIn']))
 if (!empty($_POST['showGraph']))
 	$setParts[] = "showGraph = :showGraph";
 
+if (isset($_POST['kickbackUrl']))
+	$setParts[] = "kickbackUrl = :kickbackUrl";
+
 if (!empty($errors)) {
 	$data['errors']  = $errors;
 	$data['post'] = $_POST;
@@ -96,6 +99,9 @@ if (!empty($errors)) {
 
 	if (!empty($_POST['showGraph']))
 		$sth->bindValue(':showGraph', $_POST['showGraph'], PDO::PARAM_INT);
+
+	if (isset($_POST['kickbackUrl']))
+		$sth->bindValue(':kickbackUrl', empty($_POST['kickbackUrl']) ? null : $_POST['kickbackUrl'], empty($_POST['kickbackUrl']) ? PDO::PARAM_NULL : PDO::PARAM_STR);
 
 	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_INT);
 	$sth->bindValue(':id', $_POST['id'], PDO::PARAM_INT);

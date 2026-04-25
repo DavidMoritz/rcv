@@ -515,6 +515,10 @@
                   <input type="checkbox" ng-model="ballot.allowCustom" />
                 </label>
               </div>
+              <div class="form-group" ng-show="user.name">
+                <label>Redirect URL after voting:</label>
+                <input type="url" class="form-control" ng-model="ballot.kickbackUrl" placeholder="https://example.com/thanks" />
+              </div>
               <div class="form-group">
                 <h4 ng-hide="editDate || editTime">Voting Cutoff: never (check box for custom)</h4>
                 <h4 ng-show="editDate || editTime">

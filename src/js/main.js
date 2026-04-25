@@ -786,6 +786,7 @@ mainApp.controller('MainCtrl', [
       $s.ballot.hideDetails = ballot.hideDetails == 1;
       $s.ballot.allowCustom = ballot.allowCustom == 1;
       $s.ballot.showGraph = ballot.showGraph == 1;
+      $s.ballot.kickbackUrl = ballot.kickbackUrl || '';
 
 			$http.get('/api/get-candidates.php?edit=true&key=' + $s.ballot.key + '&t=' + Date.now())
 				.then(function(resp) {
@@ -1001,6 +1002,10 @@ mainApp.controller('MainCtrl', [
           name: $s.ballot.voterName
 				},
 			}).success(function(resp) {
+        if ($s.ballot.kickbackUrl) {
+          window.location.href = $s.ballot.kickbackUrl;
+          return;
+        }
 				$s.thanks = true;
         if ($s.bbiBallot) {
           $s.patchRcvis = true;

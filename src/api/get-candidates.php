@@ -10,7 +10,7 @@ if(!empty($key)) {
 	$sth->execute();
 	$query = "
 		SELECT
-			b.id, b.key, b.name, b.positions, b.register, b.resultsRelease, b.voteCutoff, b.hideNames, b.hideDetails, b.allowCustom, b.showGraph, e.entry_id, e.image, e.hyperlink, e.color, e.name AS 'candidate'
+			b.id, b.key, b.name, b.positions, b.register, b.resultsRelease, b.voteCutoff, b.hideNames, b.hideDetails, b.allowCustom, b.showGraph, b.kickbackUrl, e.entry_id, e.image, e.hyperlink, e.color, e.name AS 'candidate'
 		FROM
 			entries e
 		JOIN
