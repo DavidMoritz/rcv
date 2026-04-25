@@ -47,6 +47,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-97773273-1"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
 
@@ -508,13 +509,13 @@
               </div>
               <div class="form-group" ng-show="user.name">
                 <label>
-                  Hide voter names when displaying results (except from owner, while logged in):
+                  Hide voter names when displaying results (except from logged-in owner):
                   <input type="checkbox" ng-model="ballot.hideNames" />
                 </label>
               </div>
               <div class="form-group" ng-show="user.name">
                 <label>
-                  Hide detailed results (except from owner, while logged in):
+                  Hide detailed results (except from logged-in owner):
                   <input type="checkbox" ng-model="ballot.hideDetails" />
                 </label>
               </div>
@@ -525,11 +526,27 @@
                 </label>
               </div>
               <div class="form-group">
-                <h4 ng-hide="editDate || editTime">Voting Cutoff: never (check box for custom)</h4>
-                <h4 ng-show="editDate || editTime">
-                  Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}}
-                  {{ballot.voteCutoff | date: "h:mm a" }}
-                </h4>
+                <label>
+                  Limit to one vote per device:
+                  <input type="checkbox" ng-model="ballot.oneDeviceOneVote" />
+                  <i
+                    class="fa fa-question-circle"
+                    style="cursor: pointer; color: #1a43bf"
+                    data-toggle="modal"
+                    data-target="#device-vote-help-modal"
+                  ></i>
+                </label>
+              </div>
+              <div class="form-group">
+                <div>
+                  <label ng-hide="editDate || editTime"
+                    >Voting Cutoff: never (check box for custom)</label
+                  >
+                  <label ng-show="editDate || editTime">
+                    Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today,
+                    at"}} {{ballot.voteCutoff | date: "h:mm a" }}
+                  </label>
+                </div>
                 <label
                   >Edit Time
                   <input type="checkbox" ng-model="editTime" />
@@ -882,7 +899,7 @@
               />
             </form>
           </div>
-          <div ng-if="candidates" ng-hide="thanks">
+          <div ng-if="candidates" ng-hide="thanks || deviceAlreadyVoted">
             <h1>Ballot: {{ballot.name}}</h1>
             <div>
               <iframe
@@ -935,6 +952,11 @@
             <h3>Thank you for voting!</h3>
             <a onclick="location.reload()">RESET</a>
           </div>
+          <div ng-show="deviceAlreadyVoted">
+            <h1>Ballot: {{ballot.name}}</h1>
+            <h3>This device has already voted on this ballot.</h3>
+            <p>Each device is limited to one vote. If you believe this is an error, please contact the ballot creator.</p>
+          </div>
         </div>
       </div>
       <div ng-show="activeLink == 'vote'" class="panel panel-default">
@@ -963,7 +985,7 @@
               </div>
             </div>
           </div>
-          <div ng-if="candidates" ng-hide="thanks">
+          <div ng-if="candidates" ng-hide="thanks || deviceAlreadyVoted">
             <h1>Ballot: {{ballot.name}}</h1>
             <div class="row" ng-hide="ballot.register == 2">
               <label class="control-label col-sm-3 col-md-2"
@@ -1059,6 +1081,11 @@
               <a href="/results#{{shortcode}}">Click here to see the results</a>
             </h4>
             <h5>Voting URL: {{origin}}/{{ballot.key}}</h5>
+          </div>
+          <div ng-show="deviceAlreadyVoted">
+            <h1>Ballot: {{ballot.name}}</h1>
+            <h3>This device has already voted on this ballot.</h3>
+            <p>Each device is limited to one vote. If you believe this is an error, please contact the ballot creator.</p>
           </div>
         </div>
       </div>
@@ -1411,6 +1438,39 @@
               <li>
                 The hosted page must allow embedding (no <code>X-Frame-Options: DENY</code> header)
               </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="device-vote-help-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h2 class="modal-title">One Device, One Vote</h2>
+          </div>
+          <div class="modal-body">
+            <p>
+              When enabled, this feature uses browser fingerprinting to detect if the same device
+              has already voted on this ballot. No personal data is collected &mdash; only an
+              anonymous device identifier is generated and stored.
+            </p>
+            <h4>Kiosk Mode</h4>
+            <p>
+              If you are using a shared device (e.g. a tablet at an event), log in with your
+              account on that device. As the ballot creator, your device will be automatically
+              whitelisted, allowing multiple people to vote from the same device.
+            </p>
+            <h4>Limitations</h4>
+            <ul>
+              <li>Different browsers or incognito/private windows on the same device may be treated as separate devices.</li>
+              <li>If a voter's browser blocks fingerprinting, the check is skipped and they can vote normally.</li>
             </ul>
           </div>
           <div class="modal-footer">

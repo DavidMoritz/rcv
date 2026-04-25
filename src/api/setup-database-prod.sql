@@ -46,6 +46,7 @@ CREATE TABLE `ballots` (
   `graphUpdated` datetime DEFAULT NULL,
   `kickbackUrl` varchar(2048) DEFAULT NULL,
   `iframeUrl` varchar(2048) DEFAULT NULL,
+  `oneDeviceOneVote` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
@@ -123,8 +124,10 @@ CREATE TABLE `votes` (
   `vote_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(40) NOT NULL DEFAULT '',
   `date_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `fingerprint` varchar(64) NOT NULL DEFAULT '',
   PRIMARY KEY (`vote_id`),
-  UNIQUE KEY `NoDuplicates` (`ballotId`,`voteIds`(25),`name`,`ipAddress`,`date_created`)
+  UNIQUE KEY `NoDuplicates` (`ballotId`,`voteIds`(25),`name`,`ipAddress`,`date_created`),
+  KEY `idx_ballot_fingerprint` (`ballotId`,`fingerprint`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
 

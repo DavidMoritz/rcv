@@ -58,6 +58,9 @@ if (isset($_POST['kickbackUrl']))
 if (isset($_POST['iframeUrl']))
 	$setParts[] = "iframeUrl = :iframeUrl";
 
+if (isset($_POST['oneDeviceOneVote']))
+	$setParts[] = "oneDeviceOneVote = :oneDeviceOneVote";
+
 if (!empty($errors)) {
 	$data['errors']  = $errors;
 	$data['post'] = $_POST;
@@ -108,6 +111,9 @@ if (!empty($errors)) {
 
 	if (isset($_POST['iframeUrl']))
 		$sth->bindValue(':iframeUrl', empty($_POST['iframeUrl']) ? null : $_POST['iframeUrl'], empty($_POST['iframeUrl']) ? PDO::PARAM_NULL : PDO::PARAM_STR);
+
+	if (isset($_POST['oneDeviceOneVote']))
+		$sth->bindValue(':oneDeviceOneVote', intval($_POST['oneDeviceOneVote']), PDO::PARAM_INT);
 
 	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_INT);
 	$sth->bindValue(':id', $_POST['id'], PDO::PARAM_INT);

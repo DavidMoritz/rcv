@@ -32,6 +32,18 @@ function setCookie(data) {
 
 const trickVote = '123456';
 
+function getDeviceToken() {
+  var token = getCookie('deviceToken');
+  if (!token) {
+    token = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+    setCookie({ name: 'deviceToken', value: token, days: 365 * 5 });
+  }
+  return token;
+}
+
 function getCookie(cname) {
   var name = cname + '=';
   var ca = document.cookie.split(';');
@@ -275,6 +287,7 @@ mainApp.controller('MainCtrl', [
 				maxVotes: 1,
         register: 0,
         allowCustom: 0,
+        oneDeviceOneVote: 0,
 				tieBreak: 'weighted',
 				voteCutoff: roundResultsRelease(),
         voteTimezone: moment.tz.guess(),
@@ -596,6 +609,7 @@ mainApp.controller('MainCtrl', [
 						$s.ballot.hideNames = !!parseInt($s.ballot.hideNames);
 						$s.ballot.hideDetails = !!parseInt($s.ballot.hideDetails);
 						$s.ballot.showGraph = !!parseInt($s.ballot.showGraph);
+						$s.ballot.oneDeviceOneVote = !!parseInt($s.ballot.oneDeviceOneVote);
 						$s.ballot.positions = parseInt($s.ballot.positions);
 						if ($s.ballot.iframeUrl) {
 							$s.ballot.iframeUrl = $sce.trustAsResourceUrl($s.ballot.iframeUrl);
@@ -624,6 +638,21 @@ mainApp.controller('MainCtrl', [
             }
           }
 					$s.resetCandidates();
+
+					// Generate device fingerprint if oneDeviceOneVote is enabled
+					if ($s.ballot.oneDeviceOneVote) {
+						if (window.FingerprintJS) {
+							FingerprintJS.load().then(function(fp) {
+								return fp.get();
+							}).then(function(result) {
+								$s.deviceFingerprint = result.visitorId;
+							}).catch(function() {
+								$s.deviceFingerprint = getDeviceToken();
+							});
+						} else {
+							$s.deviceFingerprint = getDeviceToken();
+						}
+					}
 				})
 			;
 		};
@@ -804,6 +833,7 @@ mainApp.controller('MainCtrl', [
       $s.ballot.hideDetails = ballot.hideDetails == 1;
       $s.ballot.allowCustom = ballot.allowCustom == 1;
       $s.ballot.showGraph = ballot.showGraph == 1;
+      $s.ballot.oneDeviceOneVote = ballot.oneDeviceOneVote == 1;
       $s.ballot.kickbackUrl = ballot.kickbackUrl || '';
       $s.ballot.iframeUrl = ballot.iframeUrl || '';
 
@@ -1018,9 +1048,15 @@ mainApp.controller('MainCtrl', [
 					})).replace(/"/g, ''),
 					key: $s.ballot.key,
           id: $s.ballot.id,
-          name: $s.ballot.voterName
+          name: $s.ballot.voterName,
+          fingerprint: $s.deviceFingerprint || '',
+          userId: $s.user.id || ''
 				},
 			}).success(function(resp) {
+        if (resp && resp.errors && resp.errors.duplicate) {
+          $s.deviceAlreadyVoted = true;
+          return;
+        }
         if ($s.ballot.kickbackUrl) {
           window.location.href = $s.ballot.kickbackUrl;
           return;
