@@ -555,10 +555,27 @@
                 <div class="row" ng-show="editTime">
                   <div class="col-sm-6">
                     <div class="form-inline">
-                      <select ng-model="cutoffTime.hour" ng-options="h as h for h in hours" ng-change="syncTimeToDate('voteCutoff', cutoffTime)" class="form-control" style="width:auto;display:inline-block"></select>
-                      <b style="padding:0 4px">:</b>
-                      <select ng-model="cutoffTime.minute" ng-options="m.value as m.label for m in minutes" ng-change="syncTimeToDate('voteCutoff', cutoffTime)" class="form-control" style="width:auto;display:inline-block"></select>
-                      <select ng-model="cutoffTime.meridian" ng-change="syncTimeToDate('voteCutoff', cutoffTime)" class="form-control" style="width:auto;display:inline-block">
+                      <select
+                        ng-model="cutoffTime.hour"
+                        ng-options="h as h for h in hours"
+                        ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
+                        class="form-control"
+                        style="width: auto; display: inline-block"
+                      ></select>
+                      <b style="padding: 0 4px">:</b>
+                      <select
+                        ng-model="cutoffTime.minute"
+                        ng-options="m.value as m.label for m in minutes"
+                        ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
+                        class="form-control"
+                        style="width: auto; display: inline-block"
+                      ></select>
+                      <select
+                        ng-model="cutoffTime.meridian"
+                        ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
+                        class="form-control"
+                        style="width: auto; display: inline-block"
+                      >
                         <option value="AM">AM</option>
                         <option value="PM">PM</option>
                       </select>
@@ -646,10 +663,27 @@
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="form-inline">
-                        <select ng-model="releaseTime.hour" ng-options="h as h for h in hours" ng-change="syncTimeToDate('resultsRelease', releaseTime)" class="form-control" style="width:auto;display:inline-block"></select>
-                        <b style="padding:0 4px">:</b>
-                        <select ng-model="releaseTime.minute" ng-options="m.value as m.label for m in minutes" ng-change="syncTimeToDate('resultsRelease', releaseTime)" class="form-control" style="width:auto;display:inline-block"></select>
-                        <select ng-model="releaseTime.meridian" ng-change="syncTimeToDate('resultsRelease', releaseTime)" class="form-control" style="width:auto;display:inline-block">
+                        <select
+                          ng-model="releaseTime.hour"
+                          ng-options="h as h for h in hours"
+                          ng-change="syncTimeToDate('resultsRelease', releaseTime)"
+                          class="form-control"
+                          style="width: auto; display: inline-block"
+                        ></select>
+                        <b style="padding: 0 4px">:</b>
+                        <select
+                          ng-model="releaseTime.minute"
+                          ng-options="m.value as m.label for m in minutes"
+                          ng-change="syncTimeToDate('resultsRelease', releaseTime)"
+                          class="form-control"
+                          style="width: auto; display: inline-block"
+                        ></select>
+                        <select
+                          ng-model="releaseTime.meridian"
+                          ng-change="syncTimeToDate('resultsRelease', releaseTime)"
+                          class="form-control"
+                          style="width: auto; display: inline-block"
+                        >
                           <option value="AM">AM</option>
                           <option value="PM">PM</option>
                         </select>
@@ -968,7 +1002,10 @@
           <div ng-show="deviceAlreadyVoted">
             <h1>Ballot: {{ballot.name}}</h1>
             <h3>This device has already voted on this ballot.</h3>
-            <p>Each device is limited to one vote. If you believe this is an error, please contact the ballot creator.</p>
+            <p>
+              Each device is limited to one vote. If you believe this is an error, please contact
+              the ballot creator.
+            </p>
           </div>
         </div>
       </div>
@@ -1098,7 +1135,10 @@
           <div ng-show="deviceAlreadyVoted">
             <h1>Ballot: {{ballot.name}}</h1>
             <h3>This device has already voted on this ballot.</h3>
-            <p>Each device is limited to one vote. If you believe this is an error, please contact the ballot creator.</p>
+            <p>
+              Each device is limited to one vote. If you believe this is an error, please contact
+              the ballot creator.
+            </p>
           </div>
         </div>
       </div>
@@ -1180,6 +1220,9 @@
       <div ng-show="activeLink == 'profile'" class="panel panel-default">
         <div class="panel-body">
           <h1>Profile</h1>
+          <a href="#" ng-click="signOut()" class="pull-right btn btn-info" style="margin-top: -40px"
+            >Sign out</a
+          >
           <h3 ng-show="user.name">Name: {{user.name}}</h3>
           <div ng-show="allBallots.length">
             <h3>Current Ballots</h3>
@@ -1476,14 +1519,20 @@
             </p>
             <h4>Kiosk Mode</h4>
             <p>
-              If you are using a shared device (e.g. a tablet at an event), log in with your
-              account on that device. As the ballot creator, your device will be automatically
-              whitelisted, allowing multiple people to vote from the same device.
+              If you are using a shared device (e.g. a tablet at an event), log in with your account
+              on that device. As the ballot creator, your device will be automatically whitelisted,
+              allowing multiple people to vote from the same device.
             </p>
             <h4>Limitations</h4>
             <ul>
-              <li>Different browsers or incognito/private windows on the same device may be treated as separate devices.</li>
-              <li>If a voter's browser blocks fingerprinting, the check is skipped and they can vote normally.</li>
+              <li>
+                Different browsers or incognito/private windows on the same device may be treated as
+                separate devices.
+              </li>
+              <li>
+                If a voter's browser blocks fingerprinting, the check is skipped and they can vote
+                normally.
+              </li>
             </ul>
           </div>
           <div class="modal-footer">
