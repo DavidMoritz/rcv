@@ -2,7 +2,9 @@
   background: #eee;
 }
 @media screen and (max-width: 992px) {
-  #sortable {max-width: 92%;}
+  #sortable {
+    max-width: 92%;
+  }
 }
 .fork-me-on-github {
   position: absolute;
@@ -24,4 +26,39 @@
   clear: both;
   display: block;
   content: '';
+}
+
+/* Detailed results: scrollable vote rows */
+.panel-body .table {
+  table-layout: fixed;
+  width: 100%;
+}
+.vote-pin-left {
+  width: 100px;
+  vertical-align: top;
+}
+.vote-pin-first {
+  width: 25%;
+  max-width: 250px;
+  vertical-align: top;
+}
+.vote-mid-cell {
+  padding: 4px !important;
+}
+.vote-mid-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+.vote-mid-item {
+  flex: 0 0 auto;
+  padding: 2px 4px;
+  white-space: nowrap;
+  font-size: 0.9em;
+}
+.vote-pin-right {
+  width: 100px;
+  white-space: nowrap;
+  font-weight: bold;
 }

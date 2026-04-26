@@ -124,6 +124,7 @@ switch ($action) {
             FROM users u
             LEFT JOIN ballots b ON b.createdBy = u.id
             GROUP BY u.id, u.username, u.email, u.role, u.clearance
+            HAVING ballotCount > 9
             ORDER BY ballotCount DESC
         ");
         $data['users'] = $stmt->fetchAll(PDO::FETCH_ASSOC);

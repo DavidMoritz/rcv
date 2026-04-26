@@ -1398,32 +1398,30 @@ mainApp.factory('VoteFactory', [
 			displayVotes: function(loggedIn) {
 				var model = this;
 				this.outputstring += '<tbody>';
-        console.log(JSON.stringify(model.user));
-        console.log(model.user, model);
 				_.each(this.votes, function(vote, idx) {
           var dName = model.getVoterName(idx);
-					model.outputstring += '<tr><th>';
+					model.outputstring += '<tr>';
+
+					// Fixed left: vote label + first choice
+					model.outputstring += '<th class="vote-pin-left">';
           if (loggedIn) {
             model.outputstring += '<span class="delete-vote-btn" data-delete-vote=' + $s.voterIds[idx] + '>&times;</span>';
           }
-          model.outputstring += dName;
-          model.outputstring += ':</th>';
-					var colspan = model.names.length - vote.length;
-					_.each(vote, function(name, idx2) {
-						if (idx2 === 0) {
-							model.outputstring += '<td><span class="next-vote">' + name + '</span></td>';
-						} else {
-							model.outputstring += '<td>' + name + '</td>';
-						}
-					});
+          model.outputstring += dName + ':</th>';
+					model.outputstring += '<td class="vote-pin-first"><span class="next-vote">' + (vote[0] || '') + '</span></td>';
 
-					if (colspan) {
-						model.outputstring += '<td colspan=' + colspan + '></td>';
+					// Scrollable middle choices
+					model.outputstring += '<td class="vote-mid-cell"><div class="vote-mid-scroll">';
+					for (var i = 1; i < vote.length; i++) {
+						model.outputstring += '<span class="vote-mid-item">' + vote[i] + '</span>';
 					}
+					model.outputstring += '</div></td>';
 
+					// Fixed right: vote-value (multi-seat only)
 					if (model.seats > 1) {
-						model.outputstring += '<td>vote-value = ' + _.round(model.voteweight[idx], 4) + '</td></tr>';
+						model.outputstring += '<td class="vote-pin-right">vote-value = ' + _.round(model.voteweight[idx], 4) + '</td>';
 					}
+					model.outputstring += '</tr>';
 				});
 				this.outputstring += '</tbody></table>';
 			},
