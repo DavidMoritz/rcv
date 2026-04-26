@@ -97,7 +97,7 @@
                 ng-class="{'active': nav.link == activeLink}"
                 ng-hide="nav.hide"
               >
-                <a href="/{{nav.link}}"
+                <a href="/{{nav.link}}" ng-click="navigate(nav.link)"
                   >{{nav.text}}<span ng-if="nav.link == activeLink" class="sr-only"
                     >(current)</span
                   ></a
@@ -1018,7 +1018,7 @@
                 <form ng-submit="submitShortcode()">
                   <div class="form-group">
                     <label>Enter Ballot Shortcode</label>
-                    <input name="ballot" ng-model="shortcode" class="form-control" /><span
+                    <input name="ballot" ng-model="shortcode" ng-change="errors.shortcode = null" class="form-control" /><span
                       ng-show="errors.shortcode"
                       class="text-danger"
                       >{{errors.shortcode}}</span
@@ -1151,7 +1151,7 @@
                 <form ng-submit="submitShortcode()">
                   <div class="form-group">
                     <label>Enter Ballot Shortcode</label>
-                    <input name="ballot" ng-model="shortcode" class="form-control" /><span
+                    <input name="ballot" ng-model="shortcode" ng-change="errors.shortcode = null" class="form-control" /><span
                       ng-show="errors.shortcode"
                       class="text-danger"
                       >{{errors.shortcode}}</span

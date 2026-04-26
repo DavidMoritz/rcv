@@ -488,6 +488,14 @@ mainApp.controller('MainCtrl', [
 				$s.submitShortcode();
 			} else {
 				$s.shortcode = '';
+				$s.thanks = false;
+				$s.deviceAlreadyVoted = false;
+				$s.candidates = null;
+				$s.final = false;
+				$s.showText = false;
+				$s.bodyText = '';
+				$s.patchRcvis = false;
+				$s.errors = {};
 			}
 		};
     
@@ -630,9 +638,17 @@ mainApp.controller('MainCtrl', [
 
 			$http.get('/api/get-candidates.php?key=' + $s.shortcode + '&t=' + Date.now())
 				.then(function(resp) {
+					if (resp.data && resp.data.status === 'closed') {
+						var release = moment.tz(resp.data.resultsRelease, 'Zulu');
+						if (release > moment()) {
+							$s.errors.shortcode = 'Voting has closed. Results will be released ' + release.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a');
+						} else {
+							$s.navigate('results', $s.shortcode);
+						}
+						return;
+					}
 					if (typeof resp.data == 'string') {
-						$s.navigate('results', $s.shortcode);
-
+						$s.errors.shortcode = resp.data;
 						return;
 					}
 
@@ -1806,12 +1822,12 @@ mainApp.factory('VoteFactory', [
                     $s.displayRcvisIframe();
                     
                     $.get('/api/rcvis_slug.php?key=' + $s.shortcode + '&slug=' + $s.rcvisSlug + '&id=' + $s.rcvisId);
-                  } else {                   
-                    alert( 'Error: Please refresh to see results.' );
+                  } else {
+                    console.warn('RCVis: failed to create visualization');
                   }
               },
-              error: function(jqXHR, textStatus, errorThrown) { 
-                alert( 'Error: Please refresh to see results.' ); 
+              error: function(jqXHR, textStatus, errorThrown) {
+                console.warn('RCVis: failed to create visualization');
               }
             });
           }
