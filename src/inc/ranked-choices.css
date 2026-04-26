@@ -62,3 +62,50 @@
   white-space: nowrap;
   font-weight: bold;
 }
+
+/* Mobile: stack vote rows as cards */
+@media (max-width: 767px) {
+  .panel-body {
+    overflow: hidden;
+  }
+  .panel-body .table,
+  .panel-body .table tbody {
+    display: block;
+    width: 100%;
+  }
+  .panel-body .table tbody tr {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #e8e8f0;
+    padding: 6px 0;
+  }
+  .vote-pin-left {
+    width: auto;
+    flex: 0 0 auto;
+    padding-right: 6px !important;
+    border: none !important;
+  }
+  .vote-pin-first {
+    width: auto;
+    max-width: none;
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: none !important;
+  }
+  .vote-pin-right {
+    width: auto;
+    flex: 0 0 auto;
+    margin-left: auto;
+    border: none !important;
+    font-size: 0.85em;
+  }
+  .vote-mid-cell {
+    flex: 0 0 100%;
+    min-width: 0;
+    overflow: hidden;
+    border: none !important;
+    padding: 2px 8px !important;
+  }
+}
