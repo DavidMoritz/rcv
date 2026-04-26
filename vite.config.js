@@ -34,12 +34,12 @@ export default defineConfig({
       },
       output: {
         // Keep similar structure to production
-        entryFileNames: 'inc/[name].js',
-        chunkFileNames: 'inc/[name].js',
+        entryFileNames: 'inc/[name]-[hash].js',
+        chunkFileNames: 'inc/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
           // CSS files go to inc/
           if (assetInfo.name.endsWith('.css')) {
-            return 'inc/[name][extname]';
+            return 'inc/[name]-[hash][extname]';
           }
           // Everything else at root or respective directories
           return '[name][extname]';

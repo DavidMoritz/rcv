@@ -412,6 +412,46 @@ mainApp.controller('MainCtrl', [
 			return new Date(now.setMinutes(offset));
 		}
 
+		// Time-picker helpers
+		$s.hours = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+		$s.minutes = [];
+		for (var i = 0; i < 60; i += 5) {
+			$s.minutes.push({ value: i, label: (i < 10 ? '0' : '') + i });
+		}
+
+		function dateToTime(d) {
+			var h = d.getHours();
+			var meridian = h >= 12 ? 'PM' : 'AM';
+			h = h % 12 || 12;
+			// Round minute to nearest 5
+			var m = Math.round(d.getMinutes() / 5) * 5;
+			if (m === 60) m = 55;
+			return { hour: h, minute: m, meridian: meridian };
+		}
+
+		$s.syncTimeToDate = function(field, t) {
+			var d = new Date($s.ballot[field]);
+			var h = t.hour % 12;
+			if (t.meridian === 'PM') h += 12;
+			d.setHours(h);
+			d.setMinutes(t.minute);
+			$s.ballot[field] = d;
+		};
+
+		function updateTimeObj(scopeKey, d) {
+			var t = dateToTime(d);
+			var cur = $s[scopeKey];
+			if (!cur || cur.hour !== t.hour || cur.minute !== t.minute || cur.meridian !== t.meridian) {
+				$s[scopeKey] = t;
+			}
+		}
+		$s.$watch('ballot.voteCutoff', function(v) {
+			if (v) updateTimeObj('cutoffTime', new Date(v));
+		});
+		$s.$watch('ballot.resultsRelease', function(v) {
+			if (v) updateTimeObj('releaseTime', new Date(v));
+		});
+
 		$s.navigate = function(link, shortcode) {
 			var found = _.find($s.navItems, {link: link});
 			var title = found ? found.text : 'no_title';
