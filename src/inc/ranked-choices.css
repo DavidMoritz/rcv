@@ -57,6 +57,10 @@
   white-space: nowrap;
   font-size: 0.9em;
 }
+.vote-mid-sep {
+  flex: 0 0 auto;
+  color: #c4c5d6;
+}
 .vote-pin-right {
   width: 100px;
   white-space: nowrap;

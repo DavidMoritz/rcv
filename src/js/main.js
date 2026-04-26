@@ -1413,6 +1413,7 @@ mainApp.factory('VoteFactory', [
 					// Scrollable middle choices
 					model.outputstring += '<td class="vote-mid-cell"><div class="vote-mid-scroll">';
 					for (var i = 1; i < vote.length; i++) {
+						if (i > 1) model.outputstring += '<span class="vote-mid-sep">|</span>';
 						model.outputstring += '<span class="vote-mid-item">' + vote[i] + '</span>';
 					}
 					model.outputstring += '</div></td>';
