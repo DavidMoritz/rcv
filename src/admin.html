@@ -373,7 +373,7 @@
             return;
         }
         tbody.innerHTML = ballots.map(function(b, i) {
-            var created = b.timeCreated ? new Date(b.timeCreated).toLocaleDateString() : '-';
+            var created = b.timeCreated ? new Date(b.timeCreated).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '-';
             var check = '\u2713';
             return '<tr>' +
                 '<td>' + (showRank ? (i + 1) : b.id) + '</td>' +

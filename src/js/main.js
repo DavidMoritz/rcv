@@ -27,7 +27,7 @@ function setCookie(data) {
   if (data.date) {
     data.expires = 'expires=' + data.date.toUTCString();
   }
-  document.cookie = data.name + '=' + data.value + ';' + data.expires + ';path=/';
+  document.cookie = data.name + '=' + data.value + (data.expires ? ';' + data.expires : '') + ';path=/';
 }
 
 const trickVote = '123456';
@@ -165,9 +165,7 @@ mainApp.run(['$rootScope', function($rootScope) {
   if (getCookie('loginId')) {
     setUser({
       id: getCookie('loginId'),
-      name: getCookie('loginName'),
-      email: getCookie('loginEmail'),
-      image: getCookie('loginImage')
+      name: getCookie('loginName')
     }, 'profile');
   }
 }]);
@@ -510,12 +508,9 @@ mainApp.controller('MainCtrl', [
             email: resp.data[0].email,
             image: resp.data[0].image
           }, 'profile');
-          if ($s.login.remember) {
-            setCookie({ days: 30, name: 'loginId', value: resp.data[0].id});
-            setCookie({ days: 30, name: 'loginName', value: resp.data[0].username});
-            setCookie({ days: 30, name: 'loginEmail', value: resp.data[0].email});
-            setCookie({ days: 30, name: 'loginImage', value: resp.data[0].image});
-          }
+          var cookieDays = $s.login.remember ? 30 : undefined;
+          setCookie({ days: cookieDays, name: 'loginId', value: resp.data[0].id});
+          setCookie({ days: cookieDays, name: 'loginName', value: resp.data[0].username});
         }
       }, function() {
         $s.loginError = true;
@@ -554,11 +549,11 @@ mainApp.controller('MainCtrl', [
     }
 
 		$s.signOut = function() {
-			var auth2 = gapi.auth2.getAuthInstance();
-			auth2.signOut().then(function() {
-				console.log('User signed out.');
-				resetNav();
-			});
+			setCookie({ name: 'loginId', value: '', days: -1 });
+			setCookie({ name: 'loginName', value: '', days: -1 });
+			$s.user = {};
+			resetNav();
+			$s.navigate('home');
 		};
     
     $s.validateZip = function() {
