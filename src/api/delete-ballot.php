@@ -7,7 +7,6 @@ $ballotId = $_POST['id'];
 $createdBy = $_POST['createdBy'];
 
 if(!empty($ballotId)) {
-// checking for blank values.
 	$query2 = "
 		DELETE FROM
 			`entries`
@@ -18,22 +17,22 @@ if(!empty($ballotId)) {
       FROM
         `ballots`
       WHERE
-        `createdBy` = $createdBy
-      AND 
-        `id` = $ballotId
+        `createdBy` = :createdBy
+      AND
+        `id` = :ballotId
     );";
 	$sth2 = $dbh->prepare($query2);
-	$sth2->execute();
-  echo $query2;
+	$sth2->execute([':createdBy' => $createdBy, ':ballotId' => $ballotId]);
+
 	$query = "
 		DELETE FROM
 			`ballots`
 		WHERE
-			`createdBy` = $createdBy
-		AND 
-			`id` = $ballotId;";
+			`createdBy` = :createdBy
+		AND
+			`id` = :ballotId;";
 	$sth = $dbh->prepare($query);
-	$sth->execute();
+	$sth->execute([':createdBy' => $createdBy, ':ballotId' => $ballotId]);
 } else {
 	echo "failed to supply ballotId";
 }

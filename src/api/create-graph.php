@@ -12,10 +12,9 @@ if ($key) {
       voteCutoff = NOW(),
       graphUpdated = NOW()
 		WHERE
-			`key` = '$key';";
+			`key` = :key;";
 
 	$sth = $dbh->prepare($query);
-	$sth->execute();
-	echo $query;
+	$sth->execute([':key' => $key]);
 }
 ?>

@@ -22,9 +22,9 @@ $updateGraph = "
   SET
     graphUpdated = NOW()
   WHERE
-    rcvisId = '$id';";
+    rcvisId = :id;";
 $sth = $dbh->prepare($updateGraph);
-$sth->execute();
+$sth->execute([':id' => $id]);
 //   echo $query;
 
 // grab URL and pass it to the browser

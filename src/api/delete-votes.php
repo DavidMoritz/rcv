@@ -6,14 +6,8 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 $ballotId = $_POST['id'];
 $createdBy = $_POST['createdBy'];
 $voteId = $_POST['voteId'];
-$specificVote = '';
-
-if(!empty($voteId)) {
-  $specificVote = "AND votes.id = $voteId";
-}
 
 if(!empty($ballotId)) {
-// checking for blank values.
 	$query = "
 		DELETE FROM
 			`votes`
@@ -24,14 +18,20 @@ if(!empty($ballotId)) {
 			FROM
 				ballots
 			WHERE
-				`createdBy` = $createdBy
-			AND 
-				`id` = $ballotId
+				`createdBy` = :createdBy
+			AND
+				`id` = :ballotId
 		)
-    $specificVote
-  ;";
+  ";
+	$params = [':createdBy' => $createdBy, ':ballotId' => $ballotId];
+
+	if(!empty($voteId)) {
+		$query .= "AND votes.id = :voteId";
+		$params[':voteId'] = $voteId;
+	}
+
 	$sth = $dbh->prepare($query);
-	$sth->execute();
+	$sth->execute($params);
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 } else {
 	echo "failed to supply ballotId";
