@@ -26,9 +26,17 @@ if(!empty($key)) {
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
-	if(empty($results) && !$edit)
-		echo "Either shortcode is incorrect or voting has already been cutoff.";
-	else
+	if(empty($results) && !$edit) {
+		$sth2 = $dbh->prepare("SELECT id, voteCutoff, resultsRelease FROM ballots WHERE `key` = :key");
+		$sth2->bindValue(':key', $key, PDO::PARAM_STR);
+		$sth2->execute();
+		$ballot = $sth2->fetch(PDO::FETCH_ASSOC);
+		if($ballot) {
+			echo json_encode(['status' => 'closed', 'resultsRelease' => $ballot['resultsRelease']]);
+		} else {
+			echo "Shortcode not found.";
+		}
+	} else
 		print json_encode($results);
 } else {
 	echo "Failed to supply Shortcode";

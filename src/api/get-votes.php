@@ -15,8 +15,9 @@ if(!empty($key)) {
 			ON
 				votes.ballotId = ballots.id
 		WHERE
-			ballots.key = '$key';";
+			ballots.key = :key;";
 	$sth = $dbh->prepare($query);
+	$sth->bindValue(':key', $key, PDO::PARAM_STR);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
@@ -32,9 +33,16 @@ if(!empty($key)) {
 	// // THIS DOESN'T WORK YET
 	// array_push($results, $sth->fetchAll(PDO::FETCH_ASSOC));
 
-	if(empty($results))
-		echo "Either shortcode is incorrect or no one has voted yet.";
-	else
+	if(empty($results)) {
+		$sth2 = $dbh->prepare("SELECT id FROM ballots WHERE `key` = :key");
+		$sth2->bindValue(':key', $key, PDO::PARAM_STR);
+		$sth2->execute();
+		if($sth2->fetch()) {
+			echo "No one has voted yet on this ballot.";
+		} else {
+			echo "Shortcode not found.";
+		}
+	} else
 		print json_encode($results);
 } else {
 	echo "Failed to supply key";
