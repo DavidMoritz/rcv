@@ -713,7 +713,7 @@ mainApp.controller('MainCtrl', [
         const iframe = document.createElement('iframe');
         const cacheBust = $s.graphUpdated ? $s.graphUpdated.replace(/\D/g,'') : Date.now();
         const listSize = $s.jsonObj.results.length ? Object.keys($s.jsonObj.results[0].tally).length : 0;
-        const dynamicHeight = listSize || $s.roundnum || $s.names.length;
+        const dynamicHeight = listSize || $s.roundnum || $s.ids.length;
         const house = document.getElementById('iframe-house');
 
         iframe.id = 'iframe-' + cacheBust;
@@ -741,14 +741,23 @@ mainApp.controller('MainCtrl', [
 
 						return;
 					}
-        
-        var resultsDate = moment.tz(resp.data[0].resultsRelease, 'Zulu');
-        var voteCutoffDate = moment.tz(resp.data[0].voteCutoff, 'Zulu');
+
+        var voteRows = resp.data.votes;
+        var entryList = resp.data.entries;
+
+        // Build entry map: entry_id -> { name, image, color, hyperlink }
+        $s.entryMap = {};
+        _.each(entryList, function(e) {
+          $s.entryMap[e.entry_id] = { name: e.name, image: e.image, color: e.color, hyperlink: e.hyperlink };
+        });
+
+        var resultsDate = moment.tz(voteRows[0].resultsRelease, 'Zulu');
+        var voteCutoffDate = moment.tz(voteRows[0].voteCutoff, 'Zulu');
         var now = moment();
         $s.voteClosed = voteCutoffDate < now;
-        var createdBy = resp.data[0].createdBy;
+        var createdBy = voteRows[0].createdBy;
         $s.ballotCreatedBy = createdBy;
-        $s.ballotId = resp.data[0].ballotId;
+        $s.ballotId = voteRows[0].ballotId;
         var loggedIn = $s.user.id == createdBy;
         if (resultsDate > now) {
 						$s.errors.shortcode = "The ballot you selected will not have the results released until " + resultsDate.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a') + " " + moment.tz.guess() + " Time";
@@ -758,15 +767,15 @@ mainApp.controller('MainCtrl', [
             }
         }
 
-          var hideNames = resp.data[0].hideNames == 1;
-          var hideDetails = resp.data[0].hideDetails == 1;
-          var allowCustom = resp.data[0].allowCustom == 1;
+          var hideNames = voteRows[0].hideNames == 1;
+          var hideDetails = voteRows[0].hideDetails == 1;
+          var allowCustom = voteRows[0].allowCustom == 1;
           $s.voterNames = [];
           $s.voterIds = [];
-          let mostRecentVote = resp.data[0].date_created;
-          $s.graphUpdated = resp.data[0].graphUpdated;
-          window.rawVotes = resp.data;
-					$s.votes = resp.data.map(function(result) {
+          let mostRecentVote = voteRows[0].date_created;
+          $s.graphUpdated = voteRows[0].graphUpdated;
+          window.rawVotes = voteRows;
+					$s.votes = voteRows.map(function(result) {
 						$s.seats = parseInt(result.positions);
 						$s.register = result.register;
 						$s.rcvisSlug = result.rcvisSlug;
@@ -784,21 +793,27 @@ mainApp.controller('MainCtrl', [
 						$s.hideDetails = hideDetails && !loggedIn;
 						$s.voterIds.push(result.vote_id);
 
-						if (result.vote) {
-							return JSON.parse(result.vote.replace(/\s/g, ' '));
+						if (result.voteIds) {
+							return JSON.parse(result.voteIds);
 						}
-						// THIS DOESN'T WORK YET
-						//$s.names = result;
+						// Fallback to name-based parsing for votes without voteIds
+						if (result.vote) {
+							var names = JSON.parse(result.vote.replace(/\s/g, ' '));
+							return names.map(function(name) {
+								var found = _.find(entryList, { name: name });
+								return found ? parseInt(found.entry_id) : name;
+							});
+						}
 					});
-					$s.names = _.uniq(_.flatten($s.votes));
+					$s.ids = _.uniq(_.flatten($s.votes));
           $s.mutableVotes = JSON.parse(JSON.stringify($s.votes));
-          
-        
+
+
           if ($s.showGraph) {
             if($s.voteClosed) {
               $s.patchRcvis = !$s.rcvisSlug || $s.graphUpdated < mostRecentVote;
-              $s.ballotName = resp.data[0].ballotName;
-              $s.ballotId = resp.data[0].ballotId;
+              $s.ballotName = voteRows[0].ballotName;
+              $s.ballotId = voteRows[0].ballotId;
 
               if (!$s.patchRcvis) {
                 $s.displayRcvisIframe();
@@ -808,7 +823,7 @@ mainApp.controller('MainCtrl', [
             $s.showGraphTease = $s.votes.length > 3 && (loggedIn || createdBy == 'guest');
           }
 
-					$('.ballot-name').text(' for ' + resp.data[0].ballotName);
+					$('.ballot-name').text(' for ' + voteRows[0].ballotName);
 					$s.runTheCode(loggedIn);
 					$s.bodyText = $sce.trustAsHtml($s.outputstring);
 					$s.final = true;
@@ -1383,7 +1398,7 @@ mainApp.factory('VoteFactory', [
 			},
 
 			firstQuota: function() {
-        const maxSeats = Math.min(this.seats, $s.names.length);
+        const maxSeats = Math.min(this.seats, $s.ids.length);
         this.seats = maxSeats;
 
         this.quota = _.round(this.votes.length / (this.seats + 1), 2);
@@ -1408,6 +1423,12 @@ mainApp.factory('VoteFactory', [
 
 			displayVotes: function(loggedIn) {
 				var model = this;
+				var displayItem = function(item) {
+					if (typeof item === 'object' && item.decoration) {
+						return '<span class="' + item.className + '">' + ($s.entryMap[item.id] ? $s.entryMap[item.id].name : item.id) + '</span>';
+					}
+					return $s.entryMap[item] ? $s.entryMap[item].name : item;
+				};
 				this.outputstring += '<tbody>';
 				_.each(this.votes, function(vote, idx) {
           var dName = model.getVoterName(idx);
@@ -1419,13 +1440,13 @@ mainApp.factory('VoteFactory', [
             model.outputstring += '<span class="delete-vote-btn" data-delete-vote=' + $s.voterIds[idx] + '>&times;</span>';
           }
           model.outputstring += dName + ':</th>';
-					model.outputstring += '<td class="vote-pin-first"><span class="next-vote">' + (vote[0] || '') + '</span></td>';
+					model.outputstring += '<td class="vote-pin-first"><span class="next-vote">' + (vote[0] ? displayItem(vote[0]) : '') + '</span></td>';
 
 					// Scrollable middle choices
 					model.outputstring += '<td class="vote-mid-cell"><div class="vote-mid-scroll">';
 					for (var i = 1; i < vote.length; i++) {
 						if (i > 1) model.outputstring += '<span class="vote-mid-sep">|</span>';
-						model.outputstring += '<span class="vote-mid-item">' + vote[i] + '</span>';
+						model.outputstring += '<span class="vote-mid-item">' + displayItem(vote[i]) + '</span>';
 					}
 					model.outputstring += '</div></td>';
 
@@ -1440,9 +1461,9 @@ mainApp.factory('VoteFactory', [
 
 			createHeader: function() {
 				if (this.seats > 1) {
-					return '<strong>Candidates: ' + this.names.length + ' | Seats: ' + this.seats + ' | Votes: ' + this.votes.length + ' | Quota: ' + this.quota + '</strong><br>';
+					return '<strong>Candidates: ' + this.ids.length + ' | Seats: ' + this.seats + ' | Votes: ' + this.votes.length + ' | Quota: ' + this.quota + '</strong><br>';
 				} else {
-					return '<strong>Candidates: ' + this.names.length + ' | Votes: ' + this.votes.length + '</strong><br>';
+					return '<strong>Candidates: ' + this.ids.length + ' | Votes: ' + this.votes.length + '</strong><br>';
 				}
 			},
 
@@ -1473,17 +1494,18 @@ mainApp.factory('VoteFactory', [
 				var quotacount = 0;
 				var model = this;
 				var displaySet = [];
-				this.votenum = _.range(0, this.names.length, 0);
+				this.votenum = _.range(0, this.ids.length, 0);
 
 				_.each(this.votes, function(vote, idx) {
-					var choice = model.names.indexOf(vote[0]);
-          
+					var choice = model.ids.indexOf(vote[0]);
+
           if (choice !== -1) {
   					model.votenum[choice] += model.voteweight[idx];
           }
 				});
 
-				_.each(this.names, function(name, idx) {
+				_.each(this.ids, function(id, idx) {
+					var name = $s.entryMap[id] ? $s.entryMap[id].name : id;
 					displaySet.push({
 						name: name,
 						vote: _.round(model.votenum[idx], 4)
@@ -1552,17 +1574,21 @@ mainApp.factory('VoteFactory', [
 					return num == apex;
 				}).length;
 				var chosen = this.votenum.indexOf(apex);
+				var chosenEntry = $s.entryMap[this.ids[chosen]] || {};
+				var chosenName = chosenEntry.name || this.ids[chosen];
 
 				this.outputstring += '<br>' + data.text.count + ' by a candidate = ' + _.round(apex, 4) + '.';
 				this.outputstring += '<br>Number of candidates with the ' + data.text.total + ' votes = ' + count + '.';
 
 				if (count > 1) {
 					chosen = this.tieBreak == 'random' ? this.breakTieRandom(apex) : this.breakTieWeighted(apex, data.text.tie);
-					this.outputstring += '<br>' + jsUcfirst(this.tieBreak) + ' tiebreaker ' + data.text.tie + ' is <span class="' + data.class + '">' + this.names[chosen] + '</span>.';
+					chosenEntry = $s.entryMap[this.ids[chosen]] || {};
+					chosenName = chosenEntry.name || this.ids[chosen];
+					this.outputstring += '<br>' + jsUcfirst(this.tieBreak) + ' tiebreaker ' + data.text.tie + ' is <span class="' + data.class + '">' + chosenName + '</span>.';
 				}
-        
+
         if (data.class == 'eliminated') {
-          this.jsonObj.results[this.roundnum - 1].tallyResults[0].eliminated = this.names[chosen];
+          this.jsonObj.results[this.roundnum - 1].tallyResults[0].eliminated = chosenName;
           this.votenum.reverse().forEach((vote, index) => {
             if (vote == 0) {
               var trueIndex = this.votenum.length - 1 - index;
@@ -1570,35 +1596,38 @@ mainApp.factory('VoteFactory', [
             }
           })
         } else {
-          this.jsonObj.results[this.roundnum - 1].tallyResults[0].elected = this.names[chosen];
+          this.jsonObj.results[this.roundnum - 1].tallyResults[0].elected = chosenName;
         }
 
-				this.outputstring += '<br><span class="' + data.class + '">' + this.names[chosen] + '</span> ' + data.text.result + '.';
+				this.outputstring += '<br><span class="' + data.class + '">' + chosenName + '</span> ' + data.text.result + '.';
 				this.removeChosen(chosen, data.class, data.elect, true);
 			},
 
 			// remove either the elected or eliminated candidates from votes
 			removeChosen: function(chosen, className, elect, newRound) {
+				var chosenId = this.ids[chosen];
+				var chosenEntry = $s.entryMap[chosenId] || {};
+				var chosenName = chosenEntry.name || chosenId;
 				if (elect) {
-					this.elected[this.wincount++] = this.names[chosen];
-          this.renewTally[this.names[chosen]] = this.quota;
+					this.elected[this.wincount++] = { id: chosenId, name: chosenName, image: chosenEntry.image || '' };
+          this.renewTally[chosenName] = this.quota;
 				}
 				var model = this;
 				_.each(this.votes, function(vote, index) {
-					var found = vote.indexOf(model.names[chosen]);
+					var found = vote.indexOf(chosenId);
 
 					if (found !== -1) {
 						if (found === 0) {
 							if (elect) {
 								model.voteweight[index] *= 1 - model.quota / model.votenum[chosen];
 							}
-							vote.push('<span class="' + className + '">' + vote[found] + '</span>');
+							vote.push({ decoration: true, id: chosenId, className: className });
 						}
 						vote.splice(found, 1);
 					}
 				});
         _.each(this.mutableVotes, function(vote, index) {
-					var found = vote.indexOf(model.names[chosen]);
+					var found = vote.indexOf(chosenId);
 
 					if (found !== -1) {
 						vote.splice(found, 1);
@@ -1624,7 +1653,9 @@ mainApp.factory('VoteFactory', [
 					return Math.max(voteSize, vote.length);
 				}, 0);
 				var calculateValue = function(voteArr, idx) {
-					var tie = _.find(tieArray, {name: voteArr[i]});
+					var item = voteArr[i];
+					if (typeof item === 'object') return;
+					var tie = _.find(tieArray, {id: item});
 
 					if (tie) {
 						// 2nd place votes are exponentially greater than 3rd place votes etc.
@@ -1636,7 +1667,7 @@ mainApp.factory('VoteFactory', [
 					if (val == value) {
 						tieArray.push({
 							index: idx,
-							name: model.names[idx],
+							id: model.ids[idx],
 							value: 0
 						});
 					}
@@ -1671,7 +1702,8 @@ mainApp.factory('VoteFactory', [
 				// populate tieArray only with tie breakers
 				this.votenum.map(function(val, idx) {
 					if (val == value) {
-            var seed = model.names[idx].substr(0, 12);
+						var entry = $s.entryMap[model.ids[idx]] || {};
+            var seed = (entry.name || '' + model.ids[idx]).substr(0, 12);
 						tieArray.push({
 							index: idx,
 							rand: randomize(seed + idx)
@@ -1691,8 +1723,8 @@ mainApp.factory('VoteFactory', [
 			finishElection: function() {
 				var model = this;
 				this.outputstring += '<p><b>The election is complete and the elected candidates are';
-				_.each(this.elected, function(name) {
-					model.outputstring += ' (' + name + ')';
+				_.each(this.elected, function(winner) {
+					model.outputstring += ' (' + winner.name + ')';
 				});
 				this.outputstring += '.</b></p>';
         
@@ -1746,17 +1778,17 @@ mainApp.factory('VoteFactory', [
                     
                     $s.votes = window.rawVotes.filter(rawVote => {
                       if (!rawVote.name) return false;
-                      if (!rawVote.vote) return false;
-                  
+                      if (!rawVote.voteIds) return false;
+
                       const party = rawVote.name.slice(-1).toLowerCase();
-                      
+
                       if (isMajorParty) {
                         return party === $s.bbiGroup;
                       }
-                      
+
                       return party !== 'r' && party !== 'd';
                     }).map(
-                      rawVote => JSON.parse(rawVote.vote.replace(/\s/g, ' '))
+                      rawVote => JSON.parse(rawVote.voteIds)
                     );
                     
                     $s.runTheCode();

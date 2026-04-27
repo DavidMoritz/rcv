@@ -7,7 +7,7 @@ if(!empty($key)) {
 // checking for blank values.
 	$query = "
 		SELECT
-			vote_id, vote, votes.name, votes.date_created, votes.ballotId, ballots.rcvisId, ballots.rcvisSlug, ballots.showGraph, ballots.createdBy, ballots.hideNames, ballots.hideDetails, ballots.positions, ballots.resultsRelease, ballots.voteCutoff, ballots.name AS 'ballotName', ballots.tieBreak, ballots.graphUpdated
+			vote_id, vote, voteIds, votes.name, votes.date_created, votes.ballotId, ballots.rcvisId, ballots.rcvisSlug, ballots.showGraph, ballots.createdBy, ballots.hideNames, ballots.hideDetails, ballots.positions, ballots.resultsRelease, ballots.voteCutoff, ballots.name AS 'ballotName', ballots.tieBreak, ballots.graphUpdated
 		FROM
 			votes
 		JOIN
@@ -21,18 +21,6 @@ if(!empty($key)) {
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
-	// $query2 = "
-	// 	SELECT
-	// 		name
-	// 	FROM
-	// 		entries
-	// 	WHERE
-	// 		ballotId = '$key'";
-	// $sth2 = $dbh->prepare($query2);
-	// $sth2->execute();
-	// // THIS DOESN'T WORK YET
-	// array_push($results, $sth->fetchAll(PDO::FETCH_ASSOC));
-
 	if(empty($results)) {
 		$sth2 = $dbh->prepare("SELECT id FROM ballots WHERE `key` = :key");
 		$sth2->bindValue(':key', $key, PDO::PARAM_STR);
@@ -42,8 +30,15 @@ if(!empty($key)) {
 		} else {
 			echo "Shortcode not found.";
 		}
-	} else
-		print json_encode($results);
+	} else {
+		$ballotId = $results[0]['ballotId'];
+		$sth2 = $dbh->prepare("SELECT entry_id, name, image, color, hyperlink FROM entries WHERE ballotId = :ballotId");
+		$sth2->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
+		$sth2->execute();
+		$entries = $sth2->fetchAll(PDO::FETCH_ASSOC);
+
+		print json_encode(['votes' => $results, 'entries' => $entries]);
+	}
 } else {
 	echo "Failed to supply key";
 }

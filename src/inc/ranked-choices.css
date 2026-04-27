@@ -113,3 +113,9 @@
     padding: 2px 8px !important;
   }
 }
+.winner-image {
+  max-width: 200px;
+  max-height: 200px;
+  margin: 10px auto;
+  border-radius: 8px;
+}
