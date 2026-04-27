@@ -1251,8 +1251,8 @@ mainApp.controller('MainCtrl', [
       });
     };
 
-    $s.requestMoreCodes = function () {
-      var count = $s.moreCodeCount || 10;
+    $s.requestMoreCodes = function (count) {
+      count = count || 10;
       $http({
         method: 'POST',
         url: '/api/assign-codes.php',
@@ -1371,7 +1371,9 @@ mainApp.controller('MainCtrl', [
 
     $s.generateQRCode = function (shortCode) {
       var url = 'https://rankedchoices.com/' + shortCode;
-      new QRCode(document.getElementById('qrcode'), url);
+      var el = document.getElementById('qrcode');
+      el.innerHTML = '';
+      new QRCode(el, url);
     };
 
     $s.submitEntries = function () {

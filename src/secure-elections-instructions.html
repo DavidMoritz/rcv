@@ -68,65 +68,77 @@
 <body>
 <div class="container">
   <h1>Secure Elections</h1>
-  <p>Thanks for stopping by! These instructions are for those who are looking for a way to make a ranked choice ballot fast, easy, inexpensive, and secure while using RankedChoices.com!</p>
+  <p>RankedChoices.com has a built-in Secure Ballot feature that makes running a verified, anonymous ranked choice election fast, easy, and free. No need to generate your own codes or manage spreadsheets &mdash; the system handles it all for you.</p>
+
+  <h4>How It Works</h4>
+  <ol>
+    <li><a href="/register">Create a free account</a> (or log in to your existing one).</li>
+    <li>Create a new ballot and check the <strong>Secure Ballot</strong> option. Choose how many voter codes to generate.</li>
+    <li>The system generates unique 6-character codes for your election. Each code allows exactly one vote.</li>
+    <li>Distribute the codes to your voters (see election types below).</li>
+    <li>Voters visit your ballot link, enter their code, and cast their ranked choice vote.</li>
+    <li>When voting closes, view the results from your Secure Ballot management page.</li>
+  </ol>
+
+  <h4>Managing Your Secure Ballot</h4>
   <p>
-    I recommend registering an account first, then the organizer can easily remove any fraudulent votes.
-  </p>
-  <h4>Open Election:</h4>
-  <p>
-    Everyone's vote is public. The only concern here is if a different person voted under someone else's name, it would be hard to identify which is the real vote vs the fake.
+    From your profile, click on a secure ballot to open its dedicated management page. From there you can:
   </p>
   <ol>
-    <li>Make a list of randomly generated numbers.</li>
-    <li>Assign a number to each person not showing others.</li>
-    <li>Choose "Voter Names Required" from the advanced options.</li>
-    <li>Instruct each voter to enter that number next to their name.</li>
-    <li>Use advanced options to release results after voting is cut-off.</li>
+    <li><strong>View all codes</strong> with their status (available or voted) and timestamps.</li>
+    <li><strong>Add labels</strong> to codes for your own tracking (labels are never shown to voters).</li>
+    <li><strong>Request more codes</strong> if you need additional voters.</li>
+    <li><strong>Print a code sheet</strong> with cut lines for physical distribution.</li>
+    <li><strong>Remove votes</strong> if needed &mdash; this frees the code for the voter to use again.</li>
+    <li><strong>End voting early</strong> if all votes are in before the cutoff time.</li>
   </ol>
+
+  <h4>Election Types</h4>
+  <p>The same secure ballot feature supports different levels of anonymity depending on how you distribute codes.</p>
+
+  <h5>Open Election</h5>
   <p>
-    By taking this approach, the organizer can verify that the name of the voter and their assigned number match if there are any disputes.
-  </p>
-  <h4>Blind Election:</h4>
-  <p>
-    Everyone's vote is hidden from other voters, but not the organizer. The concern here is not allowing someone to anonymously vote twice.
-  </p>
-  <h5>
-    Option 1:
-  </h5>
-  <ol>
-    <li>Choose "Voter Names Required" from the advanced options.</li>
-    <li>Choose "Hide voter names when displaying results (except from owner)" from the advanced options.</li>
-  </ol>
-  <h5>
-    Option 2:
-  </h5>
-  <ol>
-    <li>Make a list of randomly generated numbers.</li>
-    <li>Assign a number to each person not showing others.</li>
-    <li>Choose "Voter Names Required" from the advanced options.</li>
-    <li>Use advanced options to release results after voting is cut-off.</li>
-    <li>Instruct each voter to enter that number INSTEAD OF their name.</li>
-  </ol>
-  <p>
-    By taking this approach, the organizer can verify that every vote is legitimate because if an entered number does not match the list of generated numbers, the vote can be thrown out.
-  </p>
-  <h4>Double-Blind Election:</h4>
-  <p>
-    Everyone's vote is hidden from other voters, including the organizer. The concern here is not allowing someone to anonymously vote twice nor allowing any way to trace a vote back to the voter.
+    The organizer knows who received each code. Useful when you need to verify that the right people voted.
   </p>
   <ol>
-    <li>Make a list of randomly generated numbers.</li>
-    <li>Copy the list of randomly generated numbers and separate them (e.g. cut them out and place them into a bowl).</li>
-    <li>Allow each voter to secretly receive their number without others knowing (e.g. discretely drawing from a bowl).</li>
-    <li>The voter keeps this number a secret during the entire election and beyond.</li>
-    <li>Choose "Voter Names Required" from the advanced options.</li>
-    <li>Use advanced options to release results after voting is cut-off.</li>
-    <li>Instruct each voter to enter that number INSTEAD OF their name.</li>
+    <li>Create a secure ballot.</li>
+    <li>Label each code with the voter's name on the management page.</li>
+    <li>Send each voter their assigned code privately.</li>
   </ol>
   <p>
-    By taking this approach, the organizer can verify that every vote is legitimate because if an entered number does not match the list of generated numbers, the vote can be thrown out.</p>
+    If there's a dispute, the organizer can check which code was assigned to which voter.
+  </p>
+
+  <h5>Blind Election</h5>
   <p>
-    Also, the organizer has no way of tracing a number back to a voter without that voter's consent.
+    Voters' identities are hidden from each other, but the organizer can trace codes to voters. Useful when vote privacy matters but the organizer needs to verify legitimacy.
+  </p>
+  <ol>
+    <li>Create a secure ballot.</li>
+    <li>Label each code with the voter's name (for your records only &mdash; labels are never shown in results).</li>
+    <li>Send each voter their assigned code privately.</li>
+  </ol>
+  <p>
+    The organizer can verify every vote is legitimate while voters cannot see who voted for whom.
+  </p>
+
+  <h5>Double-Blind Election</h5>
+  <p>
+    Nobody &mdash; not even the organizer &mdash; can trace a vote back to a voter. This is the most secure option.
+  </p>
+  <ol>
+    <li>Create a secure ballot.</li>
+    <li>Click <strong>Print Code Sheet</strong> to generate a printable page of codes with cut lines.</li>
+    <li>Cut out the code slips and have each voter draw one randomly (e.g. from a bowl).</li>
+    <li>Each voter keeps their code secret throughout the election and beyond.</li>
+  </ol>
+  <p>
+    Because codes are distributed randomly, the organizer has no way to trace a code back to a voter. The organizer can still verify that every vote used a legitimate code.
+  </p>
+
+  <h4>Voter Experience</h4>
+  <p>
+    When a voter visits a secure ballot, they are prompted to enter their code before seeing any candidates. If the code is valid and hasn't been used yet, they proceed to rank their choices and submit their vote. Each code can only be used once.
   </p>
 </div>
 </body>
