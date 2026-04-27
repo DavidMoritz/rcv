@@ -1020,6 +1020,7 @@ mainApp.controller('MainCtrl', [
       $s.ballot.oneDeviceOneVote = ballot.oneDeviceOneVote == 1;
       $s.ballot.kickbackUrl = ballot.kickbackUrl || '';
       $s.ballot.iframeUrl = ballot.iframeUrl || '';
+      $s.showIntegrationOptions = !!(ballot.kickbackUrl || ballot.iframeUrl);
 
       $http
         .get('/api/get-candidates.php?edit=true&key=' + $s.ballot.key + '&t=' + Date.now())
