@@ -1,0 +1,47 @@
+    <div class="modal" id="iframe-help-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h2 class="modal-title">Iframe URL on Voting Page</h2>
+          </div>
+          <div class="modal-body">
+            <p>
+              This optional field lets you embed custom content (e.g. an image, custom instructions,
+              company promotional material, etc.) on the voting page, replacing the default "Order
+              by Preference / Drag &amp; Drop" headings. The candidate list and voting buttons
+              remain below.
+            </p>
+            <h4>Sizing the iframe</h4>
+            <p>
+              The iframe is set to 100% width. Prefer a white background for continuity. To control
+              the <strong>height</strong>, add a small script to your hosted page that sends its
+              height to the parent window:
+            </p>
+            <pre>
+&lt;script&gt;
+  window.addEventListener('load', function() {
+    parent.postMessage(
+      { iframeHeight: document.body.scrollHeight },
+      '*'
+    );
+  });
+&lt;/script&gt;</pre
+            >
+            <p>Ranked Choices will automatically resize the iframe to match.</p>
+            <h4>Requirements</h4>
+            <ul>
+              <li>The URL must use <strong>https://</strong></li>
+              <li>
+                The hosted page must allow embedding (no <code>X-Frame-Options: DENY</code> header)
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+          </div>
+        </div>
+      </div>
+    </div>

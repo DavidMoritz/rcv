@@ -1,0 +1,157 @@
+      <div ng-show="activeLink == 'manage'" class="panel panel-default">
+        <div class="panel-body">
+          <a href ng-click="navigate('profile')" class="btn btn-default btn-sm"
+            >&laquo; Back to Profile</a
+          >
+          <h1>{{manageBallot.name}}</h1>
+          <h4>
+            Shortcode: {{manageBallot.key}} &nbsp; Voting URL: {{origin}}/{{manageBallot.key}}
+          </h4>
+          <h4>
+            Vote Cutoff: {{manageBallot.voteCutoff.year() > 2100 ? 'never' :
+            manageBallot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a z')}}
+            <button
+              ng-if="manageBallot.voteCutoff > now"
+              ng-click="endVotingNow()"
+              class="btn btn-warning btn-sm"
+              style="margin-left: 10px"
+            >
+              End Voting Now
+            </button>
+          </h4>
+          <hr />
+          <div class="row">
+            <div class="col-md-8">
+              <h3>Voter Codes ({{manageCodes.length}})</h3>
+              <div ng-if="manageBallot.voteCutoff > now" class="form-inline" style="margin-bottom: 15px">
+                <input
+                  type="number"
+                  ng-model="moreCodeCount"
+                  min="1"
+                  max="500"
+                  class="form-control"
+                  style="width: 100px"
+                  placeholder="10"
+                />
+                <button ng-click="requestMoreCodes(moreCodeCount)" class="btn btn-success btn-sm">
+                  Request More Codes
+                </button>
+                <button ng-click="printCodeSheet()" class="btn btn-default btn-sm">
+                  <i class="fa fa-print"></i> Print Code Sheet
+                </button>
+              </div>
+              <table class="table table-condensed">
+                <thead>
+                  <tr>
+                    <th
+                      class="pointer"
+                      ng-click="manageSort = 'code'; manageSortReverse = !manageSortReverse"
+                    >
+                      Code
+                      <i
+                        class="fa"
+                        ng-class="{'fa-sort-asc': manageSort === 'code' && !manageSortReverse, 'fa-sort-desc': manageSort === 'code' && manageSortReverse, 'fa-sort': manageSort !== 'code'}"
+                      ></i>
+                    </th>
+                    <th
+                      class="pointer"
+                      ng-click="manageSort = 'label'; manageSortReverse = !manageSortReverse"
+                    >
+                      Label
+                      <i
+                        class="fa"
+                        ng-class="{'fa-sort-asc': manageSort === 'label' && !manageSortReverse, 'fa-sort-desc': manageSort === 'label' && manageSortReverse, 'fa-sort': manageSort !== 'label'}"
+                      ></i>
+                    </th>
+                    <th
+                      class="pointer"
+                      ng-click="manageSort = 'votedAt'; manageSortReverse = !manageSortReverse"
+                    >
+                      Voted At
+                      <i
+                        class="fa"
+                        ng-class="{'fa-sort-asc': manageSort === 'votedAt' && !manageSortReverse, 'fa-sort-desc': manageSort === 'votedAt' && manageSortReverse, 'fa-sort': manageSort !== 'votedAt'}"
+                      ></i>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    ng-repeat="code in manageCodes | orderBy:manageSort:manageSortReverse track by code.code"
+                    ng-class="{'success': code.votedAt}"
+                  >
+                    <td class="voter-code">
+                      {{code.code}}
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        ng-model="code.label"
+                        ng-blur="saveCodeLabel(code)"
+                        class="form-control input-sm"
+                        placeholder="optional label"
+                        style="
+                          max-width: 180px;
+                          border: none;
+                          box-shadow: none;
+                          background: transparent;
+                        "
+                      />
+                    </td>
+                    <td>
+                      <span ng-show="code.votedAt">{{code.votedAt}}
+                        <a href ng-if="manageBallot.voteCutoff > now" ng-click="resetSecureVote(code)" class="text-danger" style="margin-left: 8px" title="Reset this vote">
+                          <i class="fa fa-undo"></i>
+                        </a>
+                      </span>
+                      <span ng-if="!code.votedAt && manageBallot.voteCutoff > now" class="text-muted">available
+                        <a href ng-click="code.confirmDelete = true" ng-show="!code.confirmDelete" class="text-danger" style="margin-left: 8px" title="Remove this code">
+                          <i class="fa fa-trash"></i>
+                        </a>
+                        <span ng-show="code.confirmDelete" style="margin-left: 8px">
+                          <i class="fa fa-trash" style="visibility: hidden"></i>
+                          <button ng-click="deleteCode(code)" class="btn btn-danger btn-xs">Sure?</button>
+                        </span>
+                      </span>
+                      <span ng-if="!code.votedAt && manageBallot.voteCutoff <= now" class="text-muted">unused</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-md-4">
+              <h3>Quick Stats</h3>
+              <p>Total codes: {{manageCodes.length}}</p>
+              <p>Voted: {{manageCodes.length - manageCodesAvailable}}</p>
+              <p ng-if="manageBallot.voteCutoff > now">Available: {{manageCodesAvailable}}</p>
+              <p ng-if="manageBallot.voteCutoff <= now">Unused: {{manageCodesAvailable}}</p>
+              <hr />
+              <div class="manage-actions">
+                <a href="/results#{{manageBallot.key}}" target="_blank" class="btn btn-default btn-sm">
+                  View Results
+                </a>
+                <button ng-click="duplicateBallot(manageBallot)" class="btn btn-default btn-sm">
+                  <i class="fa fa-clone"></i> Duplicate Ballot
+                </button>
+                <button ng-click="copyToClipboard(origin + '/' + manageBallot.key)" class="btn btn-default btn-sm">
+                  Copy Voting URL
+                </button>
+                <button ng-click="transferBallot(manageBallot)" class="btn btn-default btn-sm">
+                  <i class="fa fa-exchange"></i> Transfer Ownership
+                </button>
+                <button
+                  ng-if="manageBallot.voteCutoff > now"
+                  ng-click="deleteSecureBallot()"
+                  ng-disabled="manageCodesAvailable < manageCodes.length"
+                  class="btn btn-danger btn-sm"
+                  style="margin-top: 10px"
+                  uib-tooltip="{{manageCodesAvailable < manageCodes.length ? 'Must not have any votes to delete' : ''}}"
+                  tooltip-placement="top"
+                >
+                  <i class="fa fa-trash"></i> Delete Ballot
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>

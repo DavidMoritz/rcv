@@ -1,0 +1,54 @@
+    <div class="modal" id="dup-ballot-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h2 class="modal-title">Duplicate Ballot {{dupBallotName}}</h2>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>New Ballot Name</label>
+              <input name="name" ng-model="dupBallot.name" class="form-control" /><span
+                ng-show="errors.name"
+                class="text-danger"
+                >{{errors.name}}</span
+              >
+            </div>
+            <div class="form-group">
+              <label>Please enter a new Shortcode</label>
+              <div class="input-group">
+                <input
+                  name="key"
+                  ng-model="dupBallot.key"
+                  ng-pattern-restrict
+                  pattern="\w*"
+                  ng-change="checkAvailability()"
+                  maxlength="16"
+                  class="form-control"
+                />
+                <span class="input-group-btn">
+                  <button
+                    type="button"
+                    ng-click="generateRandomKey(4, true)"
+                    ng-disabled="editBallot"
+                    class="btn btn-secondary"
+                  >
+                    New Shortcode
+                  </button>
+                </span>
+              </div>
+              <span ng-show="errors.key" class="text-danger">{{errors.key}}</span>
+              <span ng-show="success.key" class="text-success">{{success.key}}</span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" ng-click="duplicateBallotSubmit()">
+              Duplicate
+            </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>

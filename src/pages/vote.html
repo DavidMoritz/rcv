@@ -1,0 +1,164 @@
+      <div ng-show="activeLink == 'vote'" class="panel panel-default">
+        <div class="panel-body">
+          <div ng-hide="candidates">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1>Vote!</h1>
+                <form ng-submit="submitShortcode()">
+                  <div class="form-group">
+                    <label>Enter Ballot Shortcode</label>
+                    <input
+                      name="ballot"
+                      ng-model="shortcode"
+                      ng-change="errors.shortcode = null"
+                      class="form-control"
+                    /><span ng-show="errors.shortcode" class="text-danger"
+                      >{{errors.shortcode}}</span
+                    >
+                  </div>
+                  <input type="submit" value="Submit" class="btn btn-success" />
+                </form>
+              </div>
+              <div class="col-sm-6 text-center">
+                <img
+                  src="img/ranked-choices-logo.png"
+                  class="img img-responsive vote-button sidebar-logo"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            ng-if="candidates && ballot.isSecure && !secureCodeValid"
+            ng-hide="thanks || deviceAlreadyVoted"
+          >
+            <h1>Ballot: {{ballot.name}}</h1>
+            <h3>Enter your voter code to proceed</h3>
+            <form ng-submit="validateSecureCode()">
+              <div class="form-group" style="max-width: 300px">
+                <input
+                  type="text"
+                  ng-model="secure.voterCode"
+                  class="form-control voter-code"
+                  placeholder="ABC123"
+                  maxlength="6"
+                  autocomplete="off"
+                  style="font-size: 24px; text-align: center; letter-spacing: 4px;"
+                />
+                <span ng-show="errors.secureCode" class="text-danger">{{errors.secureCode}}</span>
+              </div>
+              <button type="submit" class="btn btn-success">Submit Code</button>
+            </form>
+          </div>
+          <div
+            ng-if="candidates && (!ballot.isSecure || secureCodeValid)"
+            ng-hide="thanks || deviceAlreadyVoted"
+          >
+            <h1>Ballot: {{ballot.name}}</h1>
+            <div class="row" ng-hide="ballot.register == 2 || ballot.isSecure">
+              <label class="control-label col-sm-3 col-md-2"
+                >Your Name<span ng-show="ballot.register == 1">*</span>:</label
+              >
+              <div class="col-sm-9 col-md-10">
+                <input
+                  type="text"
+                  name="voterName"
+                  ng-model="ballot.voterName"
+                  class="form-control"
+                  placeholder="{{ ballot.register == 0 ? 'Your Name Here - Optional' : 'First & Last Name'}}"
+                  ng-required="ballot.register == 1"
+                />
+              </div>
+            </div>
+            <div class="row" style="margin-top: 5px" ng-hide="ballot.allowCustom == 0">
+              <label class="control-label col-sm-3 col-md-2">New Entry?:</label>
+              <div class="col-sm-9 col-md-10">
+                <div class="input-group">
+                  <input
+                    type="text"
+                    name="customEntry"
+                    ng-model="ballot.customEntry"
+                    class="form-control"
+                    placeholder="Optional"
+                  />
+                  <span class="input-group-btn">
+                    <button type="button" ng-click="addCustomCandidate()" class="btn btn-secondary">
+                      Add
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div
+              ng-show="ballot.register == 1 && (ballot.voterName || '').length <= 2"
+              class="alert alert-info"
+              style="margin-top: 5px"
+            >
+              Enter Your Name to View the Candidates.
+            </div>
+            <div ng-show="ballot.register != 1 || (ballot.voterName || '').length > 2">
+              <iframe
+                ng-if="ballot.iframeUrl"
+                ng-src="{{ballot.iframeUrl}}"
+                class="ballot-iframe"
+              ></iframe>
+              <h2 ng-if="!ballot.iframeUrl">
+                Order by Preference
+                <small>(remove any undesired using <i class="fa fa-trash"></i>)</small>
+              </h2>
+              <h3 ng-if="!ballot.iframeUrl">(Drag &amp; Drop)</h3>
+              <h3 class="hide" ng-show="ballot.positions &gt; 1">
+                {{ballot.positions}} positions available
+              </h3>
+              <form name="voteForm" ng-submit="submitVote()">
+                <ul id="sortable" ui-sortable ng-model="candidates">
+                  <li
+                    ng-repeat="item in candidates track by $index"
+                    data-id="{{item.id}}"
+                    class="candidate-item"
+                  >
+                    <i ng-click="removeCandidate($index)" class="fa fa-trash"></i>
+                    <img class="choice-image" src="{{item.image}}" ng-if="item.image" /><a
+                      class="choice-hyperlink"
+                      target="_blank"
+                      href="{{item.hyperlink}}"
+                      ng-if="item.hyperlink"
+                      >{{item.name}} <i class="fa fa-external-link"></i
+                    ></a>
+                    <div ng-if="!item.hyperlink">{{item.name}}</div>
+                  </li>
+                </ul>
+                <button
+                  type="submit"
+                  ng-disabled="candidates.length === 0"
+                  class="btn btn-primary clearfix"
+                >
+                  Vote!
+                </button>
+                <button type="button" ng-click="resetCandidates()" class="btn btn-default">
+                  Reset
+                </button>
+              </form>
+            </div>
+            <h4>Voting URL: {{origin}}/{{ballot.key}}</h4>
+          </div>
+          <div ng-show="thanks">
+            <h1>Ballot: {{ballot.name}}</h1>
+            <h3>Thank you for voting!</h3>
+            <h4 ng-if="resultsReady">
+              <a href="/results#{{shortcode}}">Click here to see the results</a>
+            </h4>
+            <h5 ng-if="ballot.isSecure && !resultsReady">
+              Visit <a href="/results#{{shortcode}}">{{origin}}/results#{{ballot.key}}</a> after {{resultsReleaseFormatted}} to see the results
+            </h5>
+            <h5>Voting URL: {{origin}}/{{ballot.key}}</h5>
+          </div>
+          <div ng-show="deviceAlreadyVoted">
+            <h1>Ballot: {{ballot.name}}</h1>
+            <h3>This device has already voted on this ballot.</h3>
+            <p>
+              Each device is limited to one vote. If you believe this is an error, please contact
+              the ballot creator.
+            </p>
+          </div>
+        </div>
+      </div>

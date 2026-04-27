@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import htmlIncludes from './vite-plugin-html-includes.js';
 import path from 'path';
 
 export default defineConfig({
@@ -56,6 +57,7 @@ export default defineConfig({
   },
 
   plugins: [
+    htmlIncludes(),
     viteStaticCopy({
       targets: [
         // Copy local library fallbacks

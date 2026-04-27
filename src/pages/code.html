@@ -1,0 +1,170 @@
+      <div ng-show="activeLink == 'code'" class="panel panel-default">
+        <div class="panel-body">
+          <div ng-hide="candidates">
+            <h1>Please register before voting!</h1>
+            <form ng-submit="submitShortcode()">
+              <div class="row" ng-hide="uniqueCodeValid">
+                <div class="form-group col-sm-6 col-md-4 col-lg-3">
+                  <label>Enter Unique Code</label>
+                  <input
+                    ng-blur="validateCode()"
+                    name="uniqueCode"
+                    ng-model="uniqueCode"
+                    class="form-control"
+                  /><span ng-show="errors.uniqueCode" class="text-danger"
+                    >{{errors.uniqueCode}}</span
+                  >
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-sm-6 col-md-4 col-lg-3">
+                  <label>Enter Voter Zip Code</label>
+                  <input
+                    ng-blur="validateZip()"
+                    name="zipCode"
+                    ng-model="zipCode"
+                    class="form-control"
+                    required="true"
+                    maxlength="5"
+                  /><span ng-show="errors.zipCode" class="text-danger">{{errors.zipCode}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-sm-6 col-md-4 col-lg-3">
+                  <label>Choose Party Affiliation:</label><br />
+                  <label>
+                    <input
+                      ng-change="validateZip()"
+                      type="radio"
+                      ng-model="partyAffiliation"
+                      value="r"
+                    />
+                    Republican </label
+                  ><br />
+                  <label>
+                    <input
+                      ng-change="validateZip()"
+                      type="radio"
+                      ng-model="partyAffiliation"
+                      value="d"
+                    />
+                    Democrat </label
+                  ><br />
+                  <label>
+                    <input
+                      ng-change="validateZip()"
+                      type="radio"
+                      ng-model="partyAffiliation"
+                      value="l"
+                    />
+                    Libertarian </label
+                  ><br />
+                  <label>
+                    <input
+                      ng-change="validateZip()"
+                      type="radio"
+                      ng-model="partyAffiliation"
+                      value="g"
+                    />
+                    Green </label
+                  ><br />
+                  <label>
+                    <input
+                      ng-change="validateZip()"
+                      type="radio"
+                      ng-model="partyAffiliation"
+                      value="i"
+                    />
+                    Independent </label
+                  ><br />
+                  <label>
+                    <input
+                      ng-change="validateZip()"
+                      type="radio"
+                      ng-model="partyAffiliation"
+                      value="u"
+                    />
+                    Unaffiliated </label
+                  ><br />
+                  <label>
+                    <input
+                      ng-change="validateZip()"
+                      type="radio"
+                      ng-model="partyAffiliation"
+                      value="o"
+                    />
+                    Other </label
+                  ><br />
+                </div>
+              </div>
+              <input
+                type="submit"
+                value="Vote"
+                class="btn btn-success"
+                ng-show="ballot.voterName"
+              />
+            </form>
+          </div>
+          <div ng-if="candidates" ng-hide="thanks || deviceAlreadyVoted">
+            <h1>Ballot: {{ballot.name}}</h1>
+            <div>
+              <iframe
+                ng-if="ballot.iframeUrl"
+                ng-src="{{ballot.iframeUrl}}"
+                class="ballot-iframe"
+              ></iframe>
+              <h2 ng-if="!ballot.iframeUrl">
+                Order by Preference
+                <small>(remove any undesired using <i class="fa fa-trash"></i>)</small>
+              </h2>
+              <h3 ng-if="!ballot.iframeUrl">(Drag &amp; Drop)</h3>
+              <h3 class="hide" ng-show="ballot.positions &gt; 1">
+                {{ballot.positions}} positions available
+              </h3>
+              <form name="voteForm" ng-submit="submitVote()">
+                <ul id="sortable" ui-sortable ng-model="candidates">
+                  <li
+                    ng-repeat="item in candidates track by $index"
+                    data-id="{{item.id}}"
+                    class="candidate-item"
+                    style="background-color: #{{item.color}}"
+                  >
+                    <i ng-click="removeCandidate($index)" class="fa fa-trash"></i>
+                    <img class="choice-image" src="{{item.image}}" ng-if="item.image" /><a
+                      class="choice-hyperlink"
+                      target="_blank"
+                      href="{{item.hyperlink}}"
+                      ng-if="item.hyperlink"
+                      >{{item.name}} <i class="fa fa-external-link"></i
+                    ></a>
+                    <div ng-if="!item.hyperlink">{{item.name}}</div>
+                  </li>
+                </ul>
+                <button
+                  type="submit"
+                  ng-disabled="candidates.length === 0"
+                  class="btn btn-primary clearfix"
+                >
+                  Vote!
+                </button>
+                <button type="button" ng-click="resetCandidates()" class="btn btn-default">
+                  Reset
+                </button>
+              </form>
+            </div>
+          </div>
+          <div ng-show="thanks">
+            <h1>Ballot: {{ballot.name}}</h1>
+            <h3>Thank you for voting!</h3>
+            <a onclick="location.reload()">RESET</a>
+          </div>
+          <div ng-show="deviceAlreadyVoted">
+            <h1>Ballot: {{ballot.name}}</h1>
+            <h3>This device has already voted on this ballot.</h3>
+            <p>
+              Each device is limited to one vote. If you believe this is an error, please contact
+              the ballot creator.
+            </p>
+          </div>
+        </div>
+      </div>

@@ -1,0 +1,39 @@
+    <div class="modal" id="device-vote-help-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h2 class="modal-title">One Device, One Vote</h2>
+          </div>
+          <div class="modal-body">
+            <p>
+              When enabled, this feature uses browser fingerprinting to detect if the same device
+              has already voted on this ballot. No personal data is collected &mdash; only an
+              anonymous device identifier is generated and stored.
+            </p>
+            <h4>Kiosk Mode</h4>
+            <p>
+              If you are using a shared device (e.g. a tablet at an event), log in with your account
+              on that device. As the ballot creator, your device will be automatically whitelisted,
+              allowing multiple people to vote from the same device.
+            </p>
+            <h4>Limitations</h4>
+            <ul>
+              <li>
+                Different browsers or incognito/private windows on the same device may be treated as
+                separate devices.
+              </li>
+              <li>
+                If a voter's browser blocks fingerprinting, the check is skipped and they can vote
+                normally.
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+          </div>
+        </div>
+      </div>
+    </div>

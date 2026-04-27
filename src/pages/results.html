@@ -1,0 +1,81 @@
+      <div ng-show="activeLink == 'results'" class="panel panel-default">
+        <div class="panel-body">
+          <div ng-hide="final">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1>Results</h1>
+                <form ng-submit="submitShortcode()">
+                  <div class="form-group">
+                    <label>Enter Ballot Shortcode</label>
+                    <input
+                      name="ballot"
+                      ng-model="shortcode"
+                      ng-change="errors.shortcode = null"
+                      class="form-control"
+                    /><span ng-show="errors.shortcode" class="text-danger"
+                      >{{errors.shortcode}}</span
+                    >
+                  </div>
+                  <input type="submit" value="Submit" class="btn btn-success" />
+                </form>
+              </div>
+              <div class="col-sm-6 text-center">
+                <img
+                  src="img/ranked-choices-logo.png"
+                  class="img img-responsive vote-button sidebar-logo"
+                />
+              </div>
+            </div>
+          </div>
+          <div ng-show="final">
+            <div ng-show="elected[0].image" class="pull-right">
+              <img ng-src="{{elected[0].image}}" class="winner-image" />
+            </div>
+            <h1>Results<span class="ballot-name"></span></h1>
+            <h2 ng-show="elected.length == 1">
+              The winner<span ng-if="!voteClosed"> (so far)</span>: {{elected[0].name}}
+            </h2>
+            <div ng-show="elected.length > 1">
+              <h2>
+                The winners, in order of most votes<span ng-if="!voteClosed"> (so far)</span>:
+              </h2>
+              <ol>
+                <li ng-repeat="result in elected">{{result.name}}</li>
+              </ol>
+            </div>
+            <div ng-if="showGraph">
+              <div id="iframe-disclaimer" ng-if="!rcvisSlug">
+                <h3>
+                  A graph of the results will be made available after voting has been cut off.
+                </h3>
+              </div>
+              <div id="iframe-house"></div>
+            </div>
+            <div ng-show="!hideDetails">
+              <button ng-click="showText = !showText" class="btn btn-default">
+                {{!showText ? "Show" : "Hide"}} details
+              </button>
+            </div>
+            <h4>Voting URL: {{origin}}/{{shortcode}}</h4>
+            <p
+              ng-show="user.id && ballotCreatedBy == 'guest'"
+              class="text-muted"
+              style="margin-top: 20px"
+            >
+              This ballot was created as "guest".
+              <a href ng-click="claimBallot()">Click here</a> to take ownership and unlock editing.
+            </p>
+            <p ng-show="claimSuccess" class="text-success">
+              Ballot claimed! You can now edit it from your Profile tab.
+            </p>
+            <!--           <div ng-if="showGraphTease">
+            <form ng-submit="submitCreateGraph()">
+              <h4>
+                A visual display of the results, provided by <a href="https://rcvis.com/" target="_blank">RCVis</a>, is ready once voting is completed. <button type="submit" class="btn btn-primary clearfix">Graph!</button>
+              </h4>
+            </form>
+          </div> -->
+            <span ng-show="errors.shortcode" class="text-danger">{{errors.shortcode}}</span>
+          </div>
+        </div>
+      </div>

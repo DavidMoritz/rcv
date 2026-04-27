@@ -1,0 +1,22 @@
+      <div ng-show="activeLink == 'hall_of_fame'" class="panel panel-default">
+        <div class="panel-body">
+          <h2>Hall of Fame!</h2>
+          <h3>Thank you to all those who have helped support this app!</h3>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th width="15%">Date</th>
+                <th width="15%">Name</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="entry in contributions track by $index">
+                <td>{{entry.date | date: "MMM d, y"}}</td>
+                <td>{{entry.name.substr(0, entry.name.indexOf(' '))}}</td>
+                <td>{{entry.message}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
