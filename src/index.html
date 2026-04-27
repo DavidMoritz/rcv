@@ -28,15 +28,23 @@
     />
     <link rel="stylesheet" href="/main.css" />
 
-    <!-- Load vendor libraries from CDN (they need to be on window before our app loads) -->
+    <!-- Load vendor libraries from CDN with local fallbacks -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="/lib/jquery.min.js"><\/script>')</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>window.jQuery && window.jQuery.ui || document.write('<script src="/lib/jquery-ui.min.js"><\/script>')</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script>window._ || document.write('<script src="/lib/lodash.min.js"><\/script>')</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script>window.moment || document.write('<script src="/lib/moment.min.js"><\/script>')</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.43/moment-timezone-with-data.min.js"></script>
+    <script>window.moment && window.moment.tz || document.write('<script src="/lib/moment-timezone-with-data.min.js"><\/script>')</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular.min.js"></script>
+    <script>window.angular || document.write('<script src="/lib/angular.min.js"><\/script>')</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js"></script>
+    <script>window.angular && window.angular.version || document.write('<script src="/lib/angular-animate.min.js"><\/script>')</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>window.jQuery && window.jQuery.fn.modal || document.write('<script src="/lib/bootstrap.min.js"><\/script>')</script>
 
     <!-- Load timezone-picker as regular script (needs moment to be available) -->
     <script src="/inc/timezone-picker.js"></script>
@@ -47,7 +55,9 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-97773273-1"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>window.QRCode || document.write('<script src="/lib/qrcode.min.js"><\/script>')</script>
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js"></script>
+    <script>window.FingerprintJS || document.write('<script src="/lib/fp.min.js"><\/script>')</script>
     <script>
       window.dataLayer = window.dataLayer || [];
 

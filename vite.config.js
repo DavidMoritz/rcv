@@ -58,6 +58,11 @@ export default defineConfig({
   plugins: [
     viteStaticCopy({
       targets: [
+        // Copy local library fallbacks
+        {
+          src: 'lib',
+          dest: '.'
+        },
         // Copy PHP API files
         {
           src: 'api',
