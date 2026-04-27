@@ -4,6 +4,7 @@
  * Extracts VoteFactory from the Angular module, sets up a mock scope ($s),
  * and runs the election algorithm. Returns results for assertions.
  */
+import { initScope } from '../../src/js/factories/vote-factory.js';
 
 /**
  * Build entryMap and ids array from candidate name strings.
@@ -63,8 +64,8 @@ export function runElection(opts) {
   const injector = angular.injector(['ng', 'mainApp']);
   const vf = injector.get('VoteFactory');
 
-  // Set up window.$s (the mock scope that VoteFactory reads from)
-  window.$s = {
+  // Set up the mock scope that VoteFactory reads from
+  const mockScope = {
     entryMap,
     ids: [...ids],
     votes,
@@ -78,6 +79,8 @@ export function runElection(opts) {
     voterIds: votes.map((_, i) => i + 1),
     rightNow: moment()
   };
+  window.$s = mockScope;
+  initScope(mockScope);
 
   // Configure the factory instance
   vf.votes = votes;
