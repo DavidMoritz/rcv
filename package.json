@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "build:prod": "vite build && cp src/api/config.prod.php dist/api/config.php",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "angular": "^1.5.3",
@@ -24,8 +26,11 @@
     "ng-pattern-restrict": "^0.2.3"
   },
   "devDependencies": {
+    "angular-mocks": "^1.8.3",
+    "jsdom": "^29.1.0",
     "less": "^4.2.0",
     "vite": "^5.0.12",
-    "vite-plugin-static-copy": "^1.0.0"
+    "vite-plugin-static-copy": "^1.0.0",
+    "vitest": "^4.1.5"
   }
 }
