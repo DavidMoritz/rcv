@@ -71,6 +71,15 @@ if (!empty($_POST['oneDeviceOneVote']))
 else
 	$oneDeviceOneVote = 0;
 
+if (!empty($_POST['isSecure']))
+	$isSecure = 1;
+else
+	$isSecure = 0;
+
+$codeCount = 0;
+if ($isSecure && !empty($_POST['codeCount']))
+	$codeCount = min(intval($_POST['codeCount']), 500);
+
 if (empty($_POST['maxVotes']))
 	$maxVotes = "NULL";
 else
@@ -91,9 +100,9 @@ if (!empty($errors)) {
 	$sth->execute();
 	$query = "
 		INSERT INTO
-			ballots (`name`, `timeCreated`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `register`, `allowCustom`, `hideNames`, `hideDetails`, `showGraph`, `maxVotes`, `kickbackUrl`, `iframeUrl`, `oneDeviceOneVote`)
+			ballots (`name`, `timeCreated`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `register`, `allowCustom`, `hideNames`, `hideDetails`, `showGraph`, `maxVotes`, `kickbackUrl`, `iframeUrl`, `oneDeviceOneVote`, `isSecure`)
 		VALUES
-			(:name, NOW(), :key, :positions, :createdBy, :resultsRelease, :voteCutoff, :requireSignIn, :tieBreak, :register, :allowCustom, :hideNames, :hideDetails, :showGraph, :maxVotes, :kickbackUrl, :iframeUrl, :oneDeviceOneVote)";
+			(:name, NOW(), :key, :positions, :createdBy, :resultsRelease, :voteCutoff, :requireSignIn, :tieBreak, :register, :allowCustom, :hideNames, :hideDetails, :showGraph, :maxVotes, :kickbackUrl, :iframeUrl, :oneDeviceOneVote, :isSecure)";
 
 	$sth = $dbh->prepare($query);
 	$sth->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
@@ -113,7 +122,34 @@ if (!empty($errors)) {
 	$sth->bindValue(':kickbackUrl', $kickbackUrl, ($kickbackUrl === null ? PDO::PARAM_NULL : PDO::PARAM_STR));
 	$sth->bindValue(':iframeUrl', $iframeUrl, ($iframeUrl === null ? PDO::PARAM_NULL : PDO::PARAM_STR));
 	$sth->bindValue(':oneDeviceOneVote', $oneDeviceOneVote, PDO::PARAM_INT);
+	$sth->bindValue(':isSecure', $isSecure, PDO::PARAM_INT);
 	$sth->execute();
-	echo $dbh->lastInsertId();
+	$ballotId = $dbh->lastInsertId();
+
+	// Assign voter codes for secure ballots
+	if ($isSecure && $codeCount > 0) {
+		// Exclude codes used by any ballot created in the last 6 months
+		$codeSth = $dbh->prepare("
+			SELECT id FROM random_codes
+			WHERE id NOT IN (
+				SELECT bc.random_code_id FROM ballot_codes bc
+				JOIN ballots b ON b.id = bc.ballot_id
+				WHERE b.timeCreated > DATE_SUB(NOW(), INTERVAL 6 MONTH)
+			)
+			ORDER BY RAND() LIMIT :count
+		");
+		$codeSth->bindValue(':count', $codeCount, PDO::PARAM_INT);
+		$codeSth->execute();
+		$codes = $codeSth->fetchAll(PDO::FETCH_ASSOC);
+
+		$insertCode = $dbh->prepare("INSERT INTO ballot_codes (ballot_id, random_code_id) VALUES (:ballotId, :codeId)");
+		foreach ($codes as $code) {
+			$insertCode->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
+			$insertCode->bindValue(':codeId', $code['id'], PDO::PARAM_INT);
+			$insertCode->execute();
+		}
+	}
+
+	echo $ballotId;
 }
 ?>

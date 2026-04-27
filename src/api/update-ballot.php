@@ -61,6 +61,9 @@ if (isset($_POST['iframeUrl']))
 if (isset($_POST['oneDeviceOneVote']))
 	$setParts[] = "oneDeviceOneVote = :oneDeviceOneVote";
 
+if (isset($_POST['isSecure']))
+	$setParts[] = "isSecure = :isSecure";
+
 if (!empty($errors)) {
 	$data['errors']  = $errors;
 	$data['post'] = $_POST;
@@ -114,6 +117,9 @@ if (!empty($errors)) {
 
 	if (isset($_POST['oneDeviceOneVote']))
 		$sth->bindValue(':oneDeviceOneVote', intval($_POST['oneDeviceOneVote']), PDO::PARAM_INT);
+
+	if (isset($_POST['isSecure']))
+		$sth->bindValue(':isSecure', intval($_POST['isSecure']), PDO::PARAM_INT);
 
 	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_INT);
 	$sth->bindValue(':id', $_POST['id'], PDO::PARAM_INT);

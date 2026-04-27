@@ -41,11 +41,16 @@ if (!empty($errors)) {
 	$data['post'] = $_POST;
 	echo json_encode($data);
 } else {
-	// Check oneDeviceOneVote setting
-	$ballotQuery = $dbh->prepare("SELECT oneDeviceOneVote, createdBy FROM ballots WHERE id = :id");
+	// Fetch ballot settings
+	$ballotQuery = $dbh->prepare("SELECT oneDeviceOneVote, isSecure, createdBy, voteCutoff FROM ballots WHERE id = :id");
 	$ballotQuery->bindValue(':id', $id, PDO::PARAM_INT);
 	$ballotQuery->execute();
 	$ballotRow = $ballotQuery->fetch(PDO::FETCH_ASSOC);
+
+	if ($ballotRow && $ballotRow['voteCutoff'] < date('Y-m-d H:i:s')) {
+		echo json_encode(['errors' => ['closed' => 'Voting has closed.']]);
+		exit;
+	}
 
 	if ($ballotRow && $ballotRow['oneDeviceOneVote'] && !empty($fingerprint)) {
 		// Skip check if voter is the ballot creator (kiosk whitelist)
@@ -60,6 +65,47 @@ if (!empty($errors)) {
 				exit;
 			}
 		}
+	}
+
+	// Secure ballot: validate voter code server-side
+	if ($ballotRow && $ballotRow['isSecure']) {
+		$voterCode = isset($_POST['name']) ? strtolower(strtr(trim($_POST['name']), '01', 'oi')) : '';
+		$codeValid = false;
+
+		if (strlen($voterCode) === 6) {
+			// Look up code in random_codes
+			$codeQuery = $dbh->prepare("SELECT id FROM random_codes WHERE code = :code");
+			$codeQuery->bindValue(':code', $voterCode, PDO::PARAM_STR);
+			$codeQuery->execute();
+			$codeRow = $codeQuery->fetch(PDO::FETCH_ASSOC);
+
+			if ($codeRow) {
+				// Check code is assigned to this ballot
+				$assignQuery = $dbh->prepare("SELECT 1 FROM ballot_codes WHERE ballot_id = :ballotId AND random_code_id = :codeId");
+				$assignQuery->bindValue(':ballotId', $id, PDO::PARAM_INT);
+				$assignQuery->bindValue(':codeId', $codeRow['id'], PDO::PARAM_INT);
+				$assignQuery->execute();
+
+				if ($assignQuery->fetch()) {
+					// Check code hasn't been used
+					$usedQuery = $dbh->prepare("SELECT 1 FROM votes WHERE ballotId = :ballotId AND name = :code LIMIT 1");
+					$usedQuery->bindValue(':ballotId', $id, PDO::PARAM_INT);
+					$usedQuery->bindValue(':code', $voterCode, PDO::PARAM_STR);
+					$usedQuery->execute();
+
+					if (!$usedQuery->fetch()) {
+						$codeValid = true;
+					}
+				}
+			}
+		}
+
+		if (!$codeValid) {
+			echo json_encode(['errors' => ['code' => 'This code is not valid.']]);
+			exit;
+		}
+		// Store the normalized code as the vote name
+		$_POST['name'] = $voterCode;
 	}
 
 	$inFingerprint = ', `fingerprint`';

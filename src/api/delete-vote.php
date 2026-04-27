@@ -53,9 +53,9 @@ if(!empty($voteId)) {
     $sth2->bindValue(':ballotShortcode', $ballotShortcode, PDO::PARAM_STR);
     $sth2->execute();
     $results2=$sth2->fetchAll(PDO::FETCH_ASSOC);
-    echo $query;
+    echo json_encode(['success' => true]);
   } else {
-    echo "failed to supply ballotId";
+    echo json_encode(['errors' => ['ballotId' => 'Failed to supply ballotId.']]);
   }
 }
 ?>

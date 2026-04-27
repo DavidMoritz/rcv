@@ -47,6 +47,7 @@ CREATE TABLE `ballots` (
   `kickbackUrl` varchar(2048) DEFAULT NULL,
   `iframeUrl` varchar(2048) DEFAULT NULL,
   `oneDeviceOneVote` tinyint(1) NOT NULL DEFAULT '0',
+  `isSecure` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
@@ -91,6 +92,19 @@ CREATE TABLE `random_codes` (
   `code` varchar(6) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+# Dump of table ballot_codes
+# ------------------------------------------------------------
+
+CREATE TABLE `ballot_codes` (
+  `ballot_id` int NOT NULL,
+  `random_code_id` int NOT NULL,
+  `label` varchar(256) DEFAULT '',
+  PRIMARY KEY (`ballot_id`, `random_code_id`),
+  KEY `random_code_idx` (`random_code_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 

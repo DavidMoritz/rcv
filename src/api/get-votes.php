@@ -7,7 +7,7 @@ if(!empty($key)) {
 // checking for blank values.
 	$query = "
 		SELECT
-			vote_id, vote, voteIds, votes.name, votes.date_created, votes.ballotId, ballots.rcvisId, ballots.rcvisSlug, ballots.showGraph, ballots.createdBy, ballots.hideNames, ballots.hideDetails, ballots.positions, ballots.resultsRelease, ballots.voteCutoff, ballots.name AS 'ballotName', ballots.tieBreak, ballots.graphUpdated
+			vote_id, vote, voteIds, votes.name, votes.date_created, votes.ballotId, ballots.rcvisId, ballots.rcvisSlug, ballots.showGraph, ballots.createdBy, ballots.hideNames, ballots.hideDetails, ballots.positions, ballots.resultsRelease, ballots.voteCutoff, ballots.name AS 'ballotName', ballots.tieBreak, ballots.graphUpdated, ballots.isSecure
 		FROM
 			votes
 		JOIN
@@ -15,7 +15,9 @@ if(!empty($key)) {
 			ON
 				votes.ballotId = ballots.id
 		WHERE
-			ballots.key = :key;";
+			ballots.key = :key
+		ORDER BY
+			CASE WHEN ballots.isSecure = 1 THEN votes.name ELSE votes.vote_id END ASC;";
 	$sth = $dbh->prepare($query);
 	$sth->bindValue(':key', $key, PDO::PARAM_STR);
 	$sth->execute();

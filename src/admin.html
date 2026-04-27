@@ -106,6 +106,7 @@
                                     <th>Shortcode</th>
                                     <th>Owner</th>
                                     <th title="One Device One Vote">&#x1F4F1;</th>
+                                    <th title="Secure Ballot">&#x1F512;</th>
                                     <th title="Kickback URL">&#x267B;</th>
                                     <th title="Iframe URL">&#x1F5D4;</th>
                                     <th>Votes</th>
@@ -114,7 +115,7 @@
                                 </tr>
                             </thead>
                             <tbody id="recentActiveTableBody">
-                                <tr><td colspan="10" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="11" class="text-center">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -134,6 +135,7 @@
                                     <th>Shortcode</th>
                                     <th>Owner</th>
                                     <th title="One Device One Vote">&#x1F4F1;</th>
+                                    <th title="Secure Ballot">&#x1F512;</th>
                                     <th title="Kickback URL">&#x267B;</th>
                                     <th title="Iframe URL">&#x1F5D4;</th>
                                     <th>Votes</th>
@@ -142,7 +144,7 @@
                                 </tr>
                             </thead>
                             <tbody id="popularTableBody">
-                                <tr><td colspan="10" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="11" class="text-center">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -369,7 +371,7 @@
     function renderRankedBallots(tbodyId, ballots, showRank) {
         var tbody = document.getElementById(tbodyId);
         if (ballots.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted">No ballots found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted">No ballots found</td></tr>';
             return;
         }
         tbody.innerHTML = ballots.map(function(b, i) {
@@ -381,6 +383,7 @@
                 '<td><a href="/results#' + encodeURIComponent(b.key) + '" target="_blank"><code>' + escapeHtml(b.key) + '</code></a></td>' +
                 '<td>' + escapeHtml(b.ownerName || b.createdBy || '-') + '</td>' +
                 '<td>' + (b.oneDeviceOneVote == 1 ? check : '') + '</td>' +
+                '<td>' + (b.isSecure == 1 ? check : '') + '</td>' +
                 '<td>' + (b.kickbackUrl ? check : '') + '</td>' +
                 '<td>' + (b.iframeUrl ? check : '') + '</td>' +
                 '<td><strong>' + (b.voteCount || 0) + '</strong></td>' +

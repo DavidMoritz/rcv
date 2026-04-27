@@ -469,7 +469,28 @@
                   class="form-control"
                 /><span ng-show="errors.createdBy" class="text-danger">{{errors.createdBy}}</span>
               </div>
-              <div class="form-group">
+              <div class="form-group" ng-show="user.name">
+                <label>
+                  Secure Ballot (voter codes required):
+                  <input type="checkbox" ng-model="ballot.isSecure" ng-change="onSecureToggle()" />
+                </label>
+                <small ng-show="ballot.isSecure" class="text-muted">
+                  Secure ballots use system-generated codes for verified voting.
+                </small>
+              </div>
+              <div class="form-group" ng-show="ballot.isSecure">
+                <label>Number of voter codes to generate: </label>
+                <input
+                  type="number"
+                  ng-model="ballot.codeCount"
+                  min="1"
+                  max="500"
+                  class="form-control"
+                  style="max-width: 200px"
+                  placeholder="e.g. 25"
+                /><small class="text-muted">more may be added at any time</small>
+              </div>
+              <div class="form-group" ng-show="!ballot.isSecure">
                 <label>Voters Names:</label>
                 <div>
                   <label title="Putting in names is optional" class="radio-inline">
@@ -507,25 +528,29 @@
                   </label>
                 </div>
               </div>
-              <div class="form-group" ng-show="user.name">
+              <div class="form-group" ng-show="user.name && !ballot.isSecure">
                 <label>
                   Hide voter names when displaying results (except from logged-in owner):
                   <input type="checkbox" ng-model="ballot.hideNames" />
                 </label>
               </div>
-              <div class="form-group" ng-show="user.name">
+              <div class="form-group" ng-show="user.name && !ballot.isSecure">
                 <label>
                   Hide detailed results (except from logged-in owner):
                   <input type="checkbox" ng-model="ballot.hideDetails" />
                 </label>
               </div>
-              <div class="form-group">
+              <div class="form-group" ng-show="!ballot.isSecure">
                 <label>
                   Allow users to contribute custom entries:
-                  <input type="checkbox" ng-model="ballot.allowCustom" />
+                  <input
+                    type="checkbox"
+                    ng-model="ballot.allowCustom"
+                    ng-disabled="ballot.isSecure"
+                  />
                 </label>
               </div>
-              <div class="form-group">
+              <div class="form-group" ng-show="!ballot.isSecure">
                 <label>
                   Limit to one vote per device:
                   <input type="checkbox" ng-model="ballot.oneDeviceOneVote" />
@@ -537,7 +562,14 @@
                   ></i>
                 </label>
               </div>
+              <p ng-show="!user.name" class="text-muted">
+                Want a secure ballot using codes?
+                <a href ng-click="navigate('register')">Create a free account</a>
+              </p>
               <div class="form-group">
+                <span ng-show="errors.secureCutoff" class="text-danger"
+                  >{{errors.secureCutoff}}</span
+                >
                 <div>
                   <label ng-hide="editDate || editTime"
                     >Voting Cutoff: never (check box for custom)</label
@@ -549,7 +581,7 @@
                 </div>
                 <label
                   >Edit Time
-                  <input type="checkbox" ng-model="editTime" />
+                  <input type="checkbox" ng-model="editTime" ng-disabled="ballot.isSecure" />
                 </label>
                 <small ng-show="editTime">(Current Time: {{rightNow.format('LT')}})</small>
                 <div class="row" ng-show="editTime">
@@ -591,7 +623,7 @@
                 </div>
                 <label
                   >Edit Date
-                  <input type="checkbox" ng-model="editDate" />
+                  <input type="checkbox" ng-model="editDate" ng-disabled="ballot.isSecure" />
                 </label>
                 <div ng-show="editDate" class="input-group">
                   <input
@@ -634,7 +666,7 @@
                   ><span ng-hide="showRelease || (!editDate &amp;&amp; !editTime)">
                     after voting (check box for custom)</span
                   >
-                  <input type="checkbox" ng-model="showRelease" ng-click="sameTime()" /><small
+                  <input type="checkbox" ng-model="showRelease" ng-change="sameTime()" /><small
                     ng-show="showRelease &amp;&amp; ballot.resultsRelease"
                     class="text-muted"
                   >
@@ -711,6 +743,7 @@
                       value="random"
                       name="tie-break-method"
                       ng-model="ballot.tieBreak"
+                      ng-disabled="ballot.isSecure"
                     />Random (official)
                   </label>
                   <label
@@ -722,6 +755,7 @@
                       value="weighted"
                       name="tie-break-method"
                       ng-model="ballot.tieBreak"
+                      ng-disabled="ballot.isSecure"
                     />Weighted (factor in subsequent choices)
                   </label>
                   <label
@@ -824,7 +858,12 @@
                 <h3>Thank you for creating a ballot!</h3>
                 <h4>Send this url or QR code to people for voting:</h4>
                 <h4 class="text-success">{{origin}}/{{ballot.key}}</h4>
-                <a href="{{origin}}/vote#{{ballot.key}}">Click here to vote yourself</a>
+                <a ng-hide="ballot.isSecure" href="{{origin}}/vote#{{ballot.key}}"
+                  >Click here to vote yourself</a
+                >
+                <a ng-show="ballot.isSecure" href="{{origin}}/profile"
+                  >Click here to manage this secure ballot</a
+                >
               </div>
               <div class="col-sm-6">
                 <!-- QR Code Container -->
@@ -1018,9 +1057,12 @@
                 <form ng-submit="submitShortcode()">
                   <div class="form-group">
                     <label>Enter Ballot Shortcode</label>
-                    <input name="ballot" ng-model="shortcode" ng-change="errors.shortcode = null" class="form-control" /><span
-                      ng-show="errors.shortcode"
-                      class="text-danger"
+                    <input
+                      name="ballot"
+                      ng-model="shortcode"
+                      ng-change="errors.shortcode = null"
+                      class="form-control"
+                    /><span ng-show="errors.shortcode" class="text-danger"
                       >{{errors.shortcode}}</span
                     >
                   </div>
@@ -1035,9 +1077,34 @@
               </div>
             </div>
           </div>
-          <div ng-if="candidates" ng-hide="thanks || deviceAlreadyVoted">
+          <div
+            ng-if="candidates && ballot.isSecure && !secureCodeValid"
+            ng-hide="thanks || deviceAlreadyVoted"
+          >
             <h1>Ballot: {{ballot.name}}</h1>
-            <div class="row" ng-hide="ballot.register == 2">
+            <h3>Enter your voter code to proceed</h3>
+            <form ng-submit="validateSecureCode()">
+              <div class="form-group" style="max-width: 300px">
+                <input
+                  type="text"
+                  ng-model="secure.voterCode"
+                  class="form-control voter-code"
+                  placeholder="ABC123"
+                  maxlength="6"
+                  autocomplete="off"
+                  style="font-size: 24px; text-align: center; letter-spacing: 4px;"
+                />
+                <span ng-show="errors.secureCode" class="text-danger">{{errors.secureCode}}</span>
+              </div>
+              <button type="submit" class="btn btn-success">Submit Code</button>
+            </form>
+          </div>
+          <div
+            ng-if="candidates && (!ballot.isSecure || secureCodeValid)"
+            ng-hide="thanks || deviceAlreadyVoted"
+          >
+            <h1>Ballot: {{ballot.name}}</h1>
+            <div class="row" ng-hide="ballot.register == 2 || ballot.isSecure">
               <label class="control-label col-sm-3 col-md-2"
                 >Your Name<span ng-show="ballot.register == 1">*</span>:</label
               >
@@ -1130,6 +1197,9 @@
             <h4 ng-if="resultsReady">
               <a href="/results#{{shortcode}}">Click here to see the results</a>
             </h4>
+            <h5 ng-if="ballot.isSecure && !resultsReady">
+              Visit <a href="/results#{{shortcode}}">{{origin}}/results#{{ballot.key}}</a> after {{resultsReleaseFormatted}} to see the results
+            </h5>
             <h5>Voting URL: {{origin}}/{{ballot.key}}</h5>
           </div>
           <div ng-show="deviceAlreadyVoted">
@@ -1151,9 +1221,12 @@
                 <form ng-submit="submitShortcode()">
                   <div class="form-group">
                     <label>Enter Ballot Shortcode</label>
-                    <input name="ballot" ng-model="shortcode" ng-change="errors.shortcode = null" class="form-control" /><span
-                      ng-show="errors.shortcode"
-                      class="text-danger"
+                    <input
+                      name="ballot"
+                      ng-model="shortcode"
+                      ng-change="errors.shortcode = null"
+                      class="form-control"
+                    /><span ng-show="errors.shortcode" class="text-danger"
                       >{{errors.shortcode}}</span
                     >
                   </div>
@@ -1228,8 +1301,15 @@
           >
           <h3 ng-show="user.name">Name: {{user.name}}</h3>
           <div ng-show="allBallots.length">
-            <h3>Current Ballots</h3>
-            <table class="table ballots">
+            <ul class="ballot-tabs">
+              <li ng-class="{active: profileTab !== 'secure'}" ng-click="profileTab = 'standard'">
+                Standard Ballots
+              </li>
+              <li ng-class="{active: profileTab === 'secure'}" ng-click="profileTab = 'secure'">
+                Secure Ballots
+              </li>
+            </ul>
+            <table class="table ballots" ng-show="profileTab !== 'secure'">
               <thead>
                 <tr>
                   <th>Shortcode</th>
@@ -1241,7 +1321,7 @@
               </thead>
               <tbody>
                 <tr
-                  ng-repeat="ballot in allBallots track by ballot.id"
+                  ng-repeat="ballot in allBallots | filter:{isSecure: '0'} track by ballot.id"
                   id="ballot-row-{{ballot.id}}"
                 >
                   <td ng-if="ballot.transferring" colspan="10" class="text-center text-muted">
@@ -1305,6 +1385,200 @@
                 </tr>
               </tbody>
             </table>
+            <table class="table ballots" ng-show="profileTab === 'secure'">
+              <thead>
+                <tr>
+                  <th>Shortcode</th>
+                  <th>Name</th>
+                  <th>Vote Cutoff ({{moment.tz(moment.tz.guess()).format('z')}})</th>
+                  <th>Total votes</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  ng-repeat="ballot in allBallots | filter:{isSecure: '1'} track by ballot.id"
+                  id="ballot-row-{{ballot.id}}"
+                >
+                  <td>{{ballot.key}}</td>
+                  <td>{{ballot.name}}</td>
+                  <td>
+                    {{ballot.voteCutoff.year() > 2100 ? 'never' :
+                    ballot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a')}}
+                  </td>
+                  <td>{{ballot.totalVotes}}</td>
+                  <td>
+                    <a href ng-click="manageSecureBallot(ballot)" class="btn btn-sm btn-primary"
+                      >MANAGE</a
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p
+              ng-show="profileTab === 'secure' && (allBallots | filter:{isSecure: '1'}).length === 0"
+              class="text-muted"
+              style="padding: 20px 0"
+            >
+              No secure ballots yet. <a href ng-click="navigate('create')">Create one</a>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div ng-show="activeLink == 'manage'" class="panel panel-default">
+        <div class="panel-body">
+          <a href ng-click="navigate('profile')" class="btn btn-default btn-sm"
+            >&laquo; Back to Profile</a
+          >
+          <h1>{{manageBallot.name}}</h1>
+          <h4>
+            Shortcode: {{manageBallot.key}} &nbsp; Voting URL: {{origin}}/{{manageBallot.key}}
+          </h4>
+          <h4>
+            Vote Cutoff: {{manageBallot.voteCutoff.year() > 2100 ? 'never' :
+            manageBallot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a z')}}
+            <button
+              ng-if="manageBallot.voteCutoff > now"
+              ng-click="endVotingNow()"
+              class="btn btn-warning btn-sm"
+              style="margin-left: 10px"
+            >
+              End Voting Now
+            </button>
+          </h4>
+          <hr />
+          <div class="row">
+            <div class="col-md-8">
+              <h3>Voter Codes ({{manageCodes.length}})</h3>
+              <div ng-if="manageBallot.voteCutoff > now" class="form-inline" style="margin-bottom: 15px">
+                <input
+                  type="number"
+                  ng-model="moreCodeCount"
+                  min="1"
+                  max="500"
+                  class="form-control"
+                  style="width: 100px"
+                  placeholder="10"
+                />
+                <button ng-click="requestMoreCodes()" class="btn btn-success btn-sm">
+                  Request More Codes
+                </button>
+                <button ng-click="printCodeSheet()" class="btn btn-default btn-sm">
+                  <i class="fa fa-print"></i> Print Code Sheet
+                </button>
+              </div>
+              <table class="table table-condensed">
+                <thead>
+                  <tr>
+                    <th
+                      class="pointer"
+                      ng-click="manageSort = 'code'; manageSortReverse = !manageSortReverse"
+                    >
+                      Code
+                      <i
+                        class="fa"
+                        ng-class="{'fa-sort-asc': manageSort === 'code' && !manageSortReverse, 'fa-sort-desc': manageSort === 'code' && manageSortReverse, 'fa-sort': manageSort !== 'code'}"
+                      ></i>
+                    </th>
+                    <th
+                      class="pointer"
+                      ng-click="manageSort = 'label'; manageSortReverse = !manageSortReverse"
+                    >
+                      Label
+                      <i
+                        class="fa"
+                        ng-class="{'fa-sort-asc': manageSort === 'label' && !manageSortReverse, 'fa-sort-desc': manageSort === 'label' && manageSortReverse, 'fa-sort': manageSort !== 'label'}"
+                      ></i>
+                    </th>
+                    <th
+                      class="pointer"
+                      ng-click="manageSort = 'votedAt'; manageSortReverse = !manageSortReverse"
+                    >
+                      Voted At
+                      <i
+                        class="fa"
+                        ng-class="{'fa-sort-asc': manageSort === 'votedAt' && !manageSortReverse, 'fa-sort-desc': manageSort === 'votedAt' && manageSortReverse, 'fa-sort': manageSort !== 'votedAt'}"
+                      ></i>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    ng-repeat="code in manageCodes | orderBy:manageSort:manageSortReverse track by code.code"
+                    ng-class="{'success': code.votedAt}"
+                  >
+                    <td class="voter-code">
+                      {{code.code}}
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        ng-model="code.label"
+                        ng-blur="saveCodeLabel(code)"
+                        class="form-control input-sm"
+                        placeholder="optional label"
+                        style="
+                          max-width: 180px;
+                          border: none;
+                          box-shadow: none;
+                          background: transparent;
+                        "
+                      />
+                    </td>
+                    <td>
+                      <span ng-show="code.votedAt">{{code.votedAt}}
+                        <a href ng-if="manageBallot.voteCutoff > now" ng-click="resetSecureVote(code)" class="text-danger" style="margin-left: 8px" title="Reset this vote">
+                          <i class="fa fa-undo"></i>
+                        </a>
+                      </span>
+                      <span ng-if="!code.votedAt && manageBallot.voteCutoff > now" class="text-muted">available
+                        <a href ng-click="code.confirmDelete = true" ng-show="!code.confirmDelete" class="text-danger" style="margin-left: 8px" title="Remove this code">
+                          <i class="fa fa-trash"></i>
+                        </a>
+                        <span ng-show="code.confirmDelete" style="margin-left: 8px">
+                          <i class="fa fa-trash" style="visibility: hidden"></i>
+                          <button ng-click="deleteCode(code)" class="btn btn-danger btn-xs">Sure?</button>
+                        </span>
+                      </span>
+                      <span ng-if="!code.votedAt && manageBallot.voteCutoff <= now" class="text-muted">unused</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-md-4">
+              <h3>Quick Stats</h3>
+              <p>Total codes: {{manageCodes.length}}</p>
+              <p>Voted: {{manageCodes.length - manageCodesAvailable}}</p>
+              <p ng-if="manageBallot.voteCutoff > now">Available: {{manageCodesAvailable}}</p>
+              <p ng-if="manageBallot.voteCutoff <= now">Unused: {{manageCodesAvailable}}</p>
+              <hr />
+              <div class="manage-actions">
+                <a href="/results#{{manageBallot.key}}" target="_blank" class="btn btn-default btn-sm">
+                  View Results
+                </a>
+                <button ng-click="duplicateBallot(manageBallot)" class="btn btn-default btn-sm">
+                  <i class="fa fa-clone"></i> Duplicate Ballot
+                </button>
+                <button ng-click="copyToClipboard(origin + '/' + manageBallot.key)" class="btn btn-default btn-sm">
+                  Copy Voting URL
+                </button>
+                <button ng-click="transferBallot(manageBallot)" class="btn btn-default btn-sm">
+                  <i class="fa fa-exchange"></i> Transfer Ownership
+                </button>
+                <button
+                  ng-if="manageBallot.voteCutoff > now"
+                  ng-click="deleteSecureBallot()"
+                  ng-disabled="manageCodesAvailable < manageCodes.length"
+                  class="btn btn-danger btn-sm"
+                  style="margin-top: 10px"
+                  uib-tooltip="{{manageCodesAvailable < manageCodes.length ? 'Must not have any votes to delete' : ''}}"
+                  tooltip-placement="top"
+                >
+                  <i class="fa fa-trash"></i> Delete Ballot
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
