@@ -2,7 +2,7 @@ import { dataFromObj } from './utils/helpers.js';
 
 var $s, $http;
 
-function updateTime(dateObj, zoneString) {
+export function updateTime(dateObj, zoneString) {
   zoneString = zoneString || moment.tz.guess();
   var mom = moment(dateObj).tz(zoneString, true);
 
@@ -22,7 +22,7 @@ function deleteThis(data, item) {
   });
 }
 
-function roundResultsRelease() {
+export function roundResultsRelease() {
   var now = new Date();
   var m = now.getMinutes();
   var offset = parseInt((m + 25) / 15) * 15;
@@ -32,7 +32,7 @@ function roundResultsRelease() {
   return new Date(now.setMinutes(offset));
 }
 
-function dateToTime(d) {
+export function dateToTime(d) {
   var h = d.getHours();
   var meridian = h >= 12 ? 'PM' : 'AM';
   h = h % 12 || 12;
