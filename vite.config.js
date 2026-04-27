@@ -22,7 +22,7 @@ export default defineConfig({
 
   // Define global constants that will be replaced at build time
   define: {
-    'global': 'window',
+    global: 'window'
   },
 
   build: {
@@ -30,7 +30,7 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, 'src/index.html'),
+        main: path.resolve(__dirname, 'src/index.html')
       },
       output: {
         // Keep similar structure to production
@@ -153,6 +153,20 @@ export default defineConfig({
         target: 'http://localhost:2461',
         changeOrigin: true,
         secure: false
+      }
+    }
+  },
+
+  serveV2: {
+    port: 2460,
+    open: true,
+    proxy: {
+      // Proxy API requests to PHP backend
+      '/api': {
+        target: 'https://rankedchoices.com',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => '/v2' + path
       }
     }
   }
