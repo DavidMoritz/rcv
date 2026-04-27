@@ -1169,13 +1169,13 @@
             </div>
           </div>
           <div ng-show="final">
+            <div ng-show="elected[0].image" class="pull-right">
+              <img ng-src="{{elected[0].image}}" class="winner-image" />
+            </div>
             <h1>Results<span class="ballot-name"></span></h1>
             <h2 ng-show="elected.length == 1">
               The winner<span ng-if="!voteClosed"> (so far)</span>: {{elected[0].name}}
             </h2>
-            <div ng-show="elected[0].image" class="text-center">
-              <img ng-src="{{elected[0].image}}" class="winner-image" />
-            </div>
             <div ng-show="elected.length > 1">
               <h2>
                 The winners, in order of most votes<span ng-if="!voteClosed"> (so far)</span>:
