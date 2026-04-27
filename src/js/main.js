@@ -800,7 +800,10 @@ mainApp.controller('MainCtrl', [
 								var names = JSON.parse(result.vote.replace(/\s/g, ' '));
 								ids.forEach(function(id, i) {
 									if (!$s.entryMap[id] && names[i]) {
-										$s.entryMap[id] = { name: names[i], image: '', color: null, hyperlink: '' };
+										var match = _.find(entryList, { name: names[i] });
+										$s.entryMap[id] = match
+											? { name: match.name, image: match.image, color: match.color, hyperlink: match.hyperlink }
+											: { name: names[i], image: '', color: null, hyperlink: '' };
 									}
 								});
 							}
