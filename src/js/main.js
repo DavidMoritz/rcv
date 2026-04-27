@@ -6,6 +6,11 @@
  * revised by David Moritz
  */
 
+import { setCookie, getCookie, getDeviceToken } from './utils/cookies.js';
+import { jsUcfirst, dataFromObj, trickVote } from './utils/helpers.js';
+import { bbiBallots } from './constants/bbi-ballots.js';
+import mc from './utils/mc.js';
+
 /* Iframe auto-resize: hosted pages can postMessage their height */
 window.addEventListener('message', function (e) {
   if (e.data && e.data.iframeHeight) {
@@ -18,147 +23,9 @@ window.addEventListener('message', function (e) {
   }
 });
 
-/* JS Cookies - https://www.w3schools.com/js/js_cookies.asp */
-function setCookie(data) {
-  if (data.days) {
-    data.date = new Date();
-    data.date.setTime(data.date.getTime() + data.days * 24 * 60 * 60 * 1000);
-  }
-  if (data.date) {
-    data.expires = 'expires=' + data.date.toUTCString();
-  }
-  document.cookie =
-    data.name + '=' + data.value + (data.expires ? ';' + data.expires : '') + ';path=/';
-}
-
-const trickVote = '123456';
-
-function getDeviceToken() {
-  var token = getCookie('deviceToken');
-  if (!token) {
-    token = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = (Math.random() * 16) | 0;
-      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-    });
-    setCookie({ name: 'deviceToken', value: token, days: 365 * 5 });
-  }
-  return token;
-}
-
-function getCookie(cname) {
-  var name = cname + '=';
-  var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return '';
-}
-
-function jsUcfirst(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function dataFromObj(jsonObjOrString) {
-  let jsonObj;
-
-  if (typeof jsonObjOrString === 'string') {
-    // processing visuals
-    jsonObj = {
-      config: {
-        contest: jsonObjOrString
-      },
-      results: [
-        {
-          round: 1,
-          tally: { processing: '1' },
-          tallyResults: [{ elected: 'processing' }]
-        }
-      ]
-    };
-  } else {
-    jsonObj = jsonObjOrString;
-  }
-
-  const outputstring = JSON.stringify(jsonObj);
-  const file = new File(['\ufeff' + outputstring], 'results.json', { type: 'application/json' });
-  const data = new FormData();
-
-  data.append('jsonFile', file);
-
-  return data;
-}
-
-String.prototype.hashCode = function () {
-  var hash = 0;
-  if (this.length === 0) {
-    return hash;
-  }
-  for (var i = 0; i < this.length; i++) {
-    var char = this.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return hash;
-};
-
 // Note: mainApp module is defined in app.js
 // Retrieve the existing module instead of redefining it
 var mainApp = angular.module('mainApp');
-
-/**
- * bbiBallots from 2023 straw poll
- * const bbiBallots = {
- *   a: {
- *     contest: "Pulse of Iowa – Presidential Straw Poll",
- *     id: 5827,
- *     slug: "bbi-presidential-election-rcv-straw-poll-1"
- *   },
- *   r: {
- *     contest: "Pulse of Iowa – Presidential Straw Poll - Republican",
- *     id: 5824,
- *     slug: "bbi-presidential-election-rcv-straw-poll-republican"
- *   },
- *   d: {
- *     contest: "Pulse of Iowa – Presidential Straw Poll - Democrat",
- *     id: 5825,
- *     slug: "bbi-presidential-election-rcv-straw-poll-democrat"
- *   },
- *   o: {
- *     contest: "Pulse of Iowa – Presidential Straw Poll - Other",
- *     id: 5826,
- *     slug: "bbi-presidential-election-rcv-straw-poll-other"
- *   }
- * }
- */
-
-const bbiBallots = {
-  a: {
-    contest: 'Pulse of Iowa – Presidential Straw Poll',
-    id: 11410,
-    slug: 'bbi-presidential-election-rcv-straw-poll-24'
-  },
-  r: {
-    contest: 'Pulse of Iowa – Presidential Straw Poll - Republican',
-    id: 11411,
-    slug: 'bbi-presidential-election-rcv-straw-poll-24-republican'
-  },
-  d: {
-    contest: 'Pulse of Iowa – Presidential Straw Poll - Democrat',
-    id: 11412,
-    slug: 'bbi-presidential-election-rcv-straw-poll-24-democrat'
-  },
-  o: {
-    contest: 'Pulse of Iowa – Presidential Straw Poll - Other',
-    id: 11413,
-    slug: 'bbi-presidential-election-rcv-straw-poll-24-other'
-  }
-};
 
 // Note: mainApp.config and initial .run() are defined in app.js
 // This runs after mc is defined to add it to $rootScope
@@ -1655,61 +1522,6 @@ mainApp.controller('MainCtrl', [
     }
   }
 ]);
-
-var mc = {
-  pluralize: function pluralize(str) {
-    return str.replace(/y$/, 'ie') + 's';
-  },
-
-  camelToTitle: function camelToTitle(str) {
-    //	convert camelCaseString to Title Case String
-    return _.capitalize(str.replace(/([A-Z])/g, ' $1')).trim();
-  },
-
-  randomDigits: function randomDigits(min, max) {
-    min = min === undefined ? 1 : min;
-    max = max || 999;
-
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  },
-
-  alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
-
-  isAngularObjectEqual: function isAngularObjectEqual(object1, object2) {
-    return _.isEqual(_.omit(object1, '$$hashKey'), _.omit(object2, '$$hashKey'));
-  },
-
-  expandArray: function expandArray(array, times) {
-    //	turns [1,2,3] into [1,2,3,1,2,3,1,2,3];
-    times = times || 3; //	default number of times to expand it by
-
-    var expandedArray = [];
-
-    for (var i = 0; i < times; i++) {
-      expandedArray = expandedArray.concat(angular.copy(array));
-    }
-
-    return expandedArray;
-  },
-
-  calculateAge: function calculateAge(dateOfBirth) {
-    var age;
-
-    if (dateOfBirth) {
-      var year = Number(dateOfBirth.substr(0, 4));
-      var month = Number(dateOfBirth.substr(5, 2)) - 1;
-      var day = Number(dateOfBirth.substr(8, 2));
-      var today = new Date();
-      age = today.getFullYear() - year;
-
-      if (today.getMonth() < month || (today.getMonth() == month && today.getDate() < day)) {
-        age--;
-      }
-    }
-
-    return age || 0;
-  }
-};
 
 mainApp.factory('VoteFactory', [
   function VoteFactory() {
