@@ -633,3 +633,27 @@ mainApp.controller('MainCtrl', [
 ]);
 
 mainApp.factory('VoteFactory', [VoteFactory]);
+
+/* Wink animation for home page can mascot */
+document.addEventListener('DOMContentLoaded', function () {
+  var winkEl = document.getElementById('winkCan');
+  if (!winkEl) return;
+
+  var isAnimating = false;
+
+  function playWink() {
+    if (isAnimating) return;
+    isAnimating = true;
+    winkEl.classList.add('winking');
+  }
+
+  winkEl.addEventListener('animationend', function (e) {
+    if (e.animationName === 'wink-reverse') {
+      winkEl.classList.remove('winking');
+      isAnimating = false;
+    }
+  });
+
+  winkEl.addEventListener('mouseenter', playWink);
+  setTimeout(playWink, 10000);
+});

@@ -350,6 +350,45 @@ hr {
 .vote-button {
   filter: hue-rotate(310deg) saturate(1.5) brightness(0.95);
 }
+
+/* Wink logo: stacked can + words */
+.wink-logo {
+  display: block;
+  text-decoration: none;
+}
+.wink-words {
+  margin: 0 auto;
+}
+.wink-can {
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  filter: hue-rotate(310deg) saturate(1.5) brightness(0.95);
+}
+.wink-can .wink-default {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.wink-can.winking .wink-default {
+  visibility: hidden;
+}
+.wink-can.winking {
+  background: url('../img/wink-sprite.png') left top no-repeat;
+  background-size: 2700px 300px;
+  animation: wink-forward 0.75s steps(8) forwards,
+             wink-reverse 0.75s steps(8) 1s forwards;
+}
+@keyframes wink-forward {
+  from { background-position: 0 0; }
+  to { background-position: -2400px 0; }
+}
+@keyframes wink-reverse {
+  from { background-position: -2400px 0; }
+  to { background-position: 0 0; }
+}
 .sidebar-logo {
   max-height: 180px;
   margin: 0 auto;
