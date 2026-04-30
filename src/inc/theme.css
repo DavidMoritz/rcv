@@ -363,21 +363,11 @@ hr {
   width: 300px;
   height: 300px;
   margin: 0 auto;
-  position: relative;
-  overflow: hidden;
+  background: url('../img/wink-sprite.png') 0 0 no-repeat;
+  background-size: 2700px 300px;
   filter: hue-rotate(310deg) saturate(1.5) brightness(0.95);
 }
-.wink-can .wink-default {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.wink-can.winking .wink-default {
-  visibility: hidden;
-}
 .wink-can.winking {
-  background: url('../img/wink-sprite.png') left top no-repeat;
-  background-size: 2700px 300px;
   animation: wink-forward 0.75s steps(8) forwards,
              wink-reverse 0.75s steps(8) 1s forwards;
 }
@@ -388,6 +378,78 @@ hr {
 @keyframes wink-reverse {
   from { background-position: -2400px 0; }
   to { background-position: 0 0; }
+}
+
+/* Sidebar variant (vote/results pages) */
+.wink-logo-sm {
+  max-width: 180px;
+  margin: 0 auto;
+}
+.wink-logo-sm .wink-can {
+  width: 140px;
+  height: 140px;
+  background-size: 1260px 140px;
+}
+.wink-logo-sm .wink-can.winking {
+  animation: wink-forward-sm 0.75s steps(8) forwards,
+             wink-reverse-sm 0.75s steps(8) 1s forwards;
+}
+@keyframes wink-forward-sm {
+  from { background-position: 0 0; }
+  to { background-position: -1120px 0; }
+}
+@keyframes wink-reverse-sm {
+  from { background-position: -1120px 0; }
+  to { background-position: 0 0; }
+}
+
+/* About page variant */
+.wink-logo-about {
+  float: right;
+  max-width: 320px;
+  margin: 0 0 15px 20px;
+}
+.wink-logo-about .wink-can {
+  width: 200px;
+  height: 200px;
+  background-size: 1800px 200px;
+}
+.wink-logo-about .wink-can.winking {
+  animation: wink-forward-about 0.75s steps(8) forwards,
+             wink-reverse-about 0.75s steps(8) 1s forwards;
+}
+@keyframes wink-forward-about {
+  from { background-position: 0 0; }
+  to { background-position: -1600px 0; }
+}
+@keyframes wink-reverse-about {
+  from { background-position: -1600px 0; }
+  to { background-position: 0 0; }
+}
+@media (max-width: 767px) {
+  .wink-logo-about {
+    float: none;
+    display: block;
+    max-width: 200px;
+    margin: 0 auto 15px;
+  }
+  .wink-logo-about .wink-can {
+    width: 150px;
+    height: 150px;
+    background-size: 1350px 150px;
+  }
+  .wink-logo-about .wink-can.winking {
+    animation: wink-forward-about-mobile 0.75s steps(8) forwards,
+               wink-reverse-about-mobile 0.75s steps(8) 1s forwards;
+  }
+  @keyframes wink-forward-about-mobile {
+    from { background-position: 0 0; }
+    to { background-position: -1200px 0; }
+  }
+  @keyframes wink-reverse-about-mobile {
+    from { background-position: -1200px 0; }
+    to { background-position: 0 0; }
+  }
 }
 .sidebar-logo {
   max-height: 180px;

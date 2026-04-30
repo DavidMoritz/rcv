@@ -634,26 +634,38 @@ mainApp.controller('MainCtrl', [
 
 mainApp.factory('VoteFactory', [VoteFactory]);
 
-/* Wink animation for home page can mascot */
+/* Wink animation for can mascot */
 document.addEventListener('DOMContentLoaded', function () {
-  var winkEl = document.getElementById('winkCan');
-  if (!winkEl) return;
+  var winkEls = document.querySelectorAll('.wink-can');
+  if (!winkEls.length) return;
 
   var isAnimating = false;
+  var intervalId = null;
 
-  function playWink() {
+  function playWinkAll() {
     if (isAnimating) return;
     isAnimating = true;
-    winkEl.classList.add('winking');
+    winkEls.forEach(function (el) { el.classList.add('winking'); });
   }
 
-  winkEl.addEventListener('animationend', function (e) {
-    if (e.animationName === 'wink-reverse') {
-      winkEl.classList.remove('winking');
-      isAnimating = false;
-    }
+  function resetInterval() {
+    clearInterval(intervalId);
+    intervalId = setInterval(playWinkAll, 15000);
+  }
+
+  winkEls.forEach(function (el) {
+    el.addEventListener('animationend', function (e) {
+      if (e.animationName.indexOf('wink-reverse') === 0) {
+        winkEls.forEach(function (w) { w.classList.remove('winking'); });
+        isAnimating = false;
+      }
+    });
+
+    el.addEventListener('mouseenter', function () {
+      resetInterval();
+      playWinkAll();
+    });
   });
 
-  winkEl.addEventListener('mouseenter', playWink);
-  setTimeout(playWink, 10000);
+  resetInterval();
 });
