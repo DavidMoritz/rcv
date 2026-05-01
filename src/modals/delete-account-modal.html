@@ -1,0 +1,58 @@
+    <div class="modal" id="delete-account-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h2 class="modal-title">Delete Account</h2>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-danger">
+              <strong>Warning:</strong> This will permanently delete your account. Your existing
+              ballots will remain accessible but will no longer be tied to your account.
+              This action cannot be undone.
+            </div>
+            <div ng-show="deleteAccountError" class="alert alert-warning">
+              {{deleteAccountError}}
+            </div>
+            <div class="form-group" ng-show="!deleteAccountOAuthMode">
+              <label>Enter your password to confirm</label>
+              <input
+                type="password"
+                ng-model="deleteAccountConfirmation"
+                class="form-control"
+                placeholder="Your password"
+              />
+              <!--<p class="help-block">
+                <a href ng-click="deleteAccountOAuthMode = true">I signed in with Google/Facebook</a>
+              </p>-->
+            </div>
+            <div class="form-group" ng-show="deleteAccountOAuthMode">
+              <label>Enter your username to confirm</label>
+              <input
+                type="text"
+                ng-model="deleteAccountConfirmation"
+                class="form-control"
+                placeholder="Your username"
+              />
+              <p class="help-block">
+                <a href ng-click="deleteAccountOAuthMode = false">I have a password</a>
+              </p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-danger"
+              ng-click="deleteAccountSubmit()"
+              ng-disabled="!deleteAccountConfirmation || deleteAccountLoading"
+            >
+              <span ng-show="deleteAccountLoading">Deleting...</span>
+              <span ng-hide="deleteAccountLoading">Delete My Account</span>
+            </button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>

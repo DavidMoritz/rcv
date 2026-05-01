@@ -169,6 +169,48 @@ export function initAuth(scope, http, loc, resetNavFn) {
       });
   };
 
+  $s.showDeleteAccount = function () {
+    $s.deleteAccountConfirmation = '';
+    $s.deleteAccountError = null;
+    $s.deleteAccountLoading = false;
+    $s.deleteAccountOAuthMode = false;
+    $('#delete-account-modal').modal('show');
+  };
+
+  $s.deleteAccountSubmit = function () {
+    $s.deleteAccountLoading = true;
+    $s.deleteAccountError = null;
+
+    var confirmation = $s.deleteAccountOAuthMode
+      ? $s.deleteAccountConfirmation
+      : ($s.deleteAccountConfirmation + 'My RCV salt').hashCode();
+
+    $http({
+      method: 'POST',
+      url: '/api/delete-users.php',
+      data: {
+        userId: $s.user.id,
+        username: $s.user.name,
+        confirmation: String(confirmation)
+      }
+    }).then(
+      function (resp) {
+        if (resp.data && resp.data.data && resp.data.data.success) {
+          $('#delete-account-modal').modal('hide');
+          $s.signOut();
+        } else {
+          $s.deleteAccountLoading = false;
+          var errors = resp.data && resp.data.errors;
+          $s.deleteAccountError = (errors && (errors.confirmation || errors.user)) || 'Deletion failed';
+        }
+      },
+      function () {
+        $s.deleteAccountLoading = false;
+        $s.deleteAccountError = 'An error occurred. Please try again.';
+      }
+    );
+  };
+
   $s.updateUser = function (user, nav) {
     $s.user = user;
     $s.user.username = $s.user.username || $s.user.name;
