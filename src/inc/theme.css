@@ -252,6 +252,18 @@ a:focus {
 #sortable li i {
   right: 12px;
 }
+#sortable .remove-btn {
+  padding: 10px;
+  margin: -10px;
+  cursor: pointer;
+}
+@media (max-width: 767px) {
+  #sortable .remove-btn {
+    padding: 14px;
+    margin: -14px;
+    font-size: 1.2em;
+  }
+}
 
 /* ---------- Tables ---------- */
 .table > thead > tr > th {

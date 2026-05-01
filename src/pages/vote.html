@@ -110,13 +110,13 @@
                 {{ballot.positions}} positions available
               </h3>
               <form name="voteForm" ng-submit="submitVote()">
-                <ul id="sortable" ui-sortable ng-model="candidates">
+                <ul id="sortable" ui-sortable="{cancel: '.remove-btn'}" ng-model="candidates">
                   <li
                     ng-repeat="item in candidates track by $index"
                     data-id="{{item.id}}"
                     class="candidate-item"
                   >
-                    <i ng-click="removeCandidate($index)" class="fa fa-trash"></i>
+                    <i ng-click="removeCandidate($index)" class="fa fa-trash remove-btn"></i>
                     <img class="choice-image" src="{{item.image}}" ng-if="item.image" /><a
                       class="choice-hyperlink"
                       target="_blank"
