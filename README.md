@@ -193,16 +193,21 @@ rcv/
 │   ├── main-entry.js      # Vite entry point
 │   ├── js/
 │   │   ├── app.js         # Angular module definition
-│   │   └── main.js        # Main controller and application logic
+│   │   ├── main.js        # Main controller and view logic
+│   │   ├── auth.js        # Authentication (login, registration, OAuth)
+│   │   └── ballot.js      # Ballot CRUD, voting, results
+│   ├── pages/             # HTML partials (vote, create, results, etc.)
 │   ├── api/               # PHP backend API endpoints
 │   │   ├── config.php     # Database configuration (create from sample)
-│   │   └── *.php          # API endpoints
-│   ├── css/               # Stylesheets (LESS files)
+│   │   └── *.php          # API endpoints (40+)
+│   ├── inc/               # Stylesheets and static JS
 │   ├── img/               # Images
 │   └── fonts/             # Font files
-├── dist/                   # Production build output (upload to host)
+├── test/                   # Test suites
+│   ├── *.test.js          # Frontend unit tests (Vitest)
+│   └── php/               # PHP API tests (PHPUnit + SQLite)
+├── dist/                   # Production build output
 ├── vite.config.js         # Vite build configuration
-├── Schema.sql             # Database schema
 └── package.json           # Dependencies and scripts
 ```
 
@@ -218,21 +223,23 @@ rcv/
 
 ## Contributing
 
-Contributions are welcome and appreciated! Here's how you can help:
+Contributions are welcome and encouraged! This project is fully open source and the codebase matches what's running in production. Jump in — report a bug, open a PR, or propose something new.
 
-- **Report bugs**: Open an issue describing the problem
-- **Suggest features**: Share your ideas for improvements
-- **Submit pull requests**: Fix bugs or add features
-- **Improve documentation**: Help make the setup process clearer
+Before submitting a PR, please run the test suite:
 
-**Note**: Please contact me at [davidmoritz@gmail.com](mailto:davidmoritz@gmail.com) before starting significant work to avoid duplicate efforts.
+```bash
+npm test
+```
 
-### Areas for Contribution
+This runs 115 automated tests (83 frontend via Vitest + 32 PHP API via PHPUnit) to make sure nothing breaks.
 
-- Mobile responsiveness improvements (Maybe an app in the App Store?)
-- Accessibility enhancements
-- Test coverage
-- Modernization of AngularJS code
+### Ideas for Contribution
+
+- **Native mobile app** — A React Native, Flutter, or Swift/Kotlin app that uses the existing PHP API would be a huge win. Over half of all traffic is mobile, and a native app with the same backend would provide cross-platform compatibility out of the box.
+- **Accessibility enhancements** — Screen reader support, keyboard navigation, ARIA labels
+- **Additional voting methods** — STAR voting, Condorcet, etc. (see [#26](https://github.com/DavidMoritz/rcv/issues/26), [#18](https://github.com/DavidMoritz/rcv/issues/18))
+
+For questions, reach out at [davidmoritz@gmail.com](mailto:davidmoritz@gmail.com).
 
 ## Troubleshooting
 
@@ -271,14 +278,11 @@ This will diagnose common problems and provide specific fix commands.
 
 ## Recent Modernizations
 
-This project was recently updated with modern tooling:
-
-- **Migration from Grunt to Vite**: Faster builds and better development experience
-- **ES Module support**: Modern JavaScript module system
-- **Hot Module Replacement**: Instant updates during development without full page reloads
-- **Optimized builds**: Automatic code splitting and dependency optimization
-- **Fixed AngularJS dependency issues**: Resolved module loading timing problems
-- **Automated environment verification**: Added `verify-setup.sh` script for easier onboarding
+- **Grunt → Vite**: Modern build system with hot module replacement and optimized production builds
+- **Modular codebase**: JS split into focused modules (auth, ballot, factories, utils)
+- **HTML partials**: UI split from a single index.html into page-level partials
+- **115 automated tests**: Frontend unit tests (Vitest) and PHP API integration tests (PHPUnit with SQLite)
+- **Automated environment verification**: `verify-setup.sh` script for easier onboarding
 
 ## License
 
