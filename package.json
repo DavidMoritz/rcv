@@ -8,7 +8,7 @@
     "build": "vite build",
     "build:prod": "vite build && cp src/api/config.prod.php dist/api/config.php",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "vitest run && ./vendor/bin/phpunit",
     "test:watch": "vitest"
   },
   "dependencies": {

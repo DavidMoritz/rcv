@@ -21,6 +21,13 @@ lib
 # Deploy config
 .deploy-config
 
+# Composer
+/vendor/
+composer.lock
+
+# PHPUnit
+.phpunit.result.cache
+
 # OS / Editor Files
 .DS_Store
 Thumbs.db

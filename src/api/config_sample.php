@@ -1,4 +1,5 @@
 <?php
+if (defined('PHPUNIT_RUNNING')) return;
 ####	Rename this file to "config.php" after putting in your credentials	#####
 
 define('SERVER', 'localhost:3306');
