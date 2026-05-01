@@ -160,6 +160,12 @@
                   />
                 </label>
               </div>
+              <div class="form-group">
+                <label>
+                  Preserve candidate order for voters:
+                  <input type="checkbox" ng-model="ballot.orderedEntries" />
+                </label>
+              </div>
               <div class="form-group" ng-show="!ballot.isSecure">
                 <label>
                   Limit to one vote per device:

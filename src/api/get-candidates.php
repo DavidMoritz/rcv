@@ -3,14 +3,14 @@ require_once("config.php");
 
 $key = $_GET['key'];
 $edit = $_GET['edit'] ?? false;
-$editText = $edit ? '' : 'AND NOW() < b.voteCutoff;';
+$editText = $edit ? '' : 'AND NOW() < b.voteCutoff';
 
 if(!empty($key)) {
 	$sth = $dbh->prepare("SET time_zone = '+0:00'");
 	$sth->execute();
 	$query = "
 		SELECT
-			b.id, b.key, b.name, b.positions, b.register, b.resultsRelease, b.voteCutoff, b.hideNames, b.hideDetails, b.allowCustom, b.showGraph, b.kickbackUrl, b.iframeUrl, b.oneDeviceOneVote, b.isSecure, b.createdBy, e.entry_id, e.image, e.hyperlink, e.color, e.name AS 'candidate'
+			b.id, b.key, b.name, b.positions, b.register, b.resultsRelease, b.voteCutoff, b.hideNames, b.hideDetails, b.allowCustom, b.showGraph, b.kickbackUrl, b.iframeUrl, b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.createdBy, e.entry_id, e.image, e.hyperlink, e.color, e.name AS 'candidate'
 		FROM
 			entries e
 		JOIN
@@ -20,6 +20,7 @@ if(!empty($key)) {
 		WHERE
 			b.key = :key
 		$editText
+		ORDER BY e.entry_id ASC
   ";
 	$sth = $dbh->prepare($query);
 	$sth->bindValue(':key', $key, PDO::PARAM_STR);

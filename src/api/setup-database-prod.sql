@@ -48,6 +48,7 @@ CREATE TABLE `ballots` (
   `iframeUrl` varchar(2048) DEFAULT NULL,
   `oneDeviceOneVote` tinyint(1) NOT NULL DEFAULT '0',
   `isSecure` tinyint(1) NOT NULL DEFAULT '0',
+  `orderedEntries` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;

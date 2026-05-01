@@ -324,6 +324,7 @@ mainApp.controller('MainCtrl', [
             $s.ballot.showGraph = !!parseInt($s.ballot.showGraph);
             $s.ballot.oneDeviceOneVote = !!parseInt($s.ballot.oneDeviceOneVote);
             $s.ballot.isSecure = !!parseInt($s.ballot.isSecure);
+            $s.ballot.orderedEntries = !!parseInt($s.ballot.orderedEntries);
             $s.ballot.positions = parseInt($s.ballot.positions);
             if ($s.ballot.iframeUrl) {
               $s.ballot.iframeUrl = $sce.trustAsResourceUrl($s.ballot.iframeUrl);
@@ -560,7 +561,9 @@ mainApp.controller('MainCtrl', [
     };
 
     $s.resetCandidates = function () {
-      $s.candidates = _.shuffle($s.originalCandidates);
+      $s.candidates = $s.ballot.orderedEntries
+        ? $s.originalCandidates.slice()
+        : _.shuffle($s.originalCandidates);
     };
 
     $s.submitVote = function () {

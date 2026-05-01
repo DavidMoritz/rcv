@@ -24,6 +24,7 @@ CREATE TABLE ballots (
   iframeUrl varchar(2048) DEFAULT NULL,
   oneDeviceOneVote tinyint NOT NULL DEFAULT 0,
   isSecure tinyint NOT NULL DEFAULT 0,
+  orderedEntries tinyint NOT NULL DEFAULT 0,
   UNIQUE (key)
 );
 

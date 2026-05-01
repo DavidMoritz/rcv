@@ -91,6 +91,7 @@ export function initBallot(scope, http) {
       register: 0,
       allowCustom: 0,
       oneDeviceOneVote: 0,
+      orderedEntries: 0,
       tieBreak: 'weighted',
       voteCutoff: roundResultsRelease(),
       voteTimezone: moment.tz.guess(),
@@ -166,6 +167,7 @@ export function initBallot(scope, http) {
     $s.ballot.allowCustom = ballot.allowCustom == 1;
     $s.ballot.showGraph = ballot.showGraph == 1;
     $s.ballot.oneDeviceOneVote = ballot.oneDeviceOneVote == 1;
+    $s.ballot.orderedEntries = ballot.orderedEntries == 1;
     $s.ballot.kickbackUrl = ballot.kickbackUrl || '';
     $s.ballot.iframeUrl = ballot.iframeUrl || '';
     $s.showIntegrationOptions = !!(ballot.kickbackUrl || ballot.iframeUrl);

@@ -64,6 +64,9 @@ if (isset($_POST['oneDeviceOneVote']))
 if (isset($_POST['isSecure']))
 	$setParts[] = "isSecure = :isSecure";
 
+if (isset($_POST['orderedEntries']))
+	$setParts[] = "orderedEntries = :orderedEntries";
+
 if (!empty($errors)) {
 	$data['errors']  = $errors;
 	$data['post'] = $_POST;
@@ -120,6 +123,9 @@ if (!empty($errors)) {
 
 	if (isset($_POST['isSecure']))
 		$sth->bindValue(':isSecure', intval($_POST['isSecure']), PDO::PARAM_INT);
+
+	if (isset($_POST['orderedEntries']))
+		$sth->bindValue(':orderedEntries', intval($_POST['orderedEntries']), PDO::PARAM_INT);
 
 	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_INT);
 	$sth->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
