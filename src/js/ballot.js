@@ -656,17 +656,27 @@ export function initBallot(scope, http) {
   };
 
   $s.deleteBallot = function (ballot) {
-    if (confirm('Delete ' + ballot.name + ' ballot?\nThis action cannot be undone')) {
-      deleteThis(ballot, 'ballot');
-      _.remove($s.allBallots, ballot);
-    }
+    $s.deleteBallotRef = ballot;
+    $s.deleteBallotName = ballot.name;
+    $('#delete-ballot-modal').modal('show');
+  };
+
+  $s.deleteBallotSubmit = function () {
+    deleteThis($s.deleteBallotRef, 'ballot');
+    _.remove($s.allBallots, $s.deleteBallotRef);
+    $('#delete-ballot-modal').modal('hide');
   };
 
   $s.deleteVotes = function (ballot) {
-    if (confirm('Delete all ' + ballot.name + ' votes?\nThis action cannot be undone')) {
-      deleteThis(ballot, 'votes');
-      ballot.totalVotes = 0;
-    }
+    $s.resetVotesBallotRef = ballot;
+    $s.resetVotesBallotName = ballot.name;
+    $('#reset-votes-modal').modal('show');
+  };
+
+  $s.resetVotesSubmit = function () {
+    deleteThis($s.resetVotesBallotRef, 'votes');
+    $s.resetVotesBallotRef.totalVotes = 0;
+    $('#reset-votes-modal').modal('hide');
   };
 
   $s.deleteVote = function (voteId) {
