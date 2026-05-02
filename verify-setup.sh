@@ -108,8 +108,8 @@ check_port() {
     fi
 }
 
-check_port 3000 "Vite dev server"
-check_port 8000 "PHP backend API"
+check_port 2460 "Vite dev server"
+check_port 2461 "PHP backend API"
 
 # Check project files
 echo ""
@@ -198,8 +198,8 @@ if [ $ERRORS -eq 0 ] && [ $WARNINGS -eq 0 ]; then
     echo ""
     echo "  Development mode (recommended):"
     echo "    Terminal 1: npm run dev"
-    echo "    Terminal 2: cd src && php -S localhost:8000"
-    echo "    Then visit: http://localhost:3000"
+    echo "    Terminal 2: cd src && php -S localhost:2461"
+    echo "    Then visit: http://localhost:2460"
     echo ""
     echo "  Production build:"
     echo "    npm run build"
