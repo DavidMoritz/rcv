@@ -29,8 +29,8 @@
     "angular-mocks": "^1.8.3",
     "jsdom": "^29.1.0",
     "less": "^4.2.0",
-    "vite": "^5.0.12",
-    "vite-plugin-static-copy": "^1.0.0",
+    "vite": "^8.0.10",
+    "vite-plugin-static-copy": "^4.1.0",
     "vitest": "^4.1.5"
   }
 }
