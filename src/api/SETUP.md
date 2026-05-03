@@ -145,9 +145,9 @@ All test users have simple passwords for development:
 
 Try these ballot keys to see the app in action:
 
-- Visit: `http://localhost:3000/?key=pizza` - 🍕 Best Pizza Flavor
-- Visit: `http://localhost:3000/?key=codelang` - 💻 Programming Languages
-- Visit: `http://localhost:3000/?key=council2024` - 🏛️ City Council Election
+- Visit: `http://localhost:2460/?key=pizza` - 🍕 Best Pizza Flavor
+- Visit: `http://localhost:2460/?key=codelang` - 💻 Programming Languages
+- Visit: `http://localhost:2460/?key=council2024` - 🏛️ City Council Election
 
 ## Troubleshooting
 
@@ -208,6 +208,6 @@ Once the database is set up:
 
 1. Run `npm install` to install dependencies
 2. Run `npm run dev` to start the Vite dev server
-3. In another terminal, run `cd src && php -S localhost:8000` for the PHP backend
-4. Visit `http://localhost:3000`
+3. In another terminal, run `cd src && php -S localhost:2461` for the PHP backend
+4. Visit `http://localhost:2460`
 5. Create an account and test ballot creation

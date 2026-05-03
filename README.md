@@ -130,7 +130,7 @@ sudo systemctl start mysql
    npm run dev
    ```
 
-   This starts the frontend at `http://localhost:3000`
+   This starts the frontend at `http://localhost:2460`
 
    **Terminal 2 - Backend (PHP server):**
 
@@ -143,7 +143,7 @@ sudo systemctl start mysql
 
 5. **Open your browser**
 
-   Navigate to `http://localhost:3000`
+   Navigate to `http://localhost:2460`
 
    The Vite dev server automatically proxies API requests from `/api` to the PHP backend.
 
