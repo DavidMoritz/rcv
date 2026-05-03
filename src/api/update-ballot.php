@@ -127,10 +127,10 @@ if (!empty($errors)) {
 	if (isset($_POST['orderedEntries']))
 		$sth->bindValue(':orderedEntries', intval($_POST['orderedEntries']), PDO::PARAM_INT);
 
-	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_INT);
+	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_STR);
 	$sth->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
 
 	$sth->execute();
-	echo $query;
+	echo json_encode(['data' => ['success' => true]]);
 }
 ?>

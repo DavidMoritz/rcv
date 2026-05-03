@@ -26,7 +26,7 @@ if(!empty($ballotId)) {
 	$params = [':createdBy' => $createdBy, ':ballotId' => $ballotId];
 
 	if(!empty($voteId)) {
-		$query .= "AND votes.id = :voteId";
+		$query .= "AND votes.vote_id = :voteId";
 		$params[':voteId'] = $voteId;
 	}
 
