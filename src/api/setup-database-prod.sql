@@ -49,6 +49,7 @@ CREATE TABLE `ballots` (
   `oneDeviceOneVote` tinyint(1) NOT NULL DEFAULT '0',
   `isSecure` tinyint(1) NOT NULL DEFAULT '0',
   `orderedEntries` tinyint(1) NOT NULL DEFAULT '0',
+  `allowGrouping` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
@@ -140,11 +141,42 @@ CREATE TABLE `votes` (
   `name` varchar(40) NOT NULL DEFAULT '',
   `date_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `fingerprint` varchar(64) NOT NULL DEFAULT '',
+  `group_answers` json DEFAULT NULL,
   PRIMARY KEY (`vote_id`),
   UNIQUE KEY `NoDuplicates` (`ballotId`,`voteIds`(25),`name`,`ipAddress`,`date_created`),
   KEY `idx_ballot_fingerprint` (`ballotId`,`fingerprint`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
+
+
+
+
+# Dump of table voter_group_fields
+# ------------------------------------------------------------
+
+CREATE TABLE `voter_group_fields` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ballot_id` int NOT NULL,
+  `title` varchar(64) NOT NULL,
+  `question_text` varchar(256) NOT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_ballot` (`ballot_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+# Dump of table voter_group_options
+# ------------------------------------------------------------
+
+CREATE TABLE `voter_group_options` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `field_id` int NOT NULL,
+  `label` varchar(128) NOT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_field` (`field_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 

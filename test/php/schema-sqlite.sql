@@ -25,6 +25,7 @@ CREATE TABLE ballots (
   oneDeviceOneVote tinyint NOT NULL DEFAULT 0,
   isSecure tinyint NOT NULL DEFAULT 0,
   orderedEntries tinyint NOT NULL DEFAULT 0,
+  allowGrouping tinyint NOT NULL DEFAULT 0,
   UNIQUE (key)
 );
 
@@ -80,6 +81,24 @@ CREATE TABLE votes (
   ipAddress varchar(64) NOT NULL,
   name varchar(40) NOT NULL DEFAULT '',
   date_created timestamp DEFAULT CURRENT_TIMESTAMP,
-  fingerprint varchar(64) NOT NULL DEFAULT ''
+  fingerprint varchar(64) NOT NULL DEFAULT '',
+  group_answers text DEFAULT NULL
 );
 CREATE INDEX idx_ballot_fingerprint ON votes (ballotId, fingerprint);
+
+CREATE TABLE voter_group_fields (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ballot_id int NOT NULL,
+  title varchar(64) NOT NULL,
+  question_text varchar(256) NOT NULL,
+  sort_order int NOT NULL DEFAULT 0
+);
+CREATE INDEX idx_vgf_ballot ON voter_group_fields (ballot_id);
+
+CREATE TABLE voter_group_options (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  field_id int NOT NULL,
+  label varchar(128) NOT NULL,
+  sort_order int NOT NULL DEFAULT 0
+);
+CREATE INDEX idx_vgo_field ON voter_group_options (field_id);
