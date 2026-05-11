@@ -67,6 +67,9 @@ if (isset($_POST['isSecure']))
 if (isset($_POST['orderedEntries']))
 	$setParts[] = "orderedEntries = :orderedEntries";
 
+if (isset($_POST['allowGrouping']))
+	$setParts[] = "allowGrouping = :allowGrouping";
+
 if (!empty($errors)) {
 	$data['errors']  = $errors;
 	$data['post'] = $_POST;
@@ -126,6 +129,9 @@ if (!empty($errors)) {
 
 	if (isset($_POST['orderedEntries']))
 		$sth->bindValue(':orderedEntries', intval($_POST['orderedEntries']), PDO::PARAM_INT);
+
+	if (isset($_POST['allowGrouping']))
+		$sth->bindValue(':allowGrouping', intval($_POST['allowGrouping']), PDO::PARAM_INT);
 
 	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_STR);
 	$sth->bindValue(':id', $_POST['id'], PDO::PARAM_INT);

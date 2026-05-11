@@ -108,12 +108,23 @@ if (!empty($errors)) {
 		$_POST['name'] = $voterCode;
 	}
 
+	// Handle group_answers for grouped ballots
+	$groupAnswers = null;
+	if (!empty($_POST['group_answers'])) {
+		$groupAnswers = $_POST['group_answers'];
+		// If it's already a string (JSON), keep it; if array, encode it
+		if (is_array($groupAnswers)) {
+			$groupAnswers = json_encode($groupAnswers);
+		}
+	}
+
 	$inFingerprint = ', `fingerprint`';
+	$inGroupAnswers = ', `group_answers`';
 	$query = "
 		INSERT INTO
-			votes (`ballotId`, `date_created`, `vote`, `voteIds`, `ipAddress`$inName$inFingerprint)
+			votes (`ballotId`, `date_created`, `vote`, `voteIds`, `ipAddress`$inName$inFingerprint$inGroupAnswers)
 		VALUES
-			(:ballotId, NOW(), :vote, :voteIds, :ipAddress" . (empty($_POST['name']) ? "" : ", :name") . ", :fingerprint)
+			(:ballotId, NOW(), :vote, :voteIds, :ipAddress" . (empty($_POST['name']) ? "" : ", :name") . ", :fingerprint, :groupAnswers)
     ;
   ";
 	$sth = $dbh->prepare($query);
@@ -122,6 +133,7 @@ if (!empty($errors)) {
 	$sth->bindValue(':voteIds', $_POST['voteIds'], PDO::PARAM_STR);
 	$sth->bindValue(':ipAddress', $_SERVER['REMOTE_ADDR'], PDO::PARAM_STR);
 	$sth->bindValue(':fingerprint', $fingerprint, PDO::PARAM_STR);
+	$sth->bindValue(':groupAnswers', $groupAnswers, ($groupAnswers === null ? PDO::PARAM_NULL : PDO::PARAM_STR));
 	if (!empty($_POST['name'])) {
 		$sanitizedName = substr(preg_replace(array('/[^a-zA-Z0-9-]/', '/ +/', '/^-|-$/'), array(' ', ' ', ''), $_POST['name']), 0, 40);
 		$sth->bindValue(':name', $sanitizedName, PDO::PARAM_STR);

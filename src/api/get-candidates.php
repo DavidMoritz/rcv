@@ -10,7 +10,7 @@ if(!empty($key)) {
 	$sth->execute();
 	$query = "
 		SELECT
-			b.id, b.key, b.name, b.positions, b.register, b.resultsRelease, b.voteCutoff, b.hideNames, b.hideDetails, b.allowCustom, b.showGraph, b.kickbackUrl, b.iframeUrl, b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.createdBy, e.entry_id, e.image, e.hyperlink, e.color, e.name AS 'candidate'
+			b.id, b.key, b.name, b.positions, b.register, b.resultsRelease, b.voteCutoff, b.hideNames, b.hideDetails, b.allowCustom, b.showGraph, b.kickbackUrl, b.iframeUrl, b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.allowGrouping, b.createdBy, e.entry_id, e.image, e.hyperlink, e.color, e.name AS 'candidate'
 		FROM
 			entries e
 		JOIN
@@ -37,8 +37,25 @@ if(!empty($key)) {
 		} else {
 			echo "Shortcode not found.";
 		}
-	} else
-		print json_encode($results);
+	} else {
+		// If allowGrouping is enabled, include group fields and options
+		$groupFields = [];
+		if (!empty($results) && $results[0]['allowGrouping'] == 1) {
+			$ballotId = $results[0]['id'];
+			$fieldSth = $dbh->prepare("SELECT id, title, question_text, sort_order FROM voter_group_fields WHERE ballot_id = :ballotId ORDER BY sort_order ASC");
+			$fieldSth->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
+			$fieldSth->execute();
+			$groupFields = $fieldSth->fetchAll(PDO::FETCH_ASSOC);
+
+			$optionSth = $dbh->prepare("SELECT id, label, sort_order FROM voter_group_options WHERE field_id = :fieldId ORDER BY sort_order ASC");
+			foreach ($groupFields as &$field) {
+				$optionSth->bindValue(':fieldId', $field['id'], PDO::PARAM_INT);
+				$optionSth->execute();
+				$field['options'] = $optionSth->fetchAll(PDO::FETCH_ASSOC);
+			}
+		}
+		print json_encode(['candidates' => $results, 'groupFields' => $groupFields]);
+	}
 } else {
 	echo "Failed to supply Shortcode";
 }
