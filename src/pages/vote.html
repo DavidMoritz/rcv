@@ -50,11 +50,46 @@
             </form>
           </div>
           <div
-            ng-if="candidates && (!ballot.isSecure || secureCodeValid)"
+            ng-if="candidates && ballot.allowGrouping && !groupAnswersSubmitted && (!ballot.isSecure || secureCodeValid)"
             ng-hide="thanks || deviceAlreadyVoted"
           >
             <h1>Ballot: {{ballot.name}}</h1>
-            <div class="row" ng-hide="ballot.register == 2 || ballot.isSecure">
+            <form ng-submit="submitGroupAnswers()">
+              <div ng-hide="ballot.register == 2 || ballot.isSecure" style="margin-bottom: 15px">
+                <label>Your Name<span ng-show="ballot.register == 1">*</span>:</label>
+                <input
+                  type="text"
+                  ng-model="ballot.voterName"
+                  class="form-control"
+                  placeholder="{{ ballot.register == 0 ? 'Your Name Here - Optional' : 'First & Last Name'}}"
+                  ng-required="ballot.register == 1"
+                  style="max-width: 400px"
+                />
+              </div>
+              <div ng-repeat="field in groupFields track by field.id" class="form-group">
+                <label>{{field.question_text || field.title}}</label>
+                <select
+                  ng-model="groupAnswers[field.id]"
+                  class="form-control"
+                  style="max-width: 400px"
+                  required
+                >
+                  <option value="">-- Select --</option>
+                  <option ng-repeat="opt in field.options track by opt.id" value="{{opt.id}}">{{opt.label}}</option>
+                </select>
+              </div>
+              <span ng-show="errors.groupAnswers" class="text-danger">{{errors.groupAnswers}}</span>
+              <div style="margin-top: 10px">
+                <button type="submit" class="btn btn-success">Continue to Vote</button>
+              </div>
+            </form>
+          </div>
+          <div
+            ng-if="candidates && (!ballot.isSecure || secureCodeValid) && (!ballot.allowGrouping || groupAnswersSubmitted)"
+            ng-hide="thanks || deviceAlreadyVoted"
+          >
+            <h1>Ballot: {{ballot.name}}</h1>
+            <div class="row" ng-hide="ballot.register == 2 || ballot.isSecure || ballot.allowGrouping">
               <label class="control-label col-sm-3 col-md-2"
                 >Your Name<span ng-show="ballot.register == 1">*</span>:</label
               >

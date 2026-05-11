@@ -51,6 +51,57 @@
               </div>
               <div id="iframe-house"></div>
             </div>
+            <div ng-if="allowGrouping && resultGroupFields.length" style="margin-top: 20px">
+              <div ng-repeat="field in resultGroupFields" style="margin-bottom: 15px">
+                <h4
+                  class="pointer"
+                  ng-click="field.expanded = !field.expanded"
+                  style="margin-bottom: 8px; padding: 8px 12px; background: #f5f5f5; border-radius: 4px"
+                >
+                  <i class="fa" ng-class="field.expanded ? 'fa-chevron-down' : 'fa-chevron-right'" style="margin-right: 6px; width: 12px"></i>
+                  {{field.title}}
+                </h4>
+                <div ng-show="field.expanded">
+                  <ul class="ballot-tabs" style="margin-bottom: 10px">
+                    <li
+                      ng-repeat="opt in field.options"
+                      ng-class="{active: field.activeTab === opt.id}"
+                      ng-click="field.activeTab = opt.id"
+                      ng-init="$first && (field.activeTab = opt.id)"
+                    >
+                      {{opt.label}} ({{groupResults[field.id][opt.id].count || 0}})
+                    </li>
+                  </ul>
+                  <div ng-repeat="opt in field.options" ng-show="field.activeTab === opt.id">
+                    <div ng-if="groupResults[field.id][opt.id].count === 0" class="text-muted" style="padding: 10px">
+                      No votes in this group.
+                    </div>
+                    <div ng-if="groupResults[field.id][opt.id].count > 0">
+                      <p ng-if="groupResults[field.id][opt.id].elected.length === 1">
+                        <strong>Winner: {{groupResults[field.id][opt.id].elected[0]}}</strong>
+                        <small class="text-muted">({{groupResults[field.id][opt.id].count}} votes)</small>
+                      </p>
+                      <p ng-if="groupResults[field.id][opt.id].elected.length > 1">
+                        <strong>Winners: {{groupResults[field.id][opt.id].elected.join(', ')}}</strong>
+                        <small class="text-muted">({{groupResults[field.id][opt.id].count}} votes)</small>
+                      </p>
+                      <div ng-repeat="row in groupResults[field.id][opt.id].finalTally" style="margin-bottom: 4px">
+                        <div style="display: flex; align-items: center; gap: 8px">
+                          <span style="min-width: 120px; text-align: right; font-size: 13px">{{row.name}}</span>
+                          <div style="flex: 1; background: #eee; border-radius: 3px; height: 22px; position: relative">
+                            <div
+                              style="height: 100%; border-radius: 3px; min-width: 2px"
+                              ng-style="{'width': row.percent + '%', 'background-color': row.color ? '#' + row.color : '#337ab7'}"
+                            ></div>
+                          </div>
+                          <span style="min-width: 60px; font-size: 12px; color: #666">{{row.votes}} ({{row.percent}}%)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div ng-show="!hideDetails">
               <button ng-click="showText = !showText" class="btn btn-default">
                 {{!showText ? "Show" : "Hide"}} details

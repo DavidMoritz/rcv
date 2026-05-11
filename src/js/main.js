@@ -230,7 +230,10 @@ mainApp.controller('MainCtrl', [
       pickerOptions: {
         showWeeks: false
       },
-      origin: window.location.origin
+      origin: window.location.origin,
+      managedBallotFilter: function (ballot) {
+        return ballot.isSecure == 1 || ballot.allowGrouping == 1;
+      }
     });
 
     _.extend($s, VF);
@@ -314,7 +317,19 @@ mainApp.controller('MainCtrl', [
             return;
           }
 
-          $s.originalCandidates = resp.data.map(function (entry) {
+          // Handle new response shape: { candidates, groupFields } or legacy flat array
+          var candidateData = resp.data.candidates || resp.data;
+          if (!Array.isArray(candidateData)) {
+            $s.errors.shortcode = 'Unexpected response from server.';
+            return;
+          }
+
+          // Store group fields for managed ballot pre-vote gating
+          $s.groupFields = resp.data.groupFields || [];
+          $s.groupAnswers = {};
+          $s.groupAnswersSubmitted = false;
+
+          $s.originalCandidates = candidateData.map(function (entry) {
             $s.ballot = entry;
             $s.ballot.voterName = voterName || $loc.$$search.hash;
             $s.ballot.register = parseInt($s.ballot.register);
@@ -325,6 +340,7 @@ mainApp.controller('MainCtrl', [
             $s.ballot.oneDeviceOneVote = !!parseInt($s.ballot.oneDeviceOneVote);
             $s.ballot.isSecure = !!parseInt($s.ballot.isSecure);
             $s.ballot.orderedEntries = !!parseInt($s.ballot.orderedEntries);
+            $s.ballot.allowGrouping = !!parseInt($s.ballot.allowGrouping);
             $s.ballot.positions = parseInt($s.ballot.positions);
             if ($s.ballot.iframeUrl) {
               $s.ballot.iframeUrl = $sce.trustAsResourceUrl($s.ballot.iframeUrl);
@@ -513,6 +529,119 @@ mainApp.controller('MainCtrl', [
         $s.ids = _.uniq(_.flatten($s.votes));
         $s.mutableVotes = JSON.parse(JSON.stringify($s.votes));
 
+        // Parse group data for grouped analysis
+        $s.allowGrouping = voteRows[0].allowGrouping == 1;
+        $s.resultGroupFields = resp.data.groupFields || [];
+        $s.groupResults = {};
+
+        if ($s.allowGrouping && $s.resultGroupFields.length) {
+          // Bucket votes by group answers
+          var groupBuckets = {}; // { fieldId: { optionId: [voteIndex, ...] } }
+          $s.resultGroupFields.forEach(function (field) {
+            groupBuckets[field.id] = {};
+            field.options.forEach(function (opt) {
+              groupBuckets[field.id][opt.id] = [];
+            });
+          });
+
+          voteRows.forEach(function (row, idx) {
+            if (row.group_answers) {
+              var answers;
+              try {
+                answers = typeof row.group_answers === 'string' ? JSON.parse(row.group_answers) : row.group_answers;
+              } catch (e) {
+                return;
+              }
+              Object.keys(answers).forEach(function (fieldId) {
+                var optionId = answers[fieldId];
+                if (groupBuckets[fieldId] && groupBuckets[fieldId][optionId]) {
+                  groupBuckets[fieldId][optionId].push(idx);
+                }
+              });
+            }
+          });
+
+          // For each field, for each option, run RCV on the filtered subset
+          $s.resultGroupFields.forEach(function (field) {
+            $s.groupResults[field.id] = {};
+            field.options.forEach(function (opt) {
+              var voteIndices = groupBuckets[field.id][opt.id];
+              if (!voteIndices || !voteIndices.length) {
+                $s.groupResults[field.id][opt.id] = { count: 0, elected: [], finalTally: [] };
+                return;
+              }
+              // Build subset votes array
+              var subVotes = voteIndices.map(function (i) {
+                return JSON.parse(JSON.stringify($s.votes[i]));
+              });
+              var subIds = _.uniq(_.flatten(subVotes));
+              // Simple final-round tally: count first choices iteratively eliminating lowest
+              var tally = {};
+              var eliminated = {};
+              var activeVotes = subVotes.map(function (v) { return v.slice(); });
+              var elected = [];
+              var seats = $s.seats;
+
+              for (var round = 0; round < 100; round++) {
+                tally = {};
+                subIds.forEach(function (id) {
+                  if (!eliminated[id]) tally[id] = 0;
+                });
+                activeVotes.forEach(function (vote) {
+                  // Remove eliminated candidates from front
+                  while (vote.length && eliminated[vote[0]]) vote.shift();
+                  if (vote.length && tally[vote[0]] !== undefined) {
+                    tally[vote[0]]++;
+                  }
+                });
+                var remaining = Object.keys(tally);
+                if (remaining.length <= seats) {
+                  elected = remaining;
+                  break;
+                }
+                // Check if anyone exceeds quota
+                var totalActive = remaining.reduce(function (s, id) { return s + tally[id]; }, 0);
+                var quota = totalActive / (seats + 1);
+                var winner = remaining.find(function (id) { return tally[id] > quota; });
+                if (winner) {
+                  elected.push(winner);
+                  eliminated[winner] = true;
+                  seats--;
+                  if (seats <= 0) break;
+                  continue;
+                }
+                // Eliminate candidate with fewest votes
+                var minVotes = Infinity;
+                remaining.forEach(function (id) {
+                  if (tally[id] < minVotes) minVotes = tally[id];
+                });
+                var loser = remaining.find(function (id) { return tally[id] === minVotes; });
+                eliminated[loser] = true;
+              }
+
+              // Build final tally sorted descending
+              var finalTally = Object.keys(tally).map(function (id) {
+                var entry = $s.entryMap[id] || { name: id };
+                return { id: id, name: entry.name, color: entry.color, votes: tally[id] };
+              }).sort(function (a, b) { return b.votes - a.votes; });
+
+              var totalVotes = finalTally.reduce(function (s, t) { return s + t.votes; }, 0);
+              finalTally.forEach(function (t) {
+                t.percent = totalVotes > 0 ? Math.round(t.votes / totalVotes * 100) : 0;
+              });
+
+              $s.groupResults[field.id][opt.id] = {
+                count: voteIndices.length,
+                elected: elected.map(function (id) {
+                  var e = $s.entryMap[id] || { name: id };
+                  return e.name;
+                }),
+                finalTally: finalTally
+              };
+            });
+          });
+        }
+
         if ($s.showGraph) {
           if ($s.voteClosed) {
             $s.patchRcvis = !$s.rcvisSlug || $s.graphUpdated < mostRecentVote;
@@ -532,6 +661,22 @@ mainApp.controller('MainCtrl', [
         $s.bodyText = $sce.trustAsHtml($s.outputstring);
         $s.final = true;
       });
+    };
+
+    $s.submitGroupAnswers = function () {
+      // Validate all group questions are answered
+      var allAnswered = true;
+      $s.groupFields.forEach(function (field) {
+        if (!$s.groupAnswers[field.id]) {
+          allAnswered = false;
+        }
+      });
+      if (!allAnswered) {
+        $s.errors.groupAnswers = 'Please answer all questions before proceeding.';
+        return;
+      }
+      $s.errors.groupAnswers = null;
+      $s.groupAnswersSubmitted = true;
     };
 
     $s.addCustomCandidate = function () {
@@ -589,7 +734,8 @@ mainApp.controller('MainCtrl', [
           id: $s.ballot.id,
           name: $s.ballot.voterName,
           fingerprint: $s.deviceFingerprint || '',
-          userId: $s.user.id || ''
+          userId: $s.user.id || '',
+          group_answers: $s.ballot.allowGrouping && $s.groupAnswers ? JSON.stringify($s.groupAnswers) : null
         }
       }).success(function (resp) {
         if (resp && resp.errors && resp.errors.duplicate) {
