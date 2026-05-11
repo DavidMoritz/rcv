@@ -171,23 +171,39 @@ export function initBallot(scope, http) {
     $s.ballot.kickbackUrl = ballot.kickbackUrl || '';
     $s.ballot.iframeUrl = ballot.iframeUrl || '';
     $s.showIntegrationOptions = !!(ballot.kickbackUrl || ballot.iframeUrl);
+    $s.ballot.allowGrouping = ballot.allowGrouping == 1;
 
     $http
       .get('/api/get-candidates.php?edit=true&key=' + $s.ballot.key + '&t=' + Date.now())
       .then(function (resp) {
-        if (resp.data) {
-          $s.entries = resp.data.map(function (entry) {
+        var candidates = resp.data.candidates || resp.data;
+        if (candidates) {
+          $s.entries = candidates.map(function (entry) {
             return entry.candidate;
           });
-          $s.images = resp.data.map(function (entry) {
+          $s.images = candidates.map(function (entry) {
             return entry.image;
           });
-          $s.hyperlinks = resp.data.map(function (entry) {
+          $s.hyperlinks = candidates.map(function (entry) {
             return entry.hyperlink;
           });
-          $s.entryColors = resp.data.map(function (entry) {
+          $s.entryColors = candidates.map(function (entry) {
             return entry.color;
           });
+
+          // Load group fields if grouping is enabled
+          if ($s.ballot.allowGrouping && resp.data.groupFields && resp.data.groupFields.length) {
+            $s.groupFields = resp.data.groupFields.map(function (field) {
+              return {
+                title: field.title,
+                question_text: field.question_text,
+                options: field.options.map(function (opt) { return opt.label; })
+              };
+            });
+          } else {
+            $s.groupFields = [];
+          }
+
           $s.navigate('create');
         }
       });
@@ -250,7 +266,16 @@ export function initBallot(scope, http) {
     $s.manageSort = 'code';
     $s.manageSortReverse = false;
     $s.activeLink = 'manage';
-    $s.loadBallotCodes(ballot);
+    $s.manageGroupFields = [];
+    if (ballot.isSecure == 1) {
+      $s.loadBallotCodes(ballot);
+    }
+    if (ballot.allowGrouping == 1) {
+      $s.showManageGroups = ballot.isSecure != 1; // Default open if no codes section
+      $http.get('/api/get-group-fields.php?ballotId=' + ballot.id).then(function (resp) {
+        $s.manageGroupFields = resp.data || [];
+      });
+    }
   };
 
   $s.loadBallotCodes = function (ballot) {
@@ -444,6 +469,31 @@ export function initBallot(scope, http) {
     }
   };
 
+  $s.onGroupingToggle = function () {
+    if ($s.ballot.allowGrouping) {
+      $s.ballot.allowCustom = false;
+      if (!$s.groupFields || !$s.groupFields.length) {
+        $s.groupFields = [{ title: '', question_text: '', options: [''] }];
+      }
+    }
+  };
+
+  $s.addGroupField = function () {
+    $s.groupFields.push({ title: '', question_text: '', options: [''] });
+  };
+
+  $s.removeGroupField = function (idx) {
+    $s.groupFields.splice(idx, 1);
+  };
+
+  $s.addGroupOption = function (fieldIdx) {
+    $s.groupFields[fieldIdx].options.push('');
+  };
+
+  $s.removeGroupOption = function (fieldIdx, optIdx) {
+    $s.groupFields[fieldIdx].options.splice(optIdx, 1);
+  };
+
   $s.newBallot = function () {
     // Secure ballot requires a vote cutoff
     if ($s.ballot.isSecure && !$s.editTime && !$s.editDate) {
@@ -556,6 +606,36 @@ export function initBallot(scope, http) {
       if (resp.errors) {
         $s.errors = resp.errors;
       } else {
+        // Save group fields if grouping is enabled
+        if ($s.ballot.allowGrouping && $s.groupFields && $s.groupFields.length) {
+          // Filter out empty fields
+          var validFields = $s.groupFields.filter(function (f) {
+            return f.title || f.question_text;
+          });
+          if (validFields.length) {
+            $http({
+              method: 'POST',
+              url: '/api/save-group-fields.php',
+              data: {
+                ballotId: $s.ballot.id,
+                createdBy: $s.user.id || 'guest',
+                fields: validFields
+              }
+            }).success(function () {
+              $s.congrats = true;
+              $s.generateQRCode($s.ballot.key);
+            });
+            return;
+          } else {
+            // No valid fields — auto-uncheck grouping
+            $s.ballot.allowGrouping = false;
+            $http({
+              method: 'POST',
+              url: '/api/update-ballot.php',
+              data: { id: $s.ballot.id, name: $s.ballot.name, positions: $s.ballot.positions, key: $s.ballot.key, createdBy: $s.user.id || 'guest', allowGrouping: 0 }
+            });
+          }
+        }
         $s.congrats = true;
         $s.generateQRCode($s.ballot.key);
       }

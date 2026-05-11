@@ -178,8 +178,70 @@
                   ></i>
                 </label>
               </div>
+              <div class="form-group" ng-show="user.name && !ballot.isSecure">
+                <label>
+                  Group voters by category:
+                  <input type="checkbox" ng-model="ballot.allowGrouping" ng-change="onGroupingToggle()" />
+                </label>
+                <small ng-show="ballot.allowGrouping" class="text-muted">
+                  Define questions whose answers are used for grouped analysis of results.
+                </small>
+              </div>
+              <div ng-show="ballot.allowGrouping" style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #5bc0de">
+                <div ng-repeat="field in groupFields track by $index" style="margin-bottom: 12px; padding: 10px; background: #f9f9f9; border-radius: 4px">
+                  <div class="form-group" style="margin-bottom: 5px">
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <input
+                          type="text"
+                          ng-model="field.title"
+                          class="form-control input-sm"
+                          placeholder="Short title (e.g. Affiliation)"
+                          maxlength="64"
+                        />
+                      </div>
+                      <div class="col-sm-6">
+                        <input
+                          type="text"
+                          ng-model="field.question_text"
+                          class="form-control input-sm"
+                          placeholder="Question for voters (e.g. What is your party?)"
+                          maxlength="256"
+                        />
+                      </div>
+                      <div class="col-sm-1">
+                        <i ng-click="removeGroupField($index)" class="fa fa-close pointer" style="line-height: 30px; color: #d9534f"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="padding-left: 20px">
+                    <div ng-repeat="opt in field.options track by $index" style="margin-bottom: 3px">
+                      <div class="input-group input-group-sm" style="max-width: 300px">
+                        <input
+                          type="text"
+                          ng-model="field.options[$index]"
+                          class="form-control"
+                          placeholder="Choice {{$index + 1}}"
+                          maxlength="128"
+                        />
+                        <span class="input-group-btn">
+                          <button type="button" ng-click="removeGroupOption($parent.$index, $index)" class="btn btn-default btn-sm">
+                            <i class="fa fa-close"></i>
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                    <button type="button" ng-click="addGroupOption($index)" class="btn btn-default btn-xs" style="margin-top: 3px">
+                      + Add Choice
+                    </button>
+                  </div>
+                </div>
+                <button type="button" ng-click="addGroupField()" class="btn btn-default btn-sm">
+                  + Add Group Question
+                </button>
+              </div>
               <p ng-show="!user.name" class="text-muted">
-                Want a secure ballot using codes?
+                Want a secure ballot using codes or voter grouping?
                 <a href ng-click="navigate('register')">Create a free account</a>
               </p>
               <div class="form-group">
