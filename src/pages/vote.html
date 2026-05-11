@@ -150,6 +150,7 @@
                     ng-repeat="item in candidates track by $index"
                     data-id="{{item.id}}"
                     class="candidate-item"
+                    ng-style="item.color ? {'background-color': '#' + item.color} : {}"
                   >
                     <i ng-click="removeCandidate($index)" class="fa fa-trash remove-btn"></i>
                     <img class="choice-image" src="{{item.image}}" ng-if="item.image" /><a
