@@ -83,6 +83,7 @@ export function initBallot(scope, http) {
     $s.images = [];
     $s.hyperlinks = [];
     $s.entryColors = null;
+    $s.entryIds = [];
 
     return {
       positions: 1,
@@ -190,6 +191,9 @@ export function initBallot(scope, http) {
           $s.entryColors = candidates.map(function (entry) {
             return entry.color;
           });
+          $s.entryIds = candidates.map(function (entry) {
+            return entry.entry_id;
+          });
 
           // Load group fields if grouping is enabled
           var groupFields = resp.data.groupFields || [];
@@ -198,7 +202,9 @@ export function initBallot(scope, http) {
               return {
                 title: field.title,
                 question_text: field.question_text,
-                options: field.options.map(function (opt) { return opt.label; })
+                options: field.options.map(function (opt) {
+                  return opt.label;
+                })
               };
             });
           } else {
@@ -228,32 +234,47 @@ export function initBallot(scope, http) {
     });
   }, 250);
 
-  $s.addImageModal = function (idx) {
-    $('#image-modal').find('input').data('idx', idx).val();
-    $('#image-modal').modal('show');
+  $s.entryColorOptions = [
+    { value: null },
+    { value: 'e7b9af' },
+    { value: 'f4cccd' },
+    { value: 'fce6cd' },
+    { value: 'fdf3cc' },
+    { value: 'd9ead4' },
+    { value: 'd0e0e3' },
+    { value: 'c9daf8' },
+    { value: 'd0e3f3' },
+    { value: 'dad3e9' },
+    { value: 'ebd1dd' }
+  ];
+
+  $s.editEntryModal = function (idx) {
+    $s.editingEntry = {
+      idx: idx,
+      name: $s.entries[idx],
+      image: $s.images[idx] || '',
+      hyperlink: decodeURIComponent($s.hyperlinks[idx] || ''),
+      color: $s.entryColors[idx] || null
+    };
+    $('#edit-entry-modal').modal('show');
   };
 
-  $s.addImage = function () {
-    var idx = $('#image-modal').find('input').data('idx');
-    $s.images[idx] = $('#image-modal').find('input').val();
-    $('#image-modal').find('input').val('');
-    $('#image-modal').modal('hide');
-  };
-
-  $s.addHyperlinkModal = function (idx) {
-    $('#hyperlink-modal').find('input').data('idx', idx).val();
-    $('#hyperlink-modal').modal('show');
-  };
-
-  $s.addHyperlink = function () {
-    var idx = $('#hyperlink-modal').find('input').data('idx');
-    var href = $('#hyperlink-modal').find('input').val();
+  $s.saveEntry = function () {
+    var idx = $s.editingEntry.idx;
+    $s.entries[idx] = $s.editingEntry.name;
+    $s.images[idx] = $s.editingEntry.image || '';
+    var href = $s.editingEntry.hyperlink || '';
     if (href && !href.match(/^(http|https):\/\//i)) {
       href = 'http://' + href;
     }
-    $s.hyperlinks[idx] = encodeURIComponent(href);
-    $('#hyperlink-modal').find('input').val('');
-    $('#hyperlink-modal').modal('hide');
+    $s.hyperlinks[idx] = href ? encodeURIComponent(href) : '';
+    $s.entryColors[idx] = $s.editingEntry.color || '';
+    $('#edit-entry-modal').modal('hide');
+  };
+
+  $s.deleteEntry = function () {
+    $s.removeEntry($s.editingEntry.idx);
+    $('#edit-entry-modal').modal('hide');
   };
 
   $s.sameTime = function () {
@@ -450,6 +471,7 @@ export function initBallot(scope, http) {
     $s.images.splice(idx, 1);
     $s.hyperlinks.splice(idx, 1);
     $s.entryColors.splice(idx, 1);
+    if ($s.entryIds) $s.entryIds.splice(idx, 1);
   };
 
   $s.onSecureToggle = function () {
@@ -489,6 +511,10 @@ export function initBallot(scope, http) {
 
   $s.addGroupOption = function (fieldIdx) {
     $s.groupFields[fieldIdx].options.push('');
+    setTimeout(function () {
+      var inputs = document.querySelectorAll('.group-choice-' + fieldIdx);
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    });
   };
 
   $s.removeGroupOption = function (fieldIdx, optIdx) {
@@ -581,18 +607,6 @@ export function initBallot(scope, http) {
       return;
     }
 
-    if ($s.editBallot) {
-      $http({
-        method: 'POST',
-        url: '/api/delete-entries.php',
-        data: $s.ballot
-      }).success(function (resp) {
-        $s.editBallot = false;
-        $s.submitEntries();
-      });
-
-      return;
-    }
     $http({
       method: 'POST',
       url: '/api/add-entries.php',
@@ -601,12 +615,14 @@ export function initBallot(scope, http) {
         images: $s.images,
         hyperlinks: $s.hyperlinks,
         colors: $s.entryColors,
+        entryIds: $s.entryIds || [],
         ballotId: $s.ballot.id
       }
     }).success(function (resp) {
       if (resp.errors) {
         $s.errors = resp.errors;
       } else {
+        $s.editBallot = false;
         // Save group fields if grouping is enabled
         if ($s.ballot.allowGrouping && $s.groupFields && $s.groupFields.length) {
           // Filter out empty fields
@@ -633,7 +649,14 @@ export function initBallot(scope, http) {
             $http({
               method: 'POST',
               url: '/api/update-ballot.php',
-              data: { id: $s.ballot.id, name: $s.ballot.name, positions: $s.ballot.positions, key: $s.ballot.key, createdBy: $s.user.id || 'guest', allowGrouping: 0 }
+              data: {
+                id: $s.ballot.id,
+                name: $s.ballot.name,
+                positions: $s.ballot.positions,
+                key: $s.ballot.key,
+                createdBy: $s.user.id || 'guest',
+                allowGrouping: 0
+              }
             });
           }
         }
@@ -820,6 +843,7 @@ export function initBallot(scope, http) {
       $s.images.push('');
       $s.hyperlinks.push('');
       $s.entryColors.push('');
+      if ($s.entryIds) $s.entryIds.push(null);
       $s.entryInput = '';
     }
   };
