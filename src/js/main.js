@@ -488,41 +488,7 @@ mainApp.controller('MainCtrl', [
           }
           $s.voterIds.push(result.vote_id);
 
-          if (result.voteIds) {
-            var ids = JSON.parse(result.voteIds);
-            // Backfill entryMap for IDs not in current entries (deleted/recreated entries)
-            if (result.vote) {
-              var names = JSON.parse(result.vote.replace(/\s/g, ' '));
-              ids.forEach(function (id, i) {
-                if (!$s.entryMap[id] && names[i]) {
-                  var match = _.find(entryList, { name: names[i] });
-                  $s.entryMap[id] = match
-                    ? {
-                        name: match.name,
-                        image: match.image,
-                        color: match.color,
-                        hyperlink: match.hyperlink
-                      }
-                    : { name: names[i], image: '', color: null, hyperlink: '' };
-                }
-              });
-            }
-            return ids;
-          }
-          // Fallback to name-based parsing for votes without voteIds
-          if (result.vote) {
-            var names = JSON.parse(result.vote.replace(/\s/g, ' '));
-            return names.map(function (name) {
-              var found = _.find(entryList, { name: name });
-              if (found) return parseInt(found.entry_id);
-              // Generate a stable fake ID for orphaned names
-              var fakeId = 'orphan_' + name;
-              if (!$s.entryMap[fakeId]) {
-                $s.entryMap[fakeId] = { name: name, image: '', color: null, hyperlink: '' };
-              }
-              return fakeId;
-            });
-          }
+          return JSON.parse(result.voteIds);
         });
         $s.ids = _.uniq(_.flatten($s.votes));
         $s.mutableVotes = JSON.parse(JSON.stringify($s.votes));

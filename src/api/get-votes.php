@@ -28,7 +28,7 @@ if(!empty($key)) {
 
 		// Fetch votes (vote data only, no ballot metadata on each row)
 		$voteQuery = "
-			SELECT vote_id, vote, voteIds, name, date_created, group_answers
+			SELECT vote_id, voteIds, name, date_created, group_answers
 			FROM votes
 			WHERE ballotId = :ballotId
 			ORDER BY " . ($ballot['isSecure'] == 1 ? "name" : "vote_id") . " ASC
