@@ -176,7 +176,7 @@ export function initBallot(scope, http) {
     $http
       .get('/api/get-candidates.php?edit=true&key=' + $s.ballot.key + '&t=' + Date.now())
       .then(function (resp) {
-        var candidates = resp.data.candidates || resp.data;
+        var candidates = resp.data.candidates;
         if (candidates) {
           $s.entries = candidates.map(function (entry) {
             return entry.candidate;
@@ -192,8 +192,9 @@ export function initBallot(scope, http) {
           });
 
           // Load group fields if grouping is enabled
-          if ($s.ballot.allowGrouping && resp.data.groupFields && resp.data.groupFields.length) {
-            $s.groupFields = resp.data.groupFields.map(function (field) {
+          var groupFields = resp.data.groupFields || [];
+          if ($s.ballot.allowGrouping && groupFields.length) {
+            $s.groupFields = groupFields.map(function (field) {
               return {
                 title: field.title,
                 question_text: field.question_text,

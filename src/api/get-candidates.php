@@ -8,42 +8,57 @@ $editText = $edit ? '' : 'AND NOW() < b.voteCutoff';
 if(!empty($key)) {
 	$sth = $dbh->prepare("SET time_zone = '+0:00'");
 	$sth->execute();
-	$query = "
-		SELECT
-			b.id, b.key, b.name, b.positions, b.register, b.resultsRelease, b.voteCutoff, b.hideNames, b.hideDetails, b.allowCustom, b.showGraph, b.kickbackUrl, b.iframeUrl, b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.allowGrouping, b.createdBy, e.entry_id, e.image, e.hyperlink, e.color, e.name AS 'candidate'
-		FROM
-			entries e
-		JOIN
-			ballots b
-		ON
-			e.ballotId = b.id
-		WHERE
-			b.key = :key
-		$editText
-		ORDER BY e.entry_id ASC
-  ";
-	$sth = $dbh->prepare($query);
-	$sth->bindValue(':key', $key, PDO::PARAM_STR);
-	$sth->execute();
-	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
-	if(empty($results) && !$edit) {
-		$sth2 = $dbh->prepare("SELECT id, voteCutoff, resultsRelease FROM ballots WHERE `key` = :key");
-		$sth2->bindValue(':key', $key, PDO::PARAM_STR);
-		$sth2->execute();
-		$ballot = $sth2->fetch(PDO::FETCH_ASSOC);
-		if($ballot) {
-			echo json_encode(['status' => 'closed', 'resultsRelease' => $ballot['resultsRelease']]);
-		} else {
-			echo "Shortcode not found.";
-		}
+	// Fetch ballot metadata separately
+	$ballotQuery = "
+		SELECT
+			b.id, b.key, b.name, b.positions, b.register, b.resultsRelease, b.voteCutoff,
+			b.hideNames, b.hideDetails, b.allowCustom, b.showGraph, b.kickbackUrl, b.iframeUrl,
+			b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.allowGrouping, b.createdBy
+		FROM ballots b
+		WHERE b.key = :key
+	";
+	$ballotSth = $dbh->prepare($ballotQuery);
+	$ballotSth->bindValue(':key', $key, PDO::PARAM_STR);
+	$ballotSth->execute();
+	$ballot = $ballotSth->fetch(PDO::FETCH_ASSOC);
+
+	if (!$ballot) {
+		echo "Shortcode not found.";
 	} else {
-		// If allowGrouping is enabled, include group fields and options
+		// Check voting cutoff for non-edit requests
+		if (!$edit) {
+			$cutoffSth = $dbh->prepare("SELECT 1 FROM ballots WHERE id = :id AND NOW() < voteCutoff");
+			$cutoffSth->bindValue(':id', $ballot['id'], PDO::PARAM_INT);
+			$cutoffSth->execute();
+			if (!$cutoffSth->fetch()) {
+				echo json_encode(['status' => 'closed', 'resultsRelease' => $ballot['resultsRelease']]);
+				exit;
+			}
+		}
+
+		// Fetch candidates (entries only)
+		$entryQuery = "
+			SELECT entry_id, name AS 'candidate', image, hyperlink, color
+			FROM entries
+			WHERE ballotId = :ballotId
+			ORDER BY entry_id ASC
+		";
+		$entrySth = $dbh->prepare($entryQuery);
+		$entrySth->bindValue(':ballotId', $ballot['id'], PDO::PARAM_INT);
+		$entrySth->execute();
+		$candidates = $entrySth->fetchAll(PDO::FETCH_ASSOC);
+
+		if (empty($candidates) && !$edit) {
+			echo json_encode(['status' => 'closed', 'resultsRelease' => $ballot['resultsRelease']]);
+			exit;
+		}
+
+		// Fetch group fields if grouping is enabled
 		$groupFields = [];
-		if (!empty($results) && $results[0]['allowGrouping'] == 1) {
-			$ballotId = $results[0]['id'];
+		if ($ballot['allowGrouping'] == 1) {
 			$fieldSth = $dbh->prepare("SELECT id, title, question_text, sort_order FROM voter_group_fields WHERE ballot_id = :ballotId ORDER BY sort_order ASC");
-			$fieldSth->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
+			$fieldSth->bindValue(':ballotId', $ballot['id'], PDO::PARAM_INT);
 			$fieldSth->execute();
 			$groupFields = $fieldSth->fetchAll(PDO::FETCH_ASSOC);
 
@@ -54,7 +69,12 @@ if(!empty($key)) {
 				$field['options'] = $optionSth->fetchAll(PDO::FETCH_ASSOC);
 			}
 		}
-		print json_encode(['candidates' => $results, 'groupFields' => $groupFields]);
+
+		print json_encode([
+			'ballot' => $ballot,
+			'candidates' => $candidates,
+			'groupFields' => $groupFields
+		]);
 	}
 } else {
 	echo "Failed to supply Shortcode";

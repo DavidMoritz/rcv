@@ -317,11 +317,25 @@ mainApp.controller('MainCtrl', [
             return;
           }
 
-          // Handle new response shape: { candidates, groupFields } or legacy flat array
-          var candidateData = resp.data.candidates || resp.data;
-          if (!Array.isArray(candidateData)) {
-            $s.errors.shortcode = 'Unexpected response from server.';
-            return;
+          // Response is { ballot: {...}, candidates: [...], groupFields: [...] }
+          var ballot = resp.data.ballot;
+          var candidates = resp.data.candidates;
+
+          // Set ballot metadata from dedicated ballot object
+          $s.ballot = ballot;
+          $s.ballot.voterName = voterName || $loc.$$search.hash;
+          $s.ballot.register = parseInt(ballot.register);
+          $s.ballot.allowCustom = !!parseInt(ballot.allowCustom);
+          $s.ballot.hideNames = !!parseInt(ballot.hideNames);
+          $s.ballot.hideDetails = !!parseInt(ballot.hideDetails);
+          $s.ballot.showGraph = !!parseInt(ballot.showGraph);
+          $s.ballot.oneDeviceOneVote = !!parseInt(ballot.oneDeviceOneVote);
+          $s.ballot.isSecure = !!parseInt(ballot.isSecure);
+          $s.ballot.orderedEntries = !!parseInt(ballot.orderedEntries);
+          $s.ballot.allowGrouping = !!parseInt(ballot.allowGrouping);
+          $s.ballot.positions = parseInt(ballot.positions);
+          if (ballot.iframeUrl) {
+            $s.ballot.iframeUrl = $sce.trustAsResourceUrl(ballot.iframeUrl);
           }
 
           // Store group fields for managed ballot pre-vote gating
@@ -329,23 +343,7 @@ mainApp.controller('MainCtrl', [
           $s.groupAnswers = {};
           $s.groupAnswersSubmitted = false;
 
-          $s.originalCandidates = candidateData.map(function (entry) {
-            $s.ballot = entry;
-            $s.ballot.voterName = voterName || $loc.$$search.hash;
-            $s.ballot.register = parseInt($s.ballot.register);
-            $s.ballot.allowCustom = !!parseInt($s.ballot.allowCustom);
-            $s.ballot.hideNames = !!parseInt($s.ballot.hideNames);
-            $s.ballot.hideDetails = !!parseInt($s.ballot.hideDetails);
-            $s.ballot.showGraph = !!parseInt($s.ballot.showGraph);
-            $s.ballot.oneDeviceOneVote = !!parseInt($s.ballot.oneDeviceOneVote);
-            $s.ballot.isSecure = !!parseInt($s.ballot.isSecure);
-            $s.ballot.orderedEntries = !!parseInt($s.ballot.orderedEntries);
-            $s.ballot.allowGrouping = !!parseInt($s.ballot.allowGrouping);
-            $s.ballot.positions = parseInt($s.ballot.positions);
-            if ($s.ballot.iframeUrl) {
-              $s.ballot.iframeUrl = $sce.trustAsResourceUrl($s.ballot.iframeUrl);
-            }
-
+          $s.originalCandidates = candidates.map(function (entry) {
             return {
               name: entry.candidate,
               image: entry.image,
@@ -355,7 +353,7 @@ mainApp.controller('MainCtrl', [
             };
           });
           $s.activeLink = $loc.$$search.key ? 'code' : 'vote';
-          var resultsDate = moment.tz(resp.data[0].resultsRelease, 'Zulu');
+          var resultsDate = moment.tz(ballot.resultsRelease, 'Zulu');
           $s.resultsReady = resultsDate < moment();
           $s.resultsReleaseFormatted = resultsDate.tz(moment.tz.guess()).format('MMM Do, h:mma');
 
@@ -428,6 +426,7 @@ mainApp.controller('MainCtrl', [
           return;
         }
 
+        var ballot = resp.data.ballot;
         var voteRows = resp.data.votes;
         var entryList = resp.data.entries;
 
@@ -442,13 +441,14 @@ mainApp.controller('MainCtrl', [
           };
         });
 
-        var resultsDate = moment.tz(voteRows[0].resultsRelease, 'Zulu');
-        var voteCutoffDate = moment.tz(voteRows[0].voteCutoff, 'Zulu');
+        // Read ballot metadata from dedicated ballot object
+        var resultsDate = moment.tz(ballot.resultsRelease, 'Zulu');
+        var voteCutoffDate = moment.tz(ballot.voteCutoff, 'Zulu');
         var now = moment();
         $s.voteClosed = voteCutoffDate < now;
-        var createdBy = voteRows[0].createdBy;
+        var createdBy = ballot.createdBy;
         $s.ballotCreatedBy = createdBy;
-        $s.ballotId = voteRows[0].ballotId;
+        $s.ballotId = ballot.id;
         var loggedIn = $s.user.id == createdBy;
         if (resultsDate > now) {
           $s.errors.shortcode =
@@ -463,31 +463,29 @@ mainApp.controller('MainCtrl', [
           }
         }
 
-        var hideNames = voteRows[0].hideNames == 1;
-        var hideDetails = voteRows[0].hideDetails == 1;
-        var allowCustom = voteRows[0].allowCustom == 1;
-        $s.ballotIsSecure = voteRows[0].isSecure == 1;
+        var hideNames = ballot.hideNames == 1;
+        var hideDetails = ballot.hideDetails == 1;
+        $s.ballotIsSecure = ballot.isSecure == 1;
+        $s.seats = parseInt(ballot.positions);
+        $s.register = ballot.register;
+        $s.rcvisSlug = ballot.rcvisSlug;
+        $s.rcvisId = ballot.rcvisId;
+        $s.showGraph = ballot.showGraph == '1';
+        $s.allowCustom = ballot.allowCustom;
+        $s.tieBreak = ballot.tieBreak;
+        $s.graphUpdated = ballot.graphUpdated;
+        $s.hideDetails = hideDetails && !loggedIn;
         $s.voterNames = [];
         $s.voterIds = [];
         let mostRecentVote = voteRows[0].date_created;
-        $s.graphUpdated = voteRows[0].graphUpdated;
         window.rawVotes = voteRows;
         $s.votes = voteRows.map(function (result) {
-          $s.seats = parseInt(result.positions);
-          $s.register = result.register;
-          $s.rcvisSlug = result.rcvisSlug;
-          $s.rcvisId = result.rcvisId;
-          $s.showGraph = result.showGraph == '1';
-          $s.allowCustom = result.allowCustom;
-          $s.tieBreak = result.tieBreak;
           if (mostRecentVote < result.date_created) {
             mostRecentVote = result.date_created;
           }
           if (!hideNames || loggedIn) {
             $s.voterNames.push(result.name);
           }
-
-          $s.hideDetails = hideDetails && !loggedIn;
           $s.voterIds.push(result.vote_id);
 
           if (result.voteIds) {
@@ -530,7 +528,7 @@ mainApp.controller('MainCtrl', [
         $s.mutableVotes = JSON.parse(JSON.stringify($s.votes));
 
         // Parse group data for grouped analysis
-        $s.allowGrouping = voteRows[0].allowGrouping == 1;
+        $s.allowGrouping = ballot.allowGrouping == 1;
         $s.resultGroupFields = resp.data.groupFields || [];
         $s.groupResults = {};
 
@@ -645,8 +643,8 @@ mainApp.controller('MainCtrl', [
         if ($s.showGraph) {
           if ($s.voteClosed) {
             $s.patchRcvis = !$s.rcvisSlug || $s.graphUpdated < mostRecentVote;
-            $s.ballotName = voteRows[0].ballotName;
-            $s.ballotId = voteRows[0].ballotId;
+            $s.ballotName = ballot.ballotName;
+            $s.ballotId = ballot.id;
 
             if (!$s.patchRcvis) {
               $s.displayRcvisIframe();
@@ -656,7 +654,7 @@ mainApp.controller('MainCtrl', [
           $s.showGraphTease = $s.votes.length > 3 && (loggedIn || createdBy == 'guest');
         }
 
-        $('.ballot-name').text(' for ' + voteRows[0].ballotName);
+        $('.ballot-name').text(' for ' + ballot.ballotName);
         $s.runTheCode(loggedIn);
         $s.bodyText = $sce.trustAsHtml($s.outputstring);
         $s.final = true;
