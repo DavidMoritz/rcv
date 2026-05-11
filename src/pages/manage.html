@@ -22,8 +22,25 @@
           <hr />
           <div class="row">
             <div class="col-md-8">
-              <h3>Voter Codes ({{manageCodes.length}})</h3>
-              <div ng-if="manageBallot.voteCutoff > now" class="form-inline" style="margin-bottom: 15px">
+              <div ng-if="manageBallot.allowGrouping == 1" style="margin-bottom: 20px">
+                <h3 class="pointer" ng-click="showManageGroups = !showManageGroups">
+                  <i class="fa" ng-class="showManageGroups ? 'fa-chevron-down' : 'fa-chevron-right'" style="width: 14px"></i>
+                  Voter Groups
+                </h3>
+                <div ng-show="showManageGroups">
+                  <div ng-if="!manageGroupFields || !manageGroupFields.length" class="text-muted">
+                    No group questions defined.
+                  </div>
+                  <div ng-repeat="field in manageGroupFields" style="margin-bottom: 10px; padding: 8px; background: #f9f9f9; border-radius: 4px">
+                    <strong>{{field.title}}</strong>: {{field.question_text}}
+                    <div style="padding-left: 15px; margin-top: 4px">
+                      <span ng-repeat="opt in field.options" class="label label-default" style="margin-right: 4px">{{opt.label}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h3 ng-show="manageBallot.isSecure == 1">Voter Codes ({{manageCodes.length}})</h3>
+              <div ng-if="manageBallot.isSecure == 1 && manageBallot.voteCutoff > now" class="form-inline" style="margin-bottom: 15px">
                 <input
                   type="number"
                   ng-model="moreCodeCount"
@@ -40,7 +57,7 @@
                   <i class="fa fa-print"></i> Print Code Sheet
                 </button>
               </div>
-              <table class="table table-condensed">
+              <table ng-show="manageBallot.isSecure == 1" class="table table-condensed">
                 <thead>
                   <tr>
                     <th
@@ -121,10 +138,18 @@
             </div>
             <div class="col-md-4">
               <h3>Quick Stats</h3>
-              <p>Total codes: {{manageCodes.length}}</p>
-              <p>Voted: {{manageCodes.length - manageCodesAvailable}}</p>
-              <p ng-if="manageBallot.voteCutoff > now">Available: {{manageCodesAvailable}}</p>
-              <p ng-if="manageBallot.voteCutoff <= now">Unused: {{manageCodesAvailable}}</p>
+              <div ng-if="manageBallot.isSecure == 1">
+                <p>Total codes: {{manageCodes.length}}</p>
+                <p>Voted: {{manageCodes.length - manageCodesAvailable}}</p>
+                <p ng-if="manageBallot.voteCutoff > now">Available: {{manageCodesAvailable}}</p>
+                <p ng-if="manageBallot.voteCutoff <= now">Unused: {{manageCodesAvailable}}</p>
+              </div>
+              <div ng-if="manageBallot.allowGrouping == 1 && manageGroupFields.length">
+                <p><strong>Voter Groups:</strong></p>
+                <p ng-repeat="field in manageGroupFields">
+                  {{field.title}}: {{field.options.length}} choices
+                </p>
+              </div>
               <hr />
               <div class="manage-actions">
                 <a href="/results#{{manageBallot.key}}" target="_blank" class="btn btn-default btn-sm">
@@ -140,13 +165,21 @@
                   <i class="fa fa-exchange"></i> Transfer Ownership
                 </button>
                 <button
-                  ng-if="manageBallot.voteCutoff > now"
+                  ng-if="manageBallot.voteCutoff > now && manageBallot.isSecure == 1"
                   ng-click="deleteSecureBallot()"
                   ng-disabled="manageCodesAvailable < manageCodes.length"
                   class="btn btn-danger btn-sm"
                   style="margin-top: 10px"
                   uib-tooltip="{{manageCodesAvailable < manageCodes.length ? 'Must not have any votes to delete' : ''}}"
                   tooltip-placement="top"
+                >
+                  <i class="fa fa-trash"></i> Delete Ballot
+                </button>
+                <button
+                  ng-if="manageBallot.isSecure != 1"
+                  ng-click="deleteSecureBallot()"
+                  class="btn btn-danger btn-sm"
+                  style="margin-top: 10px"
                 >
                   <i class="fa fa-trash"></i> Delete Ballot
                 </button>

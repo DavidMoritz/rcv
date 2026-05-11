@@ -7,14 +7,14 @@
           <h3 ng-show="user.name">Name: {{user.name}}</h3>
           <div ng-show="allBallots.length">
             <ul class="ballot-tabs">
-              <li ng-class="{active: profileTab !== 'secure'}" ng-click="profileTab = 'standard'">
+              <li ng-class="{active: profileTab !== 'managed'}" ng-click="profileTab = 'standard'">
                 Standard Ballots
               </li>
-              <li ng-class="{active: profileTab === 'secure'}" ng-click="profileTab = 'secure'">
-                Secure Ballots
+              <li ng-class="{active: profileTab === 'managed'}" ng-click="profileTab = 'managed'">
+                Managed Ballots
               </li>
             </ul>
-            <table class="table ballots" ng-show="profileTab !== 'secure'">
+            <table class="table ballots" ng-show="profileTab !== 'managed'">
               <thead>
                 <tr>
                   <th>Shortcode</th>
@@ -26,7 +26,8 @@
               </thead>
               <tbody>
                 <tr
-                  ng-repeat="ballot in allBallots | filter:{isSecure: '0'} track by ballot.id"
+                  ng-repeat="ballot in allBallots track by ballot.id"
+                  ng-if="ballot.isSecure != 1 && ballot.allowGrouping != 1"
                   id="ballot-row-{{ballot.id}}"
                 >
                   <td ng-if="ballot.transferring" colspan="10" class="text-center text-muted">
@@ -90,19 +91,21 @@
                 </tr>
               </tbody>
             </table>
-            <table class="table ballots" ng-show="profileTab === 'secure'">
+            <table class="table ballots" ng-show="profileTab === 'managed'">
               <thead>
                 <tr>
                   <th>Shortcode</th>
                   <th>Name</th>
                   <th>Vote Cutoff ({{moment.tz(moment.tz.guess()).format('z')}})</th>
                   <th>Total votes</th>
+                  <th>Type</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 <tr
-                  ng-repeat="ballot in allBallots | filter:{isSecure: '1'} track by ballot.id"
+                  ng-repeat="ballot in allBallots track by ballot.id"
+                  ng-if="ballot.isSecure == 1 || ballot.allowGrouping == 1"
                   id="ballot-row-{{ballot.id}}"
                 >
                   <td>{{ballot.key}}</td>
@@ -113,6 +116,10 @@
                   </td>
                   <td>{{ballot.totalVotes}}</td>
                   <td>
+                    <span ng-show="ballot.isSecure == 1" class="label label-info">Secure</span>
+                    <span ng-show="ballot.allowGrouping == 1" class="label label-primary">Grouped</span>
+                  </td>
+                  <td>
                     <a href ng-click="manageSecureBallot(ballot)" class="btn btn-sm btn-primary"
                       >MANAGE</a
                     >
@@ -121,11 +128,12 @@
               </tbody>
             </table>
             <p
-              ng-show="profileTab === 'secure' && (allBallots | filter:{isSecure: '1'}).length === 0"
+              ng-show="profileTab === 'managed'"
+              ng-hide="(allBallots | filter:managedBallotFilter).length"
               class="text-muted"
               style="padding: 20px 0"
             >
-              No secure ballots yet. <a href ng-click="navigate('create')">Create one</a>
+              No managed ballots yet. <a href ng-click="navigate('create')">Create one</a>
             </p>
           </div>
           <hr />
