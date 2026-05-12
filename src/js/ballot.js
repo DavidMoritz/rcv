@@ -630,6 +630,12 @@ export function initBallot(scope, http) {
       return;
     }
 
+    // If any entry has a color, fill blanks with white instead of null
+    var hasAnyColor = $s.entryColors.some(function (c) { return !!c; });
+    if (hasAnyColor) {
+      $s.entryColors = $s.entryColors.map(function (c) { return c || 'ffffff'; });
+    }
+
     $http({
       method: 'POST',
       url: '/api/add-entries.php',
