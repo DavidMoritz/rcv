@@ -21,15 +21,26 @@ export function initAuth(scope, http, loc, resetNavFn) {
         if (typeof resp.data === 'string') {
           $s.loginError = true;
         } else {
-          setUser(
-            {
-              id: resp.data[0].id,
-              name: resp.data[0].username,
-              email: resp.data[0].email,
-              image: resp.data[0].image
-            },
-            'profile'
-          );
+          var loggedInUser = {
+            id: resp.data[0].id,
+            name: resp.data[0].username,
+            email: resp.data[0].email,
+            image: resp.data[0].image
+          };
+          if ($s.claimBallotAfterRegister) {
+            var ballotId = $s.claimBallotAfterRegister;
+            $s.claimBallotAfterRegister = null;
+            $http
+              .post('/api/claim-ballot.php', {
+                ballotId: ballotId,
+                userId: loggedInUser.id
+              })
+              .then(function () {
+                setUser(loggedInUser, 'profile');
+              });
+          } else {
+            setUser(loggedInUser, 'profile');
+          }
           var cookieDays = $s.login.remember ? 30 : undefined;
           setCookie({ days: cookieDays, name: 'loginId', value: resp.data[0].id });
           setCookie({ days: cookieDays, name: 'loginName', value: resp.data[0].username });
@@ -58,13 +69,24 @@ export function initAuth(scope, http, loc, resetNavFn) {
           .then(function (response) {
             // Only log in user if registration succeeded
             if (response.data && response.data.id) {
-              setUser(
-                {
-                  id: response.data.id,
-                  name: $s.newAccount.username
-                },
-                'create'
-              );
+              var newUser = {
+                id: response.data.id,
+                name: $s.newAccount.username
+              };
+              if ($s.claimBallotAfterRegister) {
+                var ballotId = $s.claimBallotAfterRegister;
+                $s.claimBallotAfterRegister = null;
+                $http
+                  .post('/api/claim-ballot.php', {
+                    ballotId: ballotId,
+                    userId: newUser.id
+                  })
+                  .then(function () {
+                    setUser(newUser, 'profile');
+                  });
+              } else {
+                setUser(newUser, 'create');
+              }
             } else {
               alert('Registration failed: ' + (response.data.error || 'Unknown error'));
             }

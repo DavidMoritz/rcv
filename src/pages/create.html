@@ -678,7 +678,7 @@
       </div>
       <p ng-show="!user.id" style="margin-top: 15px">
         Want to edit this ballot later?
-        <a href ng-click="navigate('register')">Create a free account</a>
+        <a href ng-click="claimBallotAfterRegister = ballot.id; navigate('register')">Create a free account</a>
         to manage your ballots and unlock features like editing entries.
       </p>
     </div>
