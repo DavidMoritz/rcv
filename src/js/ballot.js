@@ -510,6 +510,9 @@ export function initBallot(scope, http) {
   $s.onFieldTypeChange = function (field) {
     if (field.type === 'text') {
       field.options = [];
+    } else if (field.type === 'checkbox') {
+      field.options = [];
+      field.required = false;
     } else if (!field.options || !field.options.length) {
       field.options = [''];
     }
