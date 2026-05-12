@@ -165,3 +165,31 @@
   color: #333;
   border-bottom-color: #fff;
 }
+.options-section-header {
+  margin-top: 20px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+  padding: 6px 8px;
+  cursor: pointer;
+  background-color: #edf0fb;
+}
+.options-section-header h4 {
+  margin: 0;
+}
+.options-section-header .chevron {
+  display: inline-block;
+  width: 14px;
+  transition: transform 0.25s ease;
+}
+.options-section-header .chevron.open {
+  transform: rotate(90deg);
+}
+.options-section-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 1s cubic-bezier(0, 1, 0, 1);
+}
+.options-section-body.open {
+  max-height: 2000px;
+  transition: max-height 1.5s ease-in;
+}

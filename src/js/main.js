@@ -255,6 +255,9 @@ mainApp.controller('MainCtrl', [
           setTimeout(function () {
             $('.js-timezone-picker').val(moment.tz.guess());
           }, 1000);
+          setTimeout(function () {
+            document.querySelector('[name="name"]').focus();
+          });
           $s.congrats = false;
           break;
         case 'profile':

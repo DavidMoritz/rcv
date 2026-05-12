@@ -44,283 +44,133 @@
       </div>
       <div class="form-group">
         <label
-          >Advanced Options
+          >More Options
           <input type="checkbox" ng-model="advancedOptions" />
         </label>
       </div>
-      <div ng-show="advancedOptions">
-        <div class="form-group">
-          <label>Positions to be Elected</label>
-          <input
-            type="number"
-            name="positions"
-            ng-model="ballot.positions"
-            class="form-control"
-          /><span ng-show="errors.positions" class="text-danger">{{errors.positions}}</span>
-        </div>
-        <div ng-show="user.name" class="form-group">
-          <label>Created By {{user.name}}</label>
-        </div>
-        <div ng-show="!user.name && ballot.createdBy == 'guest'" class="form-group">
-          <label
-            >Created By<small class="text-muted">
-              using default "guest" will restrict future editing. Please&nbsp;<a
-                href="register"
-                class="btn-link"
-                >Sign in</a
-              >
-              to allow future editing.</small
-            ></label
-          >
-          <input name="createdBy" ng-model="ballot.createdBy" readonly class="form-control" /><span
-            ng-show="errors.createdBy"
-            class="text-danger"
-            >{{errors.createdBy}}</span
-          >
-        </div>
-        <div class="form-group" ng-show="user.name">
-          <label>
-            Secure Ballot (voters provided codes):
-            <input type="checkbox" ng-model="ballot.isSecure" ng-change="onSecureToggle()" />
-          </label>
-          <small ng-show="ballot.isSecure" class="text-muted">
-            Secure ballots use system-generated codes for verified voting.
-          </small>
-        </div>
-        <div class="form-group" ng-show="ballot.isSecure">
-          <label>Number of voter codes to generate: </label>
-          <input
-            type="number"
-            ng-model="ballot.codeCount"
-            min="1"
-            max="500"
-            class="form-control"
-            style="max-width: 200px"
-            placeholder="e.g. 25"
-          /><small class="text-muted">more may be added at any time</small>
-        </div>
-        <div class="form-group" ng-show="user.name && !ballot.isSecure">
-          <label>
-            Prompt voters for custom information:
-            <input type="checkbox" ng-model="ballot.allowGrouping" ng-change="onGroupingToggle()" />
-          </label>
-          <small ng-show="ballot.allowGrouping" class="text-muted">
-            Define prompts on the next screen.
-          </small>
-        </div>
-        <div class="form-group" ng-show="!ballot.isSecure">
-          <label>Voters Names:</label>
-          <div>
-            <label title="Putting in names is optional" class="radio-inline">
-              <input
-                type="radio"
-                value="0"
-                name="voter-register"
-                ng-model="ballot.register"
-                checked="true"
-              />Optional
-            </label>
-            <label title="At least 3 characters must be present to vote" class="radio-inline">
-              <input
-                type="radio"
-                value="1"
-                name="voter-register"
-                ng-model="ballot.register"
-              />Required
-            </label>
-            <label title="Does not ask for name" class="radio-inline">
-              <input
-                type="radio"
-                value="2"
-                name="voter-register"
-                ng-model="ballot.register"
-              />Anonymous
-            </label>
-            <label title="Uses code instead of name" class="radio-inline" ng-hide="true">
-              <input type="radio" value="3" name="voter-register" ng-model="ballot.register" />Code
-            </label>
-          </div>
-        </div>
-        <div class="form-group" ng-show="user.name && !ballot.isSecure">
-          <label>
-            Hide voter names when displaying results (except from logged-in owner):
-            <input type="checkbox" ng-model="ballot.hideNames" />
-          </label>
-        </div>
-        <div class="form-group" ng-show="user.name && !ballot.isSecure">
-          <label>
-            Hide detailed results (except from logged-in owner):
-            <input type="checkbox" ng-model="ballot.hideDetails" />
-          </label>
-        </div>
-        <div class="form-group" ng-show="!ballot.isSecure && !ballot.allowGrouping">
-          <label>
-            Allow users to contribute custom entries:
-            <input
-              type="checkbox"
-              ng-model="ballot.allowCustom"
-              ng-disabled="ballot.isSecure || ballot.allowGrouping"
-            />
-          </label>
-        </div>
-        <div class="form-group">
-          <label>
-            Preserve candidate order for voters:
-            <input type="checkbox" ng-model="ballot.orderedEntries" />
-          </label>
-        </div>
-        <div class="form-group" ng-show="!ballot.isSecure">
-          <label>
-            Limit to one vote per device:
-            <input type="checkbox" ng-model="ballot.oneDeviceOneVote" />
+      <div
+        ng-show="advancedOptions"
+        ng-init="activeSection=null"
+      >
+        <!-- Popular section (expanded by default) -->
+        <div
+          class="options-section-header"
+          ng-click="activeSection = activeSection === 'popular' ? null : 'popular'"
+        >
+          <h4>
             <i
-              class="fa fa-question-circle"
-              style="cursor: pointer; color: #1a43bf"
-              data-toggle="modal"
-              data-target="#device-vote-help-modal"
+              class="fa fa-chevron-right chevron"
+              ng-class="{'open': activeSection === 'popular'}"
             ></i>
-          </label>
+            Popular
+          </h4>
         </div>
-        <p ng-show="!user.name" class="text-muted">
-          Want a secure ballot using codes or voter grouping?
-          <a href ng-click="navigate('register')">Create a free account</a>
-        </p>
-        <div class="form-group">
-          <span ng-show="errors.secureCutoff" class="text-danger">{{errors.secureCutoff}}</span>
-          <div>
-            <label ng-hide="editDate || editTime"
-              >Voting Cutoff: never (check box for custom)</label
-            >
-            <label ng-show="editDate || editTime">
-              Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}}
-              {{ballot.voteCutoff | date: "h:mm a" }}
-            </label>
-          </div>
-          <label
-            >Edit Time
-            <input type="checkbox" ng-model="editTime" ng-disabled="ballot.isSecure" />
-          </label>
-          <small ng-show="editTime">(Current Time: {{rightNow.format('LT')}})</small>
-          <div class="row" ng-show="editTime">
-            <div class="col-sm-6">
-              <div class="form-inline">
-                <select
-                  ng-model="cutoffTime.hour"
-                  ng-options="h as h for h in hours"
-                  ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
-                  class="form-control"
-                  style="width: auto; display: inline-block"
-                ></select>
-                <b style="padding: 0 4px">:</b>
-                <select
-                  ng-model="cutoffTime.minute"
-                  ng-options="m.value as m.label for m in minutes"
-                  ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
-                  class="form-control"
-                  style="width: auto; display: inline-block"
-                ></select>
-                <select
-                  ng-model="cutoffTime.meridian"
-                  ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
-                  class="form-control"
-                  style="width: auto; display: inline-block"
-                >
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <label>Timezone:</label>
-              <select
-                class="form-control js-timezone-picker"
-                ng-model="ballot.voteTimezone"
-              ></select>
-            </div>
-          </div>
-          <label
-            >Edit Date
-            <input type="checkbox" ng-model="editDate" ng-disabled="ballot.isSecure" />
-          </label>
-          <div ng-show="editDate" class="input-group">
+        <div class="options-section-body" ng-class="{'open': activeSection === 'popular'}">
+          <div class="form-group">
+            <label>Positions to be Elected</label>
             <input
-              type="text"
-              ng-focus="releaseOpen = true"
-              uib-datepicker-popup="{{pickerFormat}}"
-              datepicker-options="pickerOptions"
-              ng-model="ballot.voteCutoff"
-              is-open="releaseOpen"
+              type="number"
+              name="positions"
+              ng-model="ballot.positions"
               class="form-control"
-            /><span class="input-group-btn">
-              <button type="button" ng-click="releaseOpen = !releaseOpen" class="btn btn-default">
-                <i class="fa fa-calendar"></i></button
-            ></span>
+            /><span ng-show="errors.positions" class="text-danger">{{errors.positions}}</span>
           </div>
-        </div>
-        <div class="form-group">
-          <label>
-            Visual display of results provided by
-            <a href="https://rcvis.com/" target="_blank">RCVis</a>:
+          <div ng-show="user.name" class="form-group">
+            <label>Created By {{user.name}}</label>
+          </div>
+          <div ng-show="!user.name && ballot.createdBy == 'guest'" class="form-group">
+            <label
+              >Created By<small class="text-muted">
+                using default "guest" will restrict future editing. Please&nbsp;<a
+                  href="register"
+                  class="btn-link"
+                  >Sign in</a
+                >
+                to allow future editing.</small
+              ></label
+            >
             <input
-              type="checkbox"
-              ng-model="ballot.showGraph"
-              ng-disabled="!editDate && !editTime"
-            /><br />
-            <small class="text-muted"
-              >NOTE: This graph is only available if a Voting Cutoff time is chosen above.</small
-            >
-          </label>
-        </div>
-        <div class="form-group">
-          <label
-            >Release Results:<span ng-hide="showRelease || editDate || editTime">
-              immediately (check box for custom)</span
-            ><span ng-hide="showRelease || (!editDate &amp;&amp; !editTime)">
-              after voting (check box for custom)</span
-            >
-            <input type="checkbox" ng-model="showRelease" ng-change="sameTime()" /><small
-              ng-show="showRelease &amp;&amp; ballot.resultsRelease"
-              class="text-muted"
-            >
-              {{ballot.resultsRelease | date: dateFormat }}</small
-            >
-          </label>
-          <div ng-show="showRelease">
-            <div class="input-group">
-              <input
-                type="text"
-                ng-focus="cutoffOpen = true"
-                uib-datepicker-popup="{{pickerFormat}}"
-                datepicker-options="pickerOptions"
-                ng-model="ballot.resultsRelease"
-                is-open="cutoffOpen"
-                class="form-control"
-              /><span class="input-group-btn">
-                <button type="button" ng-click="cutoffOpen = !cutoffOpen" class="btn btn-default">
-                  <i class="fa fa-calendar"></i></button
-              ></span>
+              name="createdBy"
+              ng-model="ballot.createdBy"
+              readonly
+              class="form-control"
+            /><span ng-show="errors.createdBy" class="text-danger">{{errors.createdBy}}</span>
+          </div>
+          <div class="form-group" ng-show="!ballot.isSecure">
+            <label>Voters Names:</label>
+            <div>
+              <label title="Putting in names is optional" class="radio-inline">
+                <input
+                  type="radio"
+                  value="0"
+                  name="voter-register"
+                  ng-model="ballot.register"
+                  checked="true"
+                />Optional
+              </label>
+              <label title="At least 3 characters must be present to vote" class="radio-inline">
+                <input
+                  type="radio"
+                  value="1"
+                  name="voter-register"
+                  ng-model="ballot.register"
+                />Required
+              </label>
+              <label title="Does not ask for name" class="radio-inline">
+                <input
+                  type="radio"
+                  value="2"
+                  name="voter-register"
+                  ng-model="ballot.register"
+                />Anonymous
+              </label>
+              <label title="Uses code instead of name" class="radio-inline" ng-hide="true">
+                <input
+                  type="radio"
+                  value="3"
+                  name="voter-register"
+                  ng-model="ballot.register"
+                />Code
+              </label>
             </div>
-            <div class="row">
+          </div>
+          <div class="form-group">
+            <span ng-show="errors.secureCutoff" class="text-danger">{{errors.secureCutoff}}</span>
+            <div>
+              <label ng-hide="editDate || editTime"
+                >Voting Cutoff: never (check box for custom)</label
+              >
+              <label ng-show="editDate || editTime">
+                Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}}
+                {{ballot.voteCutoff | date: "h:mm a" }}
+              </label>
+            </div>
+            <label
+              >Edit Time
+              <input type="checkbox" ng-model="editTime" ng-disabled="ballot.isSecure" />
+            </label>
+            <small ng-show="editTime">(Current Time: {{rightNow.format('LT')}})</small>
+            <div class="row" ng-show="editTime">
               <div class="col-sm-6">
                 <div class="form-inline">
                   <select
-                    ng-model="releaseTime.hour"
+                    ng-model="cutoffTime.hour"
                     ng-options="h as h for h in hours"
-                    ng-change="syncTimeToDate('resultsRelease', releaseTime)"
+                    ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
                     class="form-control"
                     style="width: auto; display: inline-block"
                   ></select>
                   <b style="padding: 0 4px">:</b>
                   <select
-                    ng-model="releaseTime.minute"
+                    ng-model="cutoffTime.minute"
                     ng-options="m.value as m.label for m in minutes"
-                    ng-change="syncTimeToDate('resultsRelease', releaseTime)"
+                    ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
                     class="form-control"
                     style="width: auto; display: inline-block"
                   ></select>
                   <select
-                    ng-model="releaseTime.meridian"
-                    ng-change="syncTimeToDate('resultsRelease', releaseTime)"
+                    ng-model="cutoffTime.meridian"
+                    ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
                     class="form-control"
                     style="width: auto; display: inline-block"
                   >
@@ -333,84 +183,306 @@
                 <label>Timezone:</label>
                 <select
                   class="form-control js-timezone-picker"
-                  ng-model="ballot.resultTimezone"
+                  ng-model="ballot.voteTimezone"
                 ></select>
+              </div>
+            </div>
+            <label
+              >Edit Date
+              <input type="checkbox" ng-model="editDate" ng-disabled="ballot.isSecure" />
+            </label>
+            <div ng-show="editDate" class="input-group">
+              <input
+                type="text"
+                ng-focus="releaseOpen = true"
+                uib-datepicker-popup="{{pickerFormat}}"
+                datepicker-options="pickerOptions"
+                ng-model="ballot.voteCutoff"
+                is-open="releaseOpen"
+                class="form-control"
+              /><span class="input-group-btn">
+                <button type="button" ng-click="releaseOpen = !releaseOpen" class="btn btn-default">
+                  <i class="fa fa-calendar"></i></button
+              ></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label
+              >Release Results:<span ng-hide="showRelease || editDate || editTime">
+                immediately (check box for custom)</span
+              ><span ng-hide="showRelease || (!editDate &amp;&amp; !editTime)">
+                after voting (check box for custom)</span
+              >
+              <input type="checkbox" ng-model="showRelease" ng-change="sameTime()" /><small
+                ng-show="showRelease &amp;&amp; ballot.resultsRelease"
+                class="text-muted"
+              >
+                {{ballot.resultsRelease | date: dateFormat }}</small
+              >
+            </label>
+            <div ng-show="showRelease">
+              <div class="input-group">
+                <input
+                  type="text"
+                  ng-focus="cutoffOpen = true"
+                  uib-datepicker-popup="{{pickerFormat}}"
+                  datepicker-options="pickerOptions"
+                  ng-model="ballot.resultsRelease"
+                  is-open="cutoffOpen"
+                  class="form-control"
+                /><span class="input-group-btn">
+                  <button type="button" ng-click="cutoffOpen = !cutoffOpen" class="btn btn-default">
+                    <i class="fa fa-calendar"></i></button
+                ></span>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-inline">
+                    <select
+                      ng-model="releaseTime.hour"
+                      ng-options="h as h for h in hours"
+                      ng-change="syncTimeToDate('resultsRelease', releaseTime)"
+                      class="form-control"
+                      style="width: auto; display: inline-block"
+                    ></select>
+                    <b style="padding: 0 4px">:</b>
+                    <select
+                      ng-model="releaseTime.minute"
+                      ng-options="m.value as m.label for m in minutes"
+                      ng-change="syncTimeToDate('resultsRelease', releaseTime)"
+                      class="form-control"
+                      style="width: auto; display: inline-block"
+                    ></select>
+                    <select
+                      ng-model="releaseTime.meridian"
+                      ng-change="syncTimeToDate('resultsRelease', releaseTime)"
+                      class="form-control"
+                      style="width: auto; display: inline-block"
+                    >
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <label>Timezone:</label>
+                  <select
+                    class="form-control js-timezone-picker"
+                    ng-model="ballot.resultTimezone"
+                  ></select>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="form-group">
-          <label>Tie-Break Method:</label>
-          <div>
-            <label
-              title="Randomly determine the order of candidates being eliminated"
-              class="radio-inline"
-            >
-              <input
-                type="radio"
-                value="random"
-                name="tie-break-method"
-                ng-model="ballot.tieBreak"
-                ng-disabled="ballot.isSecure"
-              />Random (official)
+
+        <!-- Voter Settings section (collapsed by default) -->
+        <div
+          class="options-section-header"
+          ng-click="activeSection = activeSection === 'voter' ? null : 'voter'"
+        >
+          <h4>
+            <i
+              class="fa fa-chevron-right chevron"
+              ng-class="{'open': activeSection === 'voter'}"
+            ></i>
+            Voter Settings
+          </h4>
+        </div>
+        <div class="options-section-body" ng-class="{'open': activeSection === 'voter'}">
+          <div class="form-group" ng-show="user.name">
+            <label>
+              Secure Ballot (voters provided codes):
+              <input type="checkbox" ng-model="ballot.isSecure" ng-change="onSecureToggle()" />
             </label>
-            <label
-              title="Observe the preference of secondary choices to determine"
-              class="radio-inline"
-            >
+            <small ng-show="ballot.isSecure" class="text-muted">
+              Secure ballots use system-generated codes for verified voting.
+            </small>
+          </div>
+          <div class="form-group" ng-show="ballot.isSecure">
+            <label>Number of voter codes to generate: </label>
+            <input
+              type="number"
+              ng-model="ballot.codeCount"
+              min="1"
+              max="500"
+              class="form-control"
+              style="max-width: 200px"
+              placeholder="e.g. 25"
+            /><small class="text-muted">more may be added at any time</small>
+          </div>
+          <div class="form-group" ng-show="user.name && !ballot.isSecure">
+            <label>
+              Prompt voters for custom information:
               <input
-                type="radio"
-                value="weighted"
-                name="tie-break-method"
-                ng-model="ballot.tieBreak"
-                ng-disabled="ballot.isSecure"
-              />Weighted (factor in subsequent choices)
+                type="checkbox"
+                ng-model="ballot.allowGrouping"
+                ng-change="onGroupingToggle()"
+              />
             </label>
-            <label
-              title="All candidates in a tie are simultaneously eliminated"
-              class="radio-inline hide"
-            >
-              <input
-                type="radio"
-                value="none"
-                name="tie-break-method"
-                ng-model="ballot.tieBreak"
-              />No Winner
+            <small ng-show="ballot.allowGrouping" class="text-muted">
+              Define prompts on the next screen.
+            </small>
+          </div>
+          <div class="form-group" ng-show="user.name && !ballot.isSecure">
+            <label>
+              Hide voter names when displaying results (except from logged-in owner):
+              <input type="checkbox" ng-model="ballot.hideNames" />
             </label>
           </div>
+          <div class="form-group" ng-show="user.name && !ballot.isSecure">
+            <label>
+              Hide detailed results (except from logged-in owner):
+              <input type="checkbox" ng-model="ballot.hideDetails" />
+            </label>
+          </div>
+          <div class="form-group" ng-show="!ballot.isSecure">
+            <label>
+              Limit to one vote per device:
+              <input type="checkbox" ng-model="ballot.oneDeviceOneVote" />
+              <i
+                class="fa fa-question-circle"
+                style="cursor: pointer; color: #1a43bf"
+                data-toggle="modal"
+                data-target="#device-vote-help-modal"
+              ></i>
+            </label>
+          </div>
+          <p ng-show="!user.name" class="text-muted">
+            Want a secure ballot using codes or voter grouping?
+            <a href ng-click="navigate('register')">Create a free account</a>
+          </p>
         </div>
-        <div class="checkbox" ng-show="user.name">
-          <label>
-            <input type="checkbox" ng-model="showIntegrationOptions" />
-            External website integration
-          </label>
-        </div>
-        <div class="form-group" ng-show="showIntegrationOptions">
-          <label>Redirect URL after voting:</label>
-          <input
-            type="url"
-            class="form-control"
-            ng-model="ballot.kickbackUrl"
-            placeholder="Leave blank to use the default 'Thank You' page"
-          />
-        </div>
-        <div class="form-group" ng-show="showIntegrationOptions">
-          <label
-            >Iframe URL on voting page:
+
+        <!-- Display section (collapsed by default) -->
+        <div
+          class="options-section-header"
+          ng-click="activeSection = activeSection === 'display' ? null : 'display'"
+        >
+          <h4>
             <i
-              class="fa fa-question-circle"
-              style="cursor: pointer; color: #1a43bf"
-              data-toggle="modal"
-              data-target="#iframe-help-modal"
+              class="fa fa-chevron-right chevron"
+              ng-class="{'open': activeSection === 'display'}"
             ></i>
-          </label>
-          <input
-            type="url"
-            class="form-control"
-            ng-model="ballot.iframeUrl"
-            placeholder="Review the instructions above."
-          />
+            Display
+          </h4>
         </div>
+        <div class="options-section-body" ng-class="{'open': activeSection === 'display'}">
+          <div class="form-group">
+            <label>
+              Preserve candidate order for voters:
+              <input type="checkbox" ng-model="ballot.orderedEntries" />
+            </label>
+          </div>
+          <div class="form-group" ng-show="!ballot.isSecure && !ballot.allowGrouping">
+            <label>
+              Allow users to contribute custom entries:
+              <input
+                type="checkbox"
+                ng-model="ballot.allowCustom"
+                ng-disabled="ballot.isSecure || ballot.allowGrouping"
+              />
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              Visual display of results provided by
+              <a href="https://rcvis.com/" target="_blank">RCVis</a>:
+              <input
+                type="checkbox"
+                ng-model="ballot.showGraph"
+                ng-disabled="!editDate && !editTime"
+              /><br />
+              <small class="text-muted"
+                >NOTE: This graph is only available if a Voting Cutoff time is chosen above.</small
+              >
+            </label>
+          </div>
+          <div class="form-group">
+            <label>Tie-Break Method:</label>
+            <div>
+              <label
+                title="Randomly determine the order of candidates being eliminated"
+                class="radio-inline"
+              >
+                <input
+                  type="radio"
+                  value="random"
+                  name="tie-break-method"
+                  ng-model="ballot.tieBreak"
+                  ng-disabled="ballot.isSecure"
+                />Random (official)
+              </label>
+              <label
+                title="Observe the preference of secondary choices to determine"
+                class="radio-inline"
+              >
+                <input
+                  type="radio"
+                  value="weighted"
+                  name="tie-break-method"
+                  ng-model="ballot.tieBreak"
+                  ng-disabled="ballot.isSecure"
+                />Weighted (factor in subsequent choices)
+              </label>
+              <label
+                title="All candidates in a tie are simultaneously eliminated"
+                class="radio-inline hide"
+              >
+                <input
+                  type="radio"
+                  value="none"
+                  name="tie-break-method"
+                  ng-model="ballot.tieBreak"
+                />No Winner
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Integration section (collapsed by default) -->
+        <div
+          class="options-section-header"
+          ng-click="activeSection = activeSection === 'integration' ? null : 'integration'"
+          ng-show="user.name"
+        >
+          <h4>
+            <i
+              class="fa fa-chevron-right chevron"
+              ng-class="{'open': activeSection === 'integration'}"
+            ></i>
+            External website Integration
+          </h4>
+        </div>
+        <div class="options-section-body" ng-class="{'open': activeSection === 'integration'}">
+          <div class="form-group">
+            <label>Redirect URL after voting:</label>
+            <input
+              type="url"
+              class="form-control"
+              ng-model="ballot.kickbackUrl"
+              placeholder="Leave blank to use the default 'Thank You' page"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Iframe URL on voting page:
+              <i
+                class="fa fa-question-circle"
+                style="cursor: pointer; color: #1a43bf"
+                data-toggle="modal"
+                data-target="#iframe-help-modal"
+              ></i>
+            </label>
+            <input
+              type="url"
+              class="form-control"
+              ng-model="ballot.iframeUrl"
+              placeholder="Review the instructions above."
+            />
+          </div>
+        </div>
+
         <div ng-hide="true" class="form-group">
           <label
             >Require Voter Sign-in:<span ng-hide="ballot.requireSignIn">
@@ -433,7 +505,7 @@
         <form name="entriesForm" ng-submit="addEntry()">
           <div class="form-group">
             <label>New Entry (use ENTER to add)</label>
-            <input name="entryInput" ng-model="entryInput" class="form-control" /><span
+            <input name="entryInput" ng-model="entryInput" ng-change="errorEntry = ''" class="form-control" /><span
               ng-show="errorEntry"
               >{{errorEntry}}</span
             >

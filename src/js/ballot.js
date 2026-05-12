@@ -85,6 +85,13 @@ export function initBallot(scope, http) {
     $s.hyperlinks = [];
     $s.entryColors = null;
     $s.entryIds = [];
+    $s.advancedOptions = false;
+    $s.activeSection = null;
+    $s.errorEntry = '';
+    $s.showRelease = false;
+    $s.editTime = false;
+    $s.editDate = false;
+    $s.showIntegrationOptions = false;
 
     return {
       positions: 1,
@@ -596,6 +603,7 @@ export function initBallot(scope, http) {
           $s.images = [];
           $s.hyperlinks = [];
           $s.entryColors = [];
+          setTimeout(function() { document.querySelector('[name="entryInput"]').focus(); });
         }
       });
     };
@@ -868,7 +876,11 @@ export function initBallot(scope, http) {
 
   $s.addEntry = function () {
     if (!$s.entryInput.length) {
-      $s.errorEntry = 'Entries must not be blank';
+      if ($s.errorEntry && $s.entries.length >= 2) {
+        $s.submitEntries();
+        return;
+      }
+      $s.errorEntry = 'Entries must not be blank.' + ($s.entries.length >= 2 ? ' Press ENTER again to Submit All Entries.' : '');
     } else if ($s.entries.indexOf($s.entryInput) !== -1) {
       $s.errorEntry = 'No duplicate entries allowed';
     } else if ($s.entryInput.indexOf('"') !== -1) {
