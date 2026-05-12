@@ -32,8 +32,10 @@
                     No group questions defined.
                   </div>
                   <div ng-repeat="field in manageGroupFields" style="margin-bottom: 10px; padding: 8px; background: #f9f9f9; border-radius: 4px">
-                    <strong>{{field.title}}</strong>: {{field.question_text}}
-                    <div style="padding-left: 15px; margin-top: 4px">
+                    <strong>{{field.title}}</strong>
+                    <span class="text-muted">({{field.type === 'checkbox' ? 'Checkbox' : field.type === 'text' ? 'Text Input' : 'Dropdown'}})</span>:
+                    {{field.question_text}}
+                    <div ng-if="field.type !== 'text'" style="padding-left: 15px; margin-top: 4px">
                       <span ng-repeat="opt in field.options" class="label label-default" style="margin-right: 4px">{{opt.label}}</span>
                     </div>
                   </div>

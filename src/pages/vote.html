@@ -67,16 +67,37 @@
                 />
               </div>
               <div ng-repeat="field in groupFields track by field.id" class="form-group">
-                <label>{{field.question_text || field.title}}</label>
+                <label>{{field.question_text || field.title}} <span ng-if="field.required == 0" class="text-muted">(optional)</span></label>
+                <!-- Dropdown (select) -->
                 <select
+                  ng-if="!field.type || field.type === 'select'"
                   ng-model="groupAnswers[field.id]"
                   class="form-control"
                   style="max-width: 400px"
-                  required
+                  ng-required="field.required != 0"
                 >
                   <option value="">-- Select --</option>
                   <option ng-repeat="opt in field.options track by opt.id" value="{{opt.id}}">{{opt.label}}</option>
                 </select>
+                <!-- Checkbox (multi-select) -->
+                <div ng-if="field.type === 'checkbox'" style="max-width: 400px">
+                  <div ng-repeat="opt in field.options track by opt.id" class="checkbox" style="margin: 2px 0">
+                    <label>
+                      <input type="checkbox" ng-click="toggleCheckboxAnswer(field.id, opt.id)" />
+                      {{opt.label}}
+                    </label>
+                  </div>
+                </div>
+                <!-- Text input -->
+                <input
+                  ng-if="field.type === 'text'"
+                  type="text"
+                  ng-model="groupAnswers[field.id]"
+                  class="form-control"
+                  style="max-width: 400px"
+                  placeholder="Enter your answer"
+                  ng-required="field.required != 0"
+                />
               </div>
               <span ng-show="errors.groupAnswers" class="text-danger">{{errors.groupAnswers}}</span>
               <div style="margin-top: 10px">

@@ -202,7 +202,9 @@ export function initBallot(scope, http) {
               return {
                 title: field.title,
                 question_text: field.question_text,
-                options: field.options.map(function (opt) {
+                type: field.type || 'select',
+                required: field.required != 0,
+                options: (field.options || []).map(function (opt) {
                   return opt.label;
                 })
               };
@@ -496,13 +498,21 @@ export function initBallot(scope, http) {
     if ($s.ballot.allowGrouping) {
       $s.ballot.allowCustom = false;
       if (!$s.groupFields || !$s.groupFields.length) {
-        $s.groupFields = [{ title: '', question_text: '', options: [''] }];
+        $s.groupFields = [{ title: '', question_text: '', type: 'select', required: true, options: [''] }];
       }
     }
   };
 
   $s.addGroupField = function () {
-    $s.groupFields.push({ title: '', question_text: '', options: [''] });
+    $s.groupFields.push({ title: '', question_text: '', type: 'select', required: true, options: [''] });
+  };
+
+  $s.onFieldTypeChange = function (field) {
+    if (field.type === 'text') {
+      field.options = [];
+    } else if (!field.options || !field.options.length) {
+      field.options = [''];
+    }
   };
 
   $s.removeGroupField = function (idx) {

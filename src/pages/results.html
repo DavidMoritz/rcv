@@ -52,7 +52,7 @@
               <div id="iframe-house"></div>
             </div>
             <div ng-if="allowGrouping && resultGroupFields.length" style="margin-top: 20px">
-              <div ng-repeat="field in resultGroupFields" style="margin-bottom: 15px">
+              <div ng-repeat="field in resultGroupFields" ng-if="field.type !== 'text'" style="margin-bottom: 15px">
                 <h4
                   class="pointer"
                   ng-click="field.expanded = !field.expanded"

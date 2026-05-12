@@ -50,7 +50,7 @@ if(!empty($key)) {
 			// Fetch group fields if grouping is enabled
 			$groupFields = [];
 			if ($ballot['allowGrouping'] == 1) {
-				$fieldSth = $dbh->prepare("SELECT id, title, question_text, sort_order FROM voter_group_fields WHERE ballot_id = :ballotId ORDER BY sort_order ASC");
+				$fieldSth = $dbh->prepare("SELECT id, title, question_text, type, required, sort_order FROM voter_group_fields WHERE ballot_id = :ballotId ORDER BY sort_order ASC");
 				$fieldSth->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
 				$fieldSth->execute();
 				$groupFields = $fieldSth->fetchAll(PDO::FETCH_ASSOC);

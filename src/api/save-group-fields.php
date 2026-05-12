@@ -39,9 +39,10 @@ if (!empty($errors)) {
 
 	// Insert new fields and options
 	$fields = isset($_POST['fields']) ? $_POST['fields'] : [];
+	$allowedTypes = ['select', 'checkbox', 'text'];
 	$insertField = $dbh->prepare("
-		INSERT INTO voter_group_fields (ballot_id, title, question_text, sort_order)
-		VALUES (:ballotId, :title, :questionText, :sortOrder)
+		INSERT INTO voter_group_fields (ballot_id, title, question_text, type, required, sort_order)
+		VALUES (:ballotId, :title, :questionText, :type, :required, :sortOrder)
 	");
 	$insertOption = $dbh->prepare("
 		INSERT INTO voter_group_options (field_id, label, sort_order)
@@ -53,12 +54,21 @@ if (!empty($errors)) {
 		$questionText = substr(trim($field['question_text'] ?? ''), 0, 256);
 		if (!$title && !$questionText) continue;
 
+		$type = isset($field['type']) && in_array($field['type'], $allowedTypes) ? $field['type'] : 'select';
+
+		$required = !empty($field['required']) ? 1 : 0;
+
 		$insertField->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
 		$insertField->bindValue(':title', $title, PDO::PARAM_STR);
 		$insertField->bindValue(':questionText', $questionText, PDO::PARAM_STR);
+		$insertField->bindValue(':type', $type, PDO::PARAM_STR);
+		$insertField->bindValue(':required', $required, PDO::PARAM_INT);
 		$insertField->bindValue(':sortOrder', $idx, PDO::PARAM_INT);
 		$insertField->execute();
 		$fieldId = $dbh->lastInsertId();
+
+		// Skip options for text type fields (no predefined choices)
+		if ($type === 'text') continue;
 
 		$options = isset($field['options']) ? $field['options'] : [];
 		foreach ($options as $optIdx => $option) {

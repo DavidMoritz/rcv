@@ -101,12 +101,11 @@
         </div>
         <div class="form-group" ng-show="user.name && !ballot.isSecure">
           <label>
-            Group voters by category:
+            Prompt voters for custom information:
             <input type="checkbox" ng-model="ballot.allowGrouping" ng-change="onGroupingToggle()" />
           </label>
           <small ng-show="ballot.allowGrouping" class="text-muted">
-            Define questions on the next screen whose answers are used for grouped analysis of
-            results.
+            Define prompts on the next screen.
           </small>
         </div>
         <div class="form-group" ng-show="!ballot.isSecure">
@@ -435,7 +434,7 @@
           ng-show="ballot.allowGrouping"
           style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #5bc0de"
         >
-          <h4>Voter Group Questions</h4>
+          <h4>Custom Voter Prompts</h4>
           <div
             ng-repeat="field in groupFields track by $index"
             ng-init="fieldIdx = $index"
@@ -443,7 +442,7 @@
           >
             <div class="form-group" style="margin-bottom: 5px">
               <div class="row">
-                <div class="col-sm-5">
+                <div class="col-sm-3">
                   <input
                     type="text"
                     ng-model="field.title"
@@ -453,7 +452,7 @@
                     maxlength="64"
                   />
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                   <input
                     type="text"
                     ng-model="field.question_text"
@@ -462,6 +461,28 @@
                     placeholder="Question for voters (e.g. What is your party?)"
                     maxlength="256"
                   />
+                </div>
+                <div class="col-sm-2">
+                  <select
+                    ng-model="field.type"
+                    ng-change="onFieldTypeChange(field)"
+                    ng-disabled="editBallot && ballot.totalVotes > 0"
+                    class="form-control input-sm"
+                  >
+                    <option value="select">Dropdown</option>
+                    <option value="checkbox">Checkbox</option>
+                    <option value="text">Text Input</option>
+                  </select>
+                </div>
+                <div class="col-sm-2">
+                  <label class="checkbox-inline" style="line-height: 30px">
+                    <input
+                      type="checkbox"
+                      ng-model="field.required"
+                      ng-disabled="editBallot && ballot.totalVotes > 0"
+                    />
+                    Required
+                  </label>
                 </div>
                 <div class="col-sm-1" ng-hide="editBallot && ballot.totalVotes > 0">
                   <i
@@ -472,7 +493,7 @@
                 </div>
               </div>
             </div>
-            <div style="padding-left: 20px">
+            <div ng-show="field.type !== 'text'" style="padding-left: 20px">
               <div ng-repeat="opt in field.options track by $index" style="margin-bottom: 3px">
                 <div class="input-group input-group-sm" style="max-width: 300px">
                   <input
@@ -512,7 +533,7 @@
             ng-hide="editBallot && ballot.totalVotes > 0"
             class="btn btn-default btn-sm"
           >
-            + Add Group Question
+            + Add Prompt
           </button>
         </div>
         <form name="entriesForm" ng-submit="addEntry()">

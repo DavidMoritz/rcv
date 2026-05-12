@@ -501,7 +501,9 @@ mainApp.controller('MainCtrl', [
         if ($s.allowGrouping && $s.resultGroupFields.length) {
           // Bucket votes by group answers
           var groupBuckets = {}; // { fieldId: { optionId: [voteIndex, ...] } }
+          var fieldTypeMap = {};
           $s.resultGroupFields.forEach(function (field) {
+            fieldTypeMap[field.id] = field.type || 'select';
             groupBuckets[field.id] = {};
             field.options.forEach(function (opt) {
               groupBuckets[field.id][opt.id] = [];
@@ -517,9 +519,22 @@ mainApp.controller('MainCtrl', [
                 return;
               }
               Object.keys(answers).forEach(function (fieldId) {
-                var optionId = answers[fieldId];
-                if (groupBuckets[fieldId] && groupBuckets[fieldId][optionId]) {
-                  groupBuckets[fieldId][optionId].push(idx);
+                var type = fieldTypeMap[fieldId] || 'select';
+                if (type === 'text') return; // skip text fields — no bucketing
+                var answer = answers[fieldId];
+                if (type === 'checkbox' && typeof answer === 'string') {
+                  // Comma-separated option IDs
+                  answer.split(',').forEach(function (optId) {
+                    optId = optId.trim();
+                    if (groupBuckets[fieldId] && groupBuckets[fieldId][optId]) {
+                      groupBuckets[fieldId][optId].push(idx);
+                    }
+                  });
+                } else {
+                  // select: single option ID
+                  if (groupBuckets[fieldId] && groupBuckets[fieldId][answer]) {
+                    groupBuckets[fieldId][answer].push(idx);
+                  }
                 }
               });
             }
@@ -627,11 +642,29 @@ mainApp.controller('MainCtrl', [
       });
     };
 
+    $s.toggleCheckboxAnswer = function (fieldId, optId) {
+      var current = $s.groupAnswers[fieldId] ? $s.groupAnswers[fieldId].split(',') : [];
+      var idx = current.indexOf(String(optId));
+      if (idx === -1) {
+        current.push(String(optId));
+      } else {
+        current.splice(idx, 1);
+      }
+      $s.groupAnswers[fieldId] = current.filter(Boolean).join(',');
+    };
+
     $s.submitGroupAnswers = function () {
-      // Validate all group questions are answered
+      // Type-aware validation (skip optional fields)
       var allAnswered = true;
       $s.groupFields.forEach(function (field) {
-        if (!$s.groupAnswers[field.id]) {
+        if (field.required == 0 || field.required === false) return;
+        var val = $s.groupAnswers[field.id];
+        var type = field.type || 'select';
+        if (type === 'select' && !val) {
+          allAnswered = false;
+        } else if (type === 'checkbox' && (!val || !val.length)) {
+          allAnswered = false;
+        } else if (type === 'text' && (!val || !val.trim().length)) {
           allAnswered = false;
         }
       });

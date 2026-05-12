@@ -7,7 +7,7 @@ if (empty($ballotId)) {
 	echo json_encode(['errors' => ['ballotId' => 'Ballot ID is required.']]);
 } else {
 	$fieldSth = $dbh->prepare("
-		SELECT id, title, question_text, sort_order
+		SELECT id, title, question_text, type, required, sort_order
 		FROM voter_group_fields
 		WHERE ballot_id = :ballotId
 		ORDER BY sort_order ASC
@@ -24,6 +24,10 @@ if (empty($ballotId)) {
 	");
 
 	foreach ($fields as &$field) {
+		if ($field['type'] === 'text') {
+			$field['options'] = [];
+			continue;
+		}
 		$optionSth->bindValue(':fieldId', $field['id'], PDO::PARAM_INT);
 		$optionSth->execute();
 		$field['options'] = $optionSth->fetchAll(PDO::FETCH_ASSOC);

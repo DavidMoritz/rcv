@@ -91,6 +91,8 @@ CREATE TABLE voter_group_fields (
   ballot_id int NOT NULL,
   title varchar(64) NOT NULL,
   question_text varchar(256) NOT NULL,
+  type varchar(16) NOT NULL DEFAULT 'select',
+  required tinyint NOT NULL DEFAULT 1,
   sort_order int NOT NULL DEFAULT 0
 );
 CREATE INDEX idx_vgf_ballot ON voter_group_fields (ballot_id);
