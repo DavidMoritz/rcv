@@ -239,6 +239,7 @@ export function initBallot(scope, http) {
 
   $s.entryColorOptions = [
     { value: null },
+    { value: 'dddddd' },
     { value: 'e7b9af' },
     { value: 'f4cccd' },
     { value: 'fce6cd' },
@@ -499,13 +500,21 @@ export function initBallot(scope, http) {
     if ($s.ballot.allowGrouping) {
       $s.ballot.allowCustom = false;
       if (!$s.groupFields || !$s.groupFields.length) {
-        $s.groupFields = [{ title: '', question_text: '', type: 'select', required: true, options: [''] }];
+        $s.groupFields = [
+          { title: '', question_text: '', type: 'select', required: true, options: [''] }
+        ];
       }
     }
   };
 
   $s.addGroupField = function () {
-    $s.groupFields.push({ title: '', question_text: '', type: 'select', required: true, options: [''] });
+    $s.groupFields.push({
+      title: '',
+      question_text: '',
+      type: 'select',
+      required: true,
+      options: ['']
+    });
   };
 
   $s.onFieldTypeChange = function (field) {
