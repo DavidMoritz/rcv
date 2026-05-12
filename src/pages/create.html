@@ -428,114 +428,8 @@
       </div>
       <input type="submit" value="Submit" ng-disabled="errors.key" class="btn btn-info" />
     </form>
-    <div ng-show="entries &amp;&amp; !congrats">
+    <div ng-show="entries &amp;&amp; !congrats &amp;&amp; !showGroupPage">
       <div ng-show="!editBallot || editBallot_Options == 'false'">
-        <div
-          ng-show="ballot.allowGrouping"
-          style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #5bc0de"
-        >
-          <h4>Custom Voter Prompts</h4>
-          <div
-            ng-repeat="field in groupFields track by $index"
-            ng-init="fieldIdx = $index"
-            style="margin-bottom: 12px; padding: 10px; background: #f9f9f9; border-radius: 4px"
-          >
-            <div class="form-group" style="margin-bottom: 5px">
-              <div class="row">
-                <div class="col-sm-3">
-                  <input
-                    type="text"
-                    ng-model="field.title"
-                    ng-readonly="editBallot && ballot.totalVotes > 0"
-                    class="form-control input-sm"
-                    placeholder="Short title (e.g. Affiliation)"
-                    maxlength="64"
-                  />
-                </div>
-                <div class="col-sm-4">
-                  <input
-                    type="text"
-                    ng-model="field.question_text"
-                    ng-readonly="editBallot && ballot.totalVotes > 0"
-                    class="form-control input-sm"
-                    placeholder="Question for voters (e.g. What is your party?)"
-                    maxlength="256"
-                  />
-                </div>
-                <div class="col-sm-2">
-                  <select
-                    ng-model="field.type"
-                    ng-change="onFieldTypeChange(field)"
-                    ng-disabled="editBallot && ballot.totalVotes > 0"
-                    class="form-control input-sm"
-                  >
-                    <option value="select">Dropdown</option>
-                    <option value="checkbox">Checkbox</option>
-                    <option value="text">Text Input</option>
-                  </select>
-                </div>
-                <div class="col-sm-2">
-                  <label class="checkbox-inline" style="line-height: 30px">
-                    <input
-                      type="checkbox"
-                      ng-model="field.required"
-                      ng-disabled="editBallot && ballot.totalVotes > 0"
-                    />
-                    Required
-                  </label>
-                </div>
-                <div class="col-sm-1" ng-hide="editBallot && ballot.totalVotes > 0">
-                  <i
-                    ng-click="removeGroupField($index)"
-                    class="fa fa-close pointer"
-                    style="line-height: 30px; color: #d9534f"
-                  ></i>
-                </div>
-              </div>
-            </div>
-            <div ng-show="field.type !== 'text'" style="padding-left: 20px">
-              <div ng-repeat="opt in field.options track by $index" style="margin-bottom: 3px">
-                <div class="input-group input-group-sm" style="max-width: 300px">
-                  <input
-                    type="text"
-                    ng-model="field.options[$index]"
-                    ng-readonly="editBallot && ballot.totalVotes > 0"
-                    ng-keydown="$event.keyCode === 13 && (addGroupOption(fieldIdx), $event.preventDefault())"
-                    class="form-control group-choice-{{fieldIdx}}"
-                    placeholder="Choice {{$index + 1}}"
-                    maxlength="128"
-                  />
-                  <span class="input-group-btn" ng-hide="editBallot && ballot.totalVotes > 0">
-                    <button
-                      type="button"
-                      ng-click="removeGroupOption($parent.$index, $index)"
-                      class="btn btn-default btn-sm"
-                    >
-                      <i class="fa fa-close"></i>
-                    </button>
-                  </span>
-                </div>
-              </div>
-              <button
-                type="button"
-                ng-click="addGroupOption(fieldIdx)"
-                ng-hide="editBallot && ballot.totalVotes > 0"
-                class="btn btn-default btn-xs"
-                style="margin-top: 3px"
-              >
-                + Add Choice
-              </button>
-            </div>
-          </div>
-          <button
-            type="button"
-            ng-click="addGroupField()"
-            ng-hide="editBallot && ballot.totalVotes > 0"
-            class="btn btn-default btn-sm"
-          >
-            + Add Prompt
-          </button>
-        </div>
         <form name="entriesForm" ng-submit="addEntry()">
           <div class="form-group">
             <label>New Entry (use ENTER to add)</label>
@@ -546,7 +440,8 @@
           </div>
           <button type="submit" class="btn btn-info">Add Entry</button>
           <button type="button" ng-click="submitEntries()" class="btn btn-default">
-            Submit All Entries <span ng-show="groupFields.length > 0"> And Groups</span>
+            <span ng-show="ballot.allowGrouping">Next: Voter Prompts</span>
+            <span ng-hide="ballot.allowGrouping">Submit All Entries</span>
           </button>
         </form>
         <h2>Current Entry List</h2>
@@ -574,6 +469,122 @@
           ><i ng-click="removeEntry($index)" ng-hide="editBallot" class="fa fa-close pointer"></i>
         </h5>
       </div>
+    </div>
+    <div ng-show="showGroupPage &amp;&amp; !congrats">
+      <h3>Voter Prompts</h3>
+      <p class="text-muted">These prompts appear to voters before they submit their ballot.</p>
+      <div
+        style="
+          margin-bottom: 15px;
+          padding: 10px;
+          background: #f0f8ff;
+          border-radius: 4px;
+          border: 1px solid #d6e9f8;
+        "
+      >
+        <span ng-show="ballot.isSecure"><strong>Voter Code</strong> &mdash; Required</span>
+        <span ng-show="!ballot.isSecure &amp;&amp; ballot.register == '1'"
+          ><strong>Voter Name</strong> &mdash; Required</span
+        >
+        <span ng-show="!ballot.isSecure &amp;&amp; ballot.register == '0'"
+          ><strong>Voter Name</strong> &mdash; Optional</span
+        >
+        <span ng-show="!ballot.isSecure &amp;&amp; ballot.register == '2'"
+          ><strong>Anonymous</strong> &mdash; no name collected</span
+        >
+      </div>
+      <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #5bc0de">
+        <h4>Custom Voter Prompts</h4>
+        <div
+          ng-repeat="field in groupFields track by $index"
+          ng-init="fieldIdx = $index"
+          style="margin-bottom: 12px; padding: 10px; background: #f9f9f9; border-radius: 4px"
+        >
+          <div class="form-group" style="margin-bottom: 5px">
+            <div class="row">
+              <div class="col-sm-3">
+                <input
+                  type="text"
+                  ng-model="field.title"
+                  class="form-control input-sm"
+                  placeholder="Short title (e.g. Affiliation)"
+                  maxlength="64"
+                />
+              </div>
+              <div class="col-sm-4">
+                <input
+                  type="text"
+                  ng-model="field.question_text"
+                  class="form-control input-sm"
+                  placeholder="Question for voters (e.g. What is your party?)"
+                  maxlength="256"
+                />
+              </div>
+              <div class="col-sm-2">
+                <select
+                  ng-model="field.type"
+                  ng-change="onFieldTypeChange(field)"
+                  class="form-control input-sm"
+                >
+                  <option value="select">Dropdown</option>
+                  <option value="checkbox">Checkbox</option>
+                  <option value="text">Text Input</option>
+                </select>
+              </div>
+              <div class="col-sm-2" ng-hide="field.type === 'checkbox'">
+                <label class="checkbox-inline" style="line-height: 30px">
+                  <input type="checkbox" ng-model="field.required" />
+                  Required
+                </label>
+              </div>
+              <div class="col-sm-1">
+                <i
+                  ng-click="removeGroupField($index)"
+                  class="fa fa-close pointer"
+                  style="line-height: 30px; color: #d9534f"
+                ></i>
+              </div>
+            </div>
+          </div>
+          <div ng-show="field.type === 'select'" style="padding-left: 20px">
+            <div ng-repeat="opt in field.options track by $index" style="margin-bottom: 3px">
+              <div class="input-group input-group-sm" style="max-width: 300px">
+                <input
+                  type="text"
+                  ng-model="field.options[$index]"
+                  ng-keydown="$event.keyCode === 13 && (addGroupOption(fieldIdx), $event.preventDefault())"
+                  class="form-control group-choice-{{fieldIdx}}"
+                  placeholder="Choice {{$index + 1}}"
+                  maxlength="128"
+                />
+                <span class="input-group-btn">
+                  <button
+                    type="button"
+                    ng-click="removeGroupOption($parent.$index, $index)"
+                    class="btn btn-default btn-sm"
+                  >
+                    <i class="fa fa-close"></i>
+                  </button>
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              ng-click="addGroupOption(fieldIdx)"
+              class="btn btn-default btn-xs"
+              style="margin-top: 3px"
+            >
+              + Add Choice
+            </button>
+          </div>
+        </div>
+        <button type="button" ng-click="addGroupField()" class="btn btn-default btn-sm">
+          + Add Prompt
+        </button>
+      </div>
+      <button type="button" ng-click="submitGroupFields()" class="btn btn-info">
+        Submit Voter Prompts
+      </button>
     </div>
     <div ng-show="congrats">
       <div class="row">

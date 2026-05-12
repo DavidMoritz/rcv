@@ -80,6 +80,7 @@ export function initBallot(scope, http) {
   $s.resetBallot = function () {
     $s.generateRandomKey();
     $s.entries = null;
+    $s.showGroupPage = false;
     $s.images = [];
     $s.hyperlinks = [];
     $s.entryColors = null;
@@ -636,47 +637,54 @@ export function initBallot(scope, http) {
         $s.errors = resp.errors;
       } else {
         $s.editBallot = false;
-        // Save group fields if grouping is enabled
-        if ($s.ballot.allowGrouping && $s.groupFields && $s.groupFields.length) {
-          // Filter out empty fields
-          var validFields = $s.groupFields.filter(function (f) {
-            return f.title || f.question_text;
-          });
-          if (validFields.length) {
-            $http({
-              method: 'POST',
-              url: '/api/save-group-fields.php',
-              data: {
-                ballotId: $s.ballot.id,
-                createdBy: $s.user.id || 'guest',
-                fields: validFields
-              }
-            }).success(function () {
-              $s.congrats = true;
-              $s.generateQRCode($s.ballot.key);
-            });
-            return;
-          } else {
-            // No valid fields — auto-uncheck grouping
-            $s.ballot.allowGrouping = false;
-            $http({
-              method: 'POST',
-              url: '/api/update-ballot.php',
-              data: {
-                id: $s.ballot.id,
-                name: $s.ballot.name,
-                positions: $s.ballot.positions,
-                key: $s.ballot.key,
-                createdBy: $s.user.id || 'guest',
-                allowGrouping: 0
-              }
-            });
-          }
+        if ($s.ballot.allowGrouping) {
+          $s.showGroupPage = true;
+        } else {
+          $s.congrats = true;
+          $s.generateQRCode($s.ballot.key);
         }
-        $s.congrats = true;
-        $s.generateQRCode($s.ballot.key);
       }
     });
+  };
+
+  $s.submitGroupFields = function () {
+    if ($s.groupFields && $s.groupFields.length) {
+      var validFields = $s.groupFields.filter(function (f) {
+        return f.title || f.question_text;
+      });
+      if (validFields.length) {
+        $http({
+          method: 'POST',
+          url: '/api/save-group-fields.php',
+          data: {
+            ballotId: $s.ballot.id,
+            createdBy: $s.user.id || 'guest',
+            fields: validFields
+          }
+        }).success(function () {
+          $s.congrats = true;
+          $s.generateQRCode($s.ballot.key);
+        });
+        return;
+      } else {
+        // No valid fields — auto-uncheck grouping
+        $s.ballot.allowGrouping = false;
+        $http({
+          method: 'POST',
+          url: '/api/update-ballot.php',
+          data: {
+            id: $s.ballot.id,
+            name: $s.ballot.name,
+            positions: $s.ballot.positions,
+            key: $s.ballot.key,
+            createdBy: $s.user.id || 'guest',
+            allowGrouping: 0
+          }
+        });
+      }
+    }
+    $s.congrats = true;
+    $s.generateQRCode($s.ballot.key);
   };
 
   $s.duplicateBallot = function (ballot) {
