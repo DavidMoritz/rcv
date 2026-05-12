@@ -676,6 +676,99 @@ mainApp.controller('MainCtrl', [
       $s.groupAnswersSubmitted = true;
     };
 
+    $s.exportCsv = function (ballot) {
+      var key = ballot.key;
+      $http.get('/api/get-votes.php?key=' + key + '&t=' + Date.now()).then(function (resp) {
+        if (typeof resp.data === 'string') return;
+
+        var voteRows = resp.data.votes;
+        var entryList = resp.data.entries;
+        var groupFields = resp.data.groupFields || [];
+
+        // Build entry map
+        var entryMap = {};
+        entryList.forEach(function (e) {
+          entryMap[e.entry_id] = e.name;
+        });
+
+        // Build option map for select/checkbox fields
+        var optionMap = {};
+        groupFields.forEach(function (field) {
+          (field.options || []).forEach(function (opt) {
+            optionMap[opt.id] = opt.label;
+          });
+        });
+
+        // Determine max rank count
+        var maxRanks = 0;
+        voteRows.forEach(function (row) {
+          var ids = JSON.parse(row.voteIds || '[]');
+          if (ids.length > maxRanks) maxRanks = ids.length;
+        });
+
+        // CSV header
+        var headers = ['Voter Name', 'Date'];
+        for (var r = 1; r <= maxRanks; r++) {
+          headers.push('Rank ' + r);
+        }
+        groupFields.forEach(function (field) {
+          headers.push(field.title || field.question_text);
+        });
+
+        // Escape CSV cell
+        function esc(val) {
+          val = String(val == null ? '' : val);
+          if (val.indexOf(',') !== -1 || val.indexOf('"') !== -1 || val.indexOf('\n') !== -1) {
+            return '"' + val.replace(/"/g, '""') + '"';
+          }
+          return val;
+        }
+
+        var lines = [headers.map(esc).join(',')];
+
+        voteRows.forEach(function (row) {
+          var cols = [row.name || '', row.date_created || ''];
+          var ids = JSON.parse(row.voteIds || '[]');
+          for (var i = 0; i < maxRanks; i++) {
+            cols.push(ids[i] ? (entryMap[ids[i]] || ids[i]) : '');
+          }
+          // Group answers
+          var answers = {};
+          if (row.group_answers) {
+            try {
+              answers = typeof row.group_answers === 'string' ? JSON.parse(row.group_answers) : row.group_answers;
+            } catch (e) {}
+          }
+          groupFields.forEach(function (field) {
+            var val = answers[field.id];
+            var type = field.type || 'select';
+            if (type === 'text') {
+              cols.push(val || '');
+            } else if (type === 'checkbox' && val) {
+              var labels = String(val).split(',').map(function (id) {
+                return optionMap[id.trim()] || id;
+              });
+              cols.push(labels.join('; '));
+            } else {
+              cols.push(val ? (optionMap[val] || val) : '');
+            }
+          });
+          lines.push(cols.map(esc).join(','));
+        });
+
+        var csv = lines.join('\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = (ballot.name || 'ballot') + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    };
+
     $s.addCustomCandidate = function () {
       const customEntry = $s.ballot.customEntry;
 

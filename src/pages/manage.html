@@ -157,6 +157,9 @@
                 <a href="/results#{{manageBallot.key}}" target="_blank" class="btn btn-default btn-sm">
                   View Results
                 </a>
+                <button ng-click="exportCsv(manageBallot)" class="btn btn-default btn-sm">
+                  <i class="fa fa-download"></i> Export to CSV
+                </button>
                 <button ng-click="duplicateBallot(manageBallot)" class="btn btn-default btn-sm">
                   <i class="fa fa-clone"></i> Duplicate Ballot
                 </button>
