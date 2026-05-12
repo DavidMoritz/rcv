@@ -234,13 +234,23 @@ switch ($action) {
             // Check new ballots since last check
             $stmt = $dbh->prepare("
                 SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
-                    b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.kickbackUrl, b.iframeUrl,
+                    b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph,
                     u.username as ownerName,
                     COUNT(v.vote_id) as voteCount,
-                    (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
+                    COALESCE(ec.entryCount, 0) as entryCount,
+                    COALESCE(ec.hasImage, 0) as hasImage,
+                    COALESCE(ec.hasColor, 0) as hasColor,
+                    COALESCE(ec.hasHyperlink, 0) as hasHyperlink
                 FROM ballots b
                 LEFT JOIN users u ON b.createdBy = u.id
                 LEFT JOIN votes v ON v.ballotId = b.id
+                LEFT JOIN (
+                    SELECT ballotId, COUNT(*) as entryCount,
+                        SUM(image != '') as hasImage,
+                        SUM(color IS NOT NULL AND color != '') as hasColor,
+                        SUM(hyperlink != '') as hasHyperlink
+                    FROM entries GROUP BY ballotId
+                ) ec ON ec.ballotId = b.id
                 WHERE b.timeCreated > :lastChecked
                 GROUP BY b.id
                 HAVING voteCount > 0
@@ -260,12 +270,23 @@ switch ($action) {
                 $placeholders = implode(',', array_fill(0, count($cachedIds), '?'));
                 $stmt = $dbh->prepare("
                     SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
+                        b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph,
                         u.username as ownerName,
                         COUNT(v.vote_id) as voteCount,
-                        (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
+                        COALESCE(ec.entryCount, 0) as entryCount,
+                        COALESCE(ec.hasImage, 0) as hasImage,
+                        COALESCE(ec.hasColor, 0) as hasColor,
+                        COALESCE(ec.hasHyperlink, 0) as hasHyperlink
                     FROM ballots b
                     LEFT JOIN users u ON b.createdBy = u.id
                     LEFT JOIN votes v ON v.ballotId = b.id
+                    LEFT JOIN (
+                        SELECT ballotId, COUNT(*) as entryCount,
+                            SUM(image != '') as hasImage,
+                            SUM(color IS NOT NULL AND color != '') as hasColor,
+                            SUM(hyperlink != '') as hasHyperlink
+                        FROM entries GROUP BY ballotId
+                    ) ec ON ec.ballotId = b.id
                     WHERE b.id IN ($placeholders)
                     GROUP BY b.id
                     ORDER BY voteCount DESC
@@ -284,12 +305,23 @@ switch ($action) {
                 $placeholders = implode(',', array_fill(0, count($cachedIds), '?'));
                 $stmt = $dbh->prepare("
                     SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
+                        b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph,
                         u.username as ownerName,
                         COUNT(v.vote_id) as voteCount,
-                        (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
+                        COALESCE(ec.entryCount, 0) as entryCount,
+                        COALESCE(ec.hasImage, 0) as hasImage,
+                        COALESCE(ec.hasColor, 0) as hasColor,
+                        COALESCE(ec.hasHyperlink, 0) as hasHyperlink
                     FROM ballots b
                     LEFT JOIN users u ON b.createdBy = u.id
                     LEFT JOIN votes v ON v.ballotId = b.id
+                    LEFT JOIN (
+                        SELECT ballotId, COUNT(*) as entryCount,
+                            SUM(image != '') as hasImage,
+                            SUM(color IS NOT NULL AND color != '') as hasColor,
+                            SUM(hyperlink != '') as hasHyperlink
+                        FROM entries GROUP BY ballotId
+                    ) ec ON ec.ballotId = b.id
                     WHERE b.id IN ($placeholders)
                     GROUP BY b.id
                     ORDER BY voteCount DESC
@@ -301,13 +333,23 @@ switch ($action) {
             // First run: full scan
             $stmt = $dbh->query("
                 SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
-                    b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.kickbackUrl, b.iframeUrl,
+                    b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph,
                     u.username as ownerName,
                     COUNT(v.vote_id) as voteCount,
-                    (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
+                    COALESCE(ec.entryCount, 0) as entryCount,
+                    COALESCE(ec.hasImage, 0) as hasImage,
+                    COALESCE(ec.hasColor, 0) as hasColor,
+                    COALESCE(ec.hasHyperlink, 0) as hasHyperlink
                 FROM ballots b
                 LEFT JOIN users u ON b.createdBy = u.id
                 LEFT JOIN votes v ON v.ballotId = b.id
+                LEFT JOIN (
+                    SELECT ballotId, COUNT(*) as entryCount,
+                        SUM(image != '') as hasImage,
+                        SUM(color IS NOT NULL AND color != '') as hasColor,
+                        SUM(hyperlink != '') as hasHyperlink
+                    FROM entries GROUP BY ballotId
+                ) ec ON ec.ballotId = b.id
                 GROUP BY b.id
                 HAVING voteCount > 0
                 ORDER BY voteCount DESC
@@ -334,9 +376,19 @@ switch ($action) {
             SELECT * FROM (
                 SELECT b.*, u.username as ownerName,
                     (SELECT COUNT(*) FROM votes v WHERE v.ballotId = b.id) as voteCount,
-                    (SELECT COUNT(*) FROM entries e WHERE e.ballotId = b.id) as entryCount
+                    COALESCE(ec.entryCount, 0) as entryCount,
+                    COALESCE(ec.hasImage, 0) as hasImage,
+                    COALESCE(ec.hasColor, 0) as hasColor,
+                    COALESCE(ec.hasHyperlink, 0) as hasHyperlink
                 FROM ballots b
                 LEFT JOIN users u ON b.createdBy = u.id
+                LEFT JOIN (
+                    SELECT ballotId, COUNT(*) as entryCount,
+                        SUM(image != '') as hasImage,
+                        SUM(color IS NOT NULL AND color != '') as hasColor,
+                        SUM(hyperlink != '') as hasHyperlink
+                    FROM entries GROUP BY ballotId
+                ) ec ON ec.ballotId = b.id
                 WHERE LOWER(b.name) NOT LIKE '% test %'
                   AND LOWER(b.name) NOT LIKE 'test %'
                   AND LOWER(b.name) NOT LIKE '% test'

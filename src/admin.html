@@ -110,13 +110,17 @@
                                     <th title="Ordered Entries">&#x1F522;</th>
                                     <th title="Kickback URL">&#x267B;</th>
                                     <th title="Iframe URL">&#x1F5D4;</th>
+                                    <th title="Has Image">&#x1F5BC;</th>
+                                    <th title="Has Color">&#x1F3A8;</th>
+                                    <th title="Has Hyperlink">&#x1F517;</th>
+                                    <th title="RCVis Graph">&#x1F4CA;</th>
                                     <th>Votes</th>
                                     <th>Entries</th>
                                     <th>Created</th>
                                 </tr>
                             </thead>
                             <tbody id="recentActiveTableBody">
-                                <tr><td colspan="12" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="16" class="text-center">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -140,13 +144,17 @@
                                     <th title="Ordered Entries">&#x1F522;</th>
                                     <th title="Kickback URL">&#x267B;</th>
                                     <th title="Iframe URL">&#x1F5D4;</th>
+                                    <th title="Has Image">&#x1F5BC;</th>
+                                    <th title="Has Color">&#x1F3A8;</th>
+                                    <th title="Has Hyperlink">&#x1F517;</th>
+                                    <th title="RCVis Graph">&#x1F4CA;</th>
                                     <th>Votes</th>
                                     <th>Entries</th>
                                     <th>Created</th>
                                 </tr>
                             </thead>
                             <tbody id="popularTableBody">
-                                <tr><td colspan="12" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="16" class="text-center">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -373,7 +381,7 @@
     function renderRankedBallots(tbodyId, ballots, showRank) {
         var tbody = document.getElementById(tbodyId);
         if (ballots.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="12" class="text-center text-muted">No ballots found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="16" class="text-center text-muted">No ballots found</td></tr>';
             return;
         }
         tbody.innerHTML = ballots.map(function(b, i) {
@@ -389,6 +397,10 @@
                 '<td>' + (b.orderedEntries == 1 ? check : '') + '</td>' +
                 '<td>' + (b.kickbackUrl ? check : '') + '</td>' +
                 '<td>' + (b.iframeUrl ? check : '') + '</td>' +
+                '<td>' + (b.hasImage > 0 ? check : '') + '</td>' +
+                '<td>' + (b.hasColor > 0 ? check : '') + '</td>' +
+                '<td>' + (b.hasHyperlink > 0 ? check : '') + '</td>' +
+                '<td>' + (b.showGraph == 1 ? check : '') + '</td>' +
                 '<td><strong>' + (b.voteCount || 0) + '</strong></td>' +
                 '<td>' + (b.entryCount || 0) + '</td>' +
                 '<td>' + created + '</td>' +
