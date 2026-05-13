@@ -190,6 +190,7 @@
                 type="text"
                 ng-focus="releaseOpen = true"
                 uib-datepicker-popup="{{pickerFormat}}"
+                datepicker-append-to-body="true"
                 datepicker-options="pickerOptions"
                 ng-model="ballot.voteCutoff"
                 is-open="releaseOpen"
@@ -215,22 +216,27 @@
               >
             </label>
             <div ng-show="showRelease">
-              <div class="input-group">
-                <input
-                  type="text"
-                  ng-focus="cutoffOpen = true"
-                  uib-datepicker-popup="{{pickerFormat}}"
-                  datepicker-options="pickerOptions"
-                  ng-model="ballot.resultsRelease"
-                  is-open="cutoffOpen"
-                  class="form-control"
-                /><span class="input-group-btn">
-                  <button type="button" ng-click="cutoffOpen = !cutoffOpen" class="btn btn-default">
-                    <i class="fa fa-calendar"></i></button
-                ></span>
-              </div>
               <div class="row">
                 <div class="col-sm-6">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      ng-focus="cutoffOpen = true"
+                      uib-datepicker-popup="{{pickerFormat}}"
+                      datepicker-append-to-body="true"
+                      datepicker-options="pickerOptions"
+                      ng-model="ballot.resultsRelease"
+                      is-open="cutoffOpen"
+                      class="form-control"
+                    /><span class="input-group-btn">
+                      <button
+                        type="button"
+                        ng-click="cutoffOpen = !cutoffOpen"
+                        class="btn btn-default"
+                      >
+                        <i class="fa fa-calendar"></i></button
+                    ></span>
+                  </div>
                   <div class="form-inline">
                     <select
                       ng-model="releaseTime.hour"
