@@ -165,6 +165,17 @@
   color: #333;
   border-bottom-color: #fff;
 }
+/* Mute other rows when a dropdown is open */
+.ballots tbody:has(.dropdown.open) tr {
+  opacity: 0.35;
+  transition: opacity 0.15s;
+}
+.ballots tbody:has(.dropdown.open) tr:has(.dropdown.open) {
+  opacity: 1;
+}
+.ballots tbody tr {
+  transition: opacity 0.15s;
+}
 .options-section-header {
   margin-top: 20px;
   margin-bottom: 8px;

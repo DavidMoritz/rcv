@@ -1,144 +1,147 @@
-      <div ng-show="activeLink == 'profile'" class="panel panel-default">
-        <div class="panel-body">
-          <h1>Profile</h1>
-          <a href="#" ng-click="signOut()" class="pull-right btn btn-info" style="margin-top: -40px"
-            >Sign out</a
+<div ng-show="activeLink == 'profile'" class="panel panel-default">
+  <div class="panel-body">
+    <h1>Profile</h1>
+    <a href="#" ng-click="signOut()" class="pull-right btn btn-info" style="margin-top: -40px"
+      >Sign out</a
+    >
+    <h3 ng-show="user.name">Name: {{user.name}}</h3>
+    <div ng-show="allBallots.length">
+      <ul class="ballot-tabs">
+        <li ng-class="{active: profileTab !== 'managed'}" ng-click="profileTab = 'standard'">
+          Standard Ballots
+        </li>
+        <li ng-class="{active: profileTab === 'managed'}" ng-click="profileTab = 'managed'">
+          Managed Ballots
+        </li>
+      </ul>
+      <table class="table ballots" ng-show="profileTab !== 'managed'">
+        <thead>
+          <tr>
+            <th>Shortcode</th>
+            <th>Name</th>
+            <th>Vote Cutoff ({{moment.tz(moment.tz.guess()).format('z')}})</th>
+            <th>Total votes</th>
+            <th>Admin Tools</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            ng-repeat="ballot in allBallots track by ballot.id"
+            ng-if="ballot.isSecure != 1 && ballot.allowGrouping != 1"
+            id="ballot-row-{{ballot.id}}"
           >
-          <h3 ng-show="user.name">Name: {{user.name}}</h3>
-          <div ng-show="allBallots.length">
-            <ul class="ballot-tabs">
-              <li ng-class="{active: profileTab !== 'managed'}" ng-click="profileTab = 'standard'">
-                Standard Ballots
-              </li>
-              <li ng-class="{active: profileTab === 'managed'}" ng-click="profileTab = 'managed'">
-                Managed Ballots
-              </li>
-            </ul>
-            <table class="table ballots" ng-show="profileTab !== 'managed'">
-              <thead>
-                <tr>
-                  <th>Shortcode</th>
-                  <th>Name</th>
-                  <th>Vote Cutoff ({{moment.tz(moment.tz.guess()).format('z')}})</th>
-                  <th>Total votes</th>
-                  <th>Admin Tools</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  ng-repeat="ballot in allBallots track by ballot.id"
-                  ng-if="ballot.isSecure != 1 && ballot.allowGrouping != 1"
-                  id="ballot-row-{{ballot.id}}"
-                >
-                  <td ng-if="ballot.transferring" colspan="10" class="text-center text-muted">
-                    <i class="fa fa-share-square-o"></i> Transferring...
-                  </td>
-                  <td ng-if="!ballot.transferring">{{ballot.key}}</td>
-                  <td ng-if="!ballot.transferring">{{ballot.name}}</td>
-                  <td ng-if="!ballot.transferring">
-                    {{ballot.voteCutoff.year() > 2100 ? 'never' :
-                    ballot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a')}}<span
-                      class="hide hidden d-none"
-                      >{{ballot.voteCutoff}}</span
-                    >
-                  </td>
-                  <td ng-if="!ballot.transferring">{{ballot.totalVotes}}</td>
-                  <td ng-if="!ballot.transferring">
-                    <a
-                      href="/results#{{ballot.key}}"
-                      tooltip-placement="top-left"
-                      target="_blank"
-                      uib-tooltip="See Results"
-                      class="fa fa-list-ol pointer"
-                    ></a>
-                    <i
-                      ng-click="copyToClipboard(origin + '/' + ballot.key)"
-                      tooltip-placement="top"
-                      uib-tooltip="Copy URL"
-                      class="fa fa-link pointer"
-                    ></i>
-                    <i
-                      ng-click="deleteVotes(ballot)"
-                      tooltip-placement="top"
-                      uib-tooltip="Reset Votes"
-                      class="fa fa-refresh pointer"
-                    ></i>
-                    <i
-                      ng-click="changeBallot(ballot)"
-                      tooltip-placement="top"
-                      uib-tooltip="Edit Ballot"
-                      class="fa fa-pencil pointer"
-                    ></i>
-                    <i
-                      ng-click="duplicateBallot(ballot)"
-                      tooltip-placement="top-right"
-                      uib-tooltip="Duplicate Ballot"
-                      class="fa fa-clone pointer"
-                    ></i>
-                    <i
-                      ng-click="transferBallot(ballot)"
-                      tooltip-placement="top-right"
-                      uib-tooltip="Transfer Ownership"
-                      class="fa fa-share-square-o pointer"
-                    ></i>
-                    <i
-                      ng-click="deleteBallot(ballot)"
-                      tooltip-placement="top-right"
-                      uib-tooltip="Delete Ballot"
-                      class="fa fa-trash pointer"
-                    ></i>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <table class="table ballots" ng-show="profileTab === 'managed'">
-              <thead>
-                <tr>
-                  <th>Shortcode</th>
-                  <th>Name</th>
-                  <th>Vote Cutoff ({{moment.tz(moment.tz.guess()).format('z')}})</th>
-                  <th>Total votes</th>
-                  <th>Type</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  ng-repeat="ballot in allBallots track by ballot.id"
-                  ng-if="ballot.isSecure == 1 || ballot.allowGrouping == 1"
-                  id="ballot-row-{{ballot.id}}"
-                >
-                  <td>{{ballot.key}}</td>
-                  <td>{{ballot.name}}</td>
-                  <td>
-                    {{ballot.voteCutoff.year() > 2100 ? 'never' :
-                    ballot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a')}}
-                  </td>
-                  <td>{{ballot.totalVotes}}</td>
-                  <td>
-                    <span ng-show="ballot.isSecure == 1" class="label label-info">Secure</span>
-                    <span ng-show="ballot.allowGrouping == 1" class="label label-primary">Grouped</span>
-                  </td>
-                  <td>
-                    <a href ng-click="manageSecureBallot(ballot)" class="btn btn-sm btn-primary"
-                      >MANAGE</a
-                    >
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <p
-              ng-show="profileTab === 'managed'"
-              ng-hide="(allBallots | filter:managedBallotFilter).length"
-              class="text-muted"
-              style="padding: 20px 0"
-            >
-              No managed ballots yet. <a href ng-click="navigate('create')">Create one</a>
-            </p>
-          </div>
-          <hr />
-          <button class="btn btn-danger btn-sm" ng-click="showDeleteAccount()">
-            Delete Account
-          </button>
-        </div>
-      </div>
+            <td ng-if="ballot.transferring" colspan="10" class="text-center text-muted">
+              <i class="fa fa-share-square-o"></i> Transferring...
+            </td>
+            <td ng-if="!ballot.transferring">{{ballot.key}}</td>
+            <td ng-if="!ballot.transferring">{{ballot.name}}</td>
+            <td ng-if="!ballot.transferring">
+              {{ballot.voteCutoff.year() > 2100 ? 'never' :
+              ballot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a')}}<span
+                class="hide hidden d-none"
+                >{{ballot.voteCutoff}}</span
+              >
+            </td>
+            <td ng-if="!ballot.transferring">{{ballot.totalVotes}}</td>
+            <td ng-if="!ballot.transferring">
+              <div class="dropdown" uib-dropdown>
+                <button class="btn btn-default btn-sm" uib-dropdown-toggle>
+                  Actions <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" uib-dropdown-menu>
+                  <li>
+                    <a href="/results#{{ballot.key}}" target="_blank">
+                      <i class="fa fa-list-ol"></i> See Results
+                    </a>
+                  </li>
+                  <li>
+                    <a href ng-click="exportCsv(ballot)">
+                      <i class="fa fa-download"></i> Download CSV
+                    </a>
+                  </li>
+                  <li>
+                    <a href ng-click="copyToClipboard(origin + '/' + ballot.key)">
+                      <i class="fa fa-link"></i> Copy URL
+                    </a>
+                  </li>
+                  <li>
+                    <a href ng-click="changeBallot(ballot)">
+                      <i class="fa fa-pencil"></i> Edit Ballot
+                    </a>
+                  </li>
+                  <li>
+                    <a href ng-click="duplicateBallot(ballot)">
+                      <i class="fa fa-clone"></i> Duplicate Ballot
+                    </a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href ng-click="transferBallot(ballot)">
+                      <i class="fa fa-share-square-o"></i> Transfer Ownership
+                    </a>
+                  </li>
+                  <li>
+                    <a href ng-click="deleteVotes(ballot)">
+                      <i class="fa fa-refresh"></i> Reset Votes
+                    </a>
+                  </li>
+                  <li>
+                    <a href ng-click="deleteBallot(ballot)">
+                      <i class="fa fa-trash"></i> Delete Ballot
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table ballots" ng-show="profileTab === 'managed'">
+        <thead>
+          <tr>
+            <th>Shortcode</th>
+            <th>Name</th>
+            <th>Vote Cutoff ({{moment.tz(moment.tz.guess()).format('z')}})</th>
+            <th>Total votes</th>
+            <th>Type</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            ng-repeat="ballot in allBallots track by ballot.id"
+            ng-if="ballot.isSecure == 1 || ballot.allowGrouping == 1"
+            id="ballot-row-{{ballot.id}}"
+          >
+            <td>{{ballot.key}}</td>
+            <td>{{ballot.name}}</td>
+            <td>
+              {{ballot.voteCutoff.year() > 2100 ? 'never' :
+              ballot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a')}}
+            </td>
+            <td>{{ballot.totalVotes}}</td>
+            <td>
+              <span ng-show="ballot.isSecure == 1" class="label label-info">Secure</span>
+              <span ng-show="ballot.allowGrouping == 1" class="label label-primary">Grouped</span>
+            </td>
+            <td>
+              <a href ng-click="manageSecureBallot(ballot)" class="btn btn-sm btn-primary"
+                >MANAGE</a
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p
+        ng-show="profileTab === 'managed'"
+        ng-hide="(allBallots | filter:managedBallotFilter).length"
+        class="text-muted"
+        style="padding: 20px 0"
+      >
+        No managed ballots yet. <a href ng-click="navigate('create')">Create one</a>
+      </p>
+    </div>
+    <hr />
+    <button class="btn btn-danger btn-sm" ng-click="showDeleteAccount()">Delete Account</button>
+  </div>
+</div>
