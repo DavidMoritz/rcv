@@ -140,6 +140,9 @@ export function initBallot(scope, http) {
 
           return ballot;
         });
+        $s.managedBallotCount = $s.allBallots.filter(function (b) {
+          return b.isSecure == 1 || b.allowGrouping == 1;
+        }).length;
       });
     } else {
       setTimeout($s.getBallots, 750);

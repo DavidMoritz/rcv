@@ -134,11 +134,11 @@
       </table>
       <p
         ng-show="profileTab === 'managed'"
-        ng-hide="(allBallots | filter:managedBallotFilter).length"
+        ng-if="managedBallotCount === 0"
         class="text-muted"
         style="padding: 20px 0"
       >
-        No managed ballots yet. <a href ng-click="navigate('create')">Create one</a>
+        No secure ballots or custom voter prompts. <a href ng-click="navigate('create')">Create one</a>
       </p>
     </div>
     <hr />
