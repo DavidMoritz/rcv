@@ -48,10 +48,7 @@
           <input type="checkbox" ng-model="advancedOptions" />
         </label>
       </div>
-      <div
-        ng-show="advancedOptions"
-        ng-init="activeSection=null"
-      >
+      <div ng-show="advancedOptions" ng-init="activeSection=null">
         <!-- Popular section (expanded by default) -->
         <div
           class="options-section-header"
@@ -74,9 +71,6 @@
               ng-model="ballot.positions"
               class="form-control"
             /><span ng-show="errors.positions" class="text-danger">{{errors.positions}}</span>
-          </div>
-          <div ng-show="user.name" class="form-group">
-            <label>Created By {{user.name}}</label>
           </div>
           <div ng-show="!user.name && ballot.createdBy == 'guest'" class="form-group">
             <label
@@ -483,6 +477,10 @@
           </div>
         </div>
 
+        <div ng-show="user.name" class="form-group">
+          <label>Created By {{user.name}}</label>
+        </div>
+
         <div ng-hide="true" class="form-group">
           <label
             >Require Voter Sign-in:<span ng-hide="ballot.requireSignIn">
@@ -505,10 +503,12 @@
         <form name="entriesForm" ng-submit="addEntry()">
           <div class="form-group">
             <label>New Entry (use ENTER to add)</label>
-            <input name="entryInput" ng-model="entryInput" ng-change="errorEntry = ''" class="form-control" /><span
-              ng-show="errorEntry"
-              >{{errorEntry}}</span
-            >
+            <input
+              name="entryInput"
+              ng-model="entryInput"
+              ng-change="errorEntry = ''"
+              class="form-control"
+            /><span ng-show="errorEntry">{{errorEntry}}</span>
           </div>
           <button type="submit" class="btn btn-info">Add Entry</button>
           <button type="button" ng-click="submitEntries()" class="btn btn-default">
@@ -559,13 +559,28 @@
           <label style="margin-bottom: 4px">Voter Names:</label>
           <div>
             <label class="radio-inline">
-              <input type="radio" value="0" name="voter-register-group" ng-model="ballot.register" />Optional
+              <input
+                type="radio"
+                value="0"
+                name="voter-register-group"
+                ng-model="ballot.register"
+              />Optional
             </label>
             <label class="radio-inline">
-              <input type="radio" value="1" name="voter-register-group" ng-model="ballot.register" />Required
+              <input
+                type="radio"
+                value="1"
+                name="voter-register-group"
+                ng-model="ballot.register"
+              />Required
             </label>
             <label class="radio-inline">
-              <input type="radio" value="2" name="voter-register-group" ng-model="ballot.register" />Anonymous
+              <input
+                type="radio"
+                value="2"
+                name="voter-register-group"
+                ng-model="ballot.register"
+              />Anonymous
             </label>
           </div>
         </div>
@@ -665,7 +680,12 @@
           Hide detailed results, including breakdowns by prompts above
         </label>
       </div>
-      <button type="button" ng-click="submitGroupFields()" class="btn btn-info" style="margin-top: 15px">
+      <button
+        type="button"
+        ng-click="submitGroupFields()"
+        class="btn btn-info"
+        style="margin-top: 15px"
+      >
         Submit Voter Prompts
       </button>
     </div>
@@ -689,7 +709,9 @@
       </div>
       <p ng-show="!user.id" style="margin-top: 15px">
         Want to edit this ballot later?
-        <a href ng-click="claimBallotAfterRegister = ballot.id; navigate('register')">Create a free account</a>
+        <a href ng-click="claimBallotAfterRegister = ballot.id; navigate('register')"
+          >Create a free account</a
+        >
         to manage your ballots and unlock features like editing entries.
       </p>
     </div>
