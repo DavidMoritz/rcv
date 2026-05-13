@@ -47,7 +47,7 @@ if (!empty($errors)) {
 	$ballotQuery->execute();
 	$ballotRow = $ballotQuery->fetch(PDO::FETCH_ASSOC);
 
-	if ($ballotRow && $ballotRow['voteCutoff'] < date('Y-m-d H:i:s')) {
+	if ($ballotRow && $ballotRow['voteCutoff'] !== null && $ballotRow['voteCutoff'] < date('Y-m-d H:i:s')) {
 		echo json_encode(['errors' => ['closed' => 'Voting has closed.']]);
 		exit;
 	}

@@ -36,7 +36,7 @@
             <td ng-if="!ballot.transferring">{{ballot.key}}</td>
             <td ng-if="!ballot.transferring">{{ballot.name}}</td>
             <td ng-if="!ballot.transferring">
-              {{ballot.voteCutoff.year() > 2100 ? 'never' :
+              {{!ballot.voteCutoff ? 'never' :
               ballot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a')}}<span
                 class="hide hidden d-none"
                 >{{ballot.voteCutoff}}</span
@@ -116,7 +116,7 @@
             <td>{{ballot.key}}</td>
             <td>{{ballot.name}}</td>
             <td>
-              {{ballot.voteCutoff.year() > 2100 ? 'never' :
+              {{!ballot.voteCutoff ? 'never' :
               ballot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a')}}
             </td>
             <td>{{ballot.totalVotes}}</td>

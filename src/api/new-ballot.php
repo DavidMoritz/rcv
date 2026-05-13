@@ -95,11 +95,8 @@ if (empty($_POST['maxVotes']))
 else
 	$maxVotes = intval($_POST['maxVotes']);
 
-if (empty($_POST['sqlVoteCutoff']))
-	$errors['voteCutoff'] = 'VoteCutoff is required.';
-
-if (empty($_POST['sqlResultsRelease']))
-	$errors['resultsRelease'] = 'ResultsRelease is required.';
+$sqlVoteCutoff = !empty($_POST['sqlVoteCutoff']) ? $_POST['sqlVoteCutoff'] : null;
+$sqlResultsRelease = !empty($_POST['sqlResultsRelease']) ? $_POST['sqlResultsRelease'] : null;
 
 if (!empty($errors)) {
 	$data['errors']  = $errors;
@@ -119,8 +116,8 @@ if (!empty($errors)) {
 	$sth->bindValue(':key', $_POST['key'], PDO::PARAM_STR);
 	$sth->bindValue(':positions', $_POST['positions'], PDO::PARAM_STR);
 	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_STR);
-	$sth->bindValue(':resultsRelease', $_POST['sqlResultsRelease'], PDO::PARAM_STR);
-	$sth->bindValue(':voteCutoff', $_POST['sqlVoteCutoff'], PDO::PARAM_STR);
+	$sth->bindValue(':resultsRelease', $sqlResultsRelease, ($sqlResultsRelease === null ? PDO::PARAM_NULL : PDO::PARAM_STR));
+	$sth->bindValue(':voteCutoff', $sqlVoteCutoff, ($sqlVoteCutoff === null ? PDO::PARAM_NULL : PDO::PARAM_STR));
 	$sth->bindValue(':requireSignIn', $requireSignIn, PDO::PARAM_INT);
 	$sth->bindValue(':tieBreak', $tieBreak, PDO::PARAM_STR);
 	$sth->bindValue(':register', $register, PDO::PARAM_INT);

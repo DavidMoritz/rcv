@@ -8,10 +8,10 @@
             Shortcode: {{manageBallot.key}} &nbsp; Voting URL: {{origin}}/{{manageBallot.key}}
           </h4>
           <h4>
-            Vote Cutoff: {{manageBallot.voteCutoff.year() > 2100 ? 'never' :
+            Vote Cutoff: {{!manageBallot.voteCutoff ? 'never' :
             manageBallot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a z')}}
             <button
-              ng-if="manageBallot.voteCutoff > now && manageBallot.totalVotes > 0"
+              ng-if="(!manageBallot.voteCutoff || manageBallot.voteCutoff > now) && manageBallot.totalVotes > 0"
               ng-click="endVotingNow()"
               class="btn btn-warning btn-sm"
               style="margin-left: 10px"
@@ -139,7 +139,7 @@
                 </div>
               </div>
               <h3 ng-show="manageBallot.isSecure == 1">Voter Codes ({{manageCodes.length}})</h3>
-              <div ng-if="manageBallot.isSecure == 1 && manageBallot.voteCutoff > now" class="form-inline" style="margin-bottom: 15px">
+              <div ng-if="manageBallot.isSecure == 1 && (!manageBallot.voteCutoff || manageBallot.voteCutoff > now)" class="form-inline" style="margin-bottom: 15px">
                 <input
                   type="number"
                   ng-model="moreCodeCount"
@@ -216,11 +216,11 @@
                     </td>
                     <td>
                       <span ng-show="code.votedAt">{{code.votedAt}}
-                        <a href ng-if="manageBallot.voteCutoff > now" ng-click="resetSecureVote(code)" class="text-danger" style="margin-left: 8px" title="Reset this vote">
+                        <a href ng-if="!manageBallot.voteCutoff || manageBallot.voteCutoff > now" ng-click="resetSecureVote(code)" class="text-danger" style="margin-left: 8px" title="Reset this vote">
                           <i class="fa fa-undo"></i>
                         </a>
                       </span>
-                      <span ng-if="!code.votedAt && manageBallot.voteCutoff > now" class="text-muted">available
+                      <span ng-if="!code.votedAt && (!manageBallot.voteCutoff || manageBallot.voteCutoff > now)" class="text-muted">available
                         <a href ng-click="code.confirmDelete = true" ng-show="!code.confirmDelete" class="text-danger" style="margin-left: 8px" title="Remove this code">
                           <i class="fa fa-trash"></i>
                         </a>
@@ -229,7 +229,7 @@
                           <button ng-click="deleteCode(code)" class="btn btn-danger btn-xs">Sure?</button>
                         </span>
                       </span>
-                      <span ng-if="!code.votedAt && manageBallot.voteCutoff <= now" class="text-muted">unused</span>
+                      <span ng-if="!code.votedAt && manageBallot.voteCutoff && manageBallot.voteCutoff <= now" class="text-muted">unused</span>
                     </td>
                   </tr>
                 </tbody>
@@ -240,8 +240,8 @@
               <div ng-if="manageBallot.isSecure == 1">
                 <p>Total codes: {{manageCodes.length}}</p>
                 <p>Voted: {{manageCodes.length - manageCodesAvailable}}</p>
-                <p ng-if="manageBallot.voteCutoff > now">Available: {{manageCodesAvailable}}</p>
-                <p ng-if="manageBallot.voteCutoff <= now">Unused: {{manageCodesAvailable}}</p>
+                <p ng-if="!manageBallot.voteCutoff || manageBallot.voteCutoff > now">Available: {{manageCodesAvailable}}</p>
+                <p ng-if="manageBallot.voteCutoff && manageBallot.voteCutoff <= now">Unused: {{manageCodesAvailable}}</p>
               </div>
               <div ng-if="manageBallot.allowGrouping == 1 && manageGroupFields.length">
                 <p><strong>Voter Prompts:</strong></p>
@@ -270,7 +270,7 @@
                   <i class="fa fa-exchange"></i> Transfer Ownership
                 </button>
                 <button
-                  ng-if="manageBallot.voteCutoff > now && manageBallot.isSecure == 1"
+                  ng-if="(!manageBallot.voteCutoff || manageBallot.voteCutoff > now) && manageBallot.isSecure == 1"
                   ng-click="deleteSecureBallot()"
                   ng-disabled="manageCodesAvailable < manageCodes.length"
                   class="btn btn-danger btn-sm"

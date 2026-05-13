@@ -135,8 +135,8 @@ export function initBallot(scope, http) {
       }).then(function (resp) {
         $s.now = new Date();
         $s.allBallots = resp.data.map(function (ballot) {
-          ballot.voteCutoff = moment.tz(ballot.voteCutoff, 'Zulu');
-          ballot.resultsRelease = moment.tz(ballot.resultsRelease, 'Zulu');
+          ballot.voteCutoff = ballot.voteCutoff ? moment.tz(ballot.voteCutoff, 'Zulu') : null;
+          ballot.resultsRelease = ballot.resultsRelease ? moment.tz(ballot.resultsRelease, 'Zulu') : null;
 
           return ballot;
         });
@@ -182,11 +182,13 @@ export function initBallot(scope, http) {
     $s.ballot = ballot;
     $s.editBallot = true;
     $s.ballot.positions = parseInt($s.ballot.positions);
-    $s.ballot.resultsRelease = new Date($s.ballot.resultsRelease);
-    $s.ballot.voteCutoff = new Date($s.ballot.voteCutoff);
-    $s.editTime = true;
-    $s.editDate = true;
-    $s.showRelease = true;
+    var noCutoff = !$s.ballot.voteCutoff;
+    $s.ballot.resultsRelease = $s.ballot.resultsRelease ? new Date($s.ballot.resultsRelease) : null;
+    $s.ballot.voteCutoff = noCutoff ? roundResultsRelease() : new Date($s.ballot.voteCutoff);
+    var noCustomRelease = !noCutoff && $s.ballot.resultsRelease <= $s.ballot.voteCutoff;
+    $s.editTime = !noCutoff;
+    $s.editDate = !noCutoff;
+    $s.showRelease = !noCutoff && !noCustomRelease;
     $s.advancedOptions = true;
     $s.ballot.isSecure = ballot.isSecure == 1;
     $s.ballot.hideNames = ballot.hideNames == 1;
@@ -668,8 +670,8 @@ export function initBallot(scope, http) {
     const tempReserve = $s.ballot.resultsRelease;
 
     if (!$s.editTime && !$s.editDate) {
-      $s.ballot.sqlResultsRelease = updateTime(new Date());
-      $s.ballot.sqlVoteCutoff = updateTime(new Date('2199-12-31T23:59:59'));
+      $s.ballot.sqlResultsRelease = null;
+      $s.ballot.sqlVoteCutoff = null;
     } else {
       $s.ballot.sqlVoteCutoff = updateTime($s.ballot.voteCutoff, $s.ballot.voteTimezone);
       $s.ballot.sqlResultsRelease = $s.ballot.sqlVoteCutoff;
@@ -872,9 +874,12 @@ export function initBallot(scope, http) {
         if (resp.data.length) {
           alert($s.dupBallot.key + ' is already in use');
         } else {
-          $s.dupBallot.sqlVoteCutoff = $s.dupBallot.voteCutoff._i || $s.dupBallot.voteCutoff;
-          $s.dupBallot.sqlResultsRelease =
-            $s.dupBallot.resultsRelease._i || $s.dupBallot.resultsRelease;
+          $s.dupBallot.sqlVoteCutoff = $s.dupBallot.voteCutoff
+            ? ($s.dupBallot.voteCutoff._i || $s.dupBallot.voteCutoff)
+            : null;
+          $s.dupBallot.sqlResultsRelease = $s.dupBallot.resultsRelease
+            ? ($s.dupBallot.resultsRelease._i || $s.dupBallot.resultsRelease)
+            : null;
           $http({
             method: 'POST',
             url: '/api/new-ballot.php',

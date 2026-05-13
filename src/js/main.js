@@ -306,13 +306,17 @@ mainApp.controller('MainCtrl', [
         .get('/api/get-candidates.php?key=' + $s.shortcode + '&t=' + Date.now())
         .then(function (resp) {
           if (resp.data && resp.data.status === 'closed') {
-            var release = moment.tz(resp.data.resultsRelease, 'Zulu');
-            if (release > moment()) {
-              $s.errors.shortcode =
-                'Voting has closed. Results will be released ' +
-                release.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a');
-            } else {
+            if (!resp.data.resultsRelease) {
               $s.navigate('results', $s.shortcode);
+            } else {
+              var release = moment.tz(resp.data.resultsRelease, 'Zulu');
+              if (release > moment()) {
+                $s.errors.shortcode =
+                  'Voting has closed. Results will be released ' +
+                  release.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a');
+              } else {
+                $s.navigate('results', $s.shortcode);
+              }
             }
             return;
           }
@@ -358,9 +362,9 @@ mainApp.controller('MainCtrl', [
             };
           });
           $s.activeLink = $loc.$$search.key ? 'code' : 'vote';
-          var resultsDate = moment.tz(ballot.resultsRelease, 'Zulu');
-          $s.resultsReady = resultsDate < moment();
-          $s.resultsReleaseFormatted = resultsDate.tz(moment.tz.guess()).format('MMM Do, h:mma');
+          var resultsDate = ballot.resultsRelease ? moment.tz(ballot.resultsRelease, 'Zulu') : null;
+          $s.resultsReady = !resultsDate || resultsDate < moment();
+          $s.resultsReleaseFormatted = resultsDate ? resultsDate.tz(moment.tz.guess()).format('MMM Do, h:mma') : null;
 
           if ($s.ballot.register == 3) {
             if (!voterName) {
@@ -447,15 +451,15 @@ mainApp.controller('MainCtrl', [
         });
 
         // Read ballot metadata from dedicated ballot object
-        var resultsDate = moment.tz(ballot.resultsRelease, 'Zulu');
-        var voteCutoffDate = moment.tz(ballot.voteCutoff, 'Zulu');
         var now = moment();
-        $s.voteClosed = voteCutoffDate < now;
+        var resultsDate = ballot.resultsRelease ? moment.tz(ballot.resultsRelease, 'Zulu') : null;
+        var voteCutoffDate = ballot.voteCutoff ? moment.tz(ballot.voteCutoff, 'Zulu') : null;
+        $s.voteClosed = !voteCutoffDate || voteCutoffDate < now;
         var createdBy = ballot.createdBy;
         $s.ballotCreatedBy = createdBy;
         $s.ballotId = ballot.id;
         var loggedIn = $s.user.id == createdBy;
-        if (resultsDate > now) {
+        if (resultsDate && resultsDate > now) {
           $s.errors.shortcode =
             'The ballot you selected will not have the results released until ' +
             resultsDate.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a') +

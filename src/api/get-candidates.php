@@ -28,7 +28,7 @@ if(!empty($key)) {
 	} else {
 		// Check voting cutoff for non-edit requests
 		if (!$edit) {
-			$cutoffSth = $dbh->prepare("SELECT 1 FROM ballots WHERE id = :id AND NOW() < voteCutoff");
+			$cutoffSth = $dbh->prepare("SELECT 1 FROM ballots WHERE id = :id AND (voteCutoff IS NULL OR NOW() < voteCutoff)");
 			$cutoffSth->bindValue(':id', $ballot['id'], PDO::PARAM_INT);
 			$cutoffSth->execute();
 			if (!$cutoffSth->fetch()) {
