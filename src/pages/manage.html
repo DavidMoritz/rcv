@@ -11,7 +11,7 @@
             Vote Cutoff: {{manageBallot.voteCutoff.year() > 2100 ? 'never' :
             manageBallot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a z')}}
             <button
-              ng-if="manageBallot.voteCutoff > now"
+              ng-if="manageBallot.voteCutoff > now && manageBallot.totalVotes > 0"
               ng-click="endVotingNow()"
               class="btn btn-warning btn-sm"
               style="margin-left: 10px"
@@ -23,20 +23,117 @@
           <div class="row">
             <div class="col-md-8">
               <div ng-if="manageBallot.allowGrouping == 1" style="margin-bottom: 20px">
-                <h3 class="pointer" ng-click="showManageGroups = !showManageGroups">
+                <h3 class="pointer" ng-click="showManageGroups = !showManageGroups" style="display: inline-block">
                   <i class="fa" ng-class="showManageGroups ? 'fa-chevron-down' : 'fa-chevron-right'" style="width: 14px"></i>
-                  Voter Groups
+                  Voter Prompts
                 </h3>
+                <button ng-if="manageBallot.totalVotes == 0 && !editingManageGroupFields"
+                        ng-click="startEditManageGroupFields()" class="btn btn-default btn-sm"
+                        style="margin-left: 8px; position: relative; top: -2px">
+                  Edit
+                </button>
                 <div ng-show="showManageGroups">
-                  <div ng-if="!manageGroupFields || !manageGroupFields.length" class="text-muted">
-                    No group questions defined.
+                  <!-- Editing mode -->
+                  <div ng-if="editingManageGroupFields">
+                    <div style="margin-bottom: 15px; padding: 10px; background: #f0f8ff; border-radius: 4px; border: 1px solid #d6e9f8">
+                      <label style="margin-bottom: 4px">Voter Names:</label>
+                      <div>
+                        <label class="radio-inline">
+                          <input type="radio" value="0" name="manage-voter-register" ng-model="manageBallot.register" />Optional
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" value="1" name="manage-voter-register" ng-model="manageBallot.register" />Required
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" value="2" name="manage-voter-register" ng-model="manageBallot.register" />Anonymous
+                        </label>
+                      </div>
+                    </div>
+                    <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #5bc0de">
+                      <h4>Custom Voter Prompts</h4>
+                      <div
+                        ng-repeat="field in groupFields track by $index"
+                        ng-init="fieldIdx = $index"
+                        style="margin-bottom: 12px; padding: 10px; background: #f9f9f9; border-radius: 4px"
+                      >
+                        <div class="form-group" style="margin-bottom: 5px">
+                          <div class="row">
+                            <div class="col-sm-3">
+                              <input type="text" ng-model="field.title" class="form-control input-sm"
+                                placeholder="Short title (e.g. Affiliation)" maxlength="64" />
+                            </div>
+                            <div class="col-sm-4">
+                              <input type="text" ng-model="field.question_text" class="form-control input-sm"
+                                placeholder="Question for voters (e.g. What is your party?)" maxlength="256" />
+                            </div>
+                            <div class="col-sm-2">
+                              <select ng-model="field.type" ng-change="onFieldTypeChange(field)" class="form-control input-sm">
+                                <option value="select">Dropdown</option>
+                                <option value="checkbox">Checkbox</option>
+                                <option value="text">Text Input</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-2" ng-hide="field.type === 'checkbox'">
+                              <label class="checkbox-inline" style="line-height: 30px">
+                                <input type="checkbox" ng-model="field.required" /> Required
+                              </label>
+                            </div>
+                            <div class="col-sm-1">
+                              <i ng-click="removeGroupField($index)" class="fa fa-close pointer"
+                                style="line-height: 30px; color: #d9534f"></i>
+                            </div>
+                          </div>
+                        </div>
+                        <div ng-show="field.type === 'select'" style="padding-left: 20px">
+                          <div ng-repeat="opt in field.options track by $index" style="margin-bottom: 3px">
+                            <div class="input-group input-group-sm" style="max-width: 300px">
+                              <input type="text" ng-model="field.options[$index]"
+                                ng-keydown="$event.keyCode === 13 && addGroupOption(fieldIdx); $event.keyCode === 13 && $event.preventDefault()"
+                                class="form-control group-choice-{{fieldIdx}}"
+                                placeholder="Choice {{$index + 1}}" maxlength="128" />
+                              <span class="input-group-btn">
+                                <button type="button" ng-click="removeGroupOption($parent.$index, $index)" class="btn btn-default btn-sm">
+                                  <i class="fa fa-close"></i>
+                                </button>
+                              </span>
+                            </div>
+                          </div>
+                          <button type="button" ng-click="addGroupOption(fieldIdx)" class="btn btn-default btn-xs" style="margin-top: 3px">
+                            + Add Choice
+                          </button>
+                        </div>
+                      </div>
+                      <button type="button" ng-click="addGroupField()" class="btn btn-default btn-sm">
+                        + Add Prompt
+                      </button>
+                    </div>
+                    <div style="margin-top: 15px">
+                      <label>
+                        <input type="checkbox" ng-model="manageBallot.hideDetails" />
+                        Hide detailed results, including breakdowns by prompts above
+                      </label>
+                    </div>
+                    <div style="margin-top: 15px">
+                      <button type="button" ng-click="saveManageGroupFields()" class="btn btn-info btn-sm">
+                        Save
+                      </button>
+                      <button type="button" ng-click="cancelEditManageGroupFields()" class="btn btn-default btn-sm">
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                  <div ng-repeat="field in manageGroupFields" style="margin-bottom: 10px; padding: 8px; background: #f9f9f9; border-radius: 4px">
-                    <strong>{{field.title}}</strong>
-                    <span class="text-muted">({{field.type === 'checkbox' ? 'Checkbox' : field.type === 'text' ? 'Text Input' : 'Dropdown'}})</span>:
-                    {{field.question_text}}
-                    <div ng-if="field.type !== 'text'" style="padding-left: 15px; margin-top: 4px">
-                      <span ng-repeat="opt in field.options" class="label label-default" style="margin-right: 4px">{{opt.label}}</span>
+                  <!-- Read-only mode -->
+                  <div ng-if="!editingManageGroupFields">
+                    <div ng-if="!manageGroupFields || !manageGroupFields.length" class="text-muted">
+                      No voter prompts defined.
+                    </div>
+                    <div ng-repeat="field in manageGroupFields" style="margin-bottom: 10px; padding: 8px; background: #f9f9f9; border-radius: 4px">
+                      <strong>{{displayTitle(field.title)}}</strong>
+                      <span class="text-muted">({{field.type === 'checkbox' ? 'Checkbox' : field.type === 'text' ? 'Text Input' : 'Dropdown'}})</span>:
+                      {{field.question_text}}
+                      <div ng-if="field.type !== 'text'" style="padding-left: 15px; margin-top: 4px">
+                        <span ng-repeat="opt in field.options" class="label label-default" style="margin-right: 4px">{{opt.label}}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -147,18 +244,21 @@
                 <p ng-if="manageBallot.voteCutoff <= now">Unused: {{manageCodesAvailable}}</p>
               </div>
               <div ng-if="manageBallot.allowGrouping == 1 && manageGroupFields.length">
-                <p><strong>Voter Groups:</strong></p>
+                <p><strong>Voter Prompts:</strong></p>
                 <p ng-repeat="field in manageGroupFields">
-                  {{field.title}}: {{field.options.length}} choices
+                  {{displayTitle(field.title)}}: {{field.options.length}} choices
                 </p>
               </div>
               <hr />
               <div class="manage-actions">
-                <a href="/results#{{manageBallot.key}}" target="_blank" class="btn btn-default btn-sm">
+                <a ng-if="manageBallot.totalVotes > 0" href="/results#{{manageBallot.key}}" target="_blank" class="btn btn-default btn-sm">
                   View Results
                 </a>
-                <button ng-click="exportCsv(manageBallot)" class="btn btn-default btn-sm">
+                <button ng-if="manageBallot.totalVotes > 0" ng-click="exportCsv(manageBallot)" class="btn btn-default btn-sm">
                   <i class="fa fa-download"></i> Export to CSV
+                </button>
+                <button ng-if="manageBallot.totalVotes == 0" ng-click="changeBallot(manageBallot)" class="btn btn-warning btn-sm">
+                  <i class="fa fa-pencil"></i> Edit Ballot
                 </button>
                 <button ng-click="duplicateBallot(manageBallot)" class="btn btn-default btn-sm">
                   <i class="fa fa-clone"></i> Duplicate Ballot

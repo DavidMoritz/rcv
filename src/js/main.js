@@ -712,7 +712,7 @@ mainApp.controller('MainCtrl', [
           headers.push('Rank ' + r);
         }
         groupFields.forEach(function (field) {
-          headers.push(field.title || field.question_text);
+          headers.push(field.title ? displayTitle(field.title) : field.question_text);
         });
 
         // Escape CSV cell

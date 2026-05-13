@@ -188,6 +188,7 @@ export function initBallot(scope, http) {
     $s.editDate = true;
     $s.showRelease = true;
     $s.advancedOptions = true;
+    $s.ballot.isSecure = ballot.isSecure == 1;
     $s.ballot.hideNames = ballot.hideNames == 1;
     $s.ballot.hideDetails = ballot.hideDetails == 1;
     $s.ballot.allowCustom = ballot.allowCustom == 1;
@@ -325,6 +326,94 @@ export function initBallot(scope, http) {
       $http.get('/api/get-group-fields.php?ballotId=' + ballot.id).then(function (resp) {
         $s.manageGroupFields = resp.data || [];
       });
+    }
+  };
+
+  $s.startEditManageGroupFields = function () {
+    $s.groupFields = ($s.manageGroupFields || []).map(function (field) {
+      return {
+        title: field.title,
+        question_text: field.question_text,
+        type: field.type || 'select',
+        required: field.required != 0,
+        options: (field.options || []).map(function (opt) {
+          return opt.label;
+        })
+      };
+    });
+    if (!$s.groupFields.length) {
+      $s.groupFields = [
+        { title: '', question_text: '', type: 'select', required: true, options: [''] }
+      ];
+    }
+    $s._manageInitialRegister = $s.manageBallot.register;
+    $s._manageInitialHideDetails = $s.manageBallot.hideDetails;
+    $s.editingManageGroupFields = true;
+    $s.showManageGroups = true;
+  };
+
+  $s.cancelEditManageGroupFields = function () {
+    $s.manageBallot.register = $s._manageInitialRegister;
+    $s.manageBallot.hideDetails = $s._manageInitialHideDetails;
+    $s.editingManageGroupFields = false;
+  };
+
+  $s.saveManageGroupFields = function () {
+    var validFields = ($s.groupFields || []).filter(function (f) {
+      return f.title || f.question_text;
+    }).map(function (f) {
+      var copy = angular.copy(f);
+      if (copy.title) {
+        copy.title = sanitizeTitle(copy.title);
+      }
+      return copy;
+    });
+
+    var ballotSettingsChanged =
+      $s.manageBallot.register != $s._manageInitialRegister ||
+      !!$s.manageBallot.hideDetails !== !!$s._manageInitialHideDetails;
+
+    function onDone() {
+      $http.get('/api/get-group-fields.php?ballotId=' + $s.manageBallot.id).then(function (resp) {
+        $s.manageGroupFields = resp.data || [];
+        $s.editingManageGroupFields = false;
+      });
+    }
+
+    function saveBallotSettingsIfChanged() {
+      if (ballotSettingsChanged) {
+        $http({
+          method: 'POST',
+          url: '/api/update-ballot.php',
+          data: {
+            id: $s.manageBallot.id,
+            name: $s.manageBallot.name,
+            positions: $s.manageBallot.positions,
+            key: $s.manageBallot.key,
+            createdBy: $s.user.id,
+            register: $s.manageBallot.register,
+            hideDetails: $s.manageBallot.hideDetails ? 1 : 0
+          }
+        });
+      }
+    }
+
+    if (validFields.length) {
+      $http({
+        method: 'POST',
+        url: '/api/save-group-fields.php',
+        data: {
+          ballotId: $s.manageBallot.id,
+          createdBy: $s.user.id,
+          fields: validFields
+        }
+      }).success(function () {
+        saveBallotSettingsIfChanged();
+        onDone();
+      });
+    } else {
+      saveBallotSettingsIfChanged();
+      onDone();
     }
   };
 
