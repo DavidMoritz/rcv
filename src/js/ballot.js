@@ -669,7 +669,8 @@ export function initBallot(scope, http) {
 
     const tempReserve = $s.ballot.resultsRelease;
 
-    if (!$s.editTime && !$s.editDate) {
+    var validCutoff = $s.editTime && $s.ballot.voteCutoff && !isNaN(new Date($s.ballot.voteCutoff).getTime());
+    if (!validCutoff) {
       $s.ballot.sqlResultsRelease = null;
       $s.ballot.sqlVoteCutoff = null;
     } else {
@@ -677,7 +678,7 @@ export function initBallot(scope, http) {
       $s.ballot.sqlResultsRelease = $s.ballot.sqlVoteCutoff;
     }
 
-    if ($s.showRelease) {
+    if ($s.showRelease && tempReserve && !isNaN(new Date(tempReserve).getTime())) {
       $s.ballot.sqlResultsRelease = updateTime(tempReserve, $s.ballot.resultTimezone);
     }
 

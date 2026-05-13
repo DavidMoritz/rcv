@@ -130,82 +130,81 @@
           </div>
           <div class="form-group">
             <span ng-show="errors.secureCutoff" class="text-danger">{{errors.secureCutoff}}</span>
-            <div>
-              <label ng-hide="editDate || editTime"
-                >Voting Cutoff: never (check box for custom)</label
-              >
-              <label ng-show="editDate || editTime">
-                Voting Cutoff: {{editDate ? (ballot.voteCutoff | date: "MMM d, y") : "Today, at"}}
-                {{ballot.voteCutoff | date: "h:mm a" }}
-              </label>
-            </div>
             <label
-              >Edit Time
-              <input type="checkbox" ng-model="editTime" ng-disabled="ballot.isSecure" />
+              >Voting Cutoff:<span ng-hide="editTime">
+                never (check box for custom)</span
+              >
+              <input type="checkbox" ng-model="editTime" ng-change="editDate = editTime" ng-disabled="ballot.isSecure" /><small
+                ng-show="editTime && ballot.voteCutoff"
+                class="text-muted"
+              >
+                {{ballot.voteCutoff | date: dateFormat }}</small
+              >
             </label>
-            <small ng-show="editTime">(Current Time: {{rightNow.format('LT')}})</small>
-            <div class="row" ng-show="editTime">
-              <div class="col-sm-6">
-                <div class="form-inline">
+            <div ng-show="editTime">
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      ng-focus="releaseOpen = true"
+                      uib-datepicker-popup="{{pickerFormat}}"
+                      datepicker-append-to-body="true"
+                      datepicker-options="pickerOptions"
+                      ng-model="ballot.voteCutoff"
+                      is-open="releaseOpen"
+                      class="form-control"
+                    /><span class="input-group-btn">
+                      <button
+                        type="button"
+                        ng-click="releaseOpen = !releaseOpen"
+                        class="btn btn-default"
+                      >
+                        <i class="fa fa-calendar"></i></button
+                    ></span>
+                  </div>
+                  <div class="form-inline">
+                    <select
+                      ng-model="cutoffTime.hour"
+                      ng-options="h as h for h in hours"
+                      ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
+                      class="form-control"
+                      style="width: auto; display: inline-block"
+                    ></select>
+                    <b style="padding: 0 4px">:</b>
+                    <select
+                      ng-model="cutoffTime.minute"
+                      ng-options="m.value as m.label for m in minutes"
+                      ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
+                      class="form-control"
+                      style="width: auto; display: inline-block"
+                    ></select>
+                    <select
+                      ng-model="cutoffTime.meridian"
+                      ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
+                      class="form-control"
+                      style="width: auto; display: inline-block"
+                    >
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <label>Timezone:</label>
                   <select
-                    ng-model="cutoffTime.hour"
-                    ng-options="h as h for h in hours"
-                    ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
-                    class="form-control"
-                    style="width: auto; display: inline-block"
+                    class="form-control js-timezone-picker"
+                    ng-model="ballot.voteTimezone"
                   ></select>
-                  <b style="padding: 0 4px">:</b>
-                  <select
-                    ng-model="cutoffTime.minute"
-                    ng-options="m.value as m.label for m in minutes"
-                    ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
-                    class="form-control"
-                    style="width: auto; display: inline-block"
-                  ></select>
-                  <select
-                    ng-model="cutoffTime.meridian"
-                    ng-change="syncTimeToDate('voteCutoff', cutoffTime)"
-                    class="form-control"
-                    style="width: auto; display: inline-block"
-                  >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
-                  </select>
                 </div>
               </div>
-              <div class="col-sm-6">
-                <label>Timezone:</label>
-                <select
-                  class="form-control js-timezone-picker"
-                  ng-model="ballot.voteTimezone"
-                ></select>
-              </div>
-            </div>
-            <label
-              >Edit Date
-              <input type="checkbox" ng-model="editDate" ng-disabled="ballot.isSecure" />
-            </label>
-            <div ng-show="editDate" class="input-group">
-              <input
-                type="text"
-                ng-focus="releaseOpen = true"
-                uib-datepicker-popup="{{pickerFormat}}"
-                datepicker-append-to-body="true"
-                datepicker-options="pickerOptions"
-                ng-model="ballot.voteCutoff"
-                is-open="releaseOpen"
-                class="form-control"
-              /><span class="input-group-btn">
-                <button type="button" ng-click="releaseOpen = !releaseOpen" class="btn btn-default">
-                  <i class="fa fa-calendar"></i></button
-              ></span>
             </div>
           </div>
           <div class="form-group">
             <label
-              >Release Results:<span ng-hide="showRelease || editDate || editTime">
+              >Release Results:<span ng-hide="showRelease || editTime">
                 immediately (check box for custom)</span
-              ><span ng-hide="showRelease || (!editDate &amp;&amp; !editTime)">
+              ><span ng-hide="showRelease || !editTime">
                 after voting (check box for custom)</span
               >
               <input type="checkbox" ng-model="showRelease" ng-change="sameTime()" /><small
@@ -391,7 +390,7 @@
               <input
                 type="checkbox"
                 ng-model="ballot.showGraph"
-                ng-disabled="!editDate && !editTime"
+                ng-disabled="!editTime"
               /><br />
               <small class="text-muted"
                 >NOTE: This graph is only available if a Voting Cutoff time is chosen above.</small
