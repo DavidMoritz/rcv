@@ -11,7 +11,7 @@ import { trickVote } from './utils/helpers.js';
 import mc from './utils/mc.js';
 import VoteFactory, { initScope } from './factories/vote-factory.js';
 import { initAuth } from './auth.js';
-import { initBallot } from './ballot.js';
+import { initBallot, assignFieldSlugs, displayTitle } from './ballot.js';
 
 /* Iframe auto-resize: hosted pages can postMessage their height */
 window.addEventListener('message', function (e) {
@@ -102,6 +102,7 @@ mainApp.controller('MainCtrl', [
     //during development
     window.$s = $s;
     initScope($s);
+    $s.displayTitle = displayTitle;
     $s.user = $s.user || {};
 
     $('.js-timezone-picker').timezones();
@@ -343,6 +344,7 @@ mainApp.controller('MainCtrl', [
 
           // Store group fields for managed ballot pre-vote gating
           $s.groupFields = resp.data.groupFields || [];
+          assignFieldSlugs($s.groupFields);
           $s.groupAnswers = {};
           $s.groupAnswersSubmitted = false;
 
@@ -506,8 +508,19 @@ mainApp.controller('MainCtrl', [
           var groupBuckets = {}; // { fieldId: { optionId: [voteIndex, ...] } }
           var fieldTypeMap = {};
           $s.resultGroupFields.forEach(function (field) {
-            fieldTypeMap[field.id] = field.type || 'select';
+            var type = field.type || 'select';
+            fieldTypeMap[field.id] = type;
             groupBuckets[field.id] = {};
+            if (type === 'checkbox') {
+              field.options = [
+                { id: 'true', label: 'True' },
+                { id: 'false', label: 'False' }
+              ];
+            } else if (type === 'select' && field.options.some(function (o) { return o.required == 0 || field.required == 0; })) {
+              if (!field.options.some(function (o) { return o.id === '__no_answer'; })) {
+                field.options.push({ id: '__no_answer', label: 'No answer' });
+              }
+            }
             field.options.forEach(function (opt) {
               groupBuckets[field.id][opt.id] = [];
             });
@@ -521,22 +534,19 @@ mainApp.controller('MainCtrl', [
               } catch (e) {
                 return;
               }
-              Object.keys(answers).forEach(function (fieldId) {
-                var type = fieldTypeMap[fieldId] || 'select';
-                if (type === 'text') return; // skip text fields — no bucketing
+              Object.keys(fieldTypeMap).forEach(function (fieldId) {
+                var type = fieldTypeMap[fieldId];
+                if (type === 'text') return;
                 var answer = answers[fieldId];
-                if (type === 'checkbox' && typeof answer === 'string') {
-                  // Comma-separated option IDs
-                  answer.split(',').forEach(function (optId) {
-                    optId = optId.trim();
-                    if (groupBuckets[fieldId] && groupBuckets[fieldId][optId]) {
-                      groupBuckets[fieldId][optId].push(idx);
-                    }
-                  });
+                if (type === 'checkbox') {
+                  var key = (answer === true || answer === 'true' || answer === '1') ? 'true' : 'false';
+                  if (groupBuckets[fieldId] && groupBuckets[fieldId][key]) {
+                    groupBuckets[fieldId][key].push(idx);
+                  }
                 } else {
-                  // select: single option ID
-                  if (groupBuckets[fieldId] && groupBuckets[fieldId][answer]) {
-                    groupBuckets[fieldId][answer].push(idx);
+                  var optId = answer || '__no_answer';
+                  if (groupBuckets[fieldId] && groupBuckets[fieldId][optId]) {
+                    groupBuckets[fieldId][optId].push(idx);
                   }
                 }
               });
@@ -645,17 +655,6 @@ mainApp.controller('MainCtrl', [
       });
     };
 
-    $s.toggleCheckboxAnswer = function (fieldId, optId) {
-      var current = $s.groupAnswers[fieldId] ? $s.groupAnswers[fieldId].split(',') : [];
-      var idx = current.indexOf(String(optId));
-      if (idx === -1) {
-        current.push(String(optId));
-      } else {
-        current.splice(idx, 1);
-      }
-      $s.groupAnswers[fieldId] = current.filter(Boolean).join(',');
-    };
-
     $s.submitGroupAnswers = function () {
       // Type-aware validation (skip optional fields)
       var allAnswered = true;
@@ -664,8 +663,6 @@ mainApp.controller('MainCtrl', [
         var val = $s.groupAnswers[field.id];
         var type = field.type || 'select';
         if (type === 'select' && !val) {
-          allAnswered = false;
-        } else if (type === 'checkbox' && (!val || !val.length)) {
           allAnswered = false;
         } else if (type === 'text' && (!val || !val.trim().length)) {
           allAnswered = false;
@@ -747,11 +744,8 @@ mainApp.controller('MainCtrl', [
             var type = field.type || 'select';
             if (type === 'text') {
               cols.push(val || '');
-            } else if (type === 'checkbox' && val) {
-              var labels = String(val).split(',').map(function (id) {
-                return optionMap[id.trim()] || id;
-              });
-              cols.push(labels.join('; '));
+            } else if (type === 'checkbox') {
+              cols.push(val ? 'true' : 'false');
             } else {
               cols.push(val ? (optionMap[val] || val) : '');
             }

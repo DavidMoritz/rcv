@@ -3,7 +3,7 @@ node_modules/
 dist/
 lib
 !src/lib
-.ext
+.ai-workspace
 
 # Extensions
 *.orig

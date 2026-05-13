@@ -2,6 +2,14 @@ import { dataFromObj } from './utils/helpers.js';
 
 var $s, $http;
 
+export function sanitizeTitle(title) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+export function displayTitle(slug) {
+  return slug.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+}
+
 export function updateTime(dateObj, zoneString) {
   zoneString = zoneString || moment.tz.guess();
   var mom = moment(dateObj).tz(zoneString, true);
@@ -48,6 +56,15 @@ function updateTimeObj(scopeKey, d) {
   if (!cur || cur.hour !== t.hour || cur.minute !== t.minute || cur.meridian !== t.meridian) {
     $s[scopeKey] = t;
   }
+}
+
+export function assignFieldSlugs(fields) {
+  var slugCounts = {};
+  fields.forEach(function (field) {
+    var base = sanitizeTitle(field.title || 'field');
+    slugCounts[base] = (slugCounts[base] || 0) + 1;
+    field.fieldSlug = slugCounts[base] > 1 ? base + '-' + slugCounts[base] : base;
+  });
 }
 
 export function initBallot(scope, http) {
@@ -674,6 +691,12 @@ export function initBallot(scope, http) {
     if ($s.groupFields && $s.groupFields.length) {
       var validFields = $s.groupFields.filter(function (f) {
         return f.title || f.question_text;
+      }).map(function (f) {
+        var copy = angular.copy(f);
+        if (copy.title) {
+          copy.title = sanitizeTitle(copy.title);
+        }
+        return copy;
       });
       if (validFields.length) {
         $http({

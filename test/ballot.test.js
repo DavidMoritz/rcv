@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { dateToTime, roundResultsRelease, updateTime, initBallot } from '@src/js/ballot.js';
+import { dateToTime, roundResultsRelease, updateTime, initBallot, sanitizeTitle, displayTitle, assignFieldSlugs } from '@src/js/ballot.js';
 
 // moment-timezone is CDN-loaded in production; stub .tz() for tests
 if (!moment.tz) {
@@ -152,5 +152,90 @@ describe('syncTimeToDate', () => {
     $s.syncTimeToDate('voteCutoff', { hour: 12, minute: 0, meridian: 'AM' });
     var d = new Date($s.ballot.voteCutoff);
     expect(d.getHours()).toBe(0);
+  });
+});
+
+describe('sanitizeTitle', () => {
+  it('converts to lowercase', () => {
+    expect(sanitizeTitle('My Field')).toBe('my-field');
+  });
+
+  it('replaces spaces with dashes', () => {
+    expect(sanitizeTitle('first name')).toBe('first-name');
+  });
+
+  it('collapses multiple non-alphanumeric characters into a single dash', () => {
+    expect(sanitizeTitle('hello   world')).toBe('hello-world');
+    expect(sanitizeTitle('foo---bar')).toBe('foo-bar');
+    expect(sanitizeTitle('one & two @ three')).toBe('one-two-three');
+  });
+
+  it('removes leading and trailing dashes', () => {
+    expect(sanitizeTitle('--hello--')).toBe('hello');
+    expect(sanitizeTitle('  spaces  ')).toBe('spaces');
+    expect(sanitizeTitle('!!!test!!!')).toBe('test');
+  });
+
+  it('preserves numbers', () => {
+    expect(sanitizeTitle('field 42')).toBe('field-42');
+  });
+
+  it('handles mixed special characters', () => {
+    expect(sanitizeTitle('Party Affiliation!')).toBe('party-affiliation');
+    expect(sanitizeTitle('zip_code (5-digit)')).toBe('zip-code-5-digit');
+  });
+});
+
+describe('displayTitle', () => {
+  it('converts dashes to spaces and title cases', () => {
+    expect(displayTitle('my-field')).toBe('My Field');
+  });
+
+  it('title cases each word', () => {
+    expect(displayTitle('party-affiliation')).toBe('Party Affiliation');
+  });
+
+  it('handles single word', () => {
+    expect(displayTitle('name')).toBe('Name');
+  });
+
+  it('preserves numbers', () => {
+    expect(displayTitle('field-42')).toBe('Field 42');
+  });
+
+  it('round-trips with sanitizeTitle', () => {
+    expect(displayTitle(sanitizeTitle('Zip Code'))).toBe('Zip Code');
+  });
+});
+
+describe('assignFieldSlugs', () => {
+  it('assigns unique slugs for unique titles', () => {
+    var fields = [{ title: 'name' }, { title: 'email' }];
+    assignFieldSlugs(fields);
+    expect(fields.map(f => f.fieldSlug)).toEqual(['name', 'email']);
+  });
+
+  it('appends suffix for duplicate titles', () => {
+    var fields = [{ title: 'name' }, { title: 'name' }];
+    assignFieldSlugs(fields);
+    expect(fields.map(f => f.fieldSlug)).toEqual(['name', 'name-2']);
+  });
+
+  it('appends incrementing suffixes for triple duplicates', () => {
+    var fields = [{ title: 'name' }, { title: 'name' }, { title: 'name' }];
+    assignFieldSlugs(fields);
+    expect(fields.map(f => f.fieldSlug)).toEqual(['name', 'name-2', 'name-3']);
+  });
+
+  it('handles mixed unique and duplicate titles', () => {
+    var fields = [{ title: 'zip' }, { title: 'name' }, { title: 'zip' }];
+    assignFieldSlugs(fields);
+    expect(fields.map(f => f.fieldSlug)).toEqual(['zip', 'name', 'zip-2']);
+  });
+
+  it('falls back to "field" when title is empty', () => {
+    var fields = [{ title: '' }, { title: '' }];
+    assignFieldSlugs(fields);
+    expect(fields.map(f => f.fieldSlug)).toEqual(['field', 'field-2']);
   });
 });
