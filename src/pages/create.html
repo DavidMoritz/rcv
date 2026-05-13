@@ -555,15 +555,20 @@
         "
       >
         <span ng-show="ballot.isSecure"><strong>Voter Code</strong> &mdash; Required</span>
-        <span ng-show="!ballot.isSecure &amp;&amp; ballot.register == '1'"
-          ><strong>Voter Name</strong> &mdash; Required</span
-        >
-        <span ng-show="!ballot.isSecure &amp;&amp; ballot.register == '0'"
-          ><strong>Voter Name</strong> &mdash; Optional</span
-        >
-        <span ng-show="!ballot.isSecure &amp;&amp; ballot.register == '2'"
-          ><strong>Anonymous</strong> &mdash; no name collected</span
-        >
+        <div ng-show="!ballot.isSecure">
+          <label style="margin-bottom: 4px">Voter Names:</label>
+          <div>
+            <label class="radio-inline">
+              <input type="radio" value="0" name="voter-register-group" ng-model="ballot.register" />Optional
+            </label>
+            <label class="radio-inline">
+              <input type="radio" value="1" name="voter-register-group" ng-model="ballot.register" />Required
+            </label>
+            <label class="radio-inline">
+              <input type="radio" value="2" name="voter-register-group" ng-model="ballot.register" />Anonymous
+            </label>
+          </div>
+        </div>
       </div>
       <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #5bc0de">
         <h4>Custom Voter Prompts</h4>
@@ -654,7 +659,13 @@
           + Add Prompt
         </button>
       </div>
-      <button type="button" ng-click="submitGroupFields()" class="btn btn-info">
+      <div ng-show="user.name && !ballot.isSecure" style="margin-top: 15px">
+        <label>
+          <input type="checkbox" ng-model="ballot.hideDetails" />
+          Hide detailed results, including breakdowns by prompts above
+        </label>
+      </div>
+      <button type="button" ng-click="submitGroupFields()" class="btn btn-info" style="margin-top: 15px">
         Submit Voter Prompts
       </button>
     </div>

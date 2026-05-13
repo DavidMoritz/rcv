@@ -679,6 +679,8 @@ export function initBallot(scope, http) {
         $s.editBallot = false;
         if ($s.ballot.allowGrouping) {
           $s.showGroupPage = true;
+          $s._initialRegister = $s.ballot.register;
+          $s._initialHideDetails = $s.ballot.hideDetails;
         } else {
           $s.congrats = true;
           $s.generateQRCode($s.ballot.key);
@@ -688,6 +690,28 @@ export function initBallot(scope, http) {
   };
 
   $s.submitGroupFields = function () {
+    var ballotSettingsChanged =
+      $s.ballot.register != $s._initialRegister ||
+      !!$s.ballot.hideDetails !== !!$s._initialHideDetails;
+
+    function saveBallotSettingsIfChanged() {
+      if (ballotSettingsChanged) {
+        $http({
+          method: 'POST',
+          url: '/api/update-ballot.php',
+          data: {
+            id: $s.ballot.id,
+            name: $s.ballot.name,
+            positions: $s.ballot.positions,
+            key: $s.ballot.key,
+            createdBy: $s.user.id || 'guest',
+            register: $s.ballot.register,
+            hideDetails: $s.ballot.hideDetails ? 1 : 0
+          }
+        });
+      }
+    }
+
     if ($s.groupFields && $s.groupFields.length) {
       var validFields = $s.groupFields.filter(function (f) {
         return f.title || f.question_text;
@@ -708,6 +732,7 @@ export function initBallot(scope, http) {
             fields: validFields
           }
         }).success(function () {
+          saveBallotSettingsIfChanged();
           $s.congrats = true;
           $s.generateQRCode($s.ballot.key);
         });
@@ -715,20 +740,26 @@ export function initBallot(scope, http) {
       } else {
         // No valid fields — auto-uncheck grouping
         $s.ballot.allowGrouping = false;
+        var updateData = {
+          id: $s.ballot.id,
+          name: $s.ballot.name,
+          positions: $s.ballot.positions,
+          key: $s.ballot.key,
+          createdBy: $s.user.id || 'guest',
+          allowGrouping: 0
+        };
+        if (ballotSettingsChanged) {
+          updateData.register = $s.ballot.register;
+          updateData.hideDetails = $s.ballot.hideDetails ? 1 : 0;
+        }
         $http({
           method: 'POST',
           url: '/api/update-ballot.php',
-          data: {
-            id: $s.ballot.id,
-            name: $s.ballot.name,
-            positions: $s.ballot.positions,
-            key: $s.ballot.key,
-            createdBy: $s.user.id || 'guest',
-            allowGrouping: 0
-          }
+          data: updateData
         });
       }
     }
+    saveBallotSettingsIfChanged();
     $s.congrats = true;
     $s.generateQRCode($s.ballot.key);
   };

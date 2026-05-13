@@ -34,13 +34,13 @@ if (!empty($_POST['key']))
 if (!empty($_POST['tieBreak']))
 	$setParts[] = "tieBreak = :tieBreak";
 
-if (!empty($_POST['register']))
+if (isset($_POST['register']))
 	$setParts[] = "register = :register";
 
 if (!empty($_POST['hideNames']))
 	$setParts[] = "hideNames = :hideNames";
 
-if (!empty($_POST['hideDetails']))
+if (isset($_POST['hideDetails']))
 	$setParts[] = "hideDetails = :hideDetails";
 
 if (!empty($_POST['allowCustom']))
@@ -97,14 +97,14 @@ if (!empty($errors)) {
 	if (!empty($_POST['tieBreak']))
 		$sth->bindValue(':tieBreak', $_POST['tieBreak'], PDO::PARAM_STR);
 
-	if (!empty($_POST['register']))
-		$sth->bindValue(':register', $_POST['register'], PDO::PARAM_INT);
+	if (isset($_POST['register']))
+		$sth->bindValue(':register', intval($_POST['register']), PDO::PARAM_INT);
 
 	if (!empty($_POST['hideNames']))
 		$sth->bindValue(':hideNames', $_POST['hideNames'], PDO::PARAM_INT);
 
-	if (!empty($_POST['hideDetails']))
-		$sth->bindValue(':hideDetails', $_POST['hideDetails'], PDO::PARAM_INT);
+	if (isset($_POST['hideDetails']))
+		$sth->bindValue(':hideDetails', intval($_POST['hideDetails']), PDO::PARAM_INT);
 
 	if (!empty($_POST['allowCustom']))
 		$sth->bindValue(':allowCustom', $_POST['allowCustom'], PDO::PARAM_INT);
