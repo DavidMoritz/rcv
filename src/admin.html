@@ -402,7 +402,10 @@
         var orange = '<span style="color:#f0ad4e">\u2713</span>';
         var red = '<span style="color:#d9534f">\u2713</span>';
         tbody.innerHTML = ballots.map(function(b, i) {
-            var created = b.timeCreated ? new Date(b.timeCreated).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '-';
+            var dateOpts = showRank
+                ? { month: 'short', day: 'numeric', year: 'numeric' }
+                : { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' };
+            var created = b.timeCreated ? new Date(b.timeCreated).toLocaleString([], dateOpts) : '-';
             return '<tr>' +
                 '<td>' + (showRank ? (i + 1) : b.id) + '</td>' +
                 '<td>' + escapeHtml(b.name) + '</td>' +
