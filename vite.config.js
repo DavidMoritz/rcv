@@ -97,23 +97,7 @@ export default defineConfig({
         },
         // Copy It's a Wrap app and assets
         {
-          src: 'wrap.html',
-          dest: '.'
-        },
-        {
-          src: 'wrap/s1.png',
-          dest: '.'
-        },
-        {
-          src: 'wrap/s2.png',
-          dest: '.'
-        },
-        {
-          src: 'wrap/s3.png',
-          dest: '.'
-        },
-        {
-          src: 'wrap/wrap-favicon.ico',
+          src: 'wrap/*',
           dest: '.'
         },
         // Copy static files
