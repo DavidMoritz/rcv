@@ -90,6 +90,11 @@ export default defineConfig({
           src: 'inc/timezone-picker.js',
           dest: 'inc'
         },
+        // Copy service worker (deregistration script)
+        {
+          src: 'sw.js',
+          dest: '.'
+        },
         // Copy static files
         {
           src: 'favicon.ico',
