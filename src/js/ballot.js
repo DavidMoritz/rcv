@@ -317,6 +317,12 @@ export function initBallot(scope, http) {
     }
   };
 
+  $s.initCutoff = function () {
+    if ($s.editTime && $s.ballot.resultsRelease) {
+      $s.ballot.voteCutoff = new Date($s.ballot.resultsRelease);
+    }
+  };
+
   $s.manageSecureBallot = function (ballot) {
     $s.manageBallot = ballot;
     $s.manageSort = 'code';
@@ -678,7 +684,7 @@ export function initBallot(scope, http) {
       $s.ballot.sqlVoteCutoff = null;
     } else {
       $s.ballot.sqlVoteCutoff = updateTime($s.ballot.voteCutoff, $s.ballot.voteTimezone);
-      $s.ballot.sqlResultsRelease = $s.ballot.sqlVoteCutoff;
+      $s.ballot.sqlResultsRelease = null;
     }
 
     if ($s.showRelease && tempReserve && !isNaN(new Date(tempReserve).getTime())) {

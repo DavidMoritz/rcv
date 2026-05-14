@@ -134,7 +134,7 @@
               >Voting Cutoff:<span ng-hide="editTime">
                 never (check box for custom)</span
               >
-              <input type="checkbox" ng-model="editTime" ng-change="editDate = editTime" ng-disabled="ballot.isSecure" /><small
+              <input type="checkbox" ng-model="editTime" ng-change="editDate = editTime; initCutoff()" ng-disabled="ballot.isSecure" /><small
                 ng-show="editTime && ballot.voteCutoff"
                 class="text-muted"
               >
@@ -202,10 +202,8 @@
           </div>
           <div class="form-group">
             <label
-              >Release Results:<span ng-hide="showRelease || editTime">
+              >Release Results:<span ng-hide="showRelease">
                 immediately (check box for custom)</span
-              ><span ng-hide="showRelease || !editTime">
-                after voting (check box for custom)</span
               >
               <input type="checkbox" ng-model="showRelease" ng-change="sameTime()" /><small
                 ng-show="showRelease &amp;&amp; ballot.resultsRelease"
