@@ -106,12 +106,14 @@
                                     <th>Name</th>
                                     <th>Shortcode</th>
                                     <th>Owner</th>
-                                    <th title="Multiple Positions">&#x1F465;</th>
+                                    <th title="Multiple Positions">&#x1F3C6;</th>
                                     <th title="Voter Names Required">&#x270D;</th>
                                     <th title="Voting Cutoff">&#x23F0;</th>
                                     <th title="Results Release">&#x1F4C5;</th>
                                     <th title="One Device One Vote">&#x1F4F1;</th>
                                     <th title="Secure Ballot">&#x1F512;</th>
+                                    <th title="Allow Custom Entries">&#x270F;</th>
+                                    <th title="Voter Grouping">&#x1F4CB;</th>
                                     <th title="Has Image">&#x1F5BC;</th>
                                     <th title="Has Color">&#x1F3A8;</th>
                                     <th title="Has Hyperlink">&#x1F517;</th>
@@ -125,7 +127,7 @@
                                 </tr>
                             </thead>
                             <tbody id="recentActiveTableBody">
-                                <tr><td colspan="20" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="22" class="text-center">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -144,12 +146,14 @@
                                     <th>Name</th>
                                     <th>Shortcode</th>
                                     <th>Owner</th>
-                                    <th title="Multiple Positions">&#x1F465;</th>
+                                    <th title="Multiple Positions">&#x1F3C6;</th>
                                     <th title="Voter Names Required">&#x270D;</th>
                                     <th title="Voting Cutoff">&#x23F0;</th>
                                     <th title="Results Release">&#x1F4C5;</th>
                                     <th title="One Device One Vote">&#x1F4F1;</th>
                                     <th title="Secure Ballot">&#x1F512;</th>
+                                    <th title="Allow Custom Entries">&#x270F;</th>
+                                    <th title="Voter Grouping">&#x1F4CB;</th>
                                     <th title="Has Image">&#x1F5BC;</th>
                                     <th title="Has Color">&#x1F3A8;</th>
                                     <th title="Has Hyperlink">&#x1F517;</th>
@@ -163,7 +167,7 @@
                                 </tr>
                             </thead>
                             <tbody id="popularTableBody">
-                                <tr><td colspan="20" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="22" class="text-center">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -390,7 +394,7 @@
     function renderRankedBallots(tbodyId, ballots, showRank) {
         var tbody = document.getElementById(tbodyId);
         if (ballots.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="20" class="text-center text-muted">No ballots found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="22" class="text-center text-muted">No ballots found</td></tr>';
             return;
         }
         var green = '<span style="color:#5cb85c">\u2713</span>';
@@ -408,8 +412,10 @@
                 '<td>' + (b.register > 0 ? green : '') + '</td>' +
                 '<td>' + (b.voteCutoff ? green : '') + '</td>' +
                 '<td>' + (b.resultsRelease ? green : '') + '</td>' +
-                '<td>' + (b.oneDeviceOneVote == 1 ? green : '') + '</td>' +
+                '<td>' + (b.oneDeviceOneVote == 1 ? blue : '') + '</td>' +
                 '<td>' + (b.isSecure == 1 ? blue : '') + '</td>' +
+                '<td>' + (b.allowCustom == 1 ? blue : '') + '</td>' +
+                '<td>' + (b.allowGrouping == 1 ? blue : '') + '</td>' +
                 '<td>' + (b.hasImage > 0 ? orange : '') + '</td>' +
                 '<td>' + (b.hasColor > 0 ? orange : '') + '</td>' +
                 '<td>' + (b.hasHyperlink > 0 ? orange : '') + '</td>' +
