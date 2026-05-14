@@ -50,7 +50,7 @@ if(!empty($key)) {
 		$candidates = $entrySth->fetchAll(PDO::FETCH_ASSOC);
 
 		if (empty($candidates) && !$edit) {
-			echo json_encode(['status' => 'closed', 'resultsRelease' => $ballot['resultsRelease']]);
+			echo "This ballot has no candidates and cannot accept votes.";
 			exit;
 		}
 

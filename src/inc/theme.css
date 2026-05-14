@@ -131,7 +131,7 @@ a:focus {
   box-shadow: 0 2px 24px rgba(24, 28, 34, 0.05);
 }
 .panel-default > .panel-heading {
-  background-color: #edf0fb;
+  background-color: aliceblue;
   border-bottom: none;
   border-radius: 8px 8px 0 0;
   color: #181c22;
@@ -236,7 +236,7 @@ a:focus {
 
 /* ---------- Candidate / Sortable Items ---------- */
 #sortable .candidate-item {
-  background: #edf0fb;
+  background: aliceblue;
   border: 1px solid #c8ccd4;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(24, 28, 34, 0.08);
@@ -281,7 +281,7 @@ a:focus {
 
 /* ---------- Jumbotron ---------- */
 .jumbotron {
-  background-color: #edf0fb;
+  background-color: aliceblue;
   border-radius: 8px;
 }
 .jumbotron h1,

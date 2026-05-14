@@ -26,8 +26,8 @@
         </thead>
         <tbody>
           <tr
-            ng-repeat="ballot in allBallots track by ballot.id"
-            ng-if="ballot.isSecure != 1 && ballot.allowGrouping != 1"
+            ng-repeat="ballot in allBallots | filter:standardBallotFilter track by ballot.id"
+            ng-style="$odd && {'background-color': 'aliceblue'}"
             id="ballot-row-{{ballot.id}}"
           >
             <td ng-if="ballot.transferring" colspan="10" class="text-center text-muted">
@@ -109,8 +109,8 @@
         </thead>
         <tbody>
           <tr
-            ng-repeat="ballot in allBallots track by ballot.id"
-            ng-if="ballot.isSecure == 1 || ballot.allowGrouping == 1"
+            ng-repeat="ballot in allBallots | filter:managedBallotFilter track by ballot.id"
+            ng-style="$odd && {'background-color': 'aliceblue'}"
             id="ballot-row-{{ballot.id}}"
           >
             <td>{{ballot.key}}</td>

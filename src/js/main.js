@@ -234,6 +234,9 @@ mainApp.controller('MainCtrl', [
       origin: window.location.origin,
       managedBallotFilter: function (ballot) {
         return ballot.isSecure == 1 || ballot.allowGrouping == 1;
+      },
+      standardBallotFilter: function (ballot) {
+        return ballot.isSecure != 1 && ballot.allowGrouping != 1;
       }
     });
 
