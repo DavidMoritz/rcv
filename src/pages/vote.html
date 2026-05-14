@@ -130,7 +130,7 @@
         ng-if="voteCutoffMoment && cutoffSecondsLeft > 0 && cutoffSecondsLeft <= 300"
         class="alert alert-warning"
       >
-        Voting closes in {{cutoffMinutes}}:{{cutoffSeconds < 10 ? '0' : ''}}{{cutoffSeconds}}
+        Voting closes in {{cutoffMinutes}}:{{cutoffSecondsPadded}}
       </div>
       <div ng-if="voteCutoffMoment && cutoffSecondsLeft <= 0" class="alert alert-danger">
         Time is up. This vote is no longer valid.

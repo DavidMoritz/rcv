@@ -376,6 +376,7 @@ mainApp.controller('MainCtrl', [
               $s.cutoffSecondsLeft = secs;
               $s.cutoffMinutes = Math.floor(Math.max(0, secs) / 60);
               $s.cutoffSeconds = Math.max(0, secs) % 60;
+              $s.cutoffSecondsPadded = ($s.cutoffSeconds < 10 ? '0' : '') + $s.cutoffSeconds;
               if (secs <= 0) $interval.cancel(cutdownInterval);
             }, 1000);
           }
