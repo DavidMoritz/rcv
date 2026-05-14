@@ -15,7 +15,7 @@ CREATE TABLE ballots (
   tieBreak varchar(24) NOT NULL DEFAULT 'weighted',
   voteCutoff datetime DEFAULT NULL,
   resultsRelease datetime DEFAULT NULL,
-  timeCreated timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  timeCreated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   register int DEFAULT 0,
   allowCustom tinyint NOT NULL DEFAULT 0,
   showGraph tinyint NOT NULL DEFAULT 0,
@@ -80,7 +80,7 @@ CREATE TABLE votes (
   voteIds text,
   ipAddress varchar(64) NOT NULL,
   name varchar(40) NOT NULL DEFAULT '',
-  date_created timestamp DEFAULT CURRENT_TIMESTAMP,
+  date_created datetime DEFAULT CURRENT_TIMESTAMP,
   fingerprint varchar(64) NOT NULL DEFAULT '',
   group_answers text DEFAULT NULL
 );
