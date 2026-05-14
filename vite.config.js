@@ -95,6 +95,15 @@ export default defineConfig({
           src: 'sw.js',
           dest: '.'
         },
+        // Copy It's a Wrap app
+        {
+          src: 'wrap.html',
+          dest: '.'
+        },
+        {
+          src: 'wrap_files',
+          dest: '.'
+        },
         // Copy static files
         {
           src: 'favicon.ico',

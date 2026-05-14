@@ -284,6 +284,10 @@ This will diagnose common problems and provide specific fix commands.
 - **115 automated tests**: Frontend unit tests (Vitest) and PHP API integration tests (PHPUnit with SQLite)
 - **Automated environment verification**: `verify-setup.sh` script for easier onboarding
 
+## It's a Wrap!
+
+Also hosted on this site is [It's a Wrap!](https://rankedchoices.com/wrap.html) — a gift I made for my wife. It's a fun, free app that helps people figure out how much wrapping paper they need for any gift. Check it out at `/wrap.html`.
+
 ## License
 
 This project is open source and free to use. See [LICENSE](LICENSE) file for details.

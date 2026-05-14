@@ -1,0 +1,229 @@
+.btn-group-justified {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate; }
+  .btn-group-justified .btn,
+  .btn-group-justified .btn-group {
+    float: none;
+    display: table-cell;
+    width: 1%; }
+    .btn-group-justified .btn .btn,
+    .btn-group-justified .btn-group .btn {
+      width: 100%; }
+    .btn-group-justified .btn .dropdown-menu,
+    .btn-group-justified .btn-group .dropdown-menu {
+      left: auto; }
+
+h5 {
+	padding-top: 15px;
+}
+
+:root {
+  --height: 100px;
+  --length: 100px;
+  --depth: 100px;
+  --rotate: 212deg;
+}
+
+
+
+.base,
+.base * {
+  transform-style: preserve-3d;
+}
+
+.base {
+  height: var(--height);
+  width: var(--length);
+  margin: auto;
+  position: relative;
+  border: solid 1px blue;
+  transform: rotate3d(1, 1, 1, var(--rotate));
+}
+
+.top {
+  height: var(--depth);
+  width: 100%;
+  bottom: 100%;
+  position: absolute;
+  background-color: rgba(50, 155, 155, .8);
+  transform: translateY(50%) rotateX(90deg);
+}
+
+.down {
+  height: var(--depth);
+  width: 100%;
+  top: 100%;
+  position: absolute;
+  background-color: rgba(155, 50, 155, .8);
+  transform: translateY(-50%) rotateX(90deg);
+}
+
+.right {
+  width: var(--depth);
+  height: 100%;
+  left: 100%;
+  position: absolute;
+  background-color: rgba(155, 155, 50, .8);
+  transform: translateX(-50%) rotateY(90deg);
+}
+
+.left {
+  width: var(--depth);
+  height: 100%;
+  right: 100%;
+  position: absolute;
+  background-color: rgba(50, 155, 50, .8);
+  transform: translateX(50%) rotateY(90deg);
+}
+
+.aux {
+  width: 100%;
+  height: var(--depth);
+  position: absolute;
+  transform: translateY(-50%) rotateX(-90deg);
+}
+
+.front {
+  height: var(--height);
+  width: 100%;
+  top: 100%;
+  position: absolute;
+  background-color: rgba(155, 50, 50, .8);
+  transform: rotateX(90deg);
+  transform-origin: center top;
+}
+
+.back {
+  height: var(--height);
+  width: 100%;
+  bottom: 100%;
+  position: absolute;
+  background-color: rgba(50, 50, 155, .8);
+  transform: rotateX(-90deg);
+  transform-origin: center bottom;
+}
+
+input {
+  width: 50px;
+}
+
+/* Snow Effect */
+body { background-color:#333;
+color: white }
+#snow{
+	background: none;
+	font-family: Androgyne;
+	background-image: url('s1.png'), url('s2.png'), url('s3.png');
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	z-index:1;
+	animation: snow 10s linear infinite;
+}
+@keyframes snow {
+  0% {background-position: 0px 0px, 0px 0px, 0px 0px;}
+  50% {background-position: 500px 500px, 100px 200px, -100px 150px;}
+  100% {background-position: 500px 1000px, 200px 400px, -100px 300px;}
+}
+/ * End Snow effect */
+
+/* all styles * /
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  background-color: rgba(194, 237, 255, 0.68);
+}
+.cm,
+.cm-unit .inch,
+.cm-unit .parse {
+  display: none;
+}
+.cm-unit .cm {
+  display: block;
+}
+.unit:after {
+  content: " inches";
+}
+.cm-unit .unit:after {
+  content: " centimeters";
+}
+.measurements {
+  clear: both;
+  display: flex;
+  justify-content: space-around;
+}
+h2 {
+  float: left;
+  margin: 5px 20px;
+}
+#result {
+  font-size: 20px;
+  margin: 20px;
+  text-align: center;
+}
+h4 {
+	padding-top: 15px;
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  min-height: 200px;
+  width: 125px;
+}
+.parse {
+  font-size: 85%
+}
+input[type=number] {
+  border: 0;
+  text-align: center;
+  font-size: 17px;
+  background-color: transparent;
+}
+h3 {
+  margin: 0;
+  text-align: center;
+}
+.plus, .minus, .radio {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.radio {
+  background-color: rgba(128, 128, 128, 0.29);
+  color: #011cff;
+}
+.radio input {
+  /* padding-top: 15px; 
+}
+.plus {
+  color: #fff;
+  background-color: #65b733;
+  border-color: #2ea436;
+}
+.minus {
+  color: #fff;
+  background-color: #b75833;
+  border-color: #a42e2e;
+}
+
+
