@@ -417,6 +417,7 @@
             return;
         }
         var green = '<span style="color:#5cb85c">\u2713</span>';
+        var greenBold = '<span style="color:#5cb85c;font-weight:bold;text-shadow:0 0 2px #5cb85c">\u2713</span>';
         var blue = '<span style="color:#337ab7">\u2713</span>';
         var orange = '<span style="color:#f0ad4e">\u2713</span>';
         var red = '<span style="color:#d9534f">\u2713</span>';
@@ -431,7 +432,7 @@
                 '<td><a href="/results#' + encodeURIComponent(b.key) + '" target="_blank"><code>' + escapeHtml(b.key) + '</code></a></td>' +
                 '<td>' + escapeHtml(b.ownerName || b.createdBy || '-') + '</td>' +
                 '<td>' + (b.positions > 1 ? green : '') + '</td>' +
-                '<td>' + (b.register > 0 ? green : '') + '</td>' +
+                '<td>' + (b.register == 2 ? greenBold : b.register > 0 ? green : '') + '</td>' +
                 '<td>' + (b.voteCutoff ? green : '') + '</td>' +
                 '<td>' + (b.resultsRelease ? green : '') + '</td>' +
                 '<td>' + (b.oneDeviceOneVote == 1 ? blue : '') + '</td>' +
