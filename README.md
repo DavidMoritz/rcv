@@ -211,6 +211,14 @@ rcv/
 └── package.json           # Dependencies and scripts
 ```
 
+## Design Philosophy: The 15-Second Ballot
+
+A core principle of Ranked Choices is that creating a ballot should be *fast*. From the home screen, you can name a ballot, type in a few options, and have a fully-functional, shareable RCV ballot in about 15 seconds. No account required, no configuration needed — just a link you can send to anyone to start voting immediately.
+
+This matters because it sets Ranked Choices apart from other RCV tools. Most require setup wizards, accounts, or multi-step processes. Here, the barrier to entry is practically zero. Advanced options (voting cutoffs, secure codes, voter prompts, result visualizations) are available but tucked away — they never slow down the common case.
+
+When contributing, please preserve this experience. Every feature should be additive, not in the way.
+
 ## Key Features
 
 - **Ballot Creation**: Create custom RCV ballots with multiple candidates
