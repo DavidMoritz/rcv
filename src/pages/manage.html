@@ -28,7 +28,7 @@
                   Voter Prompts
                 </h3>
                 <button ng-if="manageBallot.totalVotes == 0 && !editingManageGroupFields"
-                        ng-click="startEditManageGroupFields()" class="btn btn-default btn-sm"
+                        ng-click="showManageGroups = true; startEditManageGroupFields()" class="btn btn-default btn-sm"
                         style="margin-left: 8px; position: relative; top: -2px">
                   Edit
                 </button>

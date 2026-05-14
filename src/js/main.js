@@ -486,7 +486,8 @@ mainApp.controller('MainCtrl', [
         $s.allowCustom = ballot.allowCustom;
         $s.tieBreak = ballot.tieBreak;
         $s.graphUpdated = ballot.graphUpdated;
-        $s.hideDetails = hideDetails && !loggedIn;
+        $s.hideDetails = hideDetails && !loggedIn && !$s.ballotIsSecure;
+        $s.hidePromptResults = hideDetails && !loggedIn;
         $s.voterNames = [];
         $s.voterIds = [];
         let mostRecentVote = voteRows[0].date_created;
