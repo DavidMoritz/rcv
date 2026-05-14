@@ -101,7 +101,7 @@ export default defineConfig({
           dest: '.'
         },
         {
-          src: 'wrap_files',
+          src: 'wrap-assets',
           dest: '.'
         },
         // Copy static files
