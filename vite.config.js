@@ -100,10 +100,6 @@ export default defineConfig({
           src: 'wrap.html',
           dest: '.'
         },
-        {
-          src: 'wrap-assets',
-          dest: '.'
-        },
         // Copy static files
         {
           src: 'favicon.ico',
