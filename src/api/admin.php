@@ -376,7 +376,8 @@ switch ($action) {
         break;
 
     case 'recent-active':
-        $stmt = $dbh->query("
+        $limit = min(max((int)($_POST['limit'] ?? 50), 50), 500);
+        $stmt = $dbh->prepare("
             SELECT * FROM (
                 SELECT b.*, u.username as ownerName,
                     (SELECT COUNT(*) FROM votes v WHERE v.ballotId = b.id) as voteCount,
@@ -399,8 +400,10 @@ switch ($action) {
                   AND LOWER(b.name) != 'test'
                 ORDER BY b.timeCreated DESC
             ) sub WHERE voteCount >= 3
-            LIMIT 50
+            LIMIT :limit
         ");
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
         $data['ballots'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $data['success'] = true;
         break;
