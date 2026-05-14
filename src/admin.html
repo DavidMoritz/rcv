@@ -425,7 +425,7 @@
             var dateOpts = showRank
                 ? { month: 'short', day: 'numeric', year: 'numeric' }
                 : { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' };
-            var created = b.timeCreated ? new Date(b.timeCreated).toLocaleString([], dateOpts) : '-';
+            var created = b.timeCreated ? new Date(b.timeCreated.replace(' ', 'T') + 'Z').toLocaleString([], dateOpts) : '-';
             return '<tr>' +
                 '<td>' + (showRank ? (i + 1) : b.id) + '</td>' +
                 '<td>' + escapeHtml(b.name) + '</td>' +
