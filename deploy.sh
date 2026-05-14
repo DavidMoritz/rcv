@@ -53,7 +53,7 @@ rm -f dist/api/.popular-cache.json
 echo ""
 echo "Deploying to $SFTP_HOST:$SFTP_REMOTE_PATH..."
 
-RSYNC_OPTS="-avz --exclude='.popular-cache.json' --exclude='api/config.php'"
+RSYNC_OPTS="-avz --delete --exclude='.popular-cache.json' --exclude='api/config.php' --exclude='wrap.html' --exclude='It*Wrap*'"
 SSH_OPTS="-p ${SFTP_PORT:-22}"
 
 if [ -n "$SFTP_KEY_PATH" ]; then
