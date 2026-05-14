@@ -271,6 +271,7 @@ switch ($action) {
                 $placeholders = implode(',', array_fill(0, count($cachedIds), '?'));
                 $stmt = $dbh->prepare("
                     SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
+                        b.positions, b.register, b.voteCutoff, b.resultsRelease,
                         b.oneDeviceOneVote, b.isSecure, b.allowCustom, b.allowGrouping, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph,
                         u.username as ownerName,
                         COUNT(v.vote_id) as voteCount,
@@ -306,6 +307,7 @@ switch ($action) {
                 $placeholders = implode(',', array_fill(0, count($cachedIds), '?'));
                 $stmt = $dbh->prepare("
                     SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
+                        b.positions, b.register, b.voteCutoff, b.resultsRelease,
                         b.oneDeviceOneVote, b.isSecure, b.allowCustom, b.allowGrouping, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph,
                         u.username as ownerName,
                         COUNT(v.vote_id) as voteCount,
