@@ -16,7 +16,7 @@ if (!empty($errors)) {
 	exit;
 }
 
-$now = date('Y-m-d H:i:s');
+$now = gmdate('Y-m-d H:i:s');
 
 $sth = $dbh->prepare("
 	UPDATE ballots

@@ -13,7 +13,7 @@ require_once("config.php");
 		WHERE
 			ballots.key = 'r0ik'
 		AND
-			(ballots.resultsRelease IS NULL OR NOW() > ballots.resultsRelease);";
+			(ballots.resultsRelease IS NULL OR UTC_TIMESTAMP() > ballots.resultsRelease);";
 	$sth = $dbh->prepare($query);
 	$sth->execute();
   $results=$sth->fetchAll(PDO::FETCH_ASSOC);

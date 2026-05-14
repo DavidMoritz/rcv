@@ -9,8 +9,8 @@ if ($key) {
 			ballots
 		SET
 			showGraph = 1,
-      voteCutoff = NOW(),
-      graphUpdated = NOW()
+      voteCutoff = UTC_TIMESTAMP(),
+      graphUpdated = UTC_TIMESTAMP()
 		WHERE
 			`key` = :key;";
 
