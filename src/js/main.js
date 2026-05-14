@@ -369,6 +369,17 @@ mainApp.controller('MainCtrl', [
           $s.resultsReady = !resultsDate || resultsDate < moment();
           $s.resultsReleaseFormatted = resultsDate ? resultsDate.tz(moment.tz.guess()).format('MMM Do, h:mma') : null;
 
+          $s.voteCutoffMoment = ballot.voteCutoff ? moment.tz(ballot.voteCutoff, 'Zulu') : null;
+          if ($s.voteCutoffMoment) {
+            var cutdownInterval = $interval(function () {
+              var secs = $s.voteCutoffMoment.diff(moment(), 'seconds');
+              $s.cutoffSecondsLeft = secs;
+              $s.cutoffMinutes = Math.floor(Math.max(0, secs) / 60);
+              $s.cutoffSeconds = Math.max(0, secs) % 60;
+              if (secs <= 0) $interval.cancel(cutdownInterval);
+            }, 1000);
+          }
+
           if ($s.ballot.register == 3) {
             if (!voterName) {
               alert('oops, this ballot is private');

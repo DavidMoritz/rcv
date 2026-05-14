@@ -126,6 +126,15 @@
       ng-hide="thanks || deviceAlreadyVoted"
     >
       <h1>Ballot: {{ballot.name}}</h1>
+      <div
+        ng-if="voteCutoffMoment && cutoffSecondsLeft > 0 && cutoffSecondsLeft <= 300"
+        class="alert alert-warning"
+      >
+        Voting closes in {{cutoffMinutes}}:{{cutoffSeconds < 10 ? '0' : ''}}{{cutoffSeconds}}
+      </div>
+      <div ng-if="voteCutoffMoment && cutoffSecondsLeft <= 0" class="alert alert-danger">
+        Time is up. This vote is no longer valid.
+      </div>
       <div class="row" ng-hide="ballot.register == 2 || ballot.isSecure || ballot.allowGrouping">
         <label class="control-label col-sm-3 col-md-2"
           >Your Name<span ng-show="ballot.register == 1">*</span>:</label
@@ -202,7 +211,7 @@
           </ul>
           <button
             type="submit"
-            ng-disabled="candidates.length === 0"
+            ng-disabled="candidates.length === 0 || (voteCutoffMoment && cutoffSecondsLeft <= 0)"
             class="btn btn-primary clearfix"
           >
             Vote!
