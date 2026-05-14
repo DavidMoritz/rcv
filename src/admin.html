@@ -106,22 +106,26 @@
                                     <th>Name</th>
                                     <th>Shortcode</th>
                                     <th>Owner</th>
+                                    <th title="Multiple Positions">&#x1F465;</th>
+                                    <th title="Voter Names Required">&#x270D;</th>
+                                    <th title="Voting Cutoff">&#x23F0;</th>
+                                    <th title="Results Release">&#x1F4C5;</th>
                                     <th title="One Device One Vote">&#x1F4F1;</th>
                                     <th title="Secure Ballot">&#x1F512;</th>
-                                    <th title="Ordered Entries">&#x1F522;</th>
-                                    <th title="Kickback URL">&#x267B;</th>
-                                    <th title="Iframe URL">&#x1F5D4;</th>
                                     <th title="Has Image">&#x1F5BC;</th>
                                     <th title="Has Color">&#x1F3A8;</th>
                                     <th title="Has Hyperlink">&#x1F517;</th>
+                                    <th title="Ordered Entries">&#x1F522;</th>
                                     <th title="RCVis Graph">&#x1F4CA;</th>
+                                    <th title="Kickback URL">&#x267B;</th>
+                                    <th title="Iframe URL">&#x1F5D4;</th>
                                     <th>Votes</th>
                                     <th>Entries</th>
                                     <th>Created</th>
                                 </tr>
                             </thead>
                             <tbody id="recentActiveTableBody">
-                                <tr><td colspan="16" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="20" class="text-center">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -140,22 +144,26 @@
                                     <th>Name</th>
                                     <th>Shortcode</th>
                                     <th>Owner</th>
+                                    <th title="Multiple Positions">&#x1F465;</th>
+                                    <th title="Voter Names Required">&#x270D;</th>
+                                    <th title="Voting Cutoff">&#x23F0;</th>
+                                    <th title="Results Release">&#x1F4C5;</th>
                                     <th title="One Device One Vote">&#x1F4F1;</th>
                                     <th title="Secure Ballot">&#x1F512;</th>
-                                    <th title="Ordered Entries">&#x1F522;</th>
-                                    <th title="Kickback URL">&#x267B;</th>
-                                    <th title="Iframe URL">&#x1F5D4;</th>
                                     <th title="Has Image">&#x1F5BC;</th>
                                     <th title="Has Color">&#x1F3A8;</th>
                                     <th title="Has Hyperlink">&#x1F517;</th>
+                                    <th title="Ordered Entries">&#x1F522;</th>
                                     <th title="RCVis Graph">&#x1F4CA;</th>
+                                    <th title="Kickback URL">&#x267B;</th>
+                                    <th title="Iframe URL">&#x1F5D4;</th>
                                     <th>Votes</th>
                                     <th>Entries</th>
                                     <th>Created</th>
                                 </tr>
                             </thead>
                             <tbody id="popularTableBody">
-                                <tr><td colspan="16" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="20" class="text-center">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -382,26 +390,33 @@
     function renderRankedBallots(tbodyId, ballots, showRank) {
         var tbody = document.getElementById(tbodyId);
         if (ballots.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="16" class="text-center text-muted">No ballots found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="20" class="text-center text-muted">No ballots found</td></tr>';
             return;
         }
+        var green = '<span style="color:#5cb85c">\u2713</span>';
+        var blue = '<span style="color:#337ab7">\u2713</span>';
+        var orange = '<span style="color:#f0ad4e">\u2713</span>';
+        var red = '<span style="color:#d9534f">\u2713</span>';
         tbody.innerHTML = ballots.map(function(b, i) {
             var created = b.timeCreated ? new Date(b.timeCreated).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '-';
-            var check = '\u2713';
             return '<tr>' +
                 '<td>' + (showRank ? (i + 1) : b.id) + '</td>' +
                 '<td>' + escapeHtml(b.name) + '</td>' +
                 '<td><a href="/results#' + encodeURIComponent(b.key) + '" target="_blank"><code>' + escapeHtml(b.key) + '</code></a></td>' +
                 '<td>' + escapeHtml(b.ownerName || b.createdBy || '-') + '</td>' +
-                '<td>' + (b.oneDeviceOneVote == 1 ? check : '') + '</td>' +
-                '<td>' + (b.isSecure == 1 ? check : '') + '</td>' +
-                '<td>' + (b.orderedEntries == 1 ? check : '') + '</td>' +
-                '<td>' + (b.kickbackUrl ? check : '') + '</td>' +
-                '<td>' + (b.iframeUrl ? check : '') + '</td>' +
-                '<td>' + (b.hasImage > 0 ? check : '') + '</td>' +
-                '<td>' + (b.hasColor > 0 ? check : '') + '</td>' +
-                '<td>' + (b.hasHyperlink > 0 ? check : '') + '</td>' +
-                '<td>' + (b.showGraph == 1 ? check : '') + '</td>' +
+                '<td>' + (b.positions > 1 ? green : '') + '</td>' +
+                '<td>' + (b.register > 0 ? green : '') + '</td>' +
+                '<td>' + (b.voteCutoff ? green : '') + '</td>' +
+                '<td>' + (b.resultsRelease ? green : '') + '</td>' +
+                '<td>' + (b.oneDeviceOneVote == 1 ? green : '') + '</td>' +
+                '<td>' + (b.isSecure == 1 ? blue : '') + '</td>' +
+                '<td>' + (b.hasImage > 0 ? orange : '') + '</td>' +
+                '<td>' + (b.hasColor > 0 ? orange : '') + '</td>' +
+                '<td>' + (b.hasHyperlink > 0 ? orange : '') + '</td>' +
+                '<td>' + (b.orderedEntries == 1 ? orange : '') + '</td>' +
+                '<td>' + (b.showGraph == 1 ? orange : '') + '</td>' +
+                '<td>' + (b.kickbackUrl ? red : '') + '</td>' +
+                '<td>' + (b.iframeUrl ? red : '') + '</td>' +
                 '<td><strong>' + (b.voteCount || 0) + '</strong></td>' +
                 '<td>' + (b.entryCount || 0) + '</td>' +
                 '<td>' + created + '</td>' +
