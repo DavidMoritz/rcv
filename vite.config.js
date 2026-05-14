@@ -95,9 +95,25 @@ export default defineConfig({
           src: 'sw.js',
           dest: '.'
         },
-        // Copy It's a Wrap app
+        // Copy It's a Wrap app and assets
         {
           src: 'wrap.html',
+          dest: '.'
+        },
+        {
+          src: 'wrap/s1.png',
+          dest: '.'
+        },
+        {
+          src: 'wrap/s2.png',
+          dest: '.'
+        },
+        {
+          src: 'wrap/s3.png',
+          dest: '.'
+        },
+        {
+          src: 'wrap/wrap-favicon.ico',
           dest: '.'
         },
         // Copy static files
