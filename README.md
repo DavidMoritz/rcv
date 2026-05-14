@@ -286,7 +286,7 @@ This will diagnose common problems and provide specific fix commands.
 
 ## It's a Wrap!
 
-Also hosted on this site is [It's a Wrap!](https://rankedchoices.com/wrap.html) — a gift I made for my wife. It's a fun, free app that helps people figure out how much wrapping paper they need for any gift. Check it out at `/wrap.html`.
+Also hosted on this site is [It's a Wrap!](https://rankedchoices.com/wrap.html) — a gift I made for my wife. It's a fun, free app that helps people figure out how much wrapping paper they need for any gift. Check it out at `src/wrap/*` and resolves to `/wrap.html`.
 
 ## License
 

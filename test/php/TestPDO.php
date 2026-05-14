@@ -22,9 +22,9 @@ class TestPDO extends PDO
             return new NoopStatement();
         }
 
-        // Rewrite DATE_SUB(NOW(), INTERVAL ...) → datetime('now', '-...')
+        // Rewrite DATE_SUB(NOW()|UTC_TIMESTAMP(), INTERVAL ...) → datetime('now', '-...')
         $query = preg_replace_callback(
-            '/DATE_SUB\s*\(\s*NOW\(\)\s*,\s*INTERVAL\s+(\d+)\s+(\w+)\s*\)/i',
+            '/DATE_SUB\s*\(\s*(?:NOW|UTC_TIMESTAMP)\(\)\s*,\s*INTERVAL\s+(\d+)\s+(\w+)\s*\)/i',
             function ($m) {
                 $n = $m[1];
                 $unit = strtolower($m[2]);

@@ -3,8 +3,6 @@ require_once("config.php");
 
 $key = $_GET['key'];
 $edit = $_GET['edit'] ?? false;
-$editText = $edit ? '' : 'AND NOW() < b.voteCutoff';
-
 if(!empty($key)) {
 	$sth = $dbh->prepare("SET time_zone = '+0:00'");
 	$sth->execute();
@@ -28,7 +26,7 @@ if(!empty($key)) {
 	} else {
 		// Check voting cutoff for non-edit requests
 		if (!$edit) {
-			$cutoffSth = $dbh->prepare("SELECT 1 FROM ballots WHERE id = :id AND (voteCutoff IS NULL OR NOW() < voteCutoff)");
+			$cutoffSth = $dbh->prepare("SELECT 1 FROM ballots WHERE id = :id AND (voteCutoff IS NULL OR UTC_TIMESTAMP() < voteCutoff)");
 			$cutoffSth->bindValue(':id', $ballot['id'], PDO::PARAM_INT);
 			$cutoffSth->execute();
 			if (!$cutoffSth->fetch()) {

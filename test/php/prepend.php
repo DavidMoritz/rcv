@@ -33,12 +33,18 @@ if ($innerPdo instanceof Pdo\Sqlite) {
     $innerPdo->createFunction('NOW', function () {
         return date('Y-m-d H:i:s');
     }, 0);
+    $innerPdo->createFunction('UTC_TIMESTAMP', function () {
+        return gmdate('Y-m-d H:i:s');
+    }, 0);
     $innerPdo->createFunction('RAND', function () {
         return mt_rand() / mt_getrandmax();
     }, 0);
 } else {
     $innerPdo->sqliteCreateFunction('NOW', function () {
         return date('Y-m-d H:i:s');
+    }, 0);
+    $innerPdo->sqliteCreateFunction('UTC_TIMESTAMP', function () {
+        return gmdate('Y-m-d H:i:s');
     }, 0);
     $innerPdo->sqliteCreateFunction('RAND', function () {
         return mt_rand() / mt_getrandmax();

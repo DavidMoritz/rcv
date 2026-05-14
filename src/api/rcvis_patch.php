@@ -20,7 +20,7 @@ $updateGraph = "
   UPDATE
     ballots
   SET
-    graphUpdated = NOW()
+    graphUpdated = UTC_TIMESTAMP()
   WHERE
     rcvisId = :id;";
 $sth = $dbh->prepare($updateGraph);

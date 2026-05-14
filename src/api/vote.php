@@ -124,7 +124,7 @@ if (!empty($errors)) {
 		INSERT INTO
 			votes (`ballotId`, `date_created`, `vote`, `voteIds`, `ipAddress`$inName$inFingerprint$inGroupAnswers)
 		VALUES
-			(:ballotId, NOW(), :vote, :voteIds, :ipAddress" . (empty($_POST['name']) ? "" : ", :name") . ", :fingerprint, :groupAnswers)
+			(:ballotId, UTC_TIMESTAMP(), :vote, :voteIds, :ipAddress" . (empty($_POST['name']) ? "" : ", :name") . ", :fingerprint, :groupAnswers)
     ;
   ";
 	$sth = $dbh->prepare($query);

@@ -109,7 +109,7 @@ if (!empty($errors)) {
 		INSERT INTO
 			ballots (`name`, `timeCreated`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `register`, `allowCustom`, `hideNames`, `hideDetails`, `showGraph`, `maxVotes`, `kickbackUrl`, `iframeUrl`, `oneDeviceOneVote`, `isSecure`, `orderedEntries`, `allowGrouping`)
 		VALUES
-			(:name, NOW(), :key, :positions, :createdBy, :resultsRelease, :voteCutoff, :requireSignIn, :tieBreak, :register, :allowCustom, :hideNames, :hideDetails, :showGraph, :maxVotes, :kickbackUrl, :iframeUrl, :oneDeviceOneVote, :isSecure, :orderedEntries, :allowGrouping)";
+			(:name, UTC_TIMESTAMP(), :key, :positions, :createdBy, :resultsRelease, :voteCutoff, :requireSignIn, :tieBreak, :register, :allowCustom, :hideNames, :hideDetails, :showGraph, :maxVotes, :kickbackUrl, :iframeUrl, :oneDeviceOneVote, :isSecure, :orderedEntries, :allowGrouping)";
 
 	$sth = $dbh->prepare($query);
 	$sth->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
@@ -143,7 +143,7 @@ if (!empty($errors)) {
 			WHERE id NOT IN (
 				SELECT bc.random_code_id FROM ballot_codes bc
 				JOIN ballots b ON b.id = bc.ballot_id
-				WHERE b.timeCreated > DATE_SUB(NOW(), INTERVAL 6 MONTH)
+				WHERE b.timeCreated > DATE_SUB(UTC_TIMESTAMP(), INTERVAL 6 MONTH)
 			)
 			ORDER BY RAND() LIMIT :count
 		");

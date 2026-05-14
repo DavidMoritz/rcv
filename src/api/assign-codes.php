@@ -34,7 +34,7 @@ if (empty($errors)) {
 		WHERE id NOT IN (
 			SELECT bc.random_code_id FROM ballot_codes bc
 			JOIN ballots b ON b.id = bc.ballot_id
-			WHERE b.timeCreated > DATE_SUB(NOW(), INTERVAL 6 MONTH)
+			WHERE b.timeCreated > DATE_SUB(UTC_TIMESTAMP(), INTERVAL 6 MONTH)
 		)
 		ORDER BY RAND() LIMIT :count
 	");

@@ -16,7 +16,7 @@ if(!empty($_GET['key']) && !$badSlug && !empty($_GET['id'])) {
     SET
       rcvisSlug = :slug,
       rcvisId = :id,
-      graphUpdated = NOW()
+      graphUpdated = UTC_TIMESTAMP()
 		WHERE
 			`key` = :key
   ";
