@@ -5,21 +5,27 @@
             <img src="img/ranked-choices-words-only.png" class="img img-responsive vote-button wink-words" alt="rankedchoices.com" />
           </div>
           <h2>About</h2>
-          <h3>Create a professional RCV ballot in 15 seconds</h3>
-          <p>
-            Ranked Choices is the fastest way to create a ranked choice voting ballot. Name your
-            ballot, add your options, and you have a shareable link — no account needed, no
-            setup required. Advanced features like voting cutoffs, secure codes, and result
-            visualizations are there when you need them, but they never get in the way.
-          </p>
+
+          <!-- Hero: 15-second pitch -->
+          <div class="about-hero">
+            <h3><i class="fa fa-bolt"></i> Create a professional RCV ballot in 15 seconds</h3>
+            <p>
+              Ranked Choices is the fastest way to create a ranked choice voting ballot. Name your
+              ballot, add your options, and you have a shareable link — no account needed, no
+              setup required. Advanced features like voting cutoffs, secure codes, and result
+              visualizations are there when you need them, but they never get in the way.
+            </p>
+          </div>
+
+          <!-- Why RCV -->
           <h3>Why Ranked Choice Voting?</h3>
-          <ul>
-            <li>Better representation</li>
-            <li>No "Settling"</li>
-            <li>No wasted votes</li>
-            <li>Vote by preference</li>
-            <li>Great for multi-seat elections</li>
-            <li>Easy to use</li>
+          <ul class="about-benefits">
+            <li><i class="fa fa-check"></i> Better representation</li>
+            <li><i class="fa fa-check"></i> No "Settling"</li>
+            <li><i class="fa fa-check"></i> No wasted votes</li>
+            <li><i class="fa fa-check"></i> Vote by preference</li>
+            <li><i class="fa fa-check"></i> Great for multi-seat elections</li>
+            <li><i class="fa fa-check"></i> Easy to use</li>
           </ul>
           <p>
             Ranked Choice Voting is about representing the people in the best way possible. The key
@@ -35,56 +41,89 @@
             then your vote automatically gets transferred to your second choice! And that is the
             beauty of the system.
           </p>
-          <p>
-            RCV also works really well for multi-seat elections. Everyone's vote is still counted as
-            one vote, but after their first choice is elected, the unused portion of their vote
-            (equal to the amount not absolutely necessary to get their 1st choice elected) goes to
-            their second choice candidate. This short video illustrates ranked choice voting in the
-            Animal Kingdom:
-          </p>
-          <a href="https://youtu.be/l8XOZJkozfI" target="_blank">
-            <img
-              src="https://img.youtube.com/vi/l8XOZJkozfI/mqdefault.jpg"
-              alt="STV explained with animals"
-              style="max-width: 320px; border-radius: 4px"
-            />
-          </a>
-          <h3>Get more from your ballot — for free</h3>
-          <p>
-            Creating a <strong>free</strong> account lets you edit entries, manage your ballots, and
-            view results all from one place.<br />
-            Already created a ballot as a guest? Log in and claim it from the results page.
-          </p>
-          <h3>Open Source</h3>
-          <p>
-            Ranked Choices is completely open source. Browse the code, report issues, or contribute
-            on <a href="https://github.com/DavidMoritz/rcv" target="_blank">GitHub</a>.
-          </p>
-          <h3>Feedback</h3>
-          <p>
-            I welcome questions, concerns, suggestions, and accolades!<br />Please send an email to
-            <a href="mailto:davidmoritz@gmail.com">davidmoritz@gmail.com</a>
-          </p>
-          <h3>Secure Elections</h3>
-          <p>
-            If you would like to use this site for a secure election, please review:
-            <a href="https://rankedchoices.com/secure-elections-instructions.html" target="_blank"
-              >Secure Election Instructions</a
-            >
-          </p>
-          <h3>Support</h3>
-          <p>
-            I built this free app to help raise awareness of ranked choice voting. If you would like
-            to show your appreciation, please send contributions to
-            <a href="https://paypal.me/rankedchoices" target="_blank">paypal.me/rankedchoices</a>.
-            Thank you so much <a href="/hall_of_fame">to my hall of fame!</a>
-          </p>
-          <h3>Terms of Service</h3>
-          <p>
-            Please view our terms of service to understand proper use of this site:
-            <a href="https://rankedchoices.com/terms-of-service.html" target="_blank"
-              >Terms of Service</a
-            >
-          </p>
+          <div class="about-video-section">
+            <p>
+              RCV also works really well for multi-seat elections. Everyone's vote is still counted as
+              one vote, but after their first choice is elected, the unused portion of their vote
+              (equal to the amount not absolutely necessary to get their 1st choice elected) goes to
+              their second choice candidate. This short video illustrates ranked choice voting in the
+              Animal Kingdom:
+            </p>
+            <a href="https://youtu.be/l8XOZJkozfI" target="_blank" class="about-video-thumb">
+              <img
+                src="https://img.youtube.com/vi/l8XOZJkozfI/mqdefault.jpg"
+                alt="STV explained with animals"
+              />
+              <span class="about-video-play"><i class="fa fa-play-circle"></i></span>
+            </a>
+          </div>
+
+          <hr />
+
+          <!-- Bottom sections: 2-column grid -->
+          <div class="row about-grid">
+            <div class="col-sm-6">
+              <div class="about-card">
+                <h4><i class="fa fa-user-plus text-success"></i> Get more — for free</h4>
+                <p>
+                  Creating a <strong>free</strong> account lets you edit entries, manage your ballots, and
+                  view results all from one place.<br />
+                  Already created a ballot as a guest? Log in and claim it from the results page.
+                </p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="about-card">
+                <h4><i class="fa fa-github"></i> Open Source</h4>
+                <p>
+                  Ranked Choices is completely open source. Browse the code, report issues, or contribute
+                  on <a href="https://github.com/DavidMoritz/rcv" target="_blank">GitHub</a>.
+                </p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="about-card">
+                <h4><i class="fa fa-shield text-primary"></i> Secure Elections</h4>
+                <p>
+                  Need a secure election with voter codes? Review the
+                  <a href="https://rankedchoices.com/secure-elections-instructions.html" target="_blank"
+                    >Secure Election Instructions</a
+                  >.
+                </p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="about-card">
+                <h4><i class="fa fa-envelope text-info"></i> Feedback</h4>
+                <p>
+                  I welcome questions, concerns, suggestions, and accolades!
+                  <a href="mailto:davidmoritz@gmail.com">davidmoritz@gmail.com</a>
+                </p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="about-card">
+                <h4><i class="fa fa-heart text-danger"></i> Support</h4>
+                <p>
+                  I built this free app to help raise awareness of ranked choice voting. Show your
+                  appreciation at
+                  <a href="https://paypal.me/rankedchoices" target="_blank">paypal.me/rankedchoices</a>.
+                  Thank you <a href="/hall_of_fame">to my hall of fame!</a>
+                </p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="about-card">
+                <h4><i class="fa fa-file-text-o text-muted"></i> Terms of Service</h4>
+                <p>
+                  Please view our
+                  <a href="https://rankedchoices.com/terms-of-service.html" target="_blank"
+                    >Terms of Service</a
+                  >
+                  to understand proper use of this site.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
