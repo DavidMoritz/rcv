@@ -342,9 +342,6 @@ hr {
 .delete-vote-btn:hover {
   color: #c9302c;
 }
-.fork-me-on-github {
-  filter: sepia(1) saturate(3) hue-rotate(-15deg) brightness(0.9);
-}
 .about-logo {
   float: right;
   max-width: 320px;

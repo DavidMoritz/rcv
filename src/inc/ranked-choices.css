@@ -6,13 +6,6 @@
     max-width: 92%;
   }
 }
-.fork-me-on-github {
-  position: absolute;
-  top: 0;
-  right: 0;
-  border: 0;
-  z-index: 9;
-}
 .choice-hyperlink i {
   position: static !important;
 }

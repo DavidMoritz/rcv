@@ -130,10 +130,6 @@ export default defineConfig({
           dest: '.'
         },
         {
-          src: 'github-fork.png',
-          dest: '.'
-        },
-        {
           src: '.htaccess',
           dest: '.'
         },
