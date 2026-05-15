@@ -342,7 +342,7 @@
                 '<td>' + b.id + '</td>' +
                 '<td>' + escapeHtml(b.name) + '</td>' +
                 '<td><a href="/results#' + encodeURIComponent(b.key) + '" target="_blank"><code>' + escapeHtml(b.key) + '</code></a></td>' +
-                '<td>' + escapeHtml(b.ownerName || b.createdBy || '-') + '</td>' +
+                '<td>' + ((b.ownerName || b.createdBy) && (b.ownerName || b.createdBy) !== 'guest' ? escapeHtml(b.ownerName || b.createdBy) : '') + '</td>' +
                 '<td>' + (b.voteCount || 0) + '</td>' +
                 '<td>' + (b.entryCount || 0) + '</td>' +
                 '<td>' + created + '</td>' +
@@ -430,7 +430,7 @@
                 '<td>' + (showRank ? (i + 1) : b.id) + '</td>' +
                 '<td>' + escapeHtml(b.name) + '</td>' +
                 '<td><a href="/results#' + encodeURIComponent(b.key) + '" target="_blank"><code>' + escapeHtml(b.key) + '</code></a></td>' +
-                '<td>' + escapeHtml(b.ownerName || b.createdBy || '-') + '</td>' +
+                '<td>' + ((b.ownerName || b.createdBy) && (b.ownerName || b.createdBy) !== 'guest' ? escapeHtml(b.ownerName || b.createdBy) : '') + '</td>' +
                 '<td>' + (b.positions > 1 ? green : '') + '</td>' +
                 '<td>' + (b.register == 2 ? greenBold : b.register > 0 ? green : '') + '</td>' +
                 '<td>' + (b.voteCutoff ? green : '') + '</td>' +
