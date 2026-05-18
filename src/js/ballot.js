@@ -647,14 +647,14 @@ export function initBallot(scope, http, sce, timeout) {
     $s.customHtmlError = '';
     $s.activeLink = 'customHtmlEditor';
 
-    $http.get('/api/get-custom-html.php?ballotId=' + ballot.id + '&userId=' + $s.user.id)
+    $http.get('/api/get-custom-html.php?ballotId=' + ballot.id + '&userId=' + $s.user.id + '&_t=' + Date.now())
       .then(function (resp) {
         var html = (resp.data.data && resp.data.data.customHtml) || '';
 
         // Use $timeout to defer Quill init until after digest + DOM render
         $timeout(function () {
-          var editorEl = document.getElementById('quill-editor');
-          if (editorEl) editorEl.innerHTML = '';
+          var container = document.getElementById('quill-editor-container');
+          if (container) container.innerHTML = '<div id="quill-editor" style="height: 300px"></div>';
           $s._quill = new Quill('#quill-editor', {
             theme: 'snow',
             modules: {

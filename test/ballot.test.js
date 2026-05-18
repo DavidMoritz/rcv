@@ -355,7 +355,7 @@ describe('editCustomHtml', () => {
 
     return $http.get.mock.results[0].value.then(function () {
       expect($http.get).toHaveBeenCalledWith(
-        '/api/get-custom-html.php?ballotId=42&userId=user1'
+        expect.stringContaining('/api/get-custom-html.php?ballotId=42&userId=user1')
       );
       expect(pastedHtml).toBe(savedHtml);
     });
