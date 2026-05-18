@@ -2,6 +2,48 @@ import { dataFromObj } from './utils/helpers.js';
 
 var $s, $http, $sce, $timeout;
 
+/**
+ * Convert Quill editor HTML to portable HTML with inline styles,
+ * then sanitize with DOMPurify to strip scripts and dangerous content.
+ */
+export function convertQuillHtml(rawHtml) {
+  var temp = document.createElement('div');
+  temp.innerHTML = rawHtml;
+
+  // Convert Quill lists: Quill 2.x wraps all lists in <ol> with data-list attrs
+  temp.querySelectorAll('ol').forEach(function (ol) {
+    var items = ol.querySelectorAll('li[data-list="bullet"]');
+    if (items.length && items.length === ol.children.length) {
+      var ul = document.createElement('ul');
+      while (ol.firstChild) ul.appendChild(ol.firstChild);
+      ol.parentNode.replaceChild(ul, ol);
+    }
+  });
+  temp.querySelectorAll('li[data-list]').forEach(function (li) {
+    li.removeAttribute('data-list');
+  });
+
+  // Alignment
+  temp.querySelectorAll('.ql-align-center').forEach(function (el) {
+    el.style.textAlign = 'center'; el.classList.remove('ql-align-center');
+  });
+  temp.querySelectorAll('.ql-align-right').forEach(function (el) {
+    el.style.textAlign = 'right'; el.classList.remove('ql-align-right');
+  });
+  temp.querySelectorAll('.ql-align-justify').forEach(function (el) {
+    el.style.textAlign = 'justify'; el.classList.remove('ql-align-justify');
+  });
+
+  // Indentation
+  for (var i = 1; i <= 8; i++) {
+    temp.querySelectorAll('.ql-indent-' + i).forEach(function (el) {
+      el.style.paddingLeft = (i * 3) + 'em'; el.classList.remove('ql-indent-' + i);
+    });
+  }
+
+  return DOMPurify.sanitize(temp.innerHTML);
+}
+
 export function sanitizeTitle(title) {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
@@ -629,7 +671,7 @@ export function initBallot(scope, http, sce, timeout) {
           });
 
           if (html) {
-            $s._quill.root.innerHTML = html;
+            $s._quill.clipboard.dangerouslyPasteHTML(html);
           }
         });
       });
@@ -640,44 +682,7 @@ export function initBallot(scope, http, sce, timeout) {
     $s.customHtmlSaved = false;
     $s.customHtmlError = '';
 
-    var rawHtml = $s._quill.root.innerHTML;
-
-    // Convert Quill ql-* classes to inline styles
-    var temp = document.createElement('div');
-    temp.innerHTML = rawHtml;
-
-    // Convert Quill lists: Quill 2.x wraps all lists in <ol> with data-list attrs
-    temp.querySelectorAll('ol').forEach(function (ol) {
-      var items = ol.querySelectorAll('li[data-list="bullet"]');
-      if (items.length && items.length === ol.children.length) {
-        var ul = document.createElement('ul');
-        while (ol.firstChild) ul.appendChild(ol.firstChild);
-        ol.parentNode.replaceChild(ul, ol);
-      }
-    });
-    temp.querySelectorAll('li[data-list]').forEach(function (li) {
-      li.removeAttribute('data-list');
-    });
-
-    // Alignment
-    temp.querySelectorAll('.ql-align-center').forEach(function (el) {
-      el.style.textAlign = 'center'; el.classList.remove('ql-align-center');
-    });
-    temp.querySelectorAll('.ql-align-right').forEach(function (el) {
-      el.style.textAlign = 'right'; el.classList.remove('ql-align-right');
-    });
-    temp.querySelectorAll('.ql-align-justify').forEach(function (el) {
-      el.style.textAlign = 'justify'; el.classList.remove('ql-align-justify');
-    });
-
-    // Indentation
-    for (var i = 1; i <= 8; i++) {
-      temp.querySelectorAll('.ql-indent-' + i).forEach(function (el) {
-        el.style.paddingLeft = (i * 3) + 'em'; el.classList.remove('ql-indent-' + i);
-      });
-    }
-
-    var html = DOMPurify.sanitize(temp.innerHTML);
+    var html = convertQuillHtml($s._quill.root.innerHTML);
 
     $http({
       method: 'POST',

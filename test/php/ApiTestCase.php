@@ -104,12 +104,13 @@ abstract class ApiTestCase extends TestCase
             'register'       => 0,
             'oneDeviceOneVote' => 0,
             'isSecure'       => 0,
+            'iframeUrl'      => null,
         ];
         $data = array_merge($defaults, $overrides);
 
         $sth = $this->db->prepare("
-            INSERT INTO ballots (name, key, positions, createdBy, requireSignIn, maxVotes, tieBreak, voteCutoff, resultsRelease, timeCreated, register, oneDeviceOneVote, isSecure)
-            VALUES (:name, :key, :positions, :createdBy, :requireSignIn, :maxVotes, :tieBreak, :voteCutoff, :resultsRelease, :timeCreated, :register, :oneDeviceOneVote, :isSecure)
+            INSERT INTO ballots (name, key, positions, createdBy, requireSignIn, maxVotes, tieBreak, voteCutoff, resultsRelease, timeCreated, register, oneDeviceOneVote, isSecure, iframeUrl)
+            VALUES (:name, :key, :positions, :createdBy, :requireSignIn, :maxVotes, :tieBreak, :voteCutoff, :resultsRelease, :timeCreated, :register, :oneDeviceOneVote, :isSecure, :iframeUrl)
         ");
         $sth->execute([
             ':name'           => $data['name'],
@@ -125,6 +126,7 @@ abstract class ApiTestCase extends TestCase
             ':register'       => $data['register'],
             ':oneDeviceOneVote' => $data['oneDeviceOneVote'],
             ':isSecure'       => $data['isSecure'],
+            ':iframeUrl'      => $data['iframeUrl'],
         ]);
         return (int) $this->db->lastInsertId();
     }

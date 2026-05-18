@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { dateToTime, roundResultsRelease, updateTime, initBallot, sanitizeTitle, displayTitle, assignFieldSlugs } from '@src/js/ballot.js';
+import { dateToTime, roundResultsRelease, updateTime, initBallot, sanitizeTitle, displayTitle, assignFieldSlugs, convertQuillHtml } from '@src/js/ballot.js';
 
 // moment-timezone is CDN-loaded in production; stub .tz() for tests
 if (!moment.tz) {
@@ -237,5 +237,139 @@ describe('assignFieldSlugs', () => {
     var fields = [{ title: '' }, { title: '' }];
     assignFieldSlugs(fields);
     expect(fields.map(f => f.fieldSlug)).toEqual(['field', 'field-2']);
+  });
+});
+
+describe('convertQuillHtml', () => {
+  it('strips <script> tags', () => {
+    var result = convertQuillHtml('<p>Hello</p><script>alert("xss")</script>');
+    expect(result).not.toContain('<script');
+    expect(result).not.toContain('alert');
+    expect(result).toContain('<p>Hello</p>');
+  });
+
+  it('strips inline event handlers (onerror, onclick, etc.)', () => {
+    var result = convertQuillHtml('<img src="x" onerror="alert(1)">');
+    expect(result).not.toContain('onerror');
+    expect(result).not.toContain('alert');
+  });
+
+  it('strips onclick handlers', () => {
+    var result = convertQuillHtml('<p onclick="alert(1)">Click me</p>');
+    expect(result).not.toContain('onclick');
+  });
+
+  it('strips iframe injection', () => {
+    var result = convertQuillHtml('<iframe src="https://evil.com"></iframe><p>Safe</p>');
+    expect(result).not.toContain('<iframe');
+    expect(result).toContain('<p>Safe</p>');
+  });
+
+  it('preserves safe HTML tags', () => {
+    var result = convertQuillHtml('<h1>Title</h1><p>Paragraph</p><strong>Bold</strong>');
+    expect(result).toContain('<h1>Title</h1>');
+    expect(result).toContain('<p>Paragraph</p>');
+    expect(result).toContain('<strong>Bold</strong>');
+  });
+
+  it('converts Quill bullet lists to <ul>', () => {
+    var result = convertQuillHtml('<ol><li data-list="bullet">A</li><li data-list="bullet">B</li></ol>');
+    expect(result).toContain('<ul>');
+    expect(result).not.toContain('<ol>');
+    expect(result).not.toContain('data-list');
+  });
+
+  it('keeps ordered lists as <ol>', () => {
+    var result = convertQuillHtml('<ol><li data-list="ordered">A</li><li data-list="ordered">B</li></ol>');
+    expect(result).toContain('<ol>');
+    expect(result).not.toContain('<ul>');
+    expect(result).not.toContain('data-list');
+  });
+
+  it('converts ql-align-center to inline style', () => {
+    var result = convertQuillHtml('<p class="ql-align-center">Centered</p>');
+    expect(result).toContain('text-align: center');
+    expect(result).not.toContain('ql-align-center');
+  });
+
+  it('converts ql-indent to inline padding', () => {
+    var result = convertQuillHtml('<p class="ql-indent-2">Indented</p>');
+    expect(result).toContain('padding-left: 6em');
+    expect(result).not.toContain('ql-indent-2');
+  });
+});
+
+describe('editCustomHtml', () => {
+  var $s, $http, pastedHtml;
+
+  beforeEach(() => {
+    pastedHtml = null;
+
+    // Stub Quill globally
+    globalThis.Quill = function () {
+      this.root = document.createElement('div');
+      this.clipboard = {
+        dangerouslyPasteHTML: function (html) { pastedHtml = html; }
+      };
+    };
+
+    $s = {
+      ballot: {},
+      errors: {},
+      success: {},
+      user: { id: 'user1' },
+      $watch: vi.fn()
+    };
+
+    // Mock $http.get to return a resolved promise
+    $http = vi.fn();
+    $http.get = vi.fn();
+
+    // Mock $sce
+    var $sce = { trustAsHtml: function (v) { return v; } };
+
+    // Mock $timeout that executes synchronously
+    var $timeout = function (fn) { fn(); };
+
+    initBallot($s, $http, $sce, $timeout);
+
+    // Create the editor DOM element
+    var el = document.createElement('div');
+    el.id = 'quill-editor';
+    document.body.appendChild(el);
+  });
+
+  afterEach(() => {
+    var el = document.getElementById('quill-editor');
+    if (el) el.remove();
+    delete globalThis.Quill;
+  });
+
+  it('loads existing HTML into the Quill editor', () => {
+    var savedHtml = '<h1>Welcome</h1><p>Vote below</p>';
+    $http.get.mockReturnValue(Promise.resolve({
+      data: { data: { customHtml: savedHtml }, errors: [] }
+    }));
+
+    $s.editCustomHtml({ id: 42, name: 'Test', key: 'abc' });
+
+    return $http.get.mock.results[0].value.then(function () {
+      expect($http.get).toHaveBeenCalledWith(
+        '/api/get-custom-html.php?ballotId=42&userId=user1'
+      );
+      expect(pastedHtml).toBe(savedHtml);
+    });
+  });
+
+  it('initializes with empty editor when no saved HTML exists', () => {
+    $http.get.mockReturnValue(Promise.resolve({
+      data: { data: { customHtml: null }, errors: [] }
+    }));
+
+    $s.editCustomHtml({ id: 42, name: 'Test', key: 'abc' });
+
+    return $http.get.mock.results[0].value.then(function () {
+      expect(pastedHtml).toBeNull();
+    });
   });
 });

@@ -26,6 +26,23 @@ globalThis.setUser = vi.fn();
 globalThis.statusChangeCallback = vi.fn();
 globalThis.FB = { init: vi.fn(), getLoginStatus: vi.fn() };
 
+// 4a. Stub DOMPurify (CDN-loaded in production)
+globalThis.DOMPurify = {
+  sanitize: function (html) {
+    // Real sanitization: strip <script>, onerror, onclick, etc.
+    var temp = document.createElement('div');
+    temp.innerHTML = html;
+    temp.querySelectorAll('script').forEach(function (el) { el.remove(); });
+    temp.querySelectorAll('*').forEach(function (el) {
+      Array.from(el.attributes).forEach(function (attr) {
+        if (attr.name.startsWith('on')) el.removeAttribute(attr.name);
+      });
+      if (el.tagName === 'IFRAME') el.remove();
+    });
+    return temp.innerHTML;
+  }
+};
+
 // 4. Stub jQuery plugins that MainCtrl calls on init
 $.fn.timezones = vi.fn().mockReturnThis();
 
