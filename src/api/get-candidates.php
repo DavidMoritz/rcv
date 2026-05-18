@@ -12,7 +12,8 @@ if(!empty($key)) {
 		SELECT
 			b.id, b.key, b.name, b.positions, b.register, b.resultsRelease, b.voteCutoff,
 			b.hideNames, b.hideDetails, b.allowCustom, b.showGraph, b.kickbackUrl, b.iframeUrl,
-			b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.allowGrouping, b.createdBy
+			b.oneDeviceOneVote, b.isSecure, b.orderedEntries, b.allowGrouping, b.createdBy,
+			CASE WHEN b.iframeUrl = 'custom' THEN b.customHtml ELSE NULL END AS customHtml
 		FROM ballots b
 		WHERE b.key = :key
 	";

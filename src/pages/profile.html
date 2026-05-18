@@ -5,12 +5,15 @@
       >Sign out</a
     >
     <h3 ng-show="user.name">Name: {{user.name}}</h3>
-    <p ng-show="!allBallots.length" class="text-muted" style="margin-top: 20px">
+    <div ng-show="!ballotsLoaded" style="margin-top: 20px; text-align: center">
+      <i class="fa fa-spinner fa-spin fa-2x"></i>
+    </div>
+    <p ng-show="ballotsLoaded && !allBallots.length" class="text-muted" style="margin-top: 20px">
       Created a ballot before signing up? You can claim your previous "guest" ballots by
       entering the shortcode on the <a href ng-click="navigate('results')">Results page</a>
       while logged in.
     </p>
-    <div ng-show="allBallots.length">
+    <div ng-show="ballotsLoaded && allBallots.length">
       <ul class="ballot-tabs">
         <li ng-class="{active: profileTab !== 'managed'}" ng-click="profileTab = 'standard'">
           Standard Ballots
@@ -77,6 +80,11 @@
                   <li>
                     <a href ng-click="duplicateBallot(ballot)">
                       <i class="fa fa-clone"></i> Duplicate Ballot
+                    </a>
+                  </li>
+                  <li ng-show="ballot.iframeUrl === 'custom'">
+                    <a href ng-click="editCustomHtml(ballot)">
+                      <i class="fa fa-paint-brush"></i> Customize Display
                     </a>
                   </li>
                   <li class="divider"></li>

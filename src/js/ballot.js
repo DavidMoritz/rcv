@@ -1,6 +1,6 @@
 import { dataFromObj } from './utils/helpers.js';
 
-var $s, $http;
+var $s, $http, $sce, $timeout;
 
 export function sanitizeTitle(title) {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -67,9 +67,11 @@ export function assignFieldSlugs(fields) {
   });
 }
 
-export function initBallot(scope, http) {
+export function initBallot(scope, http, sce, timeout) {
   $s = scope;
   $http = http;
+  $sce = sce;
+  $timeout = timeout;
 
   // Time-picker helpers
   $s.hours = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
@@ -128,11 +130,13 @@ export function initBallot(scope, http) {
   $s.getBallots = function () {
     // we need to get ballots based on user signin
     if ($s.user.id) {
+      $s.ballotsLoaded = false;
       $http({
         method: 'POST',
         url: '/api/get-ballots.php',
         data: $s.user
       }).then(function (resp) {
+        $s.ballotsLoaded = true;
         $s.now = new Date();
         $s.allBallots = resp.data.map(function (ballot) {
           ballot.voteCutoff = ballot.voteCutoff ? moment.tz(ballot.voteCutoff, 'Zulu') : null;
@@ -201,6 +205,7 @@ export function initBallot(scope, http) {
     $s.ballot.oneDeviceOneVote = ballot.oneDeviceOneVote == 1;
     $s.ballot.orderedEntries = ballot.orderedEntries == 1;
     $s.ballot.kickbackUrl = ballot.kickbackUrl || '';
+    $s.ballot.useCustomHtml = (ballot.iframeUrl === 'custom');
     $s.ballot.iframeUrl = ballot.iframeUrl || '';
     $s.showIntegrationOptions = !!(ballot.kickbackUrl || ballot.iframeUrl);
     $s.ballot.allowGrouping = ballot.allowGrouping == 1;
@@ -590,6 +595,103 @@ export function initBallot(scope, http) {
     }).success(function (resp) {
       if (resp.codes) {
         $s.loadBallotCodes($s.manageBallot);
+      }
+    });
+  };
+
+  $s.editCustomHtml = function (ballot) {
+    $s.customHtmlBallot = ballot;
+    $s.customHtmlSaved = false;
+    $s.customHtmlError = '';
+    $s.activeLink = 'customHtmlEditor';
+
+    $http.get('/api/get-custom-html.php?ballotId=' + ballot.id + '&userId=' + $s.user.id)
+      .then(function (resp) {
+        var html = (resp.data.data && resp.data.data.customHtml) || '';
+
+        // Use $timeout to defer Quill init until after digest + DOM render
+        $timeout(function () {
+          var editorEl = document.getElementById('quill-editor');
+          if (editorEl) editorEl.innerHTML = '';
+          $s._quill = new Quill('#quill-editor', {
+            theme: 'snow',
+            modules: {
+              toolbar: [
+                [{ header: [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ align: [] }],
+                [{ color: [] }, { background: [] }],
+                ['image'],
+                ['clean']
+              ]
+            }
+          });
+
+          if (html) {
+            $s._quill.root.innerHTML = html;
+          }
+        });
+      });
+  };
+
+  $s.saveCustomHtml = function () {
+    if (!$s._quill) return;
+    $s.customHtmlSaved = false;
+    $s.customHtmlError = '';
+
+    var rawHtml = $s._quill.root.innerHTML;
+
+    // Convert Quill ql-* classes to inline styles
+    var temp = document.createElement('div');
+    temp.innerHTML = rawHtml;
+
+    // Convert Quill lists: Quill 2.x wraps all lists in <ol> with data-list attrs
+    temp.querySelectorAll('ol').forEach(function (ol) {
+      var items = ol.querySelectorAll('li[data-list="bullet"]');
+      if (items.length && items.length === ol.children.length) {
+        var ul = document.createElement('ul');
+        while (ol.firstChild) ul.appendChild(ol.firstChild);
+        ol.parentNode.replaceChild(ul, ol);
+      }
+    });
+    temp.querySelectorAll('li[data-list]').forEach(function (li) {
+      li.removeAttribute('data-list');
+    });
+
+    // Alignment
+    temp.querySelectorAll('.ql-align-center').forEach(function (el) {
+      el.style.textAlign = 'center'; el.classList.remove('ql-align-center');
+    });
+    temp.querySelectorAll('.ql-align-right').forEach(function (el) {
+      el.style.textAlign = 'right'; el.classList.remove('ql-align-right');
+    });
+    temp.querySelectorAll('.ql-align-justify').forEach(function (el) {
+      el.style.textAlign = 'justify'; el.classList.remove('ql-align-justify');
+    });
+
+    // Indentation
+    for (var i = 1; i <= 8; i++) {
+      temp.querySelectorAll('.ql-indent-' + i).forEach(function (el) {
+        el.style.paddingLeft = (i * 3) + 'em'; el.classList.remove('ql-indent-' + i);
+      });
+    }
+
+    var html = DOMPurify.sanitize(temp.innerHTML);
+
+    $http({
+      method: 'POST',
+      url: '/api/save-custom-html.php',
+      data: {
+        ballotId: $s.customHtmlBallot.id,
+        userId: $s.user.id,
+        customHtml: html
+      }
+    }).then(function (resp) {
+      if (resp.data.data && resp.data.data.success) {
+        $s.customHtmlSaved = true;
+      } else if (resp.data.errors) {
+        $s.customHtmlError = resp.data.errors.ballot || 'Save failed.';
       }
     });
   };

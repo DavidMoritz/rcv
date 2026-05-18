@@ -178,10 +178,11 @@
       </div>
       <div ng-show="ballot.register != 1 || (ballot.voterName || '').length > 2">
         <iframe
-          ng-if="ballot.iframeUrl"
+          ng-if="ballot.iframeUrl && ballot.iframeUrl !== 'custom'"
           ng-src="{{ballot.iframeUrl}}"
           class="ballot-iframe"
         ></iframe>
+        <div ng-if="ballot.customHtml" ng-bind-html="ballot.customHtml" class="custom-html-display"></div>
         <h2 ng-if="!ballot.iframeUrl">
           Order by Preference
           <small>(remove any undesired using <i class="fa fa-trash"></i>)</small>

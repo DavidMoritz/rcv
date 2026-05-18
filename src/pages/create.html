@@ -468,6 +468,19 @@
             />
           </div>
           <div class="form-group">
+            <label>
+              Use custom HTML display instead:
+              <input
+                type="checkbox"
+                ng-model="ballot.useCustomHtml"
+                ng-change="ballot.iframeUrl = ballot.useCustomHtml ? 'custom' : ''"
+              />
+            </label>
+            <small ng-show="ballot.useCustomHtml" class="text-muted">
+              After creating the ballot, use "Customize Display" from your Profile to edit the HTML.
+            </small>
+          </div>
+          <div class="form-group" ng-if="!ballot.useCustomHtml">
             <label
               >Iframe URL on voting page:
               <i

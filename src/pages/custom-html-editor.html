@@ -1,0 +1,25 @@
+      <div ng-show="activeLink == 'customHtmlEditor'" class="panel panel-default">
+        <div class="panel-body">
+          <a href ng-click="navigate('profile')" class="btn btn-default btn-sm"
+            >&laquo; Back to Profile</a
+          >
+          <h1>Customize Display: {{customHtmlBallot.name}}</h1>
+          <h4>
+            Shortcode: {{customHtmlBallot.key}} &nbsp; Voting URL:
+            {{origin}}/{{customHtmlBallot.key}}
+          </h4>
+          <hr />
+          <div id="quill-editor" style="height: 300px"></div>
+          <div style="margin-top: 15px">
+            <button ng-click="saveCustomHtml()" class="btn btn-info">
+              <i class="fa fa-save"></i> Save
+            </button>
+            <span ng-show="customHtmlSaved" class="text-success" style="margin-left: 10px"
+              >Saved!</span
+            >
+            <span ng-show="customHtmlError" class="text-danger" style="margin-left: 10px"
+              >{{customHtmlError}}</span
+            >
+          </div>
+        </div>
+      </div>

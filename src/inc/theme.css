@@ -480,3 +480,7 @@ hr {
   min-height: 200px;
   margin-top: 8px;
 }
+.custom-html-display {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}

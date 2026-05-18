@@ -156,7 +156,7 @@ mainApp.controller('MainCtrl', [
     };
 
     initAuth($s, $http, $loc, resetNav);
-    initBallot($s, $http);
+    initBallot($s, $http, $sce, $timeout);
 
     $s.$watch(function () {
       return window.location.pathname;
@@ -347,8 +347,11 @@ mainApp.controller('MainCtrl', [
           $s.ballot.orderedEntries = !!parseInt(ballot.orderedEntries);
           $s.ballot.allowGrouping = !!parseInt(ballot.allowGrouping);
           $s.ballot.positions = parseInt(ballot.positions);
-          if (ballot.iframeUrl) {
+          if (ballot.iframeUrl && ballot.iframeUrl !== 'custom') {
             $s.ballot.iframeUrl = $sce.trustAsResourceUrl(ballot.iframeUrl);
+          } else if (ballot.iframeUrl === 'custom' && ballot.customHtml) {
+            $s.ballot.iframeUrl = 'custom';
+            $s.ballot.customHtml = $sce.trustAsHtml(ballot.customHtml);
           }
 
           // Store group fields for managed ballot pre-vote gating
