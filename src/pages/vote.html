@@ -232,6 +232,17 @@
         {{resultsReleaseFormatted}} to see the results
       </h5>
       <h5>Voting URL: {{origin}}/{{ballot.key}}</h5>
+      <p
+        ng-show="user.id && ballotCreatedBy == 'guest'"
+        class="text-muted"
+        style="margin-top: 20px"
+      >
+        This ballot was created as "guest".
+        <a href ng-click="claimBallot()">Click here</a> to take ownership and unlock editing.
+      </p>
+      <p ng-show="claimSuccess" class="text-success">
+        Ballot claimed! You can now edit it from your Profile tab.
+      </p>
     </div>
     <div ng-show="deviceAlreadyVoted">
       <h1>Ballot: {{ballot.name}}</h1>

@@ -5,6 +5,11 @@
       >Sign out</a
     >
     <h3 ng-show="user.name">Name: {{user.name}}</h3>
+    <p ng-show="!allBallots.length" class="text-muted" style="margin-top: 20px">
+      Created a ballot before signing up? You can claim your previous "guest" ballots by
+      entering the shortcode on the <a href ng-click="navigate('results')">Results page</a>
+      while logged in.
+    </p>
     <div ng-show="allBallots.length">
       <ul class="ballot-tabs">
         <li ng-class="{active: profileTab !== 'managed'}" ng-click="profileTab = 'standard'">

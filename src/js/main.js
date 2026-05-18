@@ -334,6 +334,8 @@ mainApp.controller('MainCtrl', [
 
           // Set ballot metadata from dedicated ballot object
           $s.ballot = ballot;
+          $s.ballotCreatedBy = ballot.createdBy;
+          $s.ballotId = ballot.id;
           $s.ballot.voterName = voterName || $loc.$$search.hash;
           $s.ballot.register = parseInt(ballot.register);
           $s.ballot.allowCustom = !!parseInt(ballot.allowCustom);

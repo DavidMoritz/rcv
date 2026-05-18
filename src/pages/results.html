@@ -18,6 +18,17 @@
                   </div>
                   <input type="submit" value="Submit" class="btn btn-success" />
                 </form>
+                <p
+                  ng-show="errors.shortcode && user.id && ballotCreatedBy == 'guest'"
+                  class="text-muted"
+                  style="margin-top: 20px"
+                >
+                  This ballot was created as "guest".
+                  <a href ng-click="claimBallot()">Click here</a> to take ownership and unlock editing.
+                </p>
+                <p ng-show="claimSuccess" class="text-success">
+                  Ballot claimed! You can now edit it from your Profile tab.
+                </p>
               </div>
               <div class="col-sm-6 text-center">
                 <div class="wink-logo wink-logo-sm">
