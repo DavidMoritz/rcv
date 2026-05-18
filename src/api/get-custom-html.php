@@ -14,7 +14,7 @@ if (empty($userId)) {
 }
 
 if (empty($errors)) {
-    $sth = $dbh->prepare("SELECT customHtml FROM ballots WHERE id = :id AND createdBy = :userId");
+    $sth = $dbh->prepare("SELECT CAST(customHtml AS CHAR) AS customHtml FROM ballots WHERE id = :id AND createdBy = :userId");
     $sth->bindValue(':id', $ballotId, PDO::PARAM_INT);
     $sth->bindValue(':userId', $userId, PDO::PARAM_STR);
     $sth->execute();
