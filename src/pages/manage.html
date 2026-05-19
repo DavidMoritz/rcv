@@ -11,10 +11,13 @@
             Vote Cutoff: {{!manageBallot.voteCutoff ? 'never' :
             manageBallot.voteCutoff.tz(moment.tz.guess()).format('MMM Do YYYY, h:mm a z')}}
             <button
-              ng-if="(!manageBallot.voteCutoff || manageBallot.voteCutoff > now) && manageBallot.totalVotes > 0"
+              ng-if="!manageBallot.voteCutoff || manageBallot.voteCutoff > now"
               ng-click="endVotingNow()"
+              ng-disabled="!manageHasVotes()"
               class="btn btn-warning btn-sm"
               style="margin-left: 10px"
+              uib-tooltip="{{!manageHasVotes() ? 'No votes have been cast yet' : ''}}"
+              tooltip-placement="top"
             >
               End Voting Now
             </button>
@@ -27,9 +30,12 @@
                   <i class="fa" ng-class="showManageGroups ? 'fa-chevron-down' : 'fa-chevron-right'" style="width: 14px"></i>
                   Voter Prompts
                 </h3>
-                <button ng-if="manageBallot.totalVotes == 0 && !editingManageGroupFields"
+                <button ng-if="!editingManageGroupFields"
                         ng-click="showManageGroups = true; startEditManageGroupFields()" class="btn btn-default btn-sm"
-                        style="margin-left: 8px; position: relative; top: -2px">
+                        ng-disabled="manageHasVotes()"
+                        style="margin-left: 8px; position: relative; top: -2px"
+                        uib-tooltip="{{manageHasVotes() ? 'Prompts cannot be edited after votes have been cast' : ''}}"
+                        tooltip-placement="top">
                   Edit
                 </button>
                 <div ng-show="showManageGroups">
@@ -257,8 +263,15 @@
                 <button ng-if="manageBallot.totalVotes > 0" ng-click="exportCsv(manageBallot)" class="btn btn-default btn-sm">
                   <i class="fa fa-download"></i> Export to CSV
                 </button>
-                <button ng-if="manageBallot.totalVotes == 0" ng-click="changeBallot(manageBallot)" class="btn btn-warning btn-sm">
+                <button ng-click="changeBallot(manageBallot)"
+                  ng-disabled="manageHasVotes()"
+                  class="btn btn-warning btn-sm"
+                  uib-tooltip="{{manageHasVotes() ? 'Ballot cannot be edited after votes have been cast' : ''}}"
+                  tooltip-placement="top">
                   <i class="fa fa-pencil"></i> Edit Ballot
+                </button>
+                <button ng-if="manageBallot.isSecure != 1 && manageHasVotes()" ng-click="manageVotes(manageBallot)" class="btn btn-default btn-sm">
+                  <i class="fa fa-pencil-square-o"></i> Manage Votes
                 </button>
                 <button ng-click="duplicateBallot(manageBallot)" class="btn btn-default btn-sm">
                   <i class="fa fa-clone"></i> Duplicate Ballot
@@ -272,10 +285,10 @@
                 <button
                   ng-if="(!manageBallot.voteCutoff || manageBallot.voteCutoff > now) && manageBallot.isSecure == 1"
                   ng-click="deleteSecureBallot()"
-                  ng-disabled="manageCodesAvailable < manageCodes.length"
+                  ng-disabled="manageHasVotes()"
                   class="btn btn-danger btn-sm"
                   style="margin-top: 10px"
-                  uib-tooltip="{{manageCodesAvailable < manageCodes.length ? 'Must not have any votes to delete' : ''}}"
+                  uib-tooltip="{{manageHasVotes() ? 'Must not have any votes to delete' : ''}}"
                   tooltip-placement="top"
                 >
                   <i class="fa fa-trash"></i> Delete Ballot

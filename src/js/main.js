@@ -677,6 +677,15 @@ mainApp.controller('MainCtrl', [
         $s.runTheCode(loggedIn);
         $s.bodyText = $sce.trustAsHtml($s.outputstring);
         $s.final = true;
+
+        if ($s._autoShowDetails) {
+          $s.showText = true;
+          $s._autoShowDetails = false;
+          $timeout(function () {
+            var el = document.getElementById('detailed-results');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          });
+        }
       });
     };
 

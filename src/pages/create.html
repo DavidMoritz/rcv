@@ -469,15 +469,21 @@
           </div>
           <div class="form-group">
             <label>
-              Use custom display instead:
+              Add custom instructions:
               <input
                 type="checkbox"
                 ng-model="ballot.useCustomHtml"
                 ng-change="ballot.iframeUrl = ballot.useCustomHtml ? 'custom' : ''"
               />
+              <i
+                class="fa fa-question-circle"
+                style="cursor: pointer; color: #1a43bf"
+                data-toggle="modal"
+                data-target="#customInstructionsModal"
+              ></i>
             </label>
             <small ng-show="ballot.useCustomHtml" class="text-muted">
-              After creating the ballot, use "Customize Display" from your Profile to design your content.
+              After creating the ballot, use "Custom Instructions" from your Profile to write your instructions.
             </small>
           </div>
           <div class="form-group" ng-if="!ballot.useCustomHtml">

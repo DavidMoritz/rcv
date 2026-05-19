@@ -387,6 +387,18 @@ export function initBallot(scope, http, sce, timeout) {
     }
   };
 
+  $s.manageHasVotes = function () {
+    if ($s.manageBallot && $s.manageBallot.isSecure == 1) {
+      return $s.manageCodesAvailable < $s.manageCodes.length;
+    }
+    return $s.manageBallot && $s.manageBallot.totalVotes > 0;
+  };
+
+  $s.manageVotes = function (ballot) {
+    $s._autoShowDetails = true;
+    $s.navigate('results', ballot.key);
+  };
+
   $s.startEditManageGroupFields = function () {
     $s.groupFields = ($s.manageGroupFields || []).map(function (field) {
       return {
@@ -889,6 +901,8 @@ export function initBallot(scope, http, sce, timeout) {
           $s.showGroupPage = true;
           $s._initialRegister = $s.ballot.register;
           $s._initialHideDetails = $s.ballot.hideDetails;
+        } else if ($s.ballot.useCustomHtml) {
+          $s.editCustomHtml($s.ballot);
         } else {
           $s.congrats = true;
           $s.generateQRCode($s.ballot.key);
@@ -941,8 +955,12 @@ export function initBallot(scope, http, sce, timeout) {
           }
         }).success(function () {
           saveBallotSettingsIfChanged();
-          $s.congrats = true;
-          $s.generateQRCode($s.ballot.key);
+          if ($s.ballot.useCustomHtml) {
+            $s.editCustomHtml($s.ballot);
+          } else {
+            $s.congrats = true;
+            $s.generateQRCode($s.ballot.key);
+          }
         });
         return;
       } else {
@@ -968,8 +986,12 @@ export function initBallot(scope, http, sce, timeout) {
       }
     }
     saveBallotSettingsIfChanged();
-    $s.congrats = true;
-    $s.generateQRCode($s.ballot.key);
+    if ($s.ballot.useCustomHtml) {
+      $s.editCustomHtml($s.ballot);
+    } else {
+      $s.congrats = true;
+      $s.generateQRCode($s.ballot.key);
+    }
   };
 
   $s.duplicateBallot = function (ballot) {

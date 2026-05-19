@@ -62,6 +62,11 @@
                       <i class="fa fa-list-ol"></i> See Results
                     </a>
                   </li>
+                  <li ng-show="ballot.totalVotes > 0">
+                    <a href ng-click="manageVotes(ballot)">
+                      <i class="fa fa-pencil-square-o"></i> Manage Votes
+                    </a>
+                  </li>
                   <li>
                     <a href ng-click="exportCsv(ballot)">
                       <i class="fa fa-download"></i> Download CSV
@@ -84,7 +89,7 @@
                   </li>
                   <li ng-show="ballot.iframeUrl === 'custom'">
                     <a href ng-click="editCustomHtml(ballot)">
-                      <i class="fa fa-paint-brush"></i> Customize Display
+                      <i class="fa fa-paint-brush"></i> Custom Instructions
                     </a>
                   </li>
                   <li class="divider"></li>
@@ -141,6 +146,11 @@
               <a href ng-click="manageSecureBallot(ballot)" class="btn btn-sm btn-primary"
                 >MANAGE</a
               >
+              <a href ng-click="editCustomHtml(ballot)"
+                ng-show="ballot.iframeUrl === 'custom'"
+                class="btn btn-sm btn-default" style="margin-left: 5px">
+                <i class="fa fa-paint-brush"></i> Custom Instructions
+              </a>
             </td>
           </tr>
         </tbody>
