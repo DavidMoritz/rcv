@@ -23,7 +23,7 @@ abstract class ApiTestCase extends TestCase
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // Clean all tables for test isolation
-        foreach (['votes', 'entries', 'ballot_codes', 'random_codes', 'ballots', 'users', 'contributions'] as $table) {
+        foreach (['votes', 'entries', 'ballot_codes', 'random_codes', 'voter_group_options', 'voter_group_fields', 'ballots', 'users', 'contributions'] as $table) {
             $this->db->exec("DELETE FROM $table");
         }
     }
@@ -104,13 +104,15 @@ abstract class ApiTestCase extends TestCase
             'register'       => 0,
             'oneDeviceOneVote' => 0,
             'isSecure'       => 0,
+            'showGraph'      => 0,
+            'allowGrouping'  => 0,
             'iframeUrl'      => null,
         ];
         $data = array_merge($defaults, $overrides);
 
         $sth = $this->db->prepare("
-            INSERT INTO ballots (name, key, positions, createdBy, requireSignIn, maxVotes, tieBreak, voteCutoff, resultsRelease, timeCreated, register, oneDeviceOneVote, isSecure, iframeUrl)
-            VALUES (:name, :key, :positions, :createdBy, :requireSignIn, :maxVotes, :tieBreak, :voteCutoff, :resultsRelease, :timeCreated, :register, :oneDeviceOneVote, :isSecure, :iframeUrl)
+            INSERT INTO ballots (name, key, positions, createdBy, requireSignIn, maxVotes, tieBreak, voteCutoff, resultsRelease, timeCreated, register, oneDeviceOneVote, isSecure, showGraph, allowGrouping, iframeUrl)
+            VALUES (:name, :key, :positions, :createdBy, :requireSignIn, :maxVotes, :tieBreak, :voteCutoff, :resultsRelease, :timeCreated, :register, :oneDeviceOneVote, :isSecure, :showGraph, :allowGrouping, :iframeUrl)
         ");
         $sth->execute([
             ':name'           => $data['name'],
@@ -126,6 +128,8 @@ abstract class ApiTestCase extends TestCase
             ':register'       => $data['register'],
             ':oneDeviceOneVote' => $data['oneDeviceOneVote'],
             ':isSecure'       => $data['isSecure'],
+            ':showGraph'      => $data['showGraph'],
+            ':allowGrouping'  => $data['allowGrouping'],
             ':iframeUrl'      => $data['iframeUrl'],
         ]);
         return (int) $this->db->lastInsertId();
@@ -209,5 +213,56 @@ abstract class ApiTestCase extends TestCase
         $sth2->execute([':ballotId' => $ballotId, ':codeId' => $codeId]);
 
         return $code;
+    }
+
+    /**
+     * Insert an unassigned random code and return its ID.
+     */
+    protected function seedRandomCode(string $code): int
+    {
+        $sth = $this->db->prepare("INSERT INTO random_codes (code) VALUES (:code)");
+        $sth->execute([':code' => $code]);
+        return (int) $this->db->lastInsertId();
+    }
+
+    /**
+     * Insert a voter group field for a ballot and return its ID.
+     */
+    protected function seedGroupField(int $ballotId, array $overrides = []): int
+    {
+        $defaults = [
+            'title'         => 'Test Field',
+            'question_text' => 'Test Question?',
+            'type'          => 'select',
+            'required'      => 1,
+            'sort_order'    => 0,
+        ];
+        $data = array_merge($defaults, $overrides);
+        $sth = $this->db->prepare("
+            INSERT INTO voter_group_fields (ballot_id, title, question_text, type, required, sort_order)
+            VALUES (:ballotId, :title, :question_text, :type, :required, :sort_order)
+        ");
+        $sth->execute([
+            ':ballotId'      => $ballotId,
+            ':title'         => $data['title'],
+            ':question_text' => $data['question_text'],
+            ':type'          => $data['type'],
+            ':required'      => $data['required'],
+            ':sort_order'    => $data['sort_order'],
+        ]);
+        return (int) $this->db->lastInsertId();
+    }
+
+    /**
+     * Insert a voter group option for a field and return its ID.
+     */
+    protected function seedGroupOption(int $fieldId, string $label, int $sortOrder = 0): int
+    {
+        $sth = $this->db->prepare("
+            INSERT INTO voter_group_options (field_id, label, sort_order)
+            VALUES (:fieldId, :label, :sortOrder)
+        ");
+        $sth->execute([':fieldId' => $fieldId, ':label' => $label, ':sortOrder' => $sortOrder]);
+        return (int) $this->db->lastInsertId();
     }
 }
