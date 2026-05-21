@@ -3,12 +3,6 @@ require_once("config.php");
 
 $_POST = json_decode(file_get_contents('php://input'), true);
 $createdBy = $_POST['id'];
-$graph = '';
-
-if(!empty($_GET['graph']) && $_GET['graph'] == 'true') {
-  $graph = 'WHERE `showGraph` = 1';
-}
-
 if(!empty($createdBy)) {
 	$votes = "
 		SELECT
