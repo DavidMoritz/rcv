@@ -47,6 +47,7 @@ class EndVotingTest extends ApiTestCase
         ]);
 
         $this->assertIsArray($result['body']);
+        $this->assertArrayHasKey('success', $result['body']);
         $this->assertFalse($result['body']['success'], 'Non-owner should not be able to end voting');
     }
 

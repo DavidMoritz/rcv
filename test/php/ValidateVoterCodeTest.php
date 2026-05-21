@@ -70,19 +70,8 @@ class ValidateVoterCodeTest extends ApiTestCase
     public function testCodeNormalizationReplacesZeroWithO(): void
     {
         $ballotId = $this->seedBallot(['key' => 'norm-ballot']);
-        // Store code with 'o' but user types '0'
-        $this->seedVoterCode($ballotId, 'abc0oi');
-
-        $result = $this->callApi('validate-voter-code.php', [], [
-            'code'     => 'abc0oi',
-            'ballotId' => $ballotId,
-        ]);
-
-        // strtr('abc0oi', '01', 'oi') → 'abcooi', but code stored as 'abc0oi' (not normalized)
-        // The endpoint normalizes the *input*, so we must store normalized codes
-        // Reseed with normalized code to match what the endpoint stores
-        $this->db->exec("DELETE FROM ballot_codes"); // clear for reseed
-        $this->db->exec("DELETE FROM random_codes");
+        // The endpoint normalizes input before lookup: '0' → 'o', '1' → 'i'
+        // Store the already-normalized code; send the un-normalized input.
         $this->seedVoterCode($ballotId, 'abcooi');
 
         $result = $this->callApi('validate-voter-code.php', [], [

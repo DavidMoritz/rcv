@@ -48,7 +48,7 @@ class AssignCodesTest extends ApiTestCase
         $this->assertArrayHasKey('ballotId', $result['body']['errors']);
     }
 
-    public function testRequiresCount(): void
+    public function testRejectsZeroCount(): void
     {
         $ballotId = $this->seedBallot(['createdBy' => 'alice']);
 
