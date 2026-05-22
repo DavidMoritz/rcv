@@ -23,10 +23,10 @@ if (empty($errors)) {
 if (empty($errors)) {
 	$label = isset($_POST['label']) ? $_POST['label'] : '';
 	$sth = $dbh->prepare("
-		UPDATE ballot_codes bc
-		JOIN random_codes rc ON rc.id = bc.random_code_id
-		SET bc.label = :label
-		WHERE bc.ballot_id = :ballotId AND rc.code = :code
+		UPDATE ballot_codes
+		SET label = :label
+		WHERE ballot_id = :ballotId
+		AND random_code_id = (SELECT id FROM random_codes WHERE code = :code)
 	");
 	$sth->bindValue(':label', $label, PDO::PARAM_STR);
 	$sth->bindValue(':ballotId', $_POST['ballotId'], PDO::PARAM_INT);

@@ -22,6 +22,14 @@ class TestPDO extends PDO
             return new NoopStatement();
         }
 
+        // Rewrite ON DUPLICATE KEY UPDATE col=col (no-op upsert) → INSERT OR IGNORE.
+        // Only fires when the no-op self-assignment form is present, so unrelated
+        // INSERT statements still surface unique/PK violations as exceptions.
+        if (preg_match('/\bON\s+DUPLICATE\s+KEY\s+UPDATE\s+(\w+)\s*=\s*\1\b/i', $query)) {
+            $query = preg_replace('/\bINSERT\b/i', 'INSERT OR IGNORE', $query, 1);
+            $query = preg_replace('/\s+ON\s+DUPLICATE\s+KEY\s+UPDATE\s+\w+\s*=\s*\w+/i', '', $query);
+        }
+
         // Rewrite DATE_SUB(NOW()|UTC_TIMESTAMP(), INTERVAL ...) → datetime('now', '-...')
         $query = preg_replace_callback(
             '/DATE_SUB\s*\(\s*(?:NOW|UTC_TIMESTAMP)\(\)\s*,\s*INTERVAL\s+(\d+)\s+(\w+)\s*\)/i',
