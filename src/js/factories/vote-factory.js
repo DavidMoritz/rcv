@@ -1,4 +1,3 @@
-import { bbiBallots } from '../constants/bbi-ballots.js';
 import { jsUcfirst, dataFromObj } from '../utils/helpers.js';
 
 var $s = null;
@@ -15,7 +14,7 @@ export default function VoteFactory() {
     elected: [],
 
     runTheCode: function (loggedIn) {
-      const contest = $s.bbiBallot ? bbiBallots[$s.bbiGroup].contest : $s.ballotName;
+      const contest = $s.ballotName;
       this.firstQuota();
       this.outputstring = this.createHeader();
       this.wincount = 0;
@@ -464,50 +463,7 @@ export default function VoteFactory() {
           }
         }
         this.jsonObj.config.threshold = this.quota;
-        if ($s.bbiBallot) {
-          $.ajax({
-            url: '/api/rcvis_patch.php?t=45&bbi=true&id=' + bbiBallots[$s.bbiGroup].id,
-            type: 'POST',
-            data: dataFromObj(this.jsonObj),
-            cache: false,
-            processData: false,
-            contentType: false,
-            success: function (data, textStatus, jqXHR) {
-              if ($s.bbiGroup == 'a') {
-                const finalChar = $s.ballot.voterName.slice(-1).toLowerCase();
-                const isMajorParty = finalChar === 'r' || finalChar === 'd';
-
-                $s.bbiGroup = isMajorParty ? finalChar : 'o';
-
-                $s.votes = window.rawVotes
-                  .filter((rawVote) => {
-                    if (!rawVote.name) return false;
-                    if (!rawVote.voteIds) return false;
-
-                    const party = rawVote.name.slice(-1).toLowerCase();
-
-                    if (isMajorParty) {
-                      return party === $s.bbiGroup;
-                    }
-
-                    return party !== 'r' && party !== 'd';
-                  })
-                  .map((rawVote) => JSON.parse(rawVote.voteIds));
-
-                $s.runTheCode();
-              }
-              if (typeof data.error === 'undefined') {
-                //                     debugger;
-              } else {
-                alert('ERRORS: ' + data.error);
-              }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-              debugger;
-              alert('error on upload');
-            }
-          });
-        } else if ($s.rcvisId && $s.rcvisSlug) {
+        if ($s.rcvisId && $s.rcvisSlug) {
           $.ajax({
             url: '/api/rcvis_patch.php?t=451&id=' + $s.rcvisId,
             type: 'POST',
@@ -516,15 +472,24 @@ export default function VoteFactory() {
             processData: false,
             contentType: false,
             success: function (data, textStatus, jqXHR) {
+              $s.graphUpdating = false;
+              $s.rcvisError = null;
               if (typeof data.error === 'undefined') {
                 $s.displayRcvisIframe();
               } else {
-                alert('ERRORS: ' + data.error);
+                $s.rcvisError = data.error;
+                $s.$apply();
               }
             },
-            error: function (jqXHR, textStatus, errorThrown) {
-              debugger;
-              alert('error on upload');
+            error: function (jqXHR) {
+              $s.graphUpdating = false;
+              var msg = 'Failed to update graph.';
+              try {
+                var resp = JSON.parse(jqXHR.responseText);
+                if (resp.error) msg = resp.error;
+              } catch (e) {}
+              $s.rcvisError = msg;
+              $s.$apply();
             }
           });
         } else {
@@ -536,6 +501,8 @@ export default function VoteFactory() {
             processData: false,
             contentType: false,
             success: function (data, textStatus, jqXHR) {
+              $s.graphUpdating = false;
+              $s.rcvisError = null;
               if (typeof data.error === 'undefined') {
                 const lessOne = data.length - 1;
                 const finalChar = data.charAt(lessOne);
@@ -566,8 +533,15 @@ export default function VoteFactory() {
                 console.warn('RCVis: failed to create visualization');
               }
             },
-            error: function (jqXHR, textStatus, errorThrown) {
-              console.warn('RCVis: failed to create visualization');
+            error: function (jqXHR) {
+              $s.graphUpdating = false;
+              var msg = 'Failed to generate graph.';
+              try {
+                var resp = JSON.parse(jqXHR.responseText);
+                if (resp.error) msg = resp.error;
+              } catch (e) {}
+              $s.rcvisError = msg;
+              $s.$apply();
             }
           });
         }

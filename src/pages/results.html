@@ -55,12 +55,32 @@
               </ol>
             </div>
             <div ng-if="showGraph">
-              <div id="iframe-disclaimer" ng-if="!rcvisSlug">
+              <div id="iframe-disclaimer" ng-if="!rcvisSlug && !(user.id == ballotCreatedBy && user.rcvisInfo)">
                 <h3>
                   A graph of the results will be made available after voting has been cut off.
                 </h3>
               </div>
+              <div ng-if="rcvisError" class="alert alert-danger" style="margin-top: 10px">
+                {{rcvisError}}
+              </div>
+              <div ng-show="user.id == ballotCreatedBy && user.rcvisInfo" style="margin: 15px 0">
+                <button
+                  ng-click="updateGraphNow()"
+                  ng-disabled="graphUpdating"
+                  class="btn"
+                  ng-class="{'btn-primary': !rcvisSlug, 'btn-warning': rcvisSlug && graphStatus.isStale, 'btn-default': rcvisSlug && !graphStatus.isStale}"
+                >
+                  <i ng-show="graphUpdating" class="fa fa-spinner fa-spin"></i>
+                  <span ng-if="!rcvisSlug && !graphUpdating">Generate Graph NOW</span>
+                  <span ng-if="rcvisSlug && graphStatus.isStale && !graphUpdating">Update Graph NOW ({{graphStatus.votesSinceUpdate}} new votes)</span>
+                  <span ng-if="rcvisSlug && !graphStatus.isStale && !graphUpdating">Graph is current</span>
+                  <span ng-if="graphUpdating">Updating graph...</span>
+                </button>
+              </div>
               <div id="iframe-house"></div>
+              <p ng-show="rcvisSlug && graphUpdated" class="text-muted" style="font-size: 12px; margin-top: 5px">
+                Graph last updated {{graphUpdatedLocal}}
+              </p>
             </div>
             <div ng-if="allowGrouping && resultGroupFields.length && !hidePromptResults" style="margin-top: 20px">
               <div ng-repeat="field in resultGroupFields" ng-if="field.type !== 'text'" style="margin-bottom: 15px">

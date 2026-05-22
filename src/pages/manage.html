@@ -257,6 +257,19 @@
               </div>
               <hr />
               <div class="manage-actions">
+                <button
+                  ng-if="user.rcvisInfo && manageBallot.showGraph == 1"
+                  ng-click="updateGraphNow()"
+                  ng-disabled="graphUpdating"
+                  class="btn btn-sm"
+                  ng-class="graphStatus.isStale ? 'btn-warning' : 'btn-default'"
+                  style="margin-bottom: 5px"
+                >
+                  <i ng-show="graphUpdating" class="fa fa-spinner fa-spin"></i>
+                  <span ng-if="graphStatus.isStale && !graphUpdating">Update Graph NOW</span>
+                  <span ng-if="!graphStatus.isStale && !graphUpdating">Graph is current</span>
+                  <span ng-if="graphUpdating">Updating...</span>
+                </button>
                 <a ng-if="manageBallot.totalVotes > 0" href="/results#{{manageBallot.key}}" target="_blank" class="btn btn-default btn-sm">
                   View Results
                 </a>

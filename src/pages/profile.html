@@ -163,6 +163,11 @@
       >
         No secure ballots or custom voter prompts. <a href ng-click="navigate('create')">Create one</a>
       </p>
+      <div ng-show="profileTab === 'managed' && managedBallotCount > 0" style="margin-top: 10px">
+        <a href ng-click="showRcvisModal()" class="btn btn-default btn-sm">
+          <i class="fa fa-bar-chart"></i> Manage RCVis
+        </a>
+      </div>
     </div>
     <hr />
     <button class="btn btn-danger btn-sm" ng-click="showDeleteAccount()">Delete Account</button>

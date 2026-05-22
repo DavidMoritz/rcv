@@ -9,6 +9,19 @@ export function initAuth(scope, http, loc, resetNavFn) {
   $loc = loc;
   resetNav = resetNavFn;
 
+  // After page refresh, user is restored from cookies with only id/name.
+  // Fetch rcvisInfo so graph features work without re-logging in.
+  if ($s.user && $s.user.id && !$s.user.rcvisInfo) {
+    $s.rcvisInfoReady = $http.get('/api/get-rcvis-info.php?userId=' + $s.user.id).then(function (resp) {
+      if (resp.data && resp.data.data && resp.data.data.rcvisInfo) {
+        $s.user.rcvisInfo = JSON.parse(resp.data.data.rcvisInfo);
+      }
+    });
+  } else {
+    // Already have rcvisInfo (fresh login) — resolve immediately
+    $s.rcvisInfoReady = null;
+  }
+
   $s.loginForm = function () {
     var payload = angular.copy($s.login);
     payload.password = (payload.password + 'My RCV salt').hashCode();
@@ -25,7 +38,8 @@ export function initAuth(scope, http, loc, resetNavFn) {
             id: resp.data[0].id,
             name: resp.data[0].username,
             email: resp.data[0].email,
-            image: resp.data[0].image
+            image: resp.data[0].image,
+            rcvisInfo: resp.data[0].rcvisInfo ? JSON.parse(resp.data[0].rcvisInfo) : null
           };
           if ($s.claimBallotAfterRegister) {
             var ballotId = $s.claimBallotAfterRegister;
@@ -191,6 +205,101 @@ export function initAuth(scope, http, loc, resetNavFn) {
       });
   };
 
+  $s.showRcvisModal = function () {
+    $s.rcvisModalError = null;
+    $s.rcvisModalSuccess = false;
+    $s.rcvisModalLoading = false;
+
+    $s.rcvisKeyResult = null;
+    $s.rcvisKeyChecking = false;
+
+    var showWithInfo = function (info) {
+      info = info || {};
+      $s.rcvisForm = {
+        apiKey: info.apiKey || '',
+        minVotes: info.minVotes || 15,
+        minMinutes: info.minMinutes || 120
+      };
+      $('#rcvis-modal').modal('show');
+    };
+
+    if ($s.user.rcvisInfo) {
+      showWithInfo($s.user.rcvisInfo);
+    } else {
+      // After page refresh, rcvisInfo may not be loaded yet — fetch it
+      $http.get('/api/get-rcvis-info.php?userId=' + $s.user.id).then(
+        function (resp) {
+          if (resp.data && resp.data.data && resp.data.data.rcvisInfo) {
+            $s.user.rcvisInfo = JSON.parse(resp.data.data.rcvisInfo);
+          }
+          showWithInfo($s.user.rcvisInfo);
+        },
+        function () {
+          showWithInfo(null);
+        }
+      );
+    }
+  };
+
+  $s.checkRcvisKey = function () {
+    $s.rcvisKeyResult = null;
+    $s.rcvisKeyChecking = true;
+
+    $http({
+      method: 'POST',
+      url: '/api/check-rcvis-key.php',
+      data: { apiKey: $s.rcvisForm.apiKey }
+    }).then(
+      function (resp) {
+        $s.rcvisKeyChecking = false;
+        if (resp.data && resp.data.data) {
+          $s.rcvisKeyResult = resp.data.data.valid ? 'valid' : 'invalid';
+        } else {
+          $s.rcvisKeyResult = 'invalid';
+        }
+      },
+      function () {
+        $s.rcvisKeyChecking = false;
+        $s.rcvisKeyResult = 'invalid';
+      }
+    );
+  };
+
+  $s.saveRcvisInfo = function () {
+    $s.rcvisModalError = null;
+    $s.rcvisModalSuccess = false;
+    $s.rcvisModalLoading = true;
+
+    var rcvisInfo = JSON.stringify({
+      apiKey: $s.rcvisForm.apiKey,
+      minVotes: $s.rcvisForm.minVotes || 15,
+      minMinutes: $s.rcvisForm.minMinutes || 120
+    });
+
+    $http({
+      method: 'POST',
+      url: '/api/update-rcvis-info.php',
+      data: {
+        userId: $s.user.id,
+        rcvisInfo: rcvisInfo
+      }
+    }).then(
+      function (resp) {
+        $s.rcvisModalLoading = false;
+        if (resp.data && resp.data.data && resp.data.data.success) {
+          $s.user.rcvisInfo = JSON.parse(rcvisInfo);
+          $s.rcvisModalSuccess = true;
+        } else {
+          $s.rcvisModalError = (resp.data && resp.data.errors && (resp.data.errors.rcvisInfo || resp.data.errors.userId)) || 'Save failed.';
+        }
+      },
+      function () {
+        $s.rcvisModalLoading = false;
+        $s.rcvisModalError = 'An error occurred. Please try again.';
+      }
+    );
+  };
+
   $s.showDeleteAccount = function () {
     $s.deleteAccountConfirmation = '';
     $s.deleteAccountError = null;
@@ -237,6 +346,15 @@ export function initAuth(scope, http, loc, resetNavFn) {
     $s.user = user;
     $s.user.username = $s.user.username || $s.user.name;
     resetNav(true);
+
+    // Cookie-restored sessions only have id/name — fetch rcvisInfo
+    if ($s.user.id && !$s.user.rcvisInfo) {
+      $s.rcvisInfoReady = $http.get('/api/get-rcvis-info.php?userId=' + $s.user.id).then(function (resp) {
+        if (resp.data && resp.data.data && resp.data.data.rcvisInfo) {
+          $s.user.rcvisInfo = JSON.parse(resp.data.data.rcvisInfo);
+        }
+      });
+    }
 
     if (nav) {
       $s.navigate(nav);

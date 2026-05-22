@@ -21,6 +21,7 @@ $results=$sth->fetchAll(PDO::FETCH_ASSOC);
 
 if (empty($results)) {
 	header("HTTP/1.1 500 ERROR");
+  echo json_encode(['error' => 'Ballot already has a visualization or was not found.']);
 } else {
   $updateGraph = "
     UPDATE
@@ -33,22 +34,57 @@ if (empty($results)) {
   $sth->bindValue(':id', $id, PDO::PARAM_STR);
   $sth->execute();
 
-  // // Create a file
+  // Look up the ballot creator's rcvisInfo API key
+  $apiKey = defined('APIKEY') ? APIKEY : '';
+  $keyQuery = "
+    SELECT u.rcvisInfo
+    FROM ballots b
+    JOIN users u ON u.id = b.createdBy
+    WHERE b.id = :id";
+  $sth = $dbh->prepare($keyQuery);
+  $sth->execute([':id' => $id]);
+  $row = $sth->fetch(PDO::FETCH_ASSOC);
+  if ($row && !empty($row['rcvisInfo'])) {
+    $info = json_decode($row['rcvisInfo'], true);
+    if ($info && !empty($info['apiKey'])) {
+      $apiKey = $info['apiKey'];
+    }
+  }
+
+  // Create a file
   $cfile = curl_file_create($_FILES['jsonFile']['tmp_name'],$_FILES['jsonFile']['type'],'jsonFile');
 
   // set URL and other appropriate options
   curl_setopt($ch, CURLOPT_URL, "https://www.rcvis.com/api/visualizations/");
   curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_POSTFIELDS, array('jsonFile' => $cfile));
-  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . APIKEY, 'Content-Type: multipart/form-data'));
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . $apiKey, 'Content-Type: multipart/form-data'));
 
-  // grab URL and pass it to the browser
-  echo curl_exec($ch);
+  $response = curl_exec($ch);
+  $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-  // echo '{"slug":"basic-ballot-creation-test-1","id":5782,"movieHorizontal":null,"movieVertical":null,"movieGenerationStatus":0,"numRounds":1,"numCandidates":1,"title":"Basic Ballot creation test","jsonFile":"https://rcvjsons-prod-us-east-1.s3.amazonaws.com/jsonFile?AWSAccessKeyId=AKIA4WE7J45B2W6TDHXU&Signature=clFhsx8LbTEBNWTGXgeIHjX78Uo%3D&Expires=1691356818","owner":"https://www.rcvis.com/api/users/656/","visualizeUrl":"https://www.rcvis.com/v/basic-ballot-creation-test-1","embedUrl":"https://www.rcvis.com/vo/basic-ballot-creation-test-1/bar","embedSankeyUrl":"https://www.rcvis.com/vo/basic-ballot-creation-test-1/sankey","embedTableUrl":"https://www.rcvis.com/vo/basic-ballot-creation-test-1/table","oembedEndpointUrl":"https://www.rcvis.com/oembed?url=https://www.rcvis.com/v/basic-ballot-creation-test-1"}1';
+  if ($httpCode >= 200 && $httpCode < 300) {
+    // Set graphUpdated now so the ballot is consistent even before the frontend callback
+    $updateTime = "UPDATE ballots SET graphUpdated = UTC_TIMESTAMP() WHERE id = :id";
+    $sth = $dbh->prepare($updateTime);
+    $sth->bindValue(':id', $id, PDO::PARAM_STR);
+    $sth->execute();
 
-  // close cURL resource, and free up system resources
-  curl_close($ch);
+    echo $response;
+  } else {
+    // Roll back the placeholder rcvisId so the user can retry
+    $rollback = "UPDATE ballots SET rcvisId = NULL WHERE id = :id";
+    $sth = $dbh->prepare($rollback);
+    $sth->bindValue(':id', $id, PDO::PARAM_STR);
+    $sth->execute();
+
+    http_response_code($httpCode ?: 502);
+    echo json_encode([
+      'error' => 'RCVis API error (HTTP ' . $httpCode . '). Check that your API key is valid.',
+      'detail' => $response,
+    ]);
+  }
 }
 
 ?>

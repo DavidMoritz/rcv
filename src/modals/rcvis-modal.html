@@ -1,0 +1,89 @@
+    <div class="modal" id="rcvis-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h2 class="modal-title">Manage RCVis</h2>
+          </div>
+          <div class="modal-body">
+            <div ng-show="rcvisModalSuccess" class="alert alert-success">
+              Settings saved successfully.
+            </div>
+            <div ng-show="rcvisModalError" class="alert alert-danger">
+              {{rcvisModalError}}
+            </div>
+            <div class="form-group">
+              <label>
+                API Key
+                <i class="fa fa-question-circle text-muted" uib-tooltip="Your personal RCVis API key. Get one at rcvis.com." tooltip-placement="right"></i>
+              </label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  ng-model="rcvisForm.apiKey"
+                  class="form-control"
+                  placeholder="Paste your API key here"
+                />
+                <span class="input-group-btn">
+                  <button
+                    type="button"
+                    class="btn btn-default"
+                    ng-click="checkRcvisKey()"
+                    ng-disabled="!rcvisForm.apiKey || rcvisKeyChecking"
+                  >
+                    <i ng-show="rcvisKeyChecking" class="fa fa-spinner fa-spin"></i>
+                    <span ng-hide="rcvisKeyChecking">Check</span>
+                  </button>
+                </span>
+              </div>
+              <p ng-show="rcvisKeyResult === 'valid'" class="text-success" style="margin-top: 4px">
+                <i class="fa fa-check"></i> API key is valid
+              </p>
+              <p ng-show="rcvisKeyResult === 'invalid'" class="text-danger" style="margin-top: 4px">
+                <i class="fa fa-times"></i> API key is not valid
+              </p>
+            </div>
+            <div class="form-group">
+              <label>
+                Minimum votes before auto-update
+                <i class="fa fa-question-circle text-muted" uib-tooltip="Auto-update only triggers after this many new votes have been cast since the last graph update." tooltip-placement="right"></i>
+              </label>
+              <input
+                type="number"
+                ng-model="rcvisForm.minVotes"
+                class="form-control"
+                placeholder="15"
+                min="1"
+              />
+            </div>
+            <div class="form-group">
+              <label>
+                Minimum minutes before auto-update
+                <i class="fa fa-question-circle text-muted" uib-tooltip="Auto-update only triggers after this many minutes since the last update. Both thresholds (votes and time) must be met." tooltip-placement="right"></i>
+              </label>
+              <input
+                type="number"
+                ng-model="rcvisForm.minMinutes"
+                class="form-control"
+                placeholder="120"
+                min="1"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-primary"
+              ng-click="saveRcvisInfo()"
+              ng-disabled="rcvisModalLoading || !rcvisForm.apiKey"
+            >
+              <span ng-show="rcvisModalLoading">Saving...</span>
+              <span ng-hide="rcvisModalLoading">Save</span>
+            </button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>

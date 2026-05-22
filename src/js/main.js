@@ -215,8 +215,6 @@ mainApp.controller('MainCtrl', [
       rightNow: moment(),
       moment: moment,
       patchRcvis: false,
-      bbiBallot: false,
-      bbiGroup: false,
       uniqueCodeValid: false,
       secureCodeValid: false,
       secure: { voterCode: '' },
@@ -386,16 +384,6 @@ mainApp.controller('MainCtrl', [
             }, 1000);
           }
 
-          if ($s.ballot.register == 3) {
-            if (!voterName) {
-              alert('oops, this ballot is private');
-
-              return;
-            } else {
-              $s.bbiBallot = true;
-              $s.bbiGroup = 'a';
-            }
-          }
           $s.resetCandidates();
 
           // Generate device fingerprint if oneDeviceOneVote is enabled
@@ -438,12 +426,40 @@ mainApp.controller('MainCtrl', [
           `https://rcvis.com/ve/${$s.rcvisSlug}?vistype=barchart-interactive&increment=` + cacheBust
         );
 
+        house.innerHTML = '';
         house.appendChild(iframe);
-        //         document.getElementById('iframe-' + cacheBust).contentWindow.location.reload();
         const disclaimer = document.getElementById('iframe-disclaimer');
 
         if (disclaimer) disclaimer.remove();
       }, 100);
+    };
+
+    $s.checkGraphStatus = function () {
+      var key = $s.shortcode || $s.ballot.key;
+      $http.get('/api/check-graph-status.php?key=' + key + '&t=' + Date.now()).then(function (resp) {
+        if (resp.data && resp.data.data) {
+          var status = resp.data.data;
+          $s.graphStatus = status;
+          var minVotes = ($s.user.rcvisInfo && $s.user.rcvisInfo.minVotes) || 15;
+          var minMinutes = ($s.user.rcvisInfo && $s.user.rcvisInfo.minMinutes) || 120;
+          var votesThresholdMet = status.votesSinceUpdate >= minVotes;
+          var timeThresholdMet = status.minutesSinceUpdate !== null && status.minutesSinceUpdate >= minMinutes;
+
+          if ($s.rcvisSlug && votesThresholdMet && timeThresholdMet) {
+            $s.graphUpdating = true;
+            $s.patchRcvis = true;
+            $s.getResults();
+          } else if ($s.rcvisSlug) {
+            $s.displayRcvisIframe();
+          }
+        }
+      });
+    };
+
+    $s.updateGraphNow = function () {
+      $s.graphUpdating = true;
+      $s.patchRcvis = true;
+      $s.getResults();
     };
 
     $s.getResults = function () {
@@ -503,6 +519,9 @@ mainApp.controller('MainCtrl', [
         $s.allowCustom = ballot.allowCustom;
         $s.tieBreak = ballot.tieBreak;
         $s.graphUpdated = ballot.graphUpdated;
+        $s.graphUpdatedLocal = ballot.graphUpdated
+          ? moment.utc(ballot.graphUpdated).local().format('MMM D, YYYY h:mm a')
+          : null;
         $s.hideDetails = hideDetails && !loggedIn && !$s.ballotIsSecure;
         $s.hidePromptResults = hideDetails && !loggedIn;
         $s.voterNames = [];
@@ -660,14 +679,46 @@ mainApp.controller('MainCtrl', [
         }
 
         if ($s.showGraph) {
-          if ($s.voteClosed) {
-            $s.patchRcvis = !$s.rcvisSlug || $s.graphUpdated < mostRecentVote;
-            $s.ballotName = ballot.ballotName;
-            $s.ballotId = ballot.id;
+          var evaluateGraph = function () {
+            var isCreator = $s.user.id == createdBy;
+            var creatorWithKey = isCreator && $s.user.rcvisInfo && $s.user.rcvisInfo.apiKey;
+            var canSeeGraph = resultsVisible || creatorWithKey;
 
-            if (!$s.patchRcvis) {
-              $s.displayRcvisIframe();
+            if (canSeeGraph) {
+              $s.ballotName = ballot.ballotName;
+              $s.ballotId = ballot.id;
+
+              if (voteCutoffDate && voteCutoffDate < now) {
+                // Vote cutoff has passed: one final update if stale
+                $s.patchRcvis = !$s.rcvisSlug || !$s.graphUpdated || $s.graphUpdated < mostRecentVote;
+                if (!$s.patchRcvis) {
+                  $s.displayRcvisIframe();
+                }
+              } else if ($s.rcvisSlug) {
+                // Show existing graph
+                $s.displayRcvisIframe();
+                // For creators with key, also fetch staleness info for the update button
+                if (creatorWithKey) {
+                  $s.checkGraphStatus();
+                }
+              } else if (creatorWithKey) {
+                // No graph yet but creator has key — fetch status
+                $s.checkGraphStatus();
+              }
             }
+          };
+
+          var resultsVisible = !resultsDate || resultsDate < now;
+          evaluateGraph();
+
+          // If rcvisInfo is not yet loaded (cookie-restored session), re-evaluate once it arrives
+          if (!$s.user.rcvisInfo) {
+            var unwatch = $s.$watch('user.rcvisInfo', function (newVal) {
+              if (newVal) {
+                unwatch();
+                evaluateGraph();
+              }
+            });
           }
         } else {
           $s.showGraphTease = $s.votes.length > 3 && (loggedIn || createdBy == 'guest');
@@ -873,10 +924,6 @@ mainApp.controller('MainCtrl', [
           return;
         }
         $s.thanks = true;
-        if ($s.bbiBallot) {
-          $s.patchRcvis = true;
-          $s.getResults();
-        }
         console.log(resp);
       });
     };

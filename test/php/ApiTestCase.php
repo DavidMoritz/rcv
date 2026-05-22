@@ -105,14 +105,15 @@ abstract class ApiTestCase extends TestCase
             'oneDeviceOneVote' => 0,
             'isSecure'       => 0,
             'showGraph'      => 0,
+            'graphUpdated'   => null,
             'allowGrouping'  => 0,
             'iframeUrl'      => null,
         ];
         $data = array_merge($defaults, $overrides);
 
         $sth = $this->db->prepare("
-            INSERT INTO ballots (name, key, positions, createdBy, requireSignIn, maxVotes, tieBreak, voteCutoff, resultsRelease, timeCreated, register, oneDeviceOneVote, isSecure, showGraph, allowGrouping, iframeUrl)
-            VALUES (:name, :key, :positions, :createdBy, :requireSignIn, :maxVotes, :tieBreak, :voteCutoff, :resultsRelease, :timeCreated, :register, :oneDeviceOneVote, :isSecure, :showGraph, :allowGrouping, :iframeUrl)
+            INSERT INTO ballots (name, key, positions, createdBy, requireSignIn, maxVotes, tieBreak, voteCutoff, resultsRelease, timeCreated, register, oneDeviceOneVote, isSecure, showGraph, graphUpdated, allowGrouping, iframeUrl)
+            VALUES (:name, :key, :positions, :createdBy, :requireSignIn, :maxVotes, :tieBreak, :voteCutoff, :resultsRelease, :timeCreated, :register, :oneDeviceOneVote, :isSecure, :showGraph, :graphUpdated, :allowGrouping, :iframeUrl)
         ");
         $sth->execute([
             ':name'           => $data['name'],
@@ -129,6 +130,7 @@ abstract class ApiTestCase extends TestCase
             ':oneDeviceOneVote' => $data['oneDeviceOneVote'],
             ':isSecure'       => $data['isSecure'],
             ':showGraph'      => $data['showGraph'],
+            ':graphUpdated'   => $data['graphUpdated'],
             ':allowGrouping'  => $data['allowGrouping'],
             ':iframeUrl'      => $data['iframeUrl'],
         ]);
@@ -141,22 +143,24 @@ abstract class ApiTestCase extends TestCase
     protected function seedUser(array $overrides = []): int
     {
         $defaults = [
-            'id'       => random_int(100000, 999999),
-            'username' => 'user_' . uniqid(),
-            'password' => 'testpass',
-            'email'    => null,
+            'id'        => random_int(100000, 999999),
+            'username'  => 'user_' . uniqid(),
+            'password'  => 'testpass',
+            'email'     => null,
+            'rcvisInfo' => null,
         ];
         $data = array_merge($defaults, $overrides);
 
         $sth = $this->db->prepare("
-            INSERT INTO users (id, username, password, email)
-            VALUES (:id, :username, :password, :email)
+            INSERT INTO users (id, username, password, email, rcvisInfo)
+            VALUES (:id, :username, :password, :email, :rcvisInfo)
         ");
         $sth->execute([
-            ':id'       => $data['id'],
-            ':username' => $data['username'],
-            ':password' => $data['password'],
-            ':email'    => $data['email'],
+            ':id'        => $data['id'],
+            ':username'  => $data['username'],
+            ':password'  => $data['password'],
+            ':email'     => $data['email'],
+            ':rcvisInfo' => $data['rcvisInfo'],
         ]);
         return (int) $data['id'];
     }

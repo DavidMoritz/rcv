@@ -71,6 +71,33 @@ class DeleteVotesTest extends ApiTestCase
      *
      * @see src/api/delete-votes.php:29
      */
+    /**
+     * Verify that delete-vote.php sets graphUpdated to NULL (not the old sentinel value).
+     */
+    public function testDeleteVoteSetsGraphUpdatedToNull(): void
+    {
+        $userId = $this->seedUser(['username' => 'alice', 'password' => 'pass']);
+        $ballotKey = 'graph-del-' . uniqid();
+        $ballotId = $this->seedBallot([
+            'createdBy'    => $userId,
+            'key'          => $ballotKey,
+            'graphUpdated' => '2025-06-01 12:00:00',
+        ]);
+        $voteId = $this->seedVote($ballotId, '1,2', '[1,2]', 'voter1');
+
+        $this->callApi('delete-vote.php', [
+            'shortcode' => $ballotKey,
+            'createdBy' => $userId,
+            'username'  => 'alice',
+            'voteId'    => $voteId,
+        ]);
+
+        $sth = $this->db->prepare("SELECT graphUpdated FROM ballots WHERE `key` = ?");
+        $sth->execute([$ballotKey]);
+        $graphUpdated = $sth->fetchColumn();
+        $this->assertNull($graphUpdated, "graphUpdated should be NULL after vote deletion, not a sentinel date");
+    }
+
     public function testDeleteSingleVoteById(): void
     {
         $ballotId = $this->seedBallot(['createdBy' => 'alice']);

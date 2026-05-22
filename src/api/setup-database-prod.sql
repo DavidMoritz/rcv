@@ -123,6 +123,7 @@ CREATE TABLE `users` (
   `role` varchar(64) DEFAULT NULL,
   `clearance` smallint NOT NULL DEFAULT '0',
   `password` varchar(64) NOT NULL DEFAULT '',
+  `rcvisInfo` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `id` (`id`)
