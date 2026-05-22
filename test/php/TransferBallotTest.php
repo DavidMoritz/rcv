@@ -4,7 +4,7 @@ require_once __DIR__ . '/ApiTestCase.php';
 
 class TransferBallotTest extends ApiTestCase
 {
-    public function testTransfersToBallotToExistingUser(): void
+    public function testTransfersToExistingUser(): void
     {
         $ballotId = $this->seedBallot(['createdBy' => 'alice']);
         $this->seedUser(['username' => 'bob']);
