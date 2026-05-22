@@ -40,9 +40,9 @@ if ($voteCheck->fetch()) {
 
 // Delete the code assignment (not the random_code itself)
 $sth = $dbh->prepare("
-	DELETE bc FROM ballot_codes bc
-	JOIN random_codes rc ON rc.id = bc.random_code_id
-	WHERE bc.ballot_id = :ballotId AND rc.code = :code
+	DELETE FROM ballot_codes
+	WHERE ballot_id = :ballotId
+	AND random_code_id = (SELECT id FROM random_codes WHERE code = :code)
 ");
 $sth->bindValue(':ballotId', $_POST['ballotId'], PDO::PARAM_INT);
 $sth->bindValue(':code', $_POST['code'], PDO::PARAM_STR);
