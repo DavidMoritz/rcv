@@ -31,5 +31,12 @@ jobs:
       - name: Install PHP dependencies
         run: composer install --no-progress --prefer-dist --no-interaction
 
+      - name: Provide PHP config stub
+        # src/api/config.php is gitignored. Endpoints `require_once("config.php")`,
+        # so without this they fatal before PHPUnit can read their output.
+        # config_sample.php short-circuits when PHPUNIT_RUNNING is defined, so
+        # the SQLite $dbh from prepend.php remains in scope.
+        run: cp src/api/config_sample.php src/api/config.php
+
       - name: Run tests (Vitest + PHPUnit)
         run: npm test
