@@ -54,6 +54,6 @@ if(!empty($key)) {
     echo 'None found';
   }
 } else {
-  echo 'Please provde id and key';
+  echo 'Please provide id and key';
 }
 ?>
