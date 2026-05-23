@@ -24,7 +24,7 @@ if(!empty($ballotId)) {
 		);";
 	$sth = $dbh->prepare($query);
 	$sth->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
-	$sth->bindValue(':createdBy', $createdBy, PDO::PARAM_INT);
+	$sth->bindValue(':createdBy', $createdBy, PDO::PARAM_STR);
 	$sth->execute();
 	$results=$sth->fetchAll(PDO::FETCH_ASSOC);
 } else {

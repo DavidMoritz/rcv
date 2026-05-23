@@ -107,13 +107,14 @@ abstract class ApiTestCase extends TestCase
             'showGraph'      => 0,
             'graphUpdated'   => null,
             'allowGrouping'  => 0,
+            'allowCustom'    => 0,
             'iframeUrl'      => null,
         ];
         $data = array_merge($defaults, $overrides);
 
         $sth = $this->db->prepare("
-            INSERT INTO ballots (name, key, positions, createdBy, requireSignIn, maxVotes, tieBreak, voteCutoff, resultsRelease, timeCreated, register, oneDeviceOneVote, isSecure, showGraph, graphUpdated, allowGrouping, iframeUrl)
-            VALUES (:name, :key, :positions, :createdBy, :requireSignIn, :maxVotes, :tieBreak, :voteCutoff, :resultsRelease, :timeCreated, :register, :oneDeviceOneVote, :isSecure, :showGraph, :graphUpdated, :allowGrouping, :iframeUrl)
+            INSERT INTO ballots (name, key, positions, createdBy, requireSignIn, maxVotes, tieBreak, voteCutoff, resultsRelease, timeCreated, register, oneDeviceOneVote, isSecure, showGraph, graphUpdated, allowGrouping, allowCustom, iframeUrl)
+            VALUES (:name, :key, :positions, :createdBy, :requireSignIn, :maxVotes, :tieBreak, :voteCutoff, :resultsRelease, :timeCreated, :register, :oneDeviceOneVote, :isSecure, :showGraph, :graphUpdated, :allowGrouping, :allowCustom, :iframeUrl)
         ");
         $sth->execute([
             ':name'           => $data['name'],
@@ -132,6 +133,7 @@ abstract class ApiTestCase extends TestCase
             ':showGraph'      => $data['showGraph'],
             ':graphUpdated'   => $data['graphUpdated'],
             ':allowGrouping'  => $data['allowGrouping'],
+            ':allowCustom'    => $data['allowCustom'],
             ':iframeUrl'      => $data['iframeUrl'],
         ]);
         return (int) $this->db->lastInsertId();
