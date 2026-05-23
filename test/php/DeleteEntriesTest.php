@@ -4,12 +4,6 @@ require_once __DIR__ . '/ApiTestCase.php';
 
 /**
  * Tests for delete-entries.php.
- *
- * Note: delete-entries.php line 27 binds :createdBy as PARAM_INT.
- * In this endpoint createdBy is used as a string user identifier (same column
- * type as in other endpoints), so the PARAM_INT cast is inconsistent — though
- * it happens to work for numeric user IDs. A regression test is included to
- * surface behavior when createdBy is a plain string (e.g. 'alice').
  */
 class DeleteEntriesTest extends ApiTestCase
 {
