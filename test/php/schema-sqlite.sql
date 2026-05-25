@@ -3,7 +3,7 @@
 CREATE TABLE ballots (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name varchar(64) NOT NULL,
-  key varchar(255) NOT NULL DEFAULT '',
+  `key` varchar(255) NOT NULL DEFAULT '',
   positions varchar(10) NOT NULL,
   rcvisSlug varchar(255) DEFAULT NULL,
   rcvisId int DEFAULT NULL,
