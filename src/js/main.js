@@ -15,7 +15,7 @@ import { initBallot, assignFieldSlugs, displayTitle } from './ballot.js';
 import {
   shouldPatchGraph,
   shouldAutoUpdate,
-  canSeeGraph as rcvisCanSeeGraph,
+  canSeeGraph,
   shouldUsePostCutoffPath
 } from './utils/rcvis-helpers.js';
 
@@ -446,15 +446,13 @@ mainApp.controller('MainCtrl', [
         if (resp.data && resp.data.data) {
           var status = resp.data.data;
           $s.graphStatus = status;
-          var minVotes = ($s.user.rcvisInfo && $s.user.rcvisInfo.minVotes) || 15;
-          var minMinutes = ($s.user.rcvisInfo && $s.user.rcvisInfo.minMinutes) || 120;
 
           if (shouldAutoUpdate({
             rcvisSlug: $s.rcvisSlug,
             votesSinceUpdate: status.votesSinceUpdate,
             minutesSinceUpdate: status.minutesSinceUpdate,
-            minVotes: minVotes,
-            minMinutes: minMinutes
+            minVotes: $s.user.rcvisInfo && $s.user.rcvisInfo.minVotes,
+            minMinutes: $s.user.rcvisInfo && $s.user.rcvisInfo.minMinutes
           })) {
             $s.graphUpdating = true;
             $s.patchRcvis = true;
@@ -692,7 +690,7 @@ mainApp.controller('MainCtrl', [
           var evaluateGraph = function () {
             var isCreator = $s.user.id == createdBy;
             var creatorWithKey = isCreator && $s.user.rcvisInfo && $s.user.rcvisInfo.apiKey;
-            var canSee = rcvisCanSeeGraph({
+            var canSee = canSeeGraph({
               resultsDate: resultsDate,
               now: now,
               isCreator: isCreator,
