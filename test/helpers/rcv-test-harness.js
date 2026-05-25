@@ -44,6 +44,8 @@ export function buildVotes(ballots, candidates) {
  * @param {number} [opts.seats=1] - seats to fill
  * @param {string} [opts.tieBreak='weighted'] - 'weighted' or 'random'
  * @param {string} [opts.ballotName='Test Election'] - election name
+ * @param {boolean} [opts.patchRcvis=false] - when true, triggers the
+ *   transfer-diff computation and rcvis $.ajax call inside finishElection
  * @returns {{ elected: Object[], outputstring: string, jsonObj: Object }}
  */
 export function runElection(opts) {
@@ -52,7 +54,8 @@ export function runElection(opts) {
     ballots,
     seats = 1,
     tieBreak = 'weighted',
-    ballotName = 'Test Election'
+    ballotName = 'Test Election',
+    patchRcvis = false
   } = opts;
 
   const { entryMap, ids } = buildCandidates(candidateNames);
@@ -71,8 +74,7 @@ export function runElection(opts) {
     votes,
     mutableVotes,
     ballotName,
-    bbiBallot: false,
-    patchRcvis: false,
+    patchRcvis,
     rcvisId: null,
     rcvisSlug: null,
     ballotIsSecure: false,
