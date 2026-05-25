@@ -1,35 +1,15 @@
 import { describe, it, expect } from 'vitest';
+import {
+  shouldPatchGraph,
+  shouldAutoUpdate,
+  canSeeGraph,
+  shouldUsePostCutoffPath
+} from '@src/js/utils/rcvis-helpers.js';
 
 /**
  * Pure-logic tests for RCVis graph display decisions.
- * These test the threshold/staleness logic without needing the full AngularJS scope.
+ * Imports the real implementations from src/js/utils/rcvis-helpers.js.
  */
-
-// Replicate the staleness logic from main.js (post-cutoff path)
-function shouldPatchGraph({ rcvisSlug, graphUpdated, mostRecentVote }) {
-  return !rcvisSlug || !graphUpdated || graphUpdated < mostRecentVote;
-}
-
-// Replicate the auto-update threshold logic from main.js checkGraphStatus
-function shouldAutoUpdate({ rcvisSlug, votesSinceUpdate, minutesSinceUpdate, minVotes, minMinutes }) {
-  minVotes = minVotes || 15;
-  minMinutes = minMinutes || 120;
-  var votesThresholdMet = votesSinceUpdate >= minVotes;
-  var timeThresholdMet = minutesSinceUpdate !== null && minutesSinceUpdate >= minMinutes;
-  return !!rcvisSlug && votesThresholdMet && timeThresholdMet;
-}
-
-// Replicate the graph visibility logic
-function canSeeGraph({ resultsDate, now, loggedIn, rcvisInfo }) {
-  var resultsVisible = !resultsDate || resultsDate < now;
-  var creatorWithKey = loggedIn && rcvisInfo && rcvisInfo.apiKey;
-  return resultsVisible || !!creatorWithKey;
-}
-
-// Replicate the post-cutoff vs open ballot branching
-function shouldUsePostCutoffPath({ voteCutoffDate, now }) {
-  return voteCutoffDate && voteCutoffDate < now;
-}
 
 describe('Graph staleness detection (post-cutoff path)', () => {
   it('is stale when graphUpdated is null', () => {
@@ -182,7 +162,7 @@ describe('Graph visibility for creator with key', () => {
     expect(canSeeGraph({
       resultsDate: new Date('2099-01-01'),
       now: new Date('2025-06-01'),
-      loggedIn: true,
+      isCreator: true,
       rcvisInfo: { apiKey: 'abc123' }
     })).toBe(true);
   });
@@ -191,7 +171,7 @@ describe('Graph visibility for creator with key', () => {
     expect(canSeeGraph({
       resultsDate: new Date('2099-01-01'),
       now: new Date('2025-06-01'),
-      loggedIn: false,
+      isCreator: false,
       rcvisInfo: null
     })).toBe(false);
   });
@@ -200,7 +180,7 @@ describe('Graph visibility for creator with key', () => {
     expect(canSeeGraph({
       resultsDate: new Date('2020-01-01'),
       now: new Date('2025-06-01'),
-      loggedIn: false,
+      isCreator: false,
       rcvisInfo: null
     })).toBe(true);
   });
@@ -209,7 +189,7 @@ describe('Graph visibility for creator with key', () => {
     expect(canSeeGraph({
       resultsDate: null,
       now: new Date('2025-06-01'),
-      loggedIn: false,
+      isCreator: false,
       rcvisInfo: null
     })).toBe(true);
   });
@@ -218,7 +198,7 @@ describe('Graph visibility for creator with key', () => {
     expect(canSeeGraph({
       resultsDate: new Date('2099-01-01'),
       now: new Date('2025-06-01'),
-      loggedIn: true,
+      isCreator: true,
       rcvisInfo: null
     })).toBe(false);
   });
@@ -227,7 +207,7 @@ describe('Graph visibility for creator with key', () => {
     expect(canSeeGraph({
       resultsDate: new Date('2099-01-01'),
       now: new Date('2025-06-01'),
-      loggedIn: true,
+      isCreator: true,
       rcvisInfo: {}
     })).toBe(false);
   });

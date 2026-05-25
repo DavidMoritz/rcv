@@ -12,6 +12,12 @@ import mc from './utils/mc.js';
 import VoteFactory, { initScope } from './factories/vote-factory.js';
 import { initAuth } from './auth.js';
 import { initBallot, assignFieldSlugs, displayTitle } from './ballot.js';
+import {
+  shouldPatchGraph,
+  shouldAutoUpdate,
+  canSeeGraph as rcvisCanSeeGraph,
+  shouldUsePostCutoffPath
+} from './utils/rcvis-helpers.js';
 
 /* Iframe auto-resize: hosted pages can postMessage their height */
 window.addEventListener('message', function (e) {
@@ -442,10 +448,14 @@ mainApp.controller('MainCtrl', [
           $s.graphStatus = status;
           var minVotes = ($s.user.rcvisInfo && $s.user.rcvisInfo.minVotes) || 15;
           var minMinutes = ($s.user.rcvisInfo && $s.user.rcvisInfo.minMinutes) || 120;
-          var votesThresholdMet = status.votesSinceUpdate >= minVotes;
-          var timeThresholdMet = status.minutesSinceUpdate !== null && status.minutesSinceUpdate >= minMinutes;
 
-          if ($s.rcvisSlug && votesThresholdMet && timeThresholdMet) {
+          if (shouldAutoUpdate({
+            rcvisSlug: $s.rcvisSlug,
+            votesSinceUpdate: status.votesSinceUpdate,
+            minutesSinceUpdate: status.minutesSinceUpdate,
+            minVotes: minVotes,
+            minMinutes: minMinutes
+          })) {
             $s.graphUpdating = true;
             $s.patchRcvis = true;
             $s.getResults();
@@ -682,15 +692,24 @@ mainApp.controller('MainCtrl', [
           var evaluateGraph = function () {
             var isCreator = $s.user.id == createdBy;
             var creatorWithKey = isCreator && $s.user.rcvisInfo && $s.user.rcvisInfo.apiKey;
-            var canSeeGraph = resultsVisible || creatorWithKey;
+            var canSee = rcvisCanSeeGraph({
+              resultsDate: resultsDate,
+              now: now,
+              isCreator: isCreator,
+              rcvisInfo: $s.user.rcvisInfo
+            });
 
-            if (canSeeGraph) {
+            if (canSee) {
               $s.ballotName = ballot.ballotName;
               $s.ballotId = ballot.id;
 
-              if (voteCutoffDate && voteCutoffDate < now) {
+              if (shouldUsePostCutoffPath({ voteCutoffDate: voteCutoffDate, now: now })) {
                 // Vote cutoff has passed: one final update if stale
-                $s.patchRcvis = !$s.rcvisSlug || !$s.graphUpdated || $s.graphUpdated < mostRecentVote;
+                $s.patchRcvis = shouldPatchGraph({
+                  rcvisSlug: $s.rcvisSlug,
+                  graphUpdated: $s.graphUpdated,
+                  mostRecentVote: mostRecentVote
+                });
                 if (!$s.patchRcvis) {
                   $s.displayRcvisIframe();
                 }
@@ -708,7 +727,6 @@ mainApp.controller('MainCtrl', [
             }
           };
 
-          var resultsVisible = !resultsDate || resultsDate < now;
           evaluateGraph();
 
           // If rcvisInfo is not yet loaded (cookie-restored session), re-evaluate once it arrives
