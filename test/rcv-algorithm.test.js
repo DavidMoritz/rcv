@@ -315,3 +315,168 @@ describe('RCV Algorithm — Edge Cases', () => {
     expect($.get).not.toHaveBeenCalled();
   });
 });
+
+describe('RCV Algorithm — Ballot Exhaustion', () => {
+  it('completes a multi-seat election where many ballots exhaust mid-round', () => {
+    // 7 single-rank ballots; after A wins, the 3 ['A'] ballots are exhausted
+    // (vote weight set to 0). Algorithm must continue to fill the 2nd seat
+    // from the remaining non-exhausted ballots.
+    const result = runElection({
+      candidates: ['A', 'B', 'C', 'D'],
+      ballots: [['A'], ['A'], ['A'], ['B'], ['B'], ['C'], ['D']],
+      seats: 2
+    });
+
+    expect(result.elected).toHaveLength(2);
+    const names = getWinnerNames(result);
+    expect(names).toContain('A');
+    expect(names).toContain('B');
+  });
+
+  it('terminates when all remaining ballots are exhausted before quota is met', () => {
+    // 1 seat. After C is elected (or eliminated) every remaining ballot
+    // has no next preference. The algorithm must not infinite-loop and must
+    // produce a winner (the last viable candidate).
+    const result = runElection({
+      candidates: ['A', 'B', 'C'],
+      ballots: [['C'], ['C'], ['A'], ['B']],
+      seats: 1
+    });
+
+    expect(result.elected).toHaveLength(1);
+    // C had the most first-choice votes; expected to win on tally even
+    // though A and B's ballots exhaust on elimination.
+    expect(getWinnerNames(result)).toEqual(['C']);
+  });
+});
+
+describe('RCV Algorithm — Tie Breaking (elimination path)', () => {
+  it('weighted tiebreak eliminates the candidate with weaker downstream support', () => {
+    // 4 votes, quota = 2. Round 1: A=2 (=quota, not strictly >), B=1, C=1.
+    // No winner; B and C tie at the bottom.
+    // - B's downstream value: 2 second-place mentions from A voters → 0.2
+    // - C's downstream value: 0
+    // Weighted "loser" sorts ascending → C (smaller value) is eliminated.
+    const result = runElection({
+      candidates: ['A', 'B', 'C'],
+      ballots: [
+        ['A', 'B'],
+        ['A', 'B'],
+        ['B', 'A'],
+        ['C']
+      ],
+      seats: 1,
+      tieBreak: 'weighted'
+    });
+
+    expect(result.jsonObj.results[0].tallyResults[0].eliminated).toBe('C');
+    expect(getWinnerNames(result)).toEqual(['A']);
+  });
+});
+
+describe('RCV Algorithm — Vote Weight After Surplus', () => {
+  it('reduces vote weight proportionally to surplus after a candidate is elected', () => {
+    // 4 ballots all ['A','B'], 2 seats. quota = round(4/3, 2) = 1.33.
+    // Round 1: A=4. Surplus weight multiplier = 1 - 1.33/4 = 0.6675.
+    // Round 2: each of the 4 ballots is now ['B'] with weight 0.6675.
+    //   B tally = 4 * 0.6675 = 2.67 (rounded to 4 decimals).
+    const result = runElection({
+      candidates: ['A', 'B'],
+      ballots: [
+        ['A', 'B'],
+        ['A', 'B'],
+        ['A', 'B'],
+        ['A', 'B']
+      ],
+      seats: 2
+    });
+
+    expect(getWinnerNames(result)).toEqual(['A', 'B']);
+    // jsonObj stores tally values as strings (cand.vote + '')
+    const r2BTally = Number(result.jsonObj.results[1].tally.B);
+    expect(r2BTally).toBeCloseTo(2.67, 2);
+  });
+});
+
+describe('RCV Algorithm — Seats Clamping', () => {
+  it('clamps seats to number of candidates when seats > candidates', () => {
+    // firstQuota: this.seats = Math.min(this.seats, $s.ids.length).
+    // Asking for 5 seats with only 2 candidates → both elected, no crash.
+    const result = runElection({
+      candidates: ['A', 'B'],
+      ballots: [
+        ['A', 'B'],
+        ['B', 'A'],
+        ['A', 'B']
+      ],
+      seats: 5
+    });
+
+    expect(result.elected).toHaveLength(2);
+    const names = getWinnerNames(result);
+    expect(names).toContain('A');
+    expect(names).toContain('B');
+  });
+});
+
+describe('RCV Algorithm — Multi-Seat (3 seats)', () => {
+  it('elects 3 winners exercising renewQuota across multiple rounds', () => {
+    // 3 seats, 8 votes. Initial quota = 8/4 = 2. After A is elected with
+    // surplus, renewQuota recomputes based on remaining vote value, and
+    // the algorithm continues to fill 2 more seats.
+    const result = runElection({
+      candidates: ['A', 'B', 'C', 'D'],
+      ballots: [
+        ['A', 'B', 'C'],
+        ['A', 'B', 'C'],
+        ['A', 'C', 'D'],
+        ['B', 'C'],
+        ['B', 'D'],
+        ['C', 'A'],
+        ['C', 'B'],
+        ['D', 'A']
+      ],
+      seats: 3
+    });
+
+    expect(result.elected).toHaveLength(3);
+    expect(getWinnerNames(result)).toContain('A');
+    // The 3-seat election should have multiple rounds recorded.
+    expect(result.jsonObj.results.length).toBeGreaterThan(1);
+  });
+});
+
+describe('RCV Algorithm — patchRcvis output', () => {
+  it('populates per-round transfer diffs and posts to rcvis_new when patchRcvis is true', () => {
+    // Two-round single-seat election. With patchRcvis=true, finishElection
+    // computes a `transfers` map on each non-final round's tallyResults[0]
+    // showing how vote counts shifted into the next round.
+    const result = runElection({
+      candidates: ['A', 'B', 'C'],
+      ballots: [
+        ['A', 'B'],
+        ['A'],
+        ['B', 'C'],
+        ['B', 'A'],
+        ['C', 'A']
+      ],
+      seats: 1,
+      patchRcvis: true
+    });
+
+    // Round 1 has a next-round, so transfers should be populated.
+    const transfers = result.jsonObj.results[0].tallyResults[0].transfers;
+    expect(transfers).toBeDefined();
+    expect(typeof transfers).toBe('object');
+    // Transfer values are strings (newVotes - oldVotes or absolute).
+    Object.values(transfers).forEach((val) => {
+      expect(typeof val).toBe('string');
+    });
+
+    // rcvisId/rcvisSlug were null, so the post goes to rcvis_new.php.
+    expect($.ajax).toHaveBeenCalled();
+    const call = $.ajax.mock.calls[0][0];
+    expect(call.url).toContain('/api/rcvis_new.php');
+    expect(call.type).toBe('POST');
+  });
+});
