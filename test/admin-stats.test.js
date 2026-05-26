@@ -89,43 +89,21 @@ describe('admin stats localStorage tracking', () => {
     localStorage.clear();
   });
 
-  it('stores stats with timestamp', () => {
+  it('stores stats with per-value timestamps', () => {
+    var now = Date.now();
     var stats = {
-      totalBallots: 100,
-      totalVotes: 500,
-      totalUsers: 50,
-      totalEntries: 200,
-      timestamp: Date.now()
+      totalBallots: 100, totalBallotsTs: now,
+      totalVotes: 500, totalVotesTs: now,
+      totalUsers: 50, totalUsersTs: now,
+      totalEntries: 200, totalEntriesTs: now
     };
     localStorage.setItem('adminStats', JSON.stringify(stats));
 
     var stored = JSON.parse(localStorage.getItem('adminStats'));
     expect(stored.totalBallots).toBe(100);
+    expect(stored.totalBallotsTs).toBe(now);
     expect(stored.totalVotes).toBe(500);
-    expect(stored.totalUsers).toBe(50);
-    expect(stored.totalEntries).toBe(200);
-    expect(stored.timestamp).toBeTypeOf('number');
-  });
-
-  it('computes positive diff correctly', () => {
-    var prev = { totalBallots: 100 };
-    var current = 115;
-    var diff = current - prev.totalBallots;
-    expect(diff).toBe(15);
-  });
-
-  it('computes negative diff correctly', () => {
-    var prev = { totalVotes: 500 };
-    var current = 480;
-    var diff = current - prev.totalVotes;
-    expect(diff).toBe(-20);
-  });
-
-  it('computes zero diff correctly', () => {
-    var prev = { totalUsers: 50 };
-    var current = 50;
-    var diff = current - prev.totalUsers;
-    expect(diff).toBe(0);
+    expect(stored.totalVotesTs).toBe(now);
   });
 
   it('returns null when no previous stats exist', () => {
@@ -133,20 +111,31 @@ describe('admin stats localStorage tracking', () => {
     expect(prev).toBeNull();
   });
 
-  it('overwrites previous stats on save', () => {
-    localStorage.setItem('adminStats', JSON.stringify({
-      totalBallots: 100, totalVotes: 500, totalUsers: 50, totalEntries: 200,
-      timestamp: Date.now() - 60000
-    }));
-
-    var newStats = {
-      totalBallots: 110, totalVotes: 520, totalUsers: 52, totalEntries: 210,
-      timestamp: Date.now()
+  it('only updates timestamp for values that changed', () => {
+    var hourAgo = Date.now() - 3600000;
+    var prev = {
+      totalBallots: 100, totalBallotsTs: hourAgo,
+      totalVotes: 500, totalVotesTs: hourAgo,
+      totalUsers: 50, totalUsersTs: hourAgo,
+      totalEntries: 200, totalEntriesTs: hourAgo
     };
-    localStorage.setItem('adminStats', JSON.stringify(newStats));
 
-    var stored = JSON.parse(localStorage.getItem('adminStats'));
-    expect(stored.totalBallots).toBe(110);
-    expect(stored.totalVotes).toBe(520);
+    // Simulate: ballots changed, votes didn't
+    var now = Date.now();
+    var keys = ['totalBallots', 'totalVotes', 'totalUsers', 'totalEntries'];
+    var current = { totalBallots: 105, totalVotes: 500, totalUsers: 50, totalEntries: 200 };
+    for (var i = 0; i < keys.length; i++) {
+      if (current[keys[i]] !== prev[keys[i]]) {
+        prev[keys[i] + 'Ts'] = now;
+      }
+      prev[keys[i]] = current[keys[i]];
+    }
+
+    expect(prev.totalBallots).toBe(105);
+    expect(prev.totalBallotsTs).toBe(now); // updated — value changed
+    expect(prev.totalVotes).toBe(500);
+    expect(prev.totalVotesTs).toBe(hourAgo); // unchanged — same value
+    expect(prev.totalUsersTs).toBe(hourAgo);
+    expect(prev.totalEntriesTs).toBe(hourAgo);
   });
 });

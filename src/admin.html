@@ -351,22 +351,30 @@
                 document.getElementById('statEntries').textContent = stats.totalEntries.toLocaleString();
 
                 var prev = JSON.parse(localStorage.getItem('adminStats') || 'null');
-                if (prev && prev.timestamp) {
-                    var elapsed = Date.now() - prev.timestamp;
-                    var timeSince = formatTimeSince(elapsed);
-                    showChange('changeBallots', stats.totalBallots, prev.totalBallots, timeSince);
-                    showChange('changeVotes', stats.totalVotes, prev.totalVotes, timeSince);
-                    showChange('changeUsers', stats.totalUsers, prev.totalUsers, timeSince);
-                    showChange('changeEntries', stats.totalEntries, prev.totalEntries, timeSince);
+                if (prev) {
+                    var now = Date.now();
+                    var keys = ['totalBallots', 'totalVotes', 'totalUsers', 'totalEntries'];
+                    var elIds = ['changeBallots', 'changeVotes', 'changeUsers', 'changeEntries'];
+                    for (var i = 0; i < keys.length; i++) {
+                        if (prev[keys[i]] !== undefined && prev[keys[i] + 'Ts']) {
+                            var elapsed = now - prev[keys[i] + 'Ts'];
+                            showChange(elIds[i], stats[keys[i]], prev[keys[i]], formatTimeSince(elapsed));
+                        }
+                        if (stats[keys[i]] !== prev[keys[i]]) {
+                            prev[keys[i] + 'Ts'] = now;
+                        }
+                        prev[keys[i]] = stats[keys[i]];
+                    }
+                    localStorage.setItem('adminStats', JSON.stringify(prev));
+                } else {
+                    var now = Date.now();
+                    localStorage.setItem('adminStats', JSON.stringify({
+                        totalBallots: stats.totalBallots, totalBallotsTs: now,
+                        totalVotes: stats.totalVotes, totalVotesTs: now,
+                        totalUsers: stats.totalUsers, totalUsersTs: now,
+                        totalEntries: stats.totalEntries, totalEntriesTs: now
+                    }));
                 }
-
-                localStorage.setItem('adminStats', JSON.stringify({
-                    totalBallots: stats.totalBallots,
-                    totalVotes: stats.totalVotes,
-                    totalUsers: stats.totalUsers,
-                    totalEntries: stats.totalEntries,
-                    timestamp: Date.now()
-                }));
             }
         });
     }
