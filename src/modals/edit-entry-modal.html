@@ -28,9 +28,21 @@
           >
           <input
             ng-model="editingEntry.image"
+            ng-blur="previewImageUrl()"
             class="form-control"
             placeholder="https://example.com/image.png"
           />
+          <div ng-if="imagePreview.url">
+            <img
+              ng-src="{{imagePreview.url}}"
+              class="image-preview"
+              onload="angular.element(this).scope().$apply(function(s) { s.imagePreview.status = 'ok'; })"
+              onerror="angular.element(this).scope().$apply(function(s) { s.imagePreview.status = 'error'; })"
+            />
+            <p ng-if="imagePreview.status === 'error'" class="text-danger" style="margin-top: 4px">
+              Could not load image. Make sure the URL points directly to an image file.
+            </p>
+          </div>
         </div>
         <div class="form-group">
           <label
@@ -64,6 +76,12 @@
         #edit-entry-modal .modal-footer::before,
         #edit-entry-modal .modal-footer::after {
           display: none;
+        }
+        #edit-entry-modal .image-preview {
+          max-width: 200px;
+          max-height: 150px;
+          margin-top: 8px;
+          border-radius: 4px;
         }
       </style>
       <div

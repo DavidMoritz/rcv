@@ -337,7 +337,21 @@ export function initBallot(scope, http, sce, timeout) {
       hyperlink: decodeURIComponent($s.hyperlinks[idx] || ''),
       color: $s.entryColors[idx] || null
     };
+    if ($s.editingEntry.image) {
+      $s.imagePreview = { url: $s.editingEntry.image, status: 'loading' };
+    } else {
+      $s.imagePreview = {};
+    }
     $('#edit-entry-modal').modal('show');
+  };
+
+  $s.previewImageUrl = function () {
+    var url = ($s.editingEntry.image || '').trim();
+    if (url) {
+      $s.imagePreview = { url: url, status: 'loading' };
+    } else {
+      $s.imagePreview = {};
+    }
   };
 
   $s.saveEntry = function () {

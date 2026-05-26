@@ -299,6 +299,89 @@ describe('convertQuillHtml', () => {
   });
 });
 
+describe('editEntryModal image preview', () => {
+  var $s;
+
+  beforeEach(() => {
+    $.fn.modal = vi.fn();
+    $s = {
+      ballot: {},
+      errors: {},
+      success: {},
+      user: {},
+      entries: ['Alice', 'Bob'],
+      images: ['https://example.com/alice.png', ''],
+      hyperlinks: ['', ''],
+      entryColors: ['', ''],
+      $watch: vi.fn()
+    };
+    var $http = vi.fn();
+    $http.get = vi.fn();
+    initBallot($s, $http);
+  });
+
+  it('sets imagePreview when entry has an existing image', () => {
+    $s.editEntryModal(0);
+    expect($s.imagePreview).toEqual({ url: 'https://example.com/alice.png', status: 'loading' });
+  });
+
+  it('sets imagePreview to empty object when entry has no image', () => {
+    $s.editEntryModal(1);
+    expect($s.imagePreview).toEqual({});
+  });
+});
+
+describe('previewImageUrl', () => {
+  var $s;
+
+  beforeEach(() => {
+    $.fn.modal = vi.fn();
+    $s = {
+      ballot: {},
+      errors: {},
+      success: {},
+      user: {},
+      entries: ['Alice'],
+      images: [''],
+      hyperlinks: [''],
+      entryColors: [''],
+      $watch: vi.fn()
+    };
+    var $http = vi.fn();
+    $http.get = vi.fn();
+    initBallot($s, $http);
+    $s.editEntryModal(0);
+  });
+
+  it('sets imagePreview when a URL is entered', () => {
+    $s.editingEntry.image = 'https://example.com/photo.jpg';
+    $s.previewImageUrl();
+    expect($s.imagePreview).toEqual({ url: 'https://example.com/photo.jpg', status: 'loading' });
+  });
+
+  it('trims whitespace from the URL', () => {
+    $s.editingEntry.image = '  https://example.com/photo.jpg  ';
+    $s.previewImageUrl();
+    expect($s.imagePreview.url).toBe('https://example.com/photo.jpg');
+  });
+
+  it('clears imagePreview when URL is emptied', () => {
+    $s.editingEntry.image = 'https://example.com/photo.jpg';
+    $s.previewImageUrl();
+    expect($s.imagePreview.url).toBe('https://example.com/photo.jpg');
+
+    $s.editingEntry.image = '';
+    $s.previewImageUrl();
+    expect($s.imagePreview).toEqual({});
+  });
+
+  it('clears imagePreview when URL is only whitespace', () => {
+    $s.editingEntry.image = '   ';
+    $s.previewImageUrl();
+    expect($s.imagePreview).toEqual({});
+  });
+});
+
 describe('editCustomHtml', () => {
   var $s, $http, pastedHtml;
 
