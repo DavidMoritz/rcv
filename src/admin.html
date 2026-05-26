@@ -360,7 +360,7 @@
                             var elapsed = now - prev[keys[i] + 'Ts'];
                             showChange(elIds[i], stats[keys[i]], prev[keys[i]], formatTimeSince(elapsed));
                         }
-                        if (stats[keys[i]] !== prev[keys[i]]) {
+                        if (stats[keys[i]] !== prev[keys[i]] || !prev[keys[i] + 'Ts']) {
                             prev[keys[i] + 'Ts'] = now;
                         }
                         prev[keys[i]] = stats[keys[i]];
