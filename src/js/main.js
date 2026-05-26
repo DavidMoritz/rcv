@@ -381,6 +381,7 @@ mainApp.controller('MainCtrl', [
           $s.voteCutoffMoment = ballot.voteCutoff ? moment.tz(ballot.voteCutoff, 'Zulu') : null;
           if ($s.voteCutoffMoment) {
             var cutdownInterval = $interval(function () {
+              if (!$s.voteCutoffMoment) { $interval.cancel(cutdownInterval); return; }
               var secs = $s.voteCutoffMoment.diff(moment(), 'seconds');
               $s.cutoffSecondsLeft = secs;
               $s.cutoffMinutes = Math.floor(Math.max(0, secs) / 60);
