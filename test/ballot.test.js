@@ -313,16 +313,18 @@ describe('editEntryModal image preview', () => {
       images: ['https://example.com/alice.png', ''],
       hyperlinks: ['', ''],
       entryColors: ['', ''],
-      $watch: vi.fn()
+      $watch: vi.fn(),
+      $apply: vi.fn(function (fn) { fn(); })
     };
     var $http = vi.fn();
     $http.get = vi.fn();
     initBallot($s, $http);
   });
 
-  it('sets imagePreview when entry has an existing image', () => {
+  it('calls previewImageUrl when entry has an existing image', () => {
     $s.editEntryModal(0);
-    expect($s.imagePreview).toEqual({ url: 'https://example.com/alice.png', status: 'loading' });
+    expect($s.imagePreview.url).toBe('https://example.com/alice.png');
+    expect($s.imagePreview.status).toBe('loading');
   });
 
   it('sets imagePreview to empty object when entry has no image', () => {
@@ -345,7 +347,8 @@ describe('previewImageUrl', () => {
       images: [''],
       hyperlinks: [''],
       entryColors: [''],
-      $watch: vi.fn()
+      $watch: vi.fn(),
+      $apply: vi.fn(function (fn) { fn(); })
     };
     var $http = vi.fn();
     $http.get = vi.fn();
@@ -353,10 +356,11 @@ describe('previewImageUrl', () => {
     $s.editEntryModal(0);
   });
 
-  it('sets imagePreview when a URL is entered', () => {
+  it('sets imagePreview with loading status when a URL is entered', () => {
     $s.editingEntry.image = 'https://example.com/photo.jpg';
     $s.previewImageUrl();
-    expect($s.imagePreview).toEqual({ url: 'https://example.com/photo.jpg', status: 'loading' });
+    expect($s.imagePreview.url).toBe('https://example.com/photo.jpg');
+    expect($s.imagePreview.status).toBe('loading');
   });
 
   it('trims whitespace from the URL', () => {
