@@ -12,6 +12,10 @@
         .stat-box { background: #fff; border-radius: 4px; padding: 20px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center; }
         .stat-box h2 { margin: 0; font-size: 36px; color: #337ab7; }
         .stat-box p { margin: 5px 0 0; color: #777; }
+        .stat-change { font-size: 12px; min-height: 18px; }
+        .stat-change.positive { color: #5cb85c; }
+        .stat-change.negative { color: #d9534f; }
+        .stat-change.neutral { color: #999; }
         .table-container { background: #fff; border-radius: 4px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .table thead th { position: sticky; top: 0; background: #fff; z-index: 1; box-shadow: 0 1px 0 #ddd; }
         .search-bar { margin-bottom: 15px; }
@@ -64,24 +68,28 @@
                 <div class="stat-box">
                     <h2 id="statBallots">-</h2>
                     <p>Total Ballots</p>
+                    <p class="stat-change" id="changeBallots"></p>
                 </div>
             </div>
             <div class="col-sm-3">
                 <div class="stat-box">
                     <h2 id="statVotes">-</h2>
                     <p>Total Votes</p>
+                    <p class="stat-change" id="changeVotes"></p>
                 </div>
             </div>
             <div class="col-sm-3">
                 <div class="stat-box">
                     <h2 id="statUsers">-</h2>
                     <p>Total Users</p>
+                    <p class="stat-change" id="changeUsers"></p>
                 </div>
             </div>
             <div class="col-sm-3">
                 <div class="stat-box">
                     <h2 id="statEntries">-</h2>
                     <p>Total Entries</p>
+                    <p class="stat-change" id="changeEntries"></p>
                 </div>
             </div>
         </div>
@@ -308,13 +316,57 @@
         });
     }
 
+    function formatTimeSince(ms) {
+        var minutes = Math.floor(ms / 60000);
+        var hours = Math.floor(ms / 3600000);
+        var days = Math.floor(ms / 86400000);
+        var weeks = Math.floor(ms / 604800000);
+        var months = Math.floor(ms / 2592000000);
+        if (ms < 7200000) return minutes + (minutes === 1 ? ' minute' : ' minutes');
+        if (ms < 172800000) return hours + (hours === 1 ? ' hour' : ' hours');
+        if (ms < 1209600000) return days + (days === 1 ? ' day' : ' days');
+        if (ms < 5184000000) return weeks + (weeks === 1 ? ' week' : ' weeks');
+        return months + (months === 1 ? ' month' : ' months');
+    }
+
+    function showChange(elId, current, previous, timeSince) {
+        var el = document.getElementById(elId);
+        var diff = current - previous;
+        if (diff === 0) {
+            el.textContent = '0 in ' + timeSince;
+            el.className = 'stat-change neutral';
+        } else {
+            el.textContent = (diff > 0 ? '+' : '') + diff.toLocaleString() + ' in ' + timeSince;
+            el.className = 'stat-change ' + (diff > 0 ? 'positive' : 'negative');
+        }
+    }
+
     function loadStats() {
         apiCall('stats').then(function(res) {
             if (res.data) {
-                document.getElementById('statBallots').textContent = res.data.totalBallots.toLocaleString();
-                document.getElementById('statVotes').textContent = res.data.totalVotes.toLocaleString();
-                document.getElementById('statUsers').textContent = res.data.totalUsers.toLocaleString();
-                document.getElementById('statEntries').textContent = res.data.totalEntries.toLocaleString();
+                var stats = res.data;
+                document.getElementById('statBallots').textContent = stats.totalBallots.toLocaleString();
+                document.getElementById('statVotes').textContent = stats.totalVotes.toLocaleString();
+                document.getElementById('statUsers').textContent = stats.totalUsers.toLocaleString();
+                document.getElementById('statEntries').textContent = stats.totalEntries.toLocaleString();
+
+                var prev = JSON.parse(localStorage.getItem('adminStats') || 'null');
+                if (prev && prev.timestamp) {
+                    var elapsed = Date.now() - prev.timestamp;
+                    var timeSince = formatTimeSince(elapsed);
+                    showChange('changeBallots', stats.totalBallots, prev.totalBallots, timeSince);
+                    showChange('changeVotes', stats.totalVotes, prev.totalVotes, timeSince);
+                    showChange('changeUsers', stats.totalUsers, prev.totalUsers, timeSince);
+                    showChange('changeEntries', stats.totalEntries, prev.totalEntries, timeSince);
+                }
+
+                localStorage.setItem('adminStats', JSON.stringify({
+                    totalBallots: stats.totalBallots,
+                    totalVotes: stats.totalVotes,
+                    totalUsers: stats.totalUsers,
+                    totalEntries: stats.totalEntries,
+                    timestamp: Date.now()
+                }));
             }
         });
     }
