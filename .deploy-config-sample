@@ -7,3 +7,8 @@ SFTP_USER=your-username
 SFTP_REMOTE_PATH=~/www/your-site.com/public_html
 SFTP_KEY_PATH=~/.ssh/id_rsa
 SFTP_PORT=22
+
+# PayPal API (for donation check during deploy)
+# Get credentials at https://developer.paypal.com/dashboard/applications
+PAYPAL_CLIENT_ID=your-client-id
+PAYPAL_SECRET=your-secret

@@ -15,6 +15,96 @@ if [ "$SFTP_HOST" = "your-host.com" ] || [ -z "$SFTP_HOST" ]; then
     exit 1
 fi
 
+check_paypal_donations() {
+    # Skip if PayPal credentials aren't configured
+    if [ -z "$PAYPAL_CLIENT_ID" ] || [ "$PAYPAL_CLIENT_ID" = "your-client-id" ] || \
+       [ -z "$PAYPAL_SECRET" ] || [ "$PAYPAL_SECRET" = "your-secret" ]; then
+        return 0
+    fi
+
+    echo "Checking for new donations..."
+
+    LAST_CHECK_FILE="$(dirname "$0")/.paypal-last-check"
+
+    # Default to 30 days ago on first run
+    if [ -f "$LAST_CHECK_FILE" ]; then
+        SINCE=$(cat "$LAST_CHECK_FILE")
+    else
+        SINCE=$(date -u -v-30d '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date -u -d '30 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+    fi
+
+    NOW=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+
+    # Get OAuth token
+    TOKEN_RESPONSE=$(curl -s -X POST "https://api-m.paypal.com/v1/oauth2/token" \
+        -u "$PAYPAL_CLIENT_ID:$PAYPAL_SECRET" \
+        -d "grant_type=client_credentials" 2>/dev/null)
+
+    ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))" 2>/dev/null)
+
+    if [ -z "$ACCESS_TOKEN" ]; then
+        echo "  (Could not authenticate with PayPal — skipping)"
+        echo ""
+        return 0
+    fi
+
+    # Query transactions since last check
+    TXN_RESPONSE=$(curl -s -G "https://api-m.paypal.com/v1/reporting/transactions" \
+        --data-urlencode "start_date=$SINCE" \
+        --data-urlencode "end_date=$NOW" \
+        --data-urlencode "transaction_type=T0100" \
+        --data-urlencode "fields=transaction_info,payer_info" \
+        -H "Authorization: Bearer $ACCESS_TOKEN" \
+        -H "Content-Type: application/json" 2>/dev/null)
+
+    # Parse and display donations
+    python3 -c "
+import sys, json
+
+try:
+    data = json.loads(sys.stdin.read())
+except (json.JSONDecodeError, ValueError):
+    sys.exit(0)
+
+txns = data.get('transaction_details', [])
+
+# Filter to incoming payments (positive amounts, completed)
+donations = []
+for t in txns:
+    info = t.get('transaction_info', {})
+    payer = t.get('payer_info', {})
+    amount = info.get('transaction_amount', {})
+    value = float(amount.get('value', '0'))
+    status = info.get('transaction_status', '')
+    if value > 0 and status == 'S':
+        name = payer.get('payer_name', {})
+        full_name = '{} {}'.format(
+            name.get('given_name', ''),
+            name.get('surname', '')
+        ).strip() or 'Anonymous'
+        date = info.get('transaction_initiation_date', '')[:10]
+        currency = amount.get('currency_code', 'USD')
+        donations.append((date, full_name, currency, value))
+
+if not donations:
+    print('  No new donations.')
+    print()
+    sys.exit(0)
+
+print()
+print('  *** New Donations! ***')
+print('  ' + '-' * 45)
+for date, name, currency, value in donations:
+    print('  {}  {:<22s} {} {:>7.2f}'.format(date, name, currency, value))
+print('  ' + '-' * 45)
+print('  Total: {} donation(s)'.format(len(donations)))
+print()
+" <<< "$TXN_RESPONSE"
+
+    # Update last-check timestamp
+    echo "$NOW" > "$LAST_CHECK_FILE"
+}
+
 # Bump version number
 VERSION_FILE="$(dirname "$0")/.version"
 CURRENT_VERSION=$(cat "$VERSION_FILE")
@@ -79,6 +169,9 @@ elif echo "$API_RESPONSE" | grep -qi "SQLSTATE"; then
 else
     echo "Site is healthy (HTTP $HTTP_STATUS, API responding)."
 fi
+
+echo ""
+check_paypal_donations || true
 
 # Commit and push version bump
 echo "Committing version bump..."
