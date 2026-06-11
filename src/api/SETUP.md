@@ -15,6 +15,15 @@ The fastest way to set up your database is to run the production schema script:
 mysql -u root -p < src/api/setup-database-prod.sql
 ```
 
+The schema script is intended for a new local database. If you need to re-run it
+against an existing local setup, drop the database first. This deletes all local
+RCV data:
+
+```bash
+mysql -u root -p -e "DROP DATABASE IF EXISTS rcv_db;"
+mysql -u root -p < src/api/setup-database-prod.sql
+```
+
 This will:
 - Create the `rcv_db` database
 - Create the `rcv_user` with password `rcv_password`
@@ -78,16 +87,19 @@ mysql -u rcv_user -p'rcv_password' rcv_db -e "SHOW TABLES;"
 You should see:
 
 ```
-+------------------+
-| Tables_in_rcv_db |
-+------------------+
-| ballots          |
-| contributions    |
-| entries          |
-| random_codes     |
-| users            |
-| votes            |
-+------------------+
++-----------------------+
+| Tables_in_rcv_db      |
++-----------------------+
+| ballot_codes          |
+| ballots               |
+| contributions         |
+| entries               |
+| random_codes          |
+| users                 |
+| voter_group_fields    |
+| voter_group_options   |
+| votes                 |
++-----------------------+
 ```
 
 ## Create Config File

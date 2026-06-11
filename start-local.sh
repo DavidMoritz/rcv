@@ -6,7 +6,14 @@ set -e
 
 cd "$(dirname "$0")"
 
-MYSQL="/usr/local/mysql/bin/mysql"
+MYSQL="${MYSQL:-$(command -v mysql || true)}"
+if [ -z "$MYSQL" ] && [ -x "/usr/local/mysql/bin/mysql" ]; then
+  MYSQL="/usr/local/mysql/bin/mysql"
+fi
+if [ -z "$MYSQL" ]; then
+  echo "Could not find mysql. Install MySQL or set MYSQL=/path/to/mysql."
+  exit 1
+fi
 DB_USER="rcv_user"
 DB_PASS="rcv_password"
 DB_NAME="rcv_db"
