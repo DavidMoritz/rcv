@@ -1,4 +1,4 @@
-<div ng-show="activeLink == 'vote'" class="panel panel-default">
+<div ng-show="activeLink == 'vote'" class="panel panel-default" data-testid="vote-view">
   <div class="panel-body">
     <div ng-hide="candidates">
       <div class="row">
@@ -33,7 +33,7 @@
       ng-if="candidates && ballot.isSecure && !secureCodeValid"
       ng-hide="thanks || deviceAlreadyVoted"
     >
-      <h1>Ballot: {{ballot.name}}</h1>
+      <h1 data-testid="vote-ballot-title">Ballot: {{ballot.name}}</h1>
       <h3>Enter your voter code to proceed</h3>
       <form ng-submit="validateSecureCode()">
         <div class="form-group" style="max-width: 300px">
@@ -55,7 +55,7 @@
       ng-if="candidates && ballot.allowGrouping && !groupAnswersSubmitted && (!ballot.isSecure || secureCodeValid)"
       ng-hide="thanks || deviceAlreadyVoted"
     >
-      <h1>Ballot: {{ballot.name}}</h1>
+      <h1 data-testid="vote-ballot-title">Ballot: {{ballot.name}}</h1>
       <form ng-submit="submitGroupAnswers()">
         <div ng-hide="ballot.register == 2 || ballot.isSecure" style="margin-bottom: 15px">
           <label for="voter-name">Your Name<span ng-show="ballot.register == 1">*</span>:</label>
@@ -125,7 +125,7 @@
       ng-if="candidates && (!ballot.isSecure || secureCodeValid) && (!ballot.allowGrouping || groupAnswersSubmitted)"
       ng-hide="thanks || deviceAlreadyVoted"
     >
-      <h1>Ballot: {{ballot.name}}</h1>
+      <h1 data-testid="vote-ballot-title">Ballot: {{ballot.name}}</h1>
       <div
         ng-if="voteCutoffMoment && cutoffSecondsLeft > 0 && cutoffSecondsLeft <= 300"
         class="alert alert-warning"
@@ -197,6 +197,7 @@
               ng-repeat="item in candidates track by $index"
               data-id="{{item.id}}"
               class="candidate-item"
+              data-testid="vote-candidate"
               ng-style="item.color ? {'background-color': '#' + item.color} : {}"
             >
               <i ng-click="removeCandidate($index)" class="fa fa-trash remove-btn"></i>
@@ -214,6 +215,7 @@
             type="submit"
             ng-disabled="candidates.length === 0 || (voteCutoffMoment && cutoffSecondsLeft <= 0)"
             class="btn btn-primary clearfix"
+            data-testid="vote-submit"
           >
             Vote!
           </button>
@@ -222,11 +224,11 @@
       </div>
       <h4>Voting URL: {{origin}}/{{ballot.key}}</h4>
     </div>
-    <div ng-show="thanks">
-      <h1>Ballot: {{ballot.name}}</h1>
+    <div ng-show="thanks" data-testid="vote-thanks">
+      <h1 data-testid="vote-ballot-title">Ballot: {{ballot.name}}</h1>
       <h3>Thank you for voting!</h3>
       <h4 ng-if="resultsReady">
-        <a href="/results#{{shortcode}}">Click here to see the results</a>
+        <a href="/results#{{shortcode}}" data-testid="results-link">Click here to see the results</a>
       </h4>
       <h5 ng-if="ballot.isSecure && !resultsReady">
         Visit <a href="/results#{{shortcode}}">{{origin}}/results#{{ballot.key}}</a> after
@@ -246,7 +248,7 @@
       </p>
     </div>
     <div ng-show="deviceAlreadyVoted">
-      <h1>Ballot: {{ballot.name}}</h1>
+      <h1 data-testid="vote-ballot-title">Ballot: {{ballot.name}}</h1>
       <h3>This device has already voted on this ballot.</h3>
       <p>
         Each device is limited to one vote. If you believe this is an error, please contact the

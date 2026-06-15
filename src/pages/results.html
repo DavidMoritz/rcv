@@ -1,4 +1,4 @@
-      <div ng-show="activeLink == 'results'" class="panel panel-default">
+      <div ng-show="activeLink == 'results'" class="panel panel-default" data-testid="results-view">
         <div class="panel-body">
           <div ng-hide="final">
             <div class="row">
@@ -38,13 +38,14 @@
               </div>
             </div>
           </div>
-          <div ng-show="final">
+          <div ng-show="final" data-testid="results-final">
             <div ng-show="elected[0].image" class="pull-right">
               <img ng-src="{{elected[0].image}}" class="winner-image" />
             </div>
-            <h1>Results<span class="ballot-name"></span></h1>
+            <h1 data-testid="results-title">Results<span class="ballot-name"></span></h1>
             <h2 ng-show="elected.length == 1">
-              The winner<span ng-if="!voteClosed"> (so far)</span>: {{elected[0].name}}
+              The winner<span ng-if="!voteClosed"> (so far)</span>:
+              <span data-testid="results-winner-name">{{elected[0].name}}</span>
             </h2>
             <div ng-show="elected.length > 1">
               <h2>
