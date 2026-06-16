@@ -10,33 +10,38 @@ test('creates a ballot, casts a vote, and renders results', async ({ page }) => 
   const ballotName = `E2E Happy Path ${suffix}`;
 
   await page.goto('/create');
-  await expect(page.getByTestId('create-view')).toBeVisible();
+  const createView = page.getByTestId('create-view');
+  await expect(createView).toBeVisible();
 
-  await page.getByTestId('ballot-name-input').fill(ballotName);
-  await page.getByTestId('ballot-key-input').fill(shortcode);
-  await page.getByTestId('ballot-submit').click();
+  await createView.getByTestId('ballot-name-input').fill(ballotName);
+  await createView.getByTestId('ballot-key-input').fill(shortcode);
+  await createView.getByTestId('ballot-submit').click();
 
-  const entryInput = page.getByTestId('entry-input');
+  const entryInput = createView.getByTestId('entry-input');
   await expect(entryInput).toBeVisible();
   for (const entry of ['Ada', 'Grace', 'Katherine']) {
     await entryInput.fill(entry);
-    await page.getByTestId('entry-add').click();
+    await createView.getByTestId('entry-add').click();
   }
-  await expect(page.getByTestId('entry-list-item')).toHaveCount(3);
+  await expect(createView.getByTestId('entry-list-item')).toHaveCount(3);
 
-  await page.getByTestId('entries-submit').click();
-  await expect(page.getByTestId('ballot-created')).toBeVisible();
+  await createView.getByTestId('entries-submit').click();
+  await expect(createView.getByTestId('ballot-created')).toBeVisible();
 
-  await page.getByTestId('vote-self-link').click();
-  await expect(page.getByTestId('vote-ballot-title').filter({ visible: true })).toContainText(ballotName);
-  const visibleCandidates = page.getByTestId('vote-candidate').filter({ visible: true });
-  await expect(visibleCandidates).toHaveCount(3);
-  const firstChoice = (await visibleCandidates.first().textContent()).trim();
-  await page.getByTestId('vote-submit').click();
+  await createView.getByTestId('vote-self-link').click();
+  const voteView = page.getByTestId('vote-view');
+  const ballotForm = voteView.getByTestId('vote-ballot-form');
+  await expect(ballotForm.getByTestId('vote-ballot-title')).toContainText(ballotName);
+  const candidates = ballotForm.getByTestId('vote-candidate');
+  await expect(candidates).toHaveCount(3);
+  const firstChoice = await candidates.first().getByTestId('vote-candidate-name').innerText();
+  await ballotForm.getByTestId('vote-submit').click();
 
-  await expect(page.getByTestId('vote-thanks').filter({ visible: true })).toBeVisible();
-  await page.getByTestId('results-link').filter({ visible: true }).click();
+  await expect(voteView.getByTestId('vote-thanks')).toBeVisible();
+  await voteView.getByTestId('results-link').click();
 
-  await expect(page.getByTestId('results-final').filter({ visible: true })).toBeVisible();
-  await expect(page.getByTestId('results-winner-name').filter({ visible: true })).toHaveText(firstChoice);
+  const resultsView = page.getByTestId('results-view');
+  const finalResults = resultsView.getByTestId('results-final');
+  await expect(finalResults).toBeVisible();
+  await expect(finalResults.getByTestId('results-winner-name')).toHaveText(firstChoice);
 });

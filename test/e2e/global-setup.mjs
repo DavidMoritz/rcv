@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const readyFile = path.join(repoRoot, '.cache/e2e-db-ready');
+const readyFile = path.join(repoRoot, '.cache', `e2e-db-ready-${process.env.E2E_RUN_ID || 'default'}`);
 
 export default async function globalSetup() {
   await setupDatabase();

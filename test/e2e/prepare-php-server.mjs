@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const sourceDir = path.join(repoRoot, 'src');
-const targetDir = path.join(repoRoot, '.cache/e2e-php');
+const targetDir = path.resolve(repoRoot, process.env.E2E_PHP_ROOT || '.cache/e2e-php');
 const apiConfigPath = path.join(targetDir, 'api/config.php');
 
 const dbHost = process.env.E2E_DB_HOST || 'localhost';

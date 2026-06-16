@@ -35,3 +35,17 @@ E2E_DB_PORT=3306
 The PHP server uses an ignored temporary copy of `src/` at `.cache/e2e-php`
 with an E2E-only `api/config.php`, so your normal `src/api/config.php` is not
 read or modified.
+
+## CI and Parallel Runs
+
+`npm run test:e2e` generates a run-specific database name, PHP copy directory,
+and local ports by default. CI can set these values explicitly when a runner
+needs deterministic names:
+
+```bash
+E2E_RUN_ID=ci_123
+E2E_DB_NAME=rcv_e2e_ci_123
+E2E_PHP_PORT=2461
+E2E_VITE_PORT=2460
+E2E_PHP_ROOT=.cache/e2e-php-ci-123
+```
