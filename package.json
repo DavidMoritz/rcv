@@ -9,7 +9,10 @@
     "build:prod": "vite build && cp src/api/config.prod.php dist/api/config.php",
     "preview": "vite preview",
     "test": "vitest run && ./vendor/bin/phpunit",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:setup-db": "node test/e2e/db.mjs setup",
+    "test:e2e:teardown-db": "node test/e2e/db.mjs teardown"
   },
   "dependencies": {
     "angular": "^1.5.3",
@@ -26,6 +29,7 @@
     "ng-pattern-restrict": "^0.2.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "angular-mocks": "^1.8.3",
     "jsdom": "^29.1.0",
     "less": "^4.2.0",

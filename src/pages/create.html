@@ -1,4 +1,4 @@
-<div ng-show="activeLink == 'create'" class="panel panel-default">
+<div ng-show="activeLink == 'create'" class="panel panel-default" data-testid="create-view">
   <div class="panel-body">
     <h1><span ng-show="editBallot">Edit </span>Ballot: {{ballot.name}}</h1>
     <div ng-show="editBallot" class="form-group">
@@ -16,7 +16,12 @@
     >
       <div class="form-group">
         <label>Ballot Name</label>
-        <input name="name" ng-model="ballot.name" class="form-control" /><span
+        <input
+          name="name"
+          ng-model="ballot.name"
+          class="form-control"
+          data-testid="ballot-name-input"
+        /><span
           ng-show="errors.name"
           class="text-danger"
           >{{errors.name}}</span
@@ -33,6 +38,7 @@
             ng-change="checkAvailability()"
             maxlength="16"
             class="form-control"
+            data-testid="ballot-key-input"
           /><span class="input-group-btn">
             <button type="button" ng-click="generateRandomKey()" class="btn btn-primary">
               New Shortcode
@@ -524,7 +530,13 @@
           </div>
         </div>
       </div>
-      <input type="submit" value="Submit" ng-disabled="errors.key" class="btn btn-info" />
+      <input
+        type="submit"
+        value="Submit"
+        ng-disabled="errors.key"
+        class="btn btn-info"
+        data-testid="ballot-submit"
+      />
     </form>
     <div ng-show="entries &amp;&amp; !congrats &amp;&amp; !showGroupPage">
       <div ng-show="!editBallot || editBallot_Options == 'false'">
@@ -536,16 +548,22 @@
               ng-model="entryInput"
               ng-change="errorEntry = ''"
               class="form-control"
+              data-testid="entry-input"
             /><span ng-show="errorEntry">{{errorEntry}}</span>
           </div>
-          <button type="submit" class="btn btn-info">Add Entry</button>
-          <button type="button" ng-click="submitEntries()" class="btn btn-default">
+          <button type="submit" class="btn btn-info" data-testid="entry-add">Add Entry</button>
+          <button
+            type="button"
+            ng-click="submitEntries()"
+            class="btn btn-default"
+            data-testid="entries-submit"
+          >
             <span ng-show="ballot.allowGrouping">Next: Voter Prompts</span>
             <span ng-hide="ballot.allowGrouping">Submit All Entries</span>
           </button>
         </form>
         <h2>Current Entry List</h2>
-        <h5 ng-repeat="entry in entries track by $index">
+        <h5 ng-repeat="entry in entries track by $index" data-testid="entry-list-item">
           <div
             style="display: inline-block"
             ng-style="entryColors[$index] ? {'background-color': '#' + entryColors[$index], 'padding': '2px 6px', 'border-radius': '4px'} : {}"
@@ -717,13 +735,16 @@
         Submit Voter Prompts
       </button>
     </div>
-    <div ng-show="congrats">
+    <div ng-show="congrats" data-testid="ballot-created">
       <div class="row">
         <div class="col-sm-6">
           <h3>Thank you for creating a ballot!</h3>
           <h4>Send this url or QR code to people for voting:</h4>
           <h4 class="text-success">{{origin}}/{{ballot.key}}</h4>
-          <a ng-hide="ballot.isSecure" href="{{origin}}/vote#{{ballot.key}}"
+          <a
+            ng-hide="ballot.isSecure"
+            href="{{origin}}/vote#{{ballot.key}}"
+            data-testid="vote-self-link"
             >Click here to vote yourself</a
           >
           <a ng-show="ballot.isSecure" href="{{origin}}/profile"
