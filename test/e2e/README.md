@@ -1,7 +1,7 @@
 # Playwright E2E Tests
 
 These tests run against the real Vite app and real PHP API, but use an isolated
-MySQL database named `rcv_e2e` by default.
+MySQL database named `rcv_e2e_<runId>` by default.
 
 ## Commands
 
@@ -25,16 +25,20 @@ E2E_DB_ADMIN_USER=root
 E2E_DB_ADMIN_PASSWORD=
 E2E_DB_ADMIN_HOST=localhost
 E2E_DB_ADMIN_PORT=3306
-E2E_DB_NAME=rcv_e2e
+E2E_DB_NAME=rcv_e2e_<runId>
 E2E_DB_USER=rcv_e2e_user
 E2E_DB_PASSWORD=rcv_e2e_password
 E2E_DB_HOST=localhost
 E2E_DB_PORT=3306
 ```
 
-The PHP server uses an ignored temporary copy of `src/` at `.cache/e2e-php`
-with an E2E-only `api/config.php`, so your normal `src/api/config.php` is not
-read or modified.
+`npm run test:e2e` overrides `E2E_DB_NAME` with a run-specific value by
+default, while `npm run test:e2e:setup-db` and `npm run test:e2e:teardown-db`
+still use the config values you set here.
+
+The PHP server uses an ignored temporary copy of `src/` at
+`.cache/e2e-php-<runId>` with an E2E-only `api/config.php`, so your normal
+`src/api/config.php` is not read or modified.
 
 ## CI and Parallel Runs
 
