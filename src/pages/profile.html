@@ -1,10 +1,10 @@
-<div ng-show="activeLink == 'profile'" class="panel panel-default">
+<div ng-show="activeLink == 'profile'" class="panel panel-default" data-testid="profile-view">
   <div class="panel-body">
     <h1>Profile</h1>
-    <a href="#" ng-click="signOut()" class="pull-right btn btn-info" style="margin-top: -40px"
+    <a href="#" ng-click="signOut()" class="pull-right btn btn-info" style="margin-top: -40px" data-testid="sign-out"
       >Sign out</a
     >
-    <h3 ng-show="user.name">Name: {{user.name}}</h3>
+    <h3 ng-show="user.name" data-testid="profile-name">Name: {{user.name}}</h3>
     <div ng-show="!ballotsLoaded" style="margin-top: 20px; text-align: center">
       <i class="fa fa-spinner fa-spin fa-2x"></i>
     </div>
