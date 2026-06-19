@@ -32,6 +32,7 @@
     <div
       ng-if="candidates && ballot.isSecure && !secureCodeValid"
       ng-hide="thanks || deviceAlreadyVoted"
+      data-testid="secure-code-gate"
     >
       <h1 data-testid="vote-ballot-title">Ballot: {{ballot.name}}</h1>
       <h3>Enter your voter code to proceed</h3>
@@ -41,14 +42,15 @@
             type="text"
             ng-model="secure.voterCode"
             class="form-control voter-code"
+            data-testid="secure-code-input"
             placeholder="ABC123"
             maxlength="6"
             autocomplete="off"
             style="font-size: 24px; text-align: center; letter-spacing: 4px"
           />
-          <span ng-show="errors.secureCode" class="text-danger">{{errors.secureCode}}</span>
+          <span ng-show="errors.secureCode" class="text-danger" data-testid="secure-code-error">{{errors.secureCode}}</span>
         </div>
-        <button type="submit" class="btn btn-success">Submit Code</button>
+        <button type="submit" class="btn btn-success" data-testid="secure-code-submit">Submit Code</button>
       </form>
     </div>
     <div

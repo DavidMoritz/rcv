@@ -51,7 +51,7 @@
       <div class="form-group">
         <label
           >More Options
-          <input type="checkbox" ng-model="advancedOptions" />
+          <input type="checkbox" ng-model="advancedOptions" data-testid="advanced-options-toggle" />
         </label>
       </div>
       <div ng-show="advancedOptions" ng-init="activeSection=null">
@@ -296,7 +296,7 @@
           <div class="form-group" ng-show="user.name">
             <label>
               Secure Ballot (voters provided codes):
-              <input type="checkbox" ng-model="ballot.isSecure" ng-change="onSecureToggle()" />
+              <input type="checkbox" ng-model="ballot.isSecure" ng-change="onSecureToggle()" data-testid="secure-ballot-toggle" />
             </label>
             <small ng-show="ballot.isSecure" class="text-muted">
               Secure ballots use system-generated codes for verified voting.
@@ -310,6 +310,7 @@
               min="1"
               max="500"
               class="form-control"
+              data-testid="secure-code-count-input"
               style="max-width: 200px"
               placeholder="e.g. 25"
             /><small class="text-muted">more may be added at any time</small>
