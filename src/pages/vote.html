@@ -201,7 +201,11 @@
               data-testid="vote-candidate"
               ng-style="item.color ? {'background-color': '#' + item.color} : {}"
             >
-              <i ng-click="removeCandidate($index)" class="fa fa-trash remove-btn"></i>
+              <i
+                ng-click="removeCandidate($index)"
+                class="fa fa-trash remove-btn"
+                data-testid="vote-candidate-remove"
+              ></i>
               <img class="choice-image" src="{{item.image}}" ng-if="item.image" /><a
                 class="choice-hyperlink"
                 target="_blank"
@@ -220,7 +224,14 @@
           >
             Vote!
           </button>
-          <button type="button" ng-click="resetCandidates()" class="btn btn-default">Reset</button>
+          <button
+            type="button"
+            ng-click="resetCandidates()"
+            class="btn btn-default"
+            data-testid="vote-reset"
+          >
+            Reset
+          </button>
         </form>
       </div>
       <h4>Voting URL: {{origin}}/{{ballot.key}}</h4>
