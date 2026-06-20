@@ -9,6 +9,7 @@
     "build:prod": "vite build && cp src/api/config.prod.php dist/api/config.php",
     "preview": "vite preview",
     "test": "vitest run && ./vendor/bin/phpunit",
+    "test:api-contract": "vitest run --config vitest.contract.config.js",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:setup-db": "node test/e2e/db.mjs setup",

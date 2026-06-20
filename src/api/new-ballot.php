@@ -91,7 +91,7 @@ if ($isSecure && !empty($_POST['codeCount']))
 	$codeCount = min(intval($_POST['codeCount']), 500);
 
 if (empty($_POST['maxVotes']))
-	$maxVotes = "NULL";
+	$maxVotes = 0;
 else
 	$maxVotes = intval($_POST['maxVotes']);
 
@@ -125,7 +125,7 @@ if (!empty($errors)) {
 	$sth->bindValue(':hideNames', $hideNames, PDO::PARAM_INT);
 	$sth->bindValue(':hideDetails', $hideDetails, PDO::PARAM_INT);
 	$sth->bindValue(':showGraph', $showGraph, PDO::PARAM_INT);
-	$sth->bindValue(':maxVotes', $maxVotes, ($maxVotes === "NULL" ? PDO::PARAM_NULL : PDO::PARAM_INT));
+	$sth->bindValue(':maxVotes', $maxVotes, PDO::PARAM_INT);
 	$sth->bindValue(':kickbackUrl', $kickbackUrl, ($kickbackUrl === null ? PDO::PARAM_NULL : PDO::PARAM_STR));
 	$sth->bindValue(':iframeUrl', $iframeUrl, ($iframeUrl === null ? PDO::PARAM_NULL : PDO::PARAM_STR));
 	$sth->bindValue(':oneDeviceOneVote', $oneDeviceOneVote, PDO::PARAM_INT);

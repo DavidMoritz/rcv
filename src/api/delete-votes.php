@@ -5,7 +5,7 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 
 $ballotId = $_POST['id'];
 $createdBy = $_POST['createdBy'];
-$voteId = $_POST['voteId'];
+$voteId = $_POST['voteId'] ?? null;
 
 if(!empty($ballotId)) {
 	$query = "
