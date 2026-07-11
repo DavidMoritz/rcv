@@ -20,6 +20,7 @@
           name="name"
           ng-model="ballot.name"
           class="form-control"
+          maxlength="128"
           data-testid="ballot-name-input"
         /><span
           ng-show="errors.name"
@@ -556,6 +557,7 @@
             type="button"
             ng-click="submitEntries()"
             class="btn btn-default"
+            ng-disabled="entryInput.length"
             data-testid="entries-submit"
           >
             <span ng-show="ballot.allowGrouping">Next: Voter Prompts</span>

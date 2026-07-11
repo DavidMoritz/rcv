@@ -5,6 +5,9 @@
   #sortable {
     max-width: 92%;
   }
+  h1 {
+    font-size: 24px;
+  }
 }
 /* About page */
 .about-hero {
