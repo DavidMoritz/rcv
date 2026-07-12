@@ -374,6 +374,11 @@
             <label>
               Preserve candidate order for voters:
               <input type="checkbox" ng-model="ballot.orderedEntries" />
+              <i
+                class="fa fa-question-circle text-muted"
+                uib-tooltip="By default, candidates are shown in random order to each voter to reduce bias. Check this to show candidates in the order you entered them."
+                tooltip-placement="right"
+              ></i>
             </label>
           </div>
           <div class="form-group">
@@ -412,7 +417,6 @@
             <label>Tie-Break Method:</label>
             <div>
               <label
-                title="Randomly determine the order of candidates being eliminated"
                 class="radio-inline"
               >
                 <input
@@ -422,9 +426,13 @@
                   ng-model="ballot.tieBreak"
                   ng-disabled="ballot.isSecure"
                 />Random (official)
+                <i
+                  class="fa fa-question-circle text-muted"
+                  uib-tooltip="Tied candidates are eliminated randomly. This is the standard method in official RCV elections."
+                  tooltip-placement="right"
+                ></i>
               </label>
               <label
-                title="Observe the preference of secondary choices to determine"
                 class="radio-inline"
               >
                 <input
@@ -434,6 +442,11 @@
                   ng-model="ballot.tieBreak"
                   ng-disabled="ballot.isSecure"
                 />Weighted (factor in subsequent choices)
+                <i
+                  class="fa fa-question-circle text-muted"
+                  uib-tooltip="Tied candidates are compared by their voters' next-choice preferences to decide who is eliminated."
+                  tooltip-placement="right"
+                ></i>
               </label>
               <label
                 title="All candidates in a tie are simultaneously eliminated"
