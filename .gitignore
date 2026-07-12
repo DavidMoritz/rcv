@@ -29,6 +29,10 @@ composer.lock
 # PHPUnit
 .phpunit.result.cache
 
+# Playwright
+test-results/
+playwright-report/
+
 # OS / Editor Files
 .DS_Store
 Thumbs.db
