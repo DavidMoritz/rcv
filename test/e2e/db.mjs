@@ -66,6 +66,23 @@ async function schemaTablesSql() {
   return schema.slice(start);
 }
 
+function e2eSeedSql() {
+  // Secure-code input normalizes 0 -> o and 1 -> i, so avoid 0/1 here.
+  return `
+INSERT INTO random_codes (code) VALUES
+('ABC234'),
+('DEF456'),
+('GHI789'),
+('JKL234'),
+('MNO345'),
+('PQR678'),
+('STU923'),
+('VWX234'),
+('YZA567'),
+('BCD892');
+`;
+}
+
 export async function setupDatabase() {
   const dbName = quoteIdent(config.dbName);
   const tables = await schemaTablesSql();
@@ -77,6 +94,7 @@ GRANT ALL PRIVILEGES ON ${dbName}.* TO ${sqlString(config.appUser)}@${sqlString(
 FLUSH PRIVILEGES;
 USE ${dbName};
 ${tables}
+${e2eSeedSql()}
 `);
 }
 
