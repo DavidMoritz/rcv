@@ -1,7 +1,7 @@
 <?php
 require_once("config.php");
 
-$key = $_GET['key'];
+$key = $_GET['key'] ?? null;
 $edit = $_GET['edit'] ?? false;
 if(!empty($key)) {
 	$sth = $dbh->prepare("SET time_zone = '+0:00'");
