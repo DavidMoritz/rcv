@@ -59,4 +59,18 @@ class GetVotesTest extends ApiTestCase
         $this->assertIsArray($result['body']);
         $this->assertCount(2, $result['body']['votes']);
     }
+
+    public function testReturnsBordaActiveInBallot(): void
+    {
+        $key = 'borda-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key, 'bordaActive' => 1]);
+        $this->seedEntries($ballotId, ['Alice']);
+        $this->seedVote($ballotId, 'Alice', '1');
+
+        $result = $this->callApi('get-votes.php', [], ['key' => $key]);
+
+        $this->assertIsArray($result['body']);
+        $this->assertArrayHasKey('ballot', $result['body']);
+        $this->assertEquals(1, (int) $result['body']['ballot']['bordaActive']);
+    }
 }

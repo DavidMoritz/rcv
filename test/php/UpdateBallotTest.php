@@ -116,4 +116,28 @@ class UpdateBallotTest extends ApiTestCase
         $this->assertEquals(1, (int) $row['isSecure']);
         $this->assertEquals(1, (int) $row['allowCustom']);
     }
+
+    public function testUpdatesBordaActive(): void
+    {
+        $ballotId = $this->seedBallot(['createdBy' => 'alice']);
+
+        $this->callApi('update-ballot.php', $this->validUpdateData($ballotId, [
+            'bordaActive' => 1,
+        ]));
+
+        $sth = $this->db->prepare("SELECT bordaActive FROM ballots WHERE id = ?");
+        $sth->execute([$ballotId]);
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        $this->assertEquals(1, (int) $row['bordaActive']);
+    }
+
+    public function testBordaActiveDefaultsToZero(): void
+    {
+        $ballotId = $this->seedBallot(['createdBy' => 'alice']);
+
+        $sth = $this->db->prepare("SELECT bordaActive FROM ballots WHERE id = ?");
+        $sth->execute([$ballotId]);
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        $this->assertEquals(0, (int) $row['bordaActive']);
+    }
 }

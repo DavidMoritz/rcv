@@ -107,14 +107,15 @@ abstract class ApiTestCase extends TestCase
             'showGraph'      => 0,
             'graphUpdated'   => null,
             'allowGrouping'  => 0,
+            'bordaActive'    => 0,
             'allowCustom'    => 0,
             'iframeUrl'      => null,
         ];
         $data = array_merge($defaults, $overrides);
 
         $sth = $this->db->prepare("
-            INSERT INTO ballots (name, key, positions, createdBy, requireSignIn, maxVotes, tieBreak, voteCutoff, resultsRelease, timeCreated, register, oneDeviceOneVote, isSecure, showGraph, graphUpdated, allowGrouping, allowCustom, iframeUrl)
-            VALUES (:name, :key, :positions, :createdBy, :requireSignIn, :maxVotes, :tieBreak, :voteCutoff, :resultsRelease, :timeCreated, :register, :oneDeviceOneVote, :isSecure, :showGraph, :graphUpdated, :allowGrouping, :allowCustom, :iframeUrl)
+            INSERT INTO ballots (name, key, positions, createdBy, requireSignIn, maxVotes, tieBreak, voteCutoff, resultsRelease, timeCreated, register, oneDeviceOneVote, isSecure, showGraph, graphUpdated, allowGrouping, bordaActive, allowCustom, iframeUrl)
+            VALUES (:name, :key, :positions, :createdBy, :requireSignIn, :maxVotes, :tieBreak, :voteCutoff, :resultsRelease, :timeCreated, :register, :oneDeviceOneVote, :isSecure, :showGraph, :graphUpdated, :allowGrouping, :bordaActive, :allowCustom, :iframeUrl)
         ");
         $sth->execute([
             ':name'           => $data['name'],
@@ -133,6 +134,7 @@ abstract class ApiTestCase extends TestCase
             ':showGraph'      => $data['showGraph'],
             ':graphUpdated'   => $data['graphUpdated'],
             ':allowGrouping'  => $data['allowGrouping'],
+            ':bordaActive'    => $data['bordaActive'],
             ':allowCustom'    => $data['allowCustom'],
             ':iframeUrl'      => $data['iframeUrl'],
         ]);
