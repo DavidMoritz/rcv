@@ -336,7 +336,8 @@ hr {
   font-size: 18px;
   font-weight: 900;
   cursor: pointer;
-  margin-right: 4px;
+  margin-left: -6px;
+  margin-right: -2px;
   padding: 6px 10px 6px 2px;
 }
 .delete-vote-btn:hover {
