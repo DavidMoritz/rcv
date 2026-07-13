@@ -39,6 +39,7 @@ export function initAuth(scope, http, loc, resetNavFn) {
             name: resp.data[0].username,
             email: resp.data[0].email,
             image: resp.data[0].image,
+            clearance: resp.data[0].clearance || 0,
             rcvisInfo: resp.data[0].rcvisInfo ? JSON.parse(resp.data[0].rcvisInfo) : null
           };
           if ($s.claimBallotAfterRegister) {
@@ -58,6 +59,7 @@ export function initAuth(scope, http, loc, resetNavFn) {
           var cookieDays = $s.login.remember ? 30 : undefined;
           setCookie({ days: cookieDays, name: 'loginId', value: resp.data[0].id });
           setCookie({ days: cookieDays, name: 'loginName', value: resp.data[0].username });
+          setCookie({ days: cookieDays, name: 'loginClearance', value: resp.data[0].clearance || 0 });
         }
       },
       function () {
@@ -115,6 +117,7 @@ export function initAuth(scope, http, loc, resetNavFn) {
   $s.signOut = function () {
     setCookie({ name: 'loginId', value: '', days: -1 });
     setCookie({ name: 'loginName', value: '', days: -1 });
+    setCookie({ name: 'loginClearance', value: '', days: -1 });
     $s.user = {};
     resetNav();
     $s.navigate('home');

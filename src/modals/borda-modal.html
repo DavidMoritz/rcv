@@ -1,0 +1,64 @@
+<div class="modal" id="borda-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h2 class="modal-title">About Borda Count</h2>
+      </div>
+      <div class="modal-body">
+        <p>
+          The <strong>Borda count</strong> is a point-based voting method. Each voter ranks the
+          candidates, and points are awarded based on position:
+        </p>
+        <ul>
+          <li>1st place: <strong>{{ids.length - 1}}</strong> points</li>
+          <li>2nd place: <strong>{{ids.length - 2}}</strong> points</li>
+          <li ng-if="ids.length > 3">3rd place: <strong>{{ids.length - 3}}</strong> points</li>
+          <li>...and so on. Last place and unranked candidates receive 0 points.</li>
+        </ul>
+        <p>
+          The candidate with the <strong>most total points</strong> wins. Unlike standard ranked
+          choice voting (RCV), which eliminates candidates round by round, Borda rewards broad
+          support across all voters.
+        </p>
+        <p>
+          <strong>When Borda works well:</strong> Contests where voters genuinely like multiple
+          options such as chili cook-offs, movie night, or "best of" polls. Borda surfaces the
+          option with the broadest appeal.
+        </p>
+        <p>
+          <strong>When standard RCV is the better fit:</strong> Elections where voters have a clear
+          preference for one candidate over others, such as electing a new board member or vacation
+          destination. Standard RCV ensures the winner has true majority support.
+        </p>
+        <p ng-if="showGraph && bordaActive" class="text-muted">
+          <em
+            >Note: The RCVis graph is not available in Borda mode since Borda does not use
+            rounds.</em
+          >
+        </p>
+        <div ng-if="user.id == ballotCreatedBy || user.clearance >= 1">
+          <hr />
+          <p ng-if="!bordaSwitchDisabled">
+            <button class="btn btn-primary" ng-click="toggleBorda()" ng-disabled="bordaToggling">
+              <span ng-if="!bordaToggling"
+                >Switch to {{bordaActive ? 'RCV' : 'Borda'}} results</span
+              >
+              <span ng-if="bordaToggling"><i class="fa fa-spinner fa-spin"></i> Switching...</span>
+            </button>
+          </p>
+          <p ng-if="bordaSwitchDisabled" class="text-muted">
+            Switching is disabled because the results are currently public (no future results
+            release date set). To enable switching, edit the ballot and set a results release date
+            in the future.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

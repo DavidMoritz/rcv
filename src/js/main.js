@@ -7,7 +7,8 @@
  */
 
 import { getCookie, getDeviceToken } from './utils/cookies.js';
-import { trickVote } from './utils/helpers.js';
+import { trickVote, truncateName } from './utils/helpers.js';
+import { computeBorda } from './utils/borda.js';
 import mc from './utils/mc.js';
 import VoteFactory, { initScope } from './factories/vote-factory.js';
 import { initAuth } from './auth.js';
@@ -45,7 +46,8 @@ mainApp.run([
       setUser(
         {
           id: getCookie('loginId'),
-          name: getCookie('loginName')
+          name: getCookie('loginName'),
+          clearance: getCookie('loginClearance') || 0
         },
         'profile'
       );
@@ -300,6 +302,9 @@ mainApp.controller('MainCtrl', [
         $s.showText = false;
         $s.bodyText = '';
         $s.patchRcvis = false;
+        $s.bordaActive = false;
+        $s.bordaResults = null;
+        $s.bordaTeaser = null;
         $s.errors = {};
       }
     };
@@ -504,6 +509,7 @@ mainApp.controller('MainCtrl', [
         $s.ballotCreatedBy = createdBy;
         $s.ballotId = ballot.id;
         var loggedIn = $s.user.id == createdBy;
+        var canManageBorda = loggedIn || $s.user.clearance >= 1;
         if (resultsDate && resultsDate > now) {
           $s.errors.shortcode =
             'The ballot you selected will not have the results released until ' +
@@ -525,6 +531,8 @@ mainApp.controller('MainCtrl', [
         $s.rcvisSlug = ballot.rcvisSlug;
         $s.rcvisId = ballot.rcvisId;
         $s.showGraph = ballot.showGraph == '1';
+        $s.ballotName = ballot.ballotName;
+        $s.bordaActive = ballot.bordaActive == 1 || ballot.bordaActive == '1';
         $s.allowCustom = ballot.allowCustom;
         $s.tieBreak = ballot.tieBreak;
         $s.graphUpdated = ballot.graphUpdated;
@@ -744,6 +752,159 @@ mainApp.controller('MainCtrl', [
         $('.ballot-name').text(' for ' + ballot.ballotName);
         $s.runTheCode(loggedIn);
         $s.bodyText = $sce.trustAsHtml($s.outputstring);
+
+        // Borda count computation (uses original voteRows, not mutated $s.votes)
+        var bordaVotes = voteRows.map(function (row) {
+          return JSON.parse(row.voteIds);
+        });
+        $s.bordaResults = computeBorda(bordaVotes, $s.ids, $s.entryMap);
+        $s.bordaSwitchDisabled = !resultsDate || resultsDate <= now;
+
+        // Shared Borda bar helpers
+        var bordaN = $s.ids.length;
+        var rankColors = ['#1a5276', '#2980b9', '#5dade2', '#85c1e9', '#aed6f1'];
+        var rankColor = function (rank) { return rankColors[(rank - 1) % rankColors.length]; };
+        var ordinal = function (k) {
+          var s = ['th', 'st', 'nd', 'rd'];
+          var v = k % 100;
+          return k + (s[(v - 20) % 10] || s[v] || s[0]);
+        };
+        var buildBordaLegend = function () {
+          var h = '<div class="borda-legend">';
+          for (var r = 0; r < bordaN; r++) {
+            h += '<span><span class="borda-legend-swatch" style="background:' + rankColor(r + 1) + '"></span>' + ordinal(r + 1) + '</span>';
+          }
+          h += '</div>';
+          return h;
+        };
+        var buildBordaBarSegments = function (entry) {
+          var pts = entry.points || 1;
+          var h = '';
+          for (var rank = 1; rank <= bordaN; rank++) {
+            var count = entry.rankCounts[rank] || 0;
+            var contribution = count * (bordaN - rank);
+            if (contribution === 0) continue;
+            var widthPct = (contribution / pts * 100);
+            var segColor = rankColor(rank);
+            h += '<div class="borda-rank-seg" style="width:' + widthPct + '%;background:' + segColor + '" title="' + count + ' vote' + (count !== 1 ? 's' : '') + ' ranked ' + ordinal(rank) + ' (' + contribution + ' pts)"></div>';
+          }
+          return h;
+        };
+
+        // Build Borda top graph HTML (with void space background)
+        (function buildBordaTopGraph() {
+          var br = $s.bordaResults;
+          var maxPts = br.tally.length ? br.tally[0].points : 1;
+          var html = buildBordaLegend();
+          br.tally.forEach(function (entry) {
+            var barScale = maxPts > 0 ? (entry.points / maxPts * 100) : 0;
+            html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
+            html += '<span style="min-width:130px;text-align:right;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + _.escape(entry.name) + '">' + _.escape(entry.name) + '</span>';
+            html += '<div style="flex:1;background:#eee;border-radius:3px;height:22px">';
+            html += '<div class="borda-rank-bar" style="width:' + barScale + '%">';
+            html += buildBordaBarSegments(entry);
+            html += '</div></div>';
+            html += '<span style="min-width:80px;font-size:12px;color:#666">' + entry.points + ' pts (' + entry.percent + '%)</span>';
+            html += '</div>';
+          });
+          $s.bordaTopGraphHtml = $sce.trustAsHtml(html);
+        })();
+
+        // Build Borda detailed results HTML
+        (function buildBordaBody() {
+          var br = $s.bordaResults;
+          var totalVotes = bordaVotes.length;
+          var html = '<strong>Candidates: ' + $s.ids.length + ' | Votes: ' + totalVotes + '</strong><br>';
+
+          // Vote table
+          if (totalVotes < 100 || loggedIn) {
+            html += '<table class="table"><thead>Full votes</thead><tbody>';
+            bordaVotes.forEach(function (vote, idx) {
+              var dName = $s.voterNames[idx] || 'Vote ' + (idx + 1);
+              html += '<tr>';
+              html += '<th class="vote-pin-left">';
+              if (loggedIn && !$s.ballotIsSecure) {
+                html += '<span class="delete-vote-btn" data-delete-vote=' + $s.voterIds[idx] + '>&times;</span>';
+              }
+              if ($s.ballotIsSecure) {
+                html += '<span class="voter-code">' + _.escape(dName) + '</span>:</th>';
+              } else {
+                html += _.escape(dName) + ':</th>';
+              }
+              html += '<td class="vote-pin-first"><span class="next-vote">' +
+                (vote[0] ? ($s.entryMap[vote[0]] ? $s.entryMap[vote[0]].name : vote[0]) : '') +
+                '</span></td>';
+              html += '<td class="vote-mid-cell"><div class="vote-mid-scroll">';
+              for (var i = 1; i < vote.length; i++) {
+                if (i > 1) html += '<span class="vote-mid-sep">|</span>';
+                var name = $s.entryMap[vote[i]] ? $s.entryMap[vote[i]].name : vote[i];
+                html += '<span class="vote-mid-item">' + name + '</span>';
+              }
+              html += '</div></td></tr>';
+            });
+            html += '</tbody></table>';
+          }
+
+          // Per-candidate breakdown tables
+          var rankBgColors = ['#d4e6f1', '#d6eaf8', '#e0f0fa', '#ebf5fb', '#f2f9fd'];
+          var rankBgColor = function (rank) { return rankBgColors[(rank - 1) % rankBgColors.length]; };
+          br.tally.forEach(function (entry) {
+            html += '<h4 style="margin-top:18px;margin-bottom:6px">' + _.escape(entry.name) + '</h4>';
+            html += '<table class="table table-bordered table-condensed borda-breakdown">';
+            html += '<thead><tr><th>Rank</th><th>Votes</th><th>Value</th><th>Total</th></tr></thead><tbody>';
+            for (var rank = 1; rank <= bordaN; rank++) {
+              var count = entry.rankCounts[rank] || 0;
+              var value = bordaN - rank;
+              var total = count * value;
+              var bg = rankBgColor(rank);
+              html += '<tr style="background:' + bg + '">';
+              html += '<td>' + ordinal(rank) + '</td>';
+              html += '<td>' + count + '</td>';
+              html += '<td>' + value + '</td>';
+              html += '<td>' + total + '</td>';
+              html += '</tr>';
+            }
+            html += '</tbody>';
+            html += '<tfoot><tr style="font-weight:bold"><td colspan="3" style="text-align:right">Total Score</td><td>' + entry.points + '</td></tr></tfoot>';
+            html += '</table>';
+          });
+
+          // Legend + bars for detail view
+          html += buildBordaLegend();
+          var maxPts = br.tally.length ? br.tally[0].points : 1;
+          br.tally.forEach(function (entry) {
+            var barScale = maxPts > 0 ? (entry.points / maxPts * 100) : 0;
+            html += '<div style="display:flex;align-items:center;margin-bottom:6px">';
+            html += '<div style="width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + _.escape(entry.name) + '">' + _.escape(entry.name) + '</div>';
+            html += '<div style="flex:1"><div class="borda-rank-bar" style="width:' + barScale + '%">';
+            html += buildBordaBarSegments(entry);
+            html += '</div></div>';
+            html += '<div style="width:120px;flex-shrink:0;text-align:right;font-size:12px;padding-left:8px">' + entry.points + ' pts' + (entry.avgRank !== null ? ' (avg ' + entry.avgRank + ')' : '') + '</div>';
+            html += '</div>';
+          });
+
+          $s.bordaBodyText = $sce.trustAsHtml(html);
+        })();
+
+        // Build Borda teaser text
+        var buildBordaTeaser = function () {
+          if ($s.bordaActive) {
+            if (canManageBorda) {
+              return 'Currently showing Borda count results.';
+            } else {
+              return 'These results use the Borda counting method.';
+            }
+          } else {
+            if (canManageBorda && $s.bordaResults && $s.bordaResults.winner) {
+              var winnerName = truncateName($s.bordaResults.winner.name);
+              return 'Under Borda count, <strong>' + _.escape(winnerName) + '</strong> would win.';
+            }
+            return null;
+          }
+        };
+        var teaserText = buildBordaTeaser();
+        $s.bordaTeaser = teaserText ? $sce.trustAsHtml(teaserText) : null;
+
         $s.final = true;
 
         if ($s._autoShowDetails) {
@@ -754,6 +915,50 @@ mainApp.controller('MainCtrl', [
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           });
         }
+      });
+    };
+
+    $s.openBordaModal = function () {
+      $('#borda-modal').modal('show');
+    };
+
+    $s.toggleBorda = function () {
+      var newValue = $s.bordaActive ? 0 : 1;
+      $s.bordaToggling = true;
+      $http({
+        method: 'POST',
+        url: '/api/update-ballot.php',
+        data: {
+          id: $s.ballotId,
+          name: $s.ballotName,
+          positions: $s.seats,
+          key: $s.shortcode,
+          createdBy: $s.ballotCreatedBy,
+          bordaActive: newValue
+        }
+      }).then(function () {
+        $s.bordaActive = newValue === 1;
+        // Rebuild teaser
+        var teaserText;
+        if ($s.bordaActive) {
+          if ($s.user.id == $s.ballotCreatedBy || $s.user.clearance >= 1) {
+            teaserText = 'Currently showing Borda count results.';
+          } else {
+            teaserText = 'These results use the Borda counting method.';
+          }
+        } else {
+          if (($s.user.id == $s.ballotCreatedBy || $s.user.clearance >= 1) && $s.bordaResults && $s.bordaResults.winner) {
+            var winnerName = truncateName($s.bordaResults.winner.name);
+            teaserText = 'Under Borda count, <strong>' + _.escape(winnerName) + '</strong> would win.';
+          } else {
+            teaserText = null;
+          }
+        }
+        $s.bordaTeaser = teaserText ? $sce.trustAsHtml(teaserText) : null;
+        $s.bordaToggling = false;
+        $('#borda-modal').modal('hide');
+      }, function () {
+        $s.bordaToggling = false;
       });
     };
 
