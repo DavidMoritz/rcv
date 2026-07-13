@@ -46,8 +46,8 @@
           <img ng-src="{{elected[0].image}}" class="winner-image" />
         </div>
       </div>
-      <div ng-if="bordaActive && bordaResults.winner.image" class="pull-right">
-        <img ng-src="{{bordaResults.winner.image}}" class="winner-image" />
+      <div ng-if="bordaActive && bordaResults.tally[0].image" class="pull-right">
+        <img ng-src="{{bordaResults.tally[0].image}}" class="winner-image" />
       </div>
       <h1 data-testid="results-title">Results<span class="ballot-name"></span></h1>
       <div ng-if="!bordaActive">
@@ -63,9 +63,15 @@
         </div>
       </div>
       <div ng-if="bordaActive && bordaResults">
-        <h2>
+        <h2 ng-show="seats <= 1">
           Borda <span ng-if="bordaResults.tieBreakApplied">tie-break </span>winner<span ng-if="!voteClosed"> (so far)</span>: {{bordaResults.winner.name}}
         </h2>
+        <div ng-show="seats > 1">
+          <h2>The winners, in order of most points<span ng-if="!voteClosed"> (so far)</span>:</h2>
+          <ol>
+            <li ng-repeat="result in bordaResults.tally | limitTo:seats">{{result.name}}</li>
+          </ol>
+        </div>
         <div style="margin-top: 15px" ng-bind-html="bordaTopGraphHtml"></div>
       </div>
       <div ng-if="showGraph && !bordaActive">
