@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { trickVote, jsUcfirst, dataFromObj } from '@src/js/utils/helpers.js';
+import { trickVote, jsUcfirst, dataFromObj, truncateName } from '@src/js/utils/helpers.js';
 
 describe('trickVote', () => {
   it('equals "123456"', () => {
@@ -39,6 +39,37 @@ describe('dataFromObj', () => {
     var data = dataFromObj(obj);
     var file = data.get('jsonFile');
     expect(file).toBeInstanceOf(File);
+  });
+});
+
+describe('truncateName', () => {
+  it('returns short names unchanged', () => {
+    expect(truncateName('Alice')).toBe('Alice');
+  });
+
+  it('returns names at exactly 12 chars unchanged', () => {
+    expect(truncateName('Twelve Chars')).toBe('Twelve Chars');
+  });
+
+  it('truncates at first space at or after char 12', () => {
+    expect(truncateName('Alexander Hamilton Jr')).toBe('Alexander Hamilton\u2026');
+  });
+
+  it('hard-cuts single-word names longer than 18 chars', () => {
+    expect(truncateName('Superlongsinglenamehere')).toBe('Superlongsinglenamehere'.slice(0, 18) + '\u2026');
+  });
+
+  it('returns single-word names 13-18 chars unchanged', () => {
+    expect(truncateName('Thirteenchars')).toBe('Thirteenchars');
+  });
+
+  it('handles null/undefined gracefully', () => {
+    expect(truncateName(null)).toBe(null);
+    expect(truncateName(undefined)).toBe(undefined);
+  });
+
+  it('handles empty string', () => {
+    expect(truncateName('')).toBe('');
   });
 });
 

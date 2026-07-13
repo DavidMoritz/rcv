@@ -1,5 +1,15 @@
 export const trickVote = '123456';
 
+export function truncateName(name, minChar) {
+  minChar = minChar || 12;
+  if (!name || name.length <= minChar) return name;
+  var spaceIdx = name.indexOf(' ', minChar);
+  if (spaceIdx !== -1) {
+    return name.slice(0, spaceIdx) + '\u2026';
+  }
+  return name.length > 18 ? name.slice(0, 18) + '\u2026' : name;
+}
+
 export function jsUcfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
