@@ -33,7 +33,7 @@ CREATE TABLE `ballots` (
   `rcvisId` int DEFAULT NULL,
   `createdBy` varchar(64) NOT NULL DEFAULT 'guest',
   `requireSignIn` tinyint(1) NOT NULL DEFAULT 0,
-  `maxVotes` smallint NOT NULL DEFAULT 0,
+  `maxVotes` smallint NOT NULL DEFAULT 1,
   `hideNames` tinyint(1) NOT NULL DEFAULT '0',
   `hideDetails` tinyint(1) DEFAULT '0',
   `tieBreak` varchar(24) NOT NULL DEFAULT 'weighted',
