@@ -114,7 +114,7 @@ if (!empty($errors)) {
 	$sth = $dbh->prepare($query);
 	$sth->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
 	$sth->bindValue(':key', $_POST['key'], PDO::PARAM_STR);
-	$sth->bindValue(':positions', $_POST['positions'], PDO::PARAM_STR);
+	$sth->bindValue(':positions', $_POST['positions'], PDO::PARAM_INT);
 	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_STR);
 	$sth->bindValue(':resultsRelease', $sqlResultsRelease, ($sqlResultsRelease === null ? PDO::PARAM_NULL : PDO::PARAM_STR));
 	$sth->bindValue(':voteCutoff', $sqlVoteCutoff, ($sqlVoteCutoff === null ? PDO::PARAM_NULL : PDO::PARAM_STR));
