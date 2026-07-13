@@ -799,7 +799,7 @@ mainApp.controller('MainCtrl', [
           br.tally.forEach(function (entry) {
             var barScale = maxPts > 0 ? (entry.points / maxPts * 100) : 0;
             html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
-            html += '<span style="min-width:130px;max-width:200px;text-align:right;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + _.escape(entry.name) + '">' + _.escape(entry.name) + '</span>';
+            html += '<span style="width:150px;flex-shrink:0;text-align:right;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + _.escape(entry.name) + '">' + _.escape(entry.name) + '</span>';
             html += '<div style="flex:1;background:#eee;border-radius:3px;height:22px">';
             html += '<div class="borda-rank-bar" style="width:' + barScale + '%">';
             html += buildBordaBarSegments(entry);
