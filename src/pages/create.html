@@ -296,7 +296,7 @@
         <div class="options-section-body" ng-class="{'open': activeSection === 'voter'}">
           <div class="form-group" ng-show="user.name">
             <label>
-              Secure Ballot (voters provided codes):
+              Secure Ballot (voters provided with codes):
               <input type="checkbox" ng-model="ballot.isSecure" ng-change="onSecureToggle()" />
             </label>
             <small ng-show="ballot.isSecure" class="text-muted">
