@@ -12,7 +12,7 @@ if(!empty($key)) {
 		SELECT
 			id, name AS 'ballotName', positions, register, resultsRelease, voteCutoff,
 			hideNames, hideDetails, allowCustom, showGraph, tieBreak, graphUpdated,
-			isSecure, allowGrouping, createdBy, rcvisId, rcvisSlug
+			isSecure, allowGrouping, bordaActive, createdBy, rcvisId, rcvisSlug
 		FROM ballots
 		WHERE `key` = :key
 	";

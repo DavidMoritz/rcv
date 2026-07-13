@@ -50,6 +50,7 @@ CREATE TABLE `ballots` (
   `isSecure` tinyint(1) NOT NULL DEFAULT '0',
   `orderedEntries` tinyint(1) NOT NULL DEFAULT '0',
   `allowGrouping` tinyint(1) NOT NULL DEFAULT '0',
+  `bordaActive` tinyint(1) NOT NULL DEFAULT '0',
   `customHtml` mediumtext DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`)

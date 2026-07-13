@@ -25,8 +25,11 @@ if (empty($_POST['createdBy']))
 $setParts = array();
 $setParts[] = "name = :name";
 $setParts[] = "positions = :positions";
-$setParts[] = "resultsRelease = :resultsRelease";
-$setParts[] = "voteCutoff = :voteCutoff";
+if (array_key_exists('sqlResultsRelease', $_POST))
+	$setParts[] = "resultsRelease = :resultsRelease";
+
+if (array_key_exists('sqlVoteCutoff', $_POST))
+	$setParts[] = "voteCutoff = :voteCutoff";
 
 if (!empty($_POST['key']))
 	$setParts[] = "`key` = :key";
@@ -70,6 +73,9 @@ if (isset($_POST['orderedEntries']))
 if (isset($_POST['allowGrouping']))
 	$setParts[] = "allowGrouping = :allowGrouping";
 
+if (isset($_POST['bordaActive']))
+	$setParts[] = "bordaActive = :bordaActive";
+
 if (!empty($errors)) {
 	$data['errors']  = $errors;
 	$data['post'] = $_POST;
@@ -88,8 +94,11 @@ if (!empty($errors)) {
 	$sth = $dbh->prepare($query);
 	$sth->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
 	$sth->bindValue(':positions', $_POST['positions'], PDO::PARAM_INT);
-	$sth->bindValue(':resultsRelease', empty($_POST['sqlResultsRelease']) ? null : $_POST['sqlResultsRelease'], PDO::PARAM_STR);
-	$sth->bindValue(':voteCutoff', empty($_POST['sqlVoteCutoff']) ? null : $_POST['sqlVoteCutoff'], PDO::PARAM_STR);
+	if (array_key_exists('sqlResultsRelease', $_POST))
+		$sth->bindValue(':resultsRelease', empty($_POST['sqlResultsRelease']) ? null : $_POST['sqlResultsRelease'], PDO::PARAM_STR);
+
+	if (array_key_exists('sqlVoteCutoff', $_POST))
+		$sth->bindValue(':voteCutoff', empty($_POST['sqlVoteCutoff']) ? null : $_POST['sqlVoteCutoff'], PDO::PARAM_STR);
 
 	if (!empty($_POST['key']))
 		$sth->bindValue(':key', $_POST['key'], PDO::PARAM_STR);
@@ -132,6 +141,9 @@ if (!empty($errors)) {
 
 	if (isset($_POST['allowGrouping']))
 		$sth->bindValue(':allowGrouping', intval($_POST['allowGrouping']), PDO::PARAM_INT);
+
+	if (isset($_POST['bordaActive']))
+		$sth->bindValue(':bordaActive', intval($_POST['bordaActive']), PDO::PARAM_INT);
 
 	$sth->bindValue(':createdBy', $_POST['createdBy'], PDO::PARAM_STR);
 	$sth->bindValue(':id', $_POST['id'], PDO::PARAM_INT);

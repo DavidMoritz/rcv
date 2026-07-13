@@ -26,6 +26,7 @@ CREATE TABLE ballots (
   isSecure tinyint NOT NULL DEFAULT 0,
   orderedEntries tinyint NOT NULL DEFAULT 0,
   allowGrouping tinyint NOT NULL DEFAULT 0,
+  bordaActive tinyint NOT NULL DEFAULT 0,
   customHtml text DEFAULT NULL,
   UNIQUE (key)
 );
