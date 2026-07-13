@@ -1,164 +1,216 @@
-      <div ng-show="activeLink == 'results'" class="panel panel-default" data-testid="results-view">
-        <div class="panel-body">
-          <div ng-hide="final">
-            <div class="row">
-              <div class="col-sm-6">
-                <h1>Results</h1>
-                <form ng-submit="submitShortcode()">
-                  <div class="form-group">
-                    <label>Enter Ballot Shortcode</label>
-                    <input
-                      name="ballot"
-                      ng-model="shortcode"
-                      ng-change="errors.shortcode = null"
-                      class="form-control"
-                    /><span ng-show="errors.shortcode" class="text-danger"
-                      >{{errors.shortcode}}</span
+<div ng-show="activeLink == 'results'" class="panel panel-default" data-testid="results-view">
+  <div class="panel-body">
+    <div ng-hide="final">
+      <div class="row">
+        <div class="col-sm-6">
+          <h1>Results</h1>
+          <form ng-submit="submitShortcode()">
+            <div class="form-group">
+              <label>Enter Ballot Shortcode</label>
+              <input
+                name="ballot"
+                ng-model="shortcode"
+                ng-change="errors.shortcode = null"
+                class="form-control"
+              /><span ng-show="errors.shortcode" class="text-danger">{{errors.shortcode}}</span>
+            </div>
+            <input type="submit" value="Submit" class="btn btn-success" />
+          </form>
+          <p
+            ng-show="errors.shortcode && user.id && ballotCreatedBy == 'guest'"
+            class="text-muted"
+            style="margin-top: 20px"
+          >
+            This ballot was created as "guest".
+            <a href ng-click="claimBallot()">Click here</a> to take ownership and unlock editing.
+          </p>
+          <p ng-show="claimSuccess" class="text-success">
+            Ballot claimed! You can now edit it from your Profile tab.
+          </p>
+        </div>
+        <div class="col-sm-6 text-center">
+          <div class="wink-logo wink-logo-sm">
+            <div class="wink-can" role="img" aria-label="Ranked Choices mascot"></div>
+            <img
+              src="img/ranked-choices-words-only.png"
+              class="img img-responsive vote-button wink-words"
+              alt="rankedchoices.com"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div ng-show="final" data-testid="results-final">
+      <div ng-if="!bordaActive">
+        <div ng-show="elected[0].image" class="pull-right">
+          <img ng-src="{{elected[0].image}}" class="winner-image" />
+        </div>
+      </div>
+      <div ng-if="bordaActive && bordaResults.winner.image" class="pull-right">
+        <img ng-src="{{bordaResults.winner.image}}" class="winner-image" />
+      </div>
+      <h1 data-testid="results-title">Results<span class="ballot-name"></span></h1>
+      <div ng-if="!bordaActive">
+        <h2 ng-show="elected.length == 1">
+          The winner<span ng-if="!voteClosed"> (so far)</span>:
+          <span data-testid="results-winner-name">{{elected[0].name}}</span>
+        </h2>
+        <div ng-show="elected.length > 1">
+          <h2>The winners, in order of most votes<span ng-if="!voteClosed"> (so far)</span>:</h2>
+          <ol>
+            <li ng-repeat="result in elected">{{result.name}}</li>
+          </ol>
+        </div>
+      </div>
+      <div ng-if="bordaActive && bordaResults">
+        <h2>
+          Borda <span ng-if="bordaResults.tieBreakApplied">tie-break </span>winner<span ng-if="!voteClosed"> (so far)</span>: {{bordaResults.winner.name}}
+        </h2>
+        <div style="margin-top: 15px" ng-bind-html="bordaTopGraphHtml"></div>
+      </div>
+      <div ng-if="showGraph && !bordaActive">
+        <div
+          id="iframe-disclaimer"
+          ng-if="!rcvisSlug && !(user.id == ballotCreatedBy && user.rcvisInfo)"
+        >
+          <h3>A graph of the results will be made available after voting has been cut off.</h3>
+        </div>
+        <div ng-if="rcvisError" class="alert alert-danger" style="margin-top: 10px">
+          {{rcvisError}}
+        </div>
+        <div ng-show="user.id == ballotCreatedBy && user.rcvisInfo" style="margin: 15px 0">
+          <button
+            ng-click="updateGraphNow()"
+            ng-disabled="graphUpdating"
+            class="btn"
+            ng-class="{'btn-primary': !rcvisSlug, 'btn-warning': rcvisSlug && graphStatus.isStale, 'btn-default': rcvisSlug && !graphStatus.isStale}"
+          >
+            <i ng-show="graphUpdating" class="fa fa-spinner fa-spin"></i>
+            <span ng-if="!rcvisSlug && !graphUpdating">Generate Graph NOW</span>
+            <span ng-if="rcvisSlug && graphStatus.isStale && !graphUpdating"
+              >Update Graph NOW ({{graphStatus.votesSinceUpdate}} new votes)</span
+            >
+            <span ng-if="rcvisSlug && !graphStatus.isStale && !graphUpdating"
+              >Graph is current</span
+            >
+            <span ng-if="graphUpdating">Updating graph...</span>
+          </button>
+        </div>
+        <div id="iframe-house"></div>
+        <p
+          ng-show="rcvisSlug && graphUpdated"
+          class="text-muted"
+          style="font-size: 12px; margin-top: 5px"
+        >
+          Graph last updated {{graphUpdatedLocal}}
+        </p>
+      </div>
+      <div
+        ng-if="allowGrouping && resultGroupFields.length && !hidePromptResults && !bordaActive"
+        style="margin-top: 20px"
+      >
+        <div
+          ng-repeat="field in resultGroupFields"
+          ng-if="field.type !== 'text'"
+          style="margin-bottom: 15px"
+        >
+          <h4
+            class="pointer"
+            ng-click="field.expanded = !field.expanded"
+            style="margin-bottom: 8px; padding: 8px 12px; background: #f5f5f5; border-radius: 4px"
+          >
+            <i
+              class="fa"
+              ng-class="field.expanded ? 'fa-chevron-down' : 'fa-chevron-right'"
+              style="margin-right: 6px; width: 12px"
+            ></i>
+            {{displayTitle(field.title)}}
+          </h4>
+          <div ng-show="field.expanded">
+            <ul class="ballot-tabs" style="margin-bottom: 10px">
+              <li
+                ng-repeat="opt in field.options"
+                ng-class="{active: field.activeTab === opt.id}"
+                ng-click="field.activeTab = opt.id"
+                ng-init="$first && (field.activeTab = opt.id)"
+              >
+                {{opt.label}} ({{groupResults[field.id][opt.id].count || 0}})
+              </li>
+            </ul>
+            <div ng-repeat="opt in field.options" ng-show="field.activeTab === opt.id">
+              <div
+                ng-if="groupResults[field.id][opt.id].count === 0"
+                class="text-muted"
+                style="padding: 10px"
+              >
+                No votes in this group.
+              </div>
+              <div ng-if="groupResults[field.id][opt.id].count > 0">
+                <p ng-if="groupResults[field.id][opt.id].elected.length === 1">
+                  <strong>Winner: {{groupResults[field.id][opt.id].elected[0]}}</strong>
+                  <small class="text-muted">({{groupResults[field.id][opt.id].count}} votes)</small>
+                </p>
+                <p ng-if="groupResults[field.id][opt.id].elected.length > 1">
+                  <strong>Winners: {{groupResults[field.id][opt.id].elected.join(', ')}}</strong>
+                  <small class="text-muted">({{groupResults[field.id][opt.id].count}} votes)</small>
+                </p>
+                <div
+                  ng-repeat="row in groupResults[field.id][opt.id].finalTally"
+                  style="margin-bottom: 4px"
+                >
+                  <div style="display: flex; align-items: center; gap: 8px">
+                    <span style="min-width: 120px; text-align: right; font-size: 13px"
+                      >{{row.name}}</span
+                    >
+                    <div
+                      style="
+                        flex: 1;
+                        background: #eee;
+                        border-radius: 3px;
+                        height: 22px;
+                        position: relative;
+                      "
+                    >
+                      <div
+                        style="height: 100%; border-radius: 3px; min-width: 2px"
+                        ng-style="{'width': row.percent + '%', 'background-color': row.color ? '#' + row.color : '#337ab7'}"
+                      ></div>
+                    </div>
+                    <span style="min-width: 60px; font-size: 12px; color: #666"
+                      >{{row.votes}} ({{row.percent}}%)</span
                     >
                   </div>
-                  <input type="submit" value="Submit" class="btn btn-success" />
-                </form>
-                <p
-                  ng-show="errors.shortcode && user.id && ballotCreatedBy == 'guest'"
-                  class="text-muted"
-                  style="margin-top: 20px"
-                >
-                  This ballot was created as "guest".
-                  <a href ng-click="claimBallot()">Click here</a> to take ownership and unlock editing.
-                </p>
-                <p ng-show="claimSuccess" class="text-success">
-                  Ballot claimed! You can now edit it from your Profile tab.
-                </p>
-              </div>
-              <div class="col-sm-6 text-center">
-                <div class="wink-logo wink-logo-sm">
-                  <div class="wink-can" role="img" aria-label="Ranked Choices mascot"></div>
-                  <img src="img/ranked-choices-words-only.png" class="img img-responsive vote-button wink-words" alt="rankedchoices.com" />
                 </div>
               </div>
             </div>
           </div>
-          <div ng-show="final" data-testid="results-final">
-            <div ng-show="elected[0].image" class="pull-right">
-              <img ng-src="{{elected[0].image}}" class="winner-image" />
-            </div>
-            <h1 data-testid="results-title">Results<span class="ballot-name"></span></h1>
-            <h2 ng-show="elected.length == 1">
-              The winner<span ng-if="!voteClosed"> (so far)</span>:
-              <span data-testid="results-winner-name">{{elected[0].name}}</span>
-            </h2>
-            <div ng-show="elected.length > 1">
-              <h2>
-                The winners, in order of most votes<span ng-if="!voteClosed"> (so far)</span>:
-              </h2>
-              <ol>
-                <li ng-repeat="result in elected">{{result.name}}</li>
-              </ol>
-            </div>
-            <div ng-if="showGraph">
-              <div id="iframe-disclaimer" ng-if="!rcvisSlug && !(user.id == ballotCreatedBy && user.rcvisInfo)">
-                <h3>
-                  A graph of the results will be made available after voting has been cut off.
-                </h3>
-              </div>
-              <div ng-if="rcvisError" class="alert alert-danger" style="margin-top: 10px">
-                {{rcvisError}}
-              </div>
-              <div ng-show="user.id == ballotCreatedBy && user.rcvisInfo" style="margin: 15px 0">
-                <button
-                  ng-click="updateGraphNow()"
-                  ng-disabled="graphUpdating"
-                  class="btn"
-                  ng-class="{'btn-primary': !rcvisSlug, 'btn-warning': rcvisSlug && graphStatus.isStale, 'btn-default': rcvisSlug && !graphStatus.isStale}"
-                >
-                  <i ng-show="graphUpdating" class="fa fa-spinner fa-spin"></i>
-                  <span ng-if="!rcvisSlug && !graphUpdating">Generate Graph NOW</span>
-                  <span ng-if="rcvisSlug && graphStatus.isStale && !graphUpdating">Update Graph NOW ({{graphStatus.votesSinceUpdate}} new votes)</span>
-                  <span ng-if="rcvisSlug && !graphStatus.isStale && !graphUpdating">Graph is current</span>
-                  <span ng-if="graphUpdating">Updating graph...</span>
-                </button>
-              </div>
-              <div id="iframe-house"></div>
-              <p ng-show="rcvisSlug && graphUpdated" class="text-muted" style="font-size: 12px; margin-top: 5px">
-                Graph last updated {{graphUpdatedLocal}}
-              </p>
-            </div>
-            <div ng-if="allowGrouping && resultGroupFields.length && !hidePromptResults" style="margin-top: 20px">
-              <div ng-repeat="field in resultGroupFields" ng-if="field.type !== 'text'" style="margin-bottom: 15px">
-                <h4
-                  class="pointer"
-                  ng-click="field.expanded = !field.expanded"
-                  style="margin-bottom: 8px; padding: 8px 12px; background: #f5f5f5; border-radius: 4px"
-                >
-                  <i class="fa" ng-class="field.expanded ? 'fa-chevron-down' : 'fa-chevron-right'" style="margin-right: 6px; width: 12px"></i>
-                  {{displayTitle(field.title)}}
-                </h4>
-                <div ng-show="field.expanded">
-                  <ul class="ballot-tabs" style="margin-bottom: 10px">
-                    <li
-                      ng-repeat="opt in field.options"
-                      ng-class="{active: field.activeTab === opt.id}"
-                      ng-click="field.activeTab = opt.id"
-                      ng-init="$first && (field.activeTab = opt.id)"
-                    >
-                      {{opt.label}} ({{groupResults[field.id][opt.id].count || 0}})
-                    </li>
-                  </ul>
-                  <div ng-repeat="opt in field.options" ng-show="field.activeTab === opt.id">
-                    <div ng-if="groupResults[field.id][opt.id].count === 0" class="text-muted" style="padding: 10px">
-                      No votes in this group.
-                    </div>
-                    <div ng-if="groupResults[field.id][opt.id].count > 0">
-                      <p ng-if="groupResults[field.id][opt.id].elected.length === 1">
-                        <strong>Winner: {{groupResults[field.id][opt.id].elected[0]}}</strong>
-                        <small class="text-muted">({{groupResults[field.id][opt.id].count}} votes)</small>
-                      </p>
-                      <p ng-if="groupResults[field.id][opt.id].elected.length > 1">
-                        <strong>Winners: {{groupResults[field.id][opt.id].elected.join(', ')}}</strong>
-                        <small class="text-muted">({{groupResults[field.id][opt.id].count}} votes)</small>
-                      </p>
-                      <div ng-repeat="row in groupResults[field.id][opt.id].finalTally" style="margin-bottom: 4px">
-                        <div style="display: flex; align-items: center; gap: 8px">
-                          <span style="min-width: 120px; text-align: right; font-size: 13px">{{row.name}}</span>
-                          <div style="flex: 1; background: #eee; border-radius: 3px; height: 22px; position: relative">
-                            <div
-                              style="height: 100%; border-radius: 3px; min-width: 2px"
-                              ng-style="{'width': row.percent + '%', 'background-color': row.color ? '#' + row.color : '#337ab7'}"
-                            ></div>
-                          </div>
-                          <span style="min-width: 60px; font-size: 12px; color: #666">{{row.votes}} ({{row.percent}}%)</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div ng-show="!hideDetails">
-              <button ng-click="showText = !showText" class="btn btn-default">
-                {{!showText ? "Show" : "Hide"}} details
-              </button>
-            </div>
-            <h4>Voting URL: {{origin}}/{{shortcode}}</h4>
-            <p
-              ng-show="user.id && ballotCreatedBy == 'guest'"
-              class="text-muted"
-              style="margin-top: 20px"
-            >
-              This ballot was created as "guest".
-              <a href ng-click="claimBallot()">Click here</a> to take ownership and unlock editing.
-            </p>
-            <p ng-show="claimSuccess" class="text-success">
-              Ballot claimed! You can now edit it from your Profile tab.
-            </p>
-            <!--           <div ng-if="showGraphTease">
+        </div>
+      </div>
+      <div ng-show="!hideDetails">
+        <button ng-click="showText = !showText" class="btn btn-default">
+          {{!showText ? "Show" : "Hide"}} details
+        </button>
+      </div>
+      <h4>Voting URL: {{origin}}/{{shortcode}}</h4>
+      <p
+        ng-show="user.id && ballotCreatedBy == 'guest'"
+        class="text-muted"
+        style="margin-top: 20px"
+      >
+        This ballot was created as "guest".
+        <a href ng-click="claimBallot()">Click here</a> to take ownership and unlock editing.
+      </p>
+      <p ng-show="claimSuccess" class="text-success">
+        Ballot claimed! You can now edit it from your Profile tab.
+      </p>
+      <!--           <div ng-if="showGraphTease">
             <form ng-submit="submitCreateGraph()">
               <h4>
                 A visual display of the results, provided by <a href="https://rcvis.com/" target="_blank">RCVis</a>, is ready once voting is completed. <button type="submit" class="btn btn-primary clearfix">Graph!</button>
               </h4>
             </form>
           </div> -->
-            <span ng-show="errors.shortcode" class="text-danger">{{errors.shortcode}}</span>
-          </div>
-        </div>
-      </div>
+      <span ng-show="errors.shortcode" class="text-danger">{{errors.shortcode}}</span>
+    </div>
+  </div>
+</div>

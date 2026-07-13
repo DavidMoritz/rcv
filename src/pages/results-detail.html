@@ -2,5 +2,12 @@
         <div class="panel-heading">
           <h3 class="panel-title">Detailed Results</h3>
         </div>
-        <div ng-bind-html="bodyText" class="panel-body"></div>
+        <div class="panel-body">
+          <p ng-if="bordaTeaser" class="text-muted" style="margin-bottom: 10px">
+            <span ng-bind-html="bordaTeaser"></span>
+            <a href ng-click="openBordaModal()">Learn more</a>
+          </p>
+          <div ng-if="!bordaActive" ng-bind-html="bodyText"></div>
+          <div ng-if="bordaActive" ng-bind-html="bordaBodyText"></div>
+        </div>
       </div>

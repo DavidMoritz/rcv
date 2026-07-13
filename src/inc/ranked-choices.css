@@ -161,12 +161,12 @@
   .panel-body {
     overflow: hidden;
   }
-  .panel-body .table,
-  .panel-body .table tbody {
+  .panel-body .table:not(.borda-breakdown),
+  .panel-body .table:not(.borda-breakdown) tbody {
     display: block;
     width: 100%;
   }
-  .panel-body .table tbody tr {
+  .panel-body .table:not(.borda-breakdown) tbody tr {
     display: flex;
     flex-wrap: wrap;
     border-bottom: 1px solid #e8e8f0;
@@ -293,3 +293,10 @@
   max-height: 2000px;
   transition: max-height 1.5s ease-in;
 }
+/* Borda rank distribution bars */
+.borda-rank-bar { display: flex; height: 22px; border-radius: 3px; overflow: hidden; }
+.borda-rank-seg { min-width: 2px; }
+.borda-legend { display: flex; gap: 12px; margin-bottom: 8px; font-size: 12px; color: #666; }
+.borda-legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 3px; vertical-align: middle; }
+.borda-breakdown { max-width: 360px; }
+.borda-breakdown th, .borda-breakdown td { text-align: center; }
