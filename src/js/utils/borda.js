@@ -7,9 +7,11 @@
  * @param {Array<Array<number|string>>} votes - Each vote is an ordered array of entry IDs (most preferred first)
  * @param {Array<number|string>} ids - All candidate IDs that appear in the election
  * @param {Object} entryMap - Maps entry_id to { name, image, color, hyperlink }
+ * @param {number} [seats=1] - Number of positions to elect
  * @returns {{ winner: { id, name, image, color }, tally: Array<{ id, name, image, color, points, percent }> }}
  */
-export function computeBorda(votes, ids, entryMap) {
+export function computeBorda(votes, ids, entryMap, seats) {
+  seats = seats || 1;
   var n = ids.length;
   var pointTotals = {};
 
@@ -60,15 +62,32 @@ export function computeBorda(votes, ids, entryMap) {
     };
   });
 
+  // Sort by points only first
   tally.sort(function (a, b) {
-    if (b.points !== a.points) return b.points - a.points;
-    return b.firstPlaceVotes - a.firstPlaceVotes;
+    return b.points - a.points;
   });
 
+  // Apply first-place-votes tie-break only at the seat boundary
+  var tieBreakApplied = false;
+  var seatIdx = seats - 1; // index of last winner
+  if (tally.length > seats && tally[seatIdx].points === tally[seats].points) {
+    // There's a tie spanning the cutoff — re-sort tied group by first-place votes
+    var tiedPoints = tally[seatIdx].points;
+    var tieStart = seatIdx;
+    while (tieStart > 0 && tally[tieStart - 1].points === tiedPoints) tieStart--;
+    var tieEnd = seats;
+    while (tieEnd < tally.length - 1 && tally[tieEnd + 1].points === tiedPoints) tieEnd++;
+    var tiedGroup = tally.splice(tieStart, tieEnd - tieStart + 1);
+    tiedGroup.sort(function (a, b) {
+      return b.firstPlaceVotes - a.firstPlaceVotes;
+    });
+    Array.prototype.splice.apply(tally, [tieStart, 0].concat(tiedGroup));
+    if (tally[seatIdx].firstPlaceVotes > tally[seats].firstPlaceVotes) {
+      tieBreakApplied = true;
+    }
+  }
+
   var winner = tally[0] || null;
-  var tieBreakApplied = tally.length >= 2 &&
-    tally[0].points === tally[1].points &&
-    tally[0].firstPlaceVotes > tally[1].firstPlaceVotes;
 
   return { winner: winner, tally: tally, tieBreakApplied: tieBreakApplied };
 }

@@ -757,7 +757,7 @@ mainApp.controller('MainCtrl', [
         var bordaVotes = voteRows.map(function (row) {
           return JSON.parse(row.voteIds);
         });
-        $s.bordaResults = computeBorda(bordaVotes, $s.ids, $s.entryMap);
+        $s.bordaResults = computeBorda(bordaVotes, $s.ids, $s.entryMap, $s.seats);
         $s.bordaSwitchDisabled = !resultsDate || resultsDate <= now;
 
         // Shared Borda bar helpers

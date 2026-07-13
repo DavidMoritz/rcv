@@ -247,6 +247,40 @@ describe('computeBorda', () => {
     expect(alice.avgRank).toBe(1.5);
   });
 
+  it('does not tie-break above the seat boundary in multi-seat', () => {
+    var ids = [1, 2, 3, 4];
+    var entryMap = makeEntryMap(['Alice', 'Bob', 'Carol', 'Dave']);
+    // Alice=5pts 1 first, Bob=5pts 2 firsts, Carol=3pts, Dave=2pts
+    var votes = [
+      [1, 2, 3, 4], // Alice=3, Bob=2, Carol=1, Dave=0
+      [2, 1, 3, 4], // Bob=3, Alice=2, Carol=1, Dave=0
+      [2, 1, 4, 3], // Bob=3, Alice=2, Dave=1, Carol=0
+    ];
+    // Alice: 3+2+2=7, 1 first. Bob: 2+3+3=8, 2 firsts. Carol: 1+1+0=2. Dave: 0+0+1=1.
+    // seats=2: top 2 are Bob(8) and Alice(7) — no tie at boundary, no tieBreak
+    var result = computeBorda(votes, ids, entryMap, 2);
+    expect(result.tieBreakApplied).toBe(false);
+    expect(result.tally[0].name).toBe('Bob');
+    expect(result.tally[1].name).toBe('Alice');
+  });
+
+  it('applies tie-break only at seat boundary in multi-seat', () => {
+    // 3 candidates, seats=2, all tied at 2 points
+    // Alice: 1 first, Bob: 0 firsts, Carol: 1 first
+    // Tie-break at seat boundary pushes Bob (0 firsts) to last
+    var ids = [1, 2, 3];
+    var entryMap = makeEntryMap(['Alice', 'Bob', 'Carol']);
+    var votes = [
+      [1, 2, 3], // Alice=2, Bob=1, Carol=0
+      [3, 2, 1], // Carol=2, Bob=1, Alice=0
+    ];
+
+    var result = computeBorda(votes, ids, entryMap, 2);
+    expect(result.tieBreakApplied).toBe(true);
+    expect(result.tally[2].name).toBe('Bob');
+    expect(result.tally[2].firstPlaceVotes).toBe(0);
+  });
+
   it('preserves image and color in tally', () => {
     var ids = [1];
     var entryMap = { 1: { name: 'Alice', image: 'alice.png', color: 'ff0000', hyperlink: '' } };
