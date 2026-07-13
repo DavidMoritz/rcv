@@ -126,6 +126,7 @@
                                     <th title="Has Color">&#x1F3A8;</th>
                                     <th title="Has Hyperlink">&#x1F517;</th>
                                     <th title="Ordered Entries">&#x1F522;</th>
+                                    <th title="Borda Count">&#x1F9EE;</th>
                                     <th title="RCVis Graph">&#x1F4CA;</th>
                                     <th title="Kickback URL">&#x267B;</th>
                                     <th title="Iframe URL">&#x1F5D4;</th>
@@ -135,7 +136,7 @@
                                 </tr>
                             </thead>
                             <tbody id="recentActiveTableBody">
-                                <tr><td colspan="22" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="23" class="text-center">Loading...</td></tr>
                             </tbody>
                         </table>
                         <div class="text-center" id="loadMoreContainer" style="display:none">
@@ -169,6 +170,7 @@
                                     <th title="Has Color">&#x1F3A8;</th>
                                     <th title="Has Hyperlink">&#x1F517;</th>
                                     <th title="Ordered Entries">&#x1F522;</th>
+                                    <th title="Borda Count">&#x1F9EE;</th>
                                     <th title="RCVis Graph">&#x1F4CA;</th>
                                     <th title="Kickback URL">&#x267B;</th>
                                     <th title="Iframe URL">&#x1F5D4;</th>
@@ -178,7 +180,7 @@
                                 </tr>
                             </thead>
                             <tbody id="popularTableBody">
-                                <tr><td colspan="22" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="23" class="text-center">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -473,7 +475,7 @@
     function renderRankedBallots(tbodyId, ballots, showRank) {
         var tbody = document.getElementById(tbodyId);
         if (ballots.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="22" class="text-center text-muted">No ballots found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="23" class="text-center text-muted">No ballots found</td></tr>';
             return;
         }
         var green = '<span style="color:#5cb85c">\u2713</span>';
@@ -503,6 +505,7 @@
                 '<td>' + (b.hasColor > 0 ? orange : '') + '</td>' +
                 '<td>' + (b.hasHyperlink > 0 ? orange : '') + '</td>' +
                 '<td>' + (b.orderedEntries == 1 ? orange : '') + '</td>' +
+                '<td>' + (b.bordaActive == 1 ? blue : '') + '</td>' +
                 '<td>' + (b.showGraph == 1 ? orange : '') + '</td>' +
                 '<td>' + (b.kickbackUrl ? red : '') + '</td>' +
                 '<td>' + (b.iframeUrl ? red : '') + '</td>' +

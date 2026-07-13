@@ -235,7 +235,7 @@ switch ($action) {
             $stmt = $dbh->prepare("
                 SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
                     b.positions, b.register, b.voteCutoff, b.resultsRelease,
-                    b.oneDeviceOneVote, b.isSecure, b.allowCustom, b.allowGrouping, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph,
+                    b.oneDeviceOneVote, b.isSecure, b.allowCustom, b.allowGrouping, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph, b.bordaActive,
                     u.username as ownerName,
                     COUNT(v.vote_id) as voteCount,
                     COALESCE(ec.entryCount, 0) as entryCount,
@@ -272,7 +272,7 @@ switch ($action) {
                 $stmt = $dbh->prepare("
                     SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
                         b.positions, b.register, b.voteCutoff, b.resultsRelease,
-                        b.oneDeviceOneVote, b.isSecure, b.allowCustom, b.allowGrouping, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph,
+                        b.oneDeviceOneVote, b.isSecure, b.allowCustom, b.allowGrouping, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph, b.bordaActive,
                         u.username as ownerName,
                         COUNT(v.vote_id) as voteCount,
                         COALESCE(ec.entryCount, 0) as entryCount,
@@ -308,7 +308,7 @@ switch ($action) {
                 $stmt = $dbh->prepare("
                     SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
                         b.positions, b.register, b.voteCutoff, b.resultsRelease,
-                        b.oneDeviceOneVote, b.isSecure, b.allowCustom, b.allowGrouping, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph,
+                        b.oneDeviceOneVote, b.isSecure, b.allowCustom, b.allowGrouping, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph, b.bordaActive,
                         u.username as ownerName,
                         COUNT(v.vote_id) as voteCount,
                         COALESCE(ec.entryCount, 0) as entryCount,
@@ -337,7 +337,7 @@ switch ($action) {
             $stmt = $dbh->query("
                 SELECT b.id, b.name, b.`key`, b.createdBy, b.timeCreated,
                     b.positions, b.register, b.voteCutoff, b.resultsRelease,
-                    b.oneDeviceOneVote, b.isSecure, b.allowCustom, b.allowGrouping, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph,
+                    b.oneDeviceOneVote, b.isSecure, b.allowCustom, b.allowGrouping, b.orderedEntries, b.kickbackUrl, b.iframeUrl, b.showGraph, b.bordaActive,
                     u.username as ownerName,
                     COUNT(v.vote_id) as voteCount,
                     COALESCE(ec.entryCount, 0) as entryCount,
