@@ -508,8 +508,7 @@ mainApp.controller('MainCtrl', [
         var createdBy = ballot.createdBy;
         $s.ballotCreatedBy = createdBy;
         $s.ballotId = ballot.id;
-        var loggedIn = $s.user.id == createdBy;
-        var canManageBorda = loggedIn || $s.user.clearance >= 1;
+        var loggedIn = $s.user.id == createdBy || $s.user.clearance >= 1;
         if (resultsDate && resultsDate > now) {
           $s.errors.shortcode =
             'The ballot you selected will not have the results released until ' +
@@ -697,7 +696,7 @@ mainApp.controller('MainCtrl', [
 
         if ($s.showGraph) {
           var evaluateGraph = function () {
-            var isCreator = $s.user.id == createdBy;
+            var isCreator = $s.user.id == createdBy || $s.user.clearance >= 1;
             var creatorWithKey = isCreator && $s.user.rcvisInfo && $s.user.rcvisInfo.apiKey;
             var canSee = canSeeGraph({
               resultsDate: resultsDate,
@@ -889,13 +888,13 @@ mainApp.controller('MainCtrl', [
         // Build Borda teaser text
         var buildBordaTeaser = function () {
           if ($s.bordaActive) {
-            if (canManageBorda) {
+            if (loggedIn) {
               return 'Currently showing Borda count results.';
             } else {
               return 'These results use the Borda counting method.';
             }
           } else {
-            if (canManageBorda && $s.bordaResults && $s.bordaResults.winner) {
+            if (loggedIn && $s.bordaResults && $s.bordaResults.winner) {
               var winnerName = truncateName($s.bordaResults.winner.name);
               return 'Under Borda count, <strong>' + _.escape(winnerName) + '</strong> would win.';
             }

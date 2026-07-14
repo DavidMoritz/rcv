@@ -77,14 +77,14 @@
       <div ng-if="showGraph && !bordaActive">
         <div
           id="iframe-disclaimer"
-          ng-if="!rcvisSlug && !(user.id == ballotCreatedBy && user.rcvisInfo)"
+          ng-if="!rcvisSlug && !((user.id == ballotCreatedBy || user.clearance >= 1) && user.rcvisInfo)"
         >
           <h3>A graph of the results will be made available after voting has been cut off.</h3>
         </div>
         <div ng-if="rcvisError" class="alert alert-danger" style="margin-top: 10px">
           {{rcvisError}}
         </div>
-        <div ng-show="user.id == ballotCreatedBy && user.rcvisInfo" style="margin: 15px 0">
+        <div ng-show="(user.id == ballotCreatedBy || user.clearance >= 1) && user.rcvisInfo" style="margin: 15px 0">
           <button
             ng-click="updateGraphNow()"
             ng-disabled="graphUpdating"
