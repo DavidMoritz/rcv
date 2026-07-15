@@ -775,7 +775,7 @@ mainApp.controller('MainCtrl', [
         var buildBordaLegend = function () {
           var h = '<div class="borda-legend">';
           for (var r = 0; r < bordaN; r++) {
-            h += '<span><span class="borda-legend-swatch" style="background:' + rankColor(r + 1) + '"></span>' + ordinal(r + 1) + '</span>';
+            h += '<span><span class="borda-legend-swatch" style="background:' + rankColor(r + 1) + ';-webkit-print-color-adjust:exact;print-color-adjust:exact"></span>' + ordinal(r + 1) + '</span>';
           }
           h += '</div>';
           return h;
@@ -789,7 +789,7 @@ mainApp.controller('MainCtrl', [
             if (contribution === 0) continue;
             var widthPct = (contribution / pts * 100);
             var segColor = rankColor(rank);
-            h += '<div class="borda-rank-seg" style="width:' + widthPct + '%;background:' + segColor + '" title="' + count + ' vote' + (count !== 1 ? 's' : '') + ' ranked ' + ordinal(rank) + ' (' + contribution + ' pts)"></div>';
+            h += '<div class="borda-rank-seg" style="width:' + widthPct + '%;background:' + segColor + ';-webkit-print-color-adjust:exact;print-color-adjust:exact" title="' + count + ' vote' + (count !== 1 ? 's' : '') + ' ranked ' + ordinal(rank) + ' (' + contribution + ' pts)"></div>';
           }
           return h;
         };
@@ -803,7 +803,7 @@ mainApp.controller('MainCtrl', [
             var barScale = maxPts > 0 ? (entry.points / maxPts * 100) : 0;
             html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
             html += '<span style="width:150px;flex-shrink:0;text-align:right;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + _.escape(entry.name) + '">' + _.escape(entry.name) + '</span>';
-            html += '<div style="flex:1;background:#eee;border-radius:3px;height:22px">';
+            html += '<div style="flex:1;background:#eee;border-radius:3px;height:22px;-webkit-print-color-adjust:exact;print-color-adjust:exact">';
             html += '<div class="borda-rank-bar" style="width:' + barScale + '%">';
             html += buildBordaBarSegments(entry);
             html += '</div></div>';

@@ -316,5 +316,6 @@
   h4 { margin: 5px 0 !important; }
   .table { margin-bottom: 5px !important; }
   .table td, .table th { padding: 2px 5px !important; }
-  [data-testid="results-final"] * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  [data-testid="results-final"] * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  #detailed-results * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }
