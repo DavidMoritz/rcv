@@ -20,6 +20,7 @@ export default function VoteFactory() {
       this.wincount = 0;
       this.roundnum = 0;
       this.elected = [];
+      this.eliminatedIds = {};
       this.renewTally = {};
       this.jsonObj = {
         config: {
@@ -184,6 +185,7 @@ export default function VoteFactory() {
       _.each(this.ids, function (id, idx) {
         var name = $s.entryMap[id] ? $s.entryMap[id].name : id;
         displaySet.push({
+          id: id,
           name: name,
           vote: _.round(model.votenum[idx], 4)
         });
@@ -199,8 +201,9 @@ export default function VoteFactory() {
           if (cand.vote > 0) {
             model.jsonObj.results[model.roundnum - 1].tally[cand.name] = cand.vote + '';
           }
-
-          model.outputstring += cand.name + ' = ' + cand.vote + '<br>';
+          if (!model.eliminatedIds[cand.id]) {
+            model.outputstring += cand.name + ' = ' + cand.vote + '<br>';
+          }
         });
 
       // only one candidate left, they automatically win
@@ -317,6 +320,8 @@ export default function VoteFactory() {
           image: chosenEntry.image || ''
         };
         this.renewTally[chosenName] = this.quota;
+      } else {
+        this.eliminatedIds[chosenId] = true;
       }
       var model = this;
       _.each(this.votes, function (vote, index) {
