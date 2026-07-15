@@ -281,6 +281,56 @@ describe('computeBorda', () => {
     expect(result.tally[2].firstPlaceVotes).toBe(0);
   });
 
+  it('caps points at min(n, max(seats, 10)) for large fields', () => {
+    // 15 candidates, 1 seat → cap = min(15, max(1, 10)) = 10
+    // 1st place gets 9 pts, 10th gets 0, 11th+ gets 0
+    var ids = [];
+    var names = [];
+    for (var i = 1; i <= 15; i++) {
+      ids.push(i);
+      names.push('C' + i);
+    }
+    var entryMap = makeEntryMap(names);
+    // One vote ranking all 15
+    var vote = ids.slice(); // [1,2,...,15]
+    var result = computeBorda([vote], ids, entryMap, 1);
+
+    expect(result.cap).toBe(10);
+    expect(result.tally.find(t => t.name === 'C1').points).toBe(9);  // cap-1
+    expect(result.tally.find(t => t.name === 'C10').points).toBe(0); // cap-1-9 = 0
+    expect(result.tally.find(t => t.name === 'C11').points).toBe(0); // beyond cap
+    expect(result.tally.find(t => t.name === 'C15').points).toBe(0); // beyond cap
+  });
+
+  it('raises cap when seats exceed 10', () => {
+    // 20 candidates, 15 seats → cap = min(20, max(15, 10)) = 15
+    var ids = [];
+    var names = [];
+    for (var i = 1; i <= 20; i++) {
+      ids.push(i);
+      names.push('C' + i);
+    }
+    var entryMap = makeEntryMap(names);
+    var vote = ids.slice();
+    var result = computeBorda([vote], ids, entryMap, 15);
+
+    expect(result.cap).toBe(15);
+    expect(result.tally.find(t => t.name === 'C1').points).toBe(14);  // cap-1
+    expect(result.tally.find(t => t.name === 'C15').points).toBe(0);  // cap-1-14 = 0
+    expect(result.tally.find(t => t.name === 'C16').points).toBe(0);  // beyond cap
+  });
+
+  it('cap does not exceed number of candidates', () => {
+    // 5 candidates, 1 seat → cap = min(5, max(1, 10)) = 5
+    var ids = [1, 2, 3, 4, 5];
+    var entryMap = makeEntryMap(['A', 'B', 'C', 'D', 'E']);
+    var vote = [1, 2, 3, 4, 5];
+    var result = computeBorda([vote], ids, entryMap, 1);
+
+    expect(result.cap).toBe(5);
+    expect(result.tally.find(t => t.name === 'A').points).toBe(4); // normal n-1
+  });
+
   it('preserves image and color in tally', () => {
     var ids = [1];
     var entryMap = { 1: { name: 'Alice', image: 'alice.png', color: 'ff0000', hyperlink: '' } };

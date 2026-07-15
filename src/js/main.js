@@ -760,7 +760,7 @@ mainApp.controller('MainCtrl', [
         $s.bordaSwitchDisabled = $s.user.clearance >= 1 ? false : !resultsDate || resultsDate <= now;
 
         // Shared Borda bar helpers
-        var bordaN = $s.ids.length;
+        var bordaN = $s.bordaResults.cap;
         var rankColors = ['#1a5276', '#2980b9', '#5dade2', '#85c1e9', '#aed6f1'];
         var rankColor = function (rank) { return rankColors[(rank - 1) % rankColors.length]; };
         var ordinal = function (k) {
@@ -847,21 +847,45 @@ mainApp.controller('MainCtrl', [
           // Per-candidate breakdown tables
           var rankBgColors = ['#d4e6f1', '#d6eaf8', '#e0f0fa', '#ebf5fb', '#f2f9fd'];
           var rankBgColor = function (rank) { return rankBgColors[(rank - 1) % rankBgColors.length]; };
+          var totalRanks = $s.ids.length;
           br.tally.forEach(function (entry) {
             html += '<h4 style="margin-top:18px;margin-bottom:6px">' + _.escape(entry.name) + '</h4>';
             html += '<table class="table table-bordered table-condensed borda-breakdown">';
             html += '<thead><tr><th>Rank</th><th>Votes</th><th>Value</th><th>Total</th></tr></thead><tbody>';
+            // Show scored ranks (1 to cap), collapsing consecutive 0-total rows
+            var zeroStart = null;
             for (var rank = 1; rank <= bordaN; rank++) {
               var count = entry.rankCounts[rank] || 0;
               var value = bordaN - rank;
               var total = count * value;
-              var bg = rankBgColor(rank);
-              html += '<tr style="background:' + bg + '">';
-              html += '<td>' + ordinal(rank) + '</td>';
-              html += '<td>' + count + '</td>';
-              html += '<td>' + value + '</td>';
-              html += '<td>' + total + '</td>';
-              html += '</tr>';
+              if (total === 0) {
+                if (zeroStart === null) zeroStart = rank;
+              } else {
+                if (zeroStart !== null) {
+                  var zeroLabel = zeroStart === rank - 1 ? ordinal(zeroStart) : ordinal(zeroStart) + ' - ' + ordinal(rank - 1);
+                  html += '<tr style="background:' + rankBgColor(zeroStart) + ';color:#999"><td>' + zeroLabel + '</td><td>—</td><td>0</td><td>0</td></tr>';
+                  zeroStart = null;
+                }
+                html += '<tr style="background:' + rankBgColor(rank) + '">';
+                html += '<td>' + ordinal(rank) + '</td>';
+                html += '<td>' + count + '</td>';
+                html += '<td>' + value + '</td>';
+                html += '<td>' + total + '</td>';
+                html += '</tr>';
+              }
+            }
+            // Flush any trailing zero-value rows within the scored range
+            if (zeroStart !== null) {
+              var zeroLabel = zeroStart === bordaN ? ordinal(zeroStart) : ordinal(zeroStart) + ' - ' + ordinal(bordaN);
+              html += '<tr style="background:' + rankBgColor(zeroStart) + ';color:#999"><td>' + zeroLabel + '</td><td>—</td><td>0</td><td>0</td></tr>';
+            }
+            // Collapse unscored ranks beyond the cap
+            if (bordaN < totalRanks) {
+              var unscoredVotes = 0;
+              for (var r = bordaN + 1; r <= totalRanks; r++) {
+                unscoredVotes += entry.rankCounts[r] || 0;
+              }
+              html += '<tr style="background:#f5f5f5;color:#999"><td>Unscored</td><td>' + (unscoredVotes || '—') + '</td><td>0</td><td>0</td></tr>';
             }
             html += '</tbody>';
             html += '<tfoot><tr style="font-weight:bold"><td colspan="3" style="text-align:right">Total Score</td><td>' + entry.points + '</td></tr></tfoot>';

@@ -13,10 +13,11 @@
           candidates, and points are awarded based on position:
         </p>
         <ul>
-          <li>1st place: <strong>{{ids.length - 1}}</strong> points</li>
-          <li>2nd place: <strong>{{ids.length - 2}}</strong> points</li>
-          <li ng-if="ids.length > 3">3rd place: <strong>{{ids.length - 3}}</strong> points</li>
-          <li>...and so on. Last place and unranked candidates receive 0 points.</li>
+          <li>1st place: <strong>{{bordaResults.cap - 1}}</strong> points</li>
+          <li>2nd place: <strong>{{bordaResults.cap - 2}}</strong> points</li>
+          <li ng-if="bordaResults.cap > 3">3rd place: <strong>{{bordaResults.cap - 3}}</strong> points</li>
+          <li ng-if="bordaResults.cap < ids.length">...and so on down to 0. Ranks beyond {{bordaResults.cap}} are unscored.</li>
+          <li ng-if="bordaResults.cap >= ids.length">...and so on. Last place and unranked candidates receive 0 points.</li>
         </ul>
         <p>
           The candidate with the <strong>most total points</strong> wins. Unlike standard ranked

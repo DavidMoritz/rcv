@@ -1,18 +1,21 @@
 /**
  * Borda count calculation.
  *
- * Awards (n-1) points for 1st place, (n-2) for 2nd, etc.
- * Unranked candidates receive 0 points.
+ * Awards (cap-1) points for 1st place, (cap-2) for 2nd, etc.
+ * Cap = min(n_candidates, max(seats, 10)) — prevents low-ranked
+ * candidates from accumulating meaningless points in large fields.
+ * Unranked candidates and ranks beyond the cap receive 0 points.
  *
  * @param {Array<Array<number|string>>} votes - Each vote is an ordered array of entry IDs (most preferred first)
  * @param {Array<number|string>} ids - All candidate IDs that appear in the election
  * @param {Object} entryMap - Maps entry_id to { name, image, color, hyperlink }
  * @param {number} [seats=1] - Number of positions to elect
- * @returns {{ winner: { id, name, image, color }, tally: Array<{ id, name, image, color, points, percent }> }}
+ * @returns {{ winner: { id, name, image, color }, tally: Array<{ id, name, image, color, points, percent }>, cap: number }}
  */
 export function computeBorda(votes, ids, entryMap, seats) {
   seats = seats || 1;
   var n = ids.length;
+  var cap = Math.min(n, Math.max(seats, 10));
   var pointTotals = {};
 
   ids.forEach(function (id) {
@@ -29,7 +32,8 @@ export function computeBorda(votes, ids, entryMap, seats) {
   votes.forEach(function (vote) {
     vote.forEach(function (id, rank) {
       if (pointTotals.hasOwnProperty(id)) {
-        pointTotals[id] += (n - 1 - rank);
+        var pts = Math.max(0, cap - 1 - rank);
+        pointTotals[id] += pts;
         rankCounts[id][rank + 1] = (rankCounts[id][rank + 1] || 0) + 1;
       }
     });
@@ -38,7 +42,7 @@ export function computeBorda(votes, ids, entryMap, seats) {
     }
   });
 
-  var maxPoints = votes.length * (n - 1);
+  var maxPoints = votes.length * (cap - 1);
   var tally = ids.map(function (id) {
     var entry = entryMap[id] || { name: String(id) };
     var points = pointTotals[id];
@@ -89,5 +93,5 @@ export function computeBorda(votes, ids, entryMap, seats) {
 
   var winner = tally[0] || null;
 
-  return { winner: winner, tally: tally, tieBreakApplied: tieBreakApplied };
+  return { winner: winner, tally: tally, tieBreakApplied: tieBreakApplied, cap: cap };
 }

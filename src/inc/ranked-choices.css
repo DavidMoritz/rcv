@@ -1,3 +1,4 @@
+.tooltip-inner { min-width: 300px; }
 #sortable .candidate-item {
   background: #eee;
 }
@@ -296,7 +297,8 @@
 /* Borda rank distribution bars */
 .borda-rank-bar { display: flex; height: 22px; border-radius: 3px; overflow: hidden; }
 .borda-rank-seg { min-width: 2px; }
-.borda-legend { display: flex; gap: 12px; margin-bottom: 8px; font-size: 12px; color: #666; }
+.borda-legend { display: flex; gap: 12px; margin-bottom: 8px; font-size: 12px; color: #666; overflow: hidden; flex-wrap: nowrap; }
 .borda-legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 3px; vertical-align: middle; }
 .borda-breakdown { max-width: 360px; }
 .borda-breakdown th, .borda-breakdown td { text-align: center; }
+.borda-breakdown th:first-child, .borda-breakdown td:first-child { min-width: 78px; }
