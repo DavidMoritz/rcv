@@ -898,7 +898,8 @@ mainApp.controller('MainCtrl', [
             html += '</div>';
           });
 
-          // Legend + bars for detail view
+          // Legend + bars for detail view (hidden in print — redundant with top graph)
+          html += '<div class="no-print">';
           html += buildBordaLegend();
           var maxPts = br.tally.length ? br.tally[0].points : 1;
           br.tally.forEach(function (entry) {
@@ -911,6 +912,7 @@ mainApp.controller('MainCtrl', [
             html += '<div style="width:120px;flex-shrink:0;text-align:right;font-size:12px;padding-left:8px">' + entry.points + ' pts' + (entry.avgRank !== null ? ' (avg ' + entry.avgRank + ')' : '') + '</div>';
             html += '</div>';
           });
+          html += '</div>';
 
           $s.bordaBodyText = $sce.trustAsHtml(html);
         })();
