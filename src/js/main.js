@@ -853,6 +853,7 @@ mainApp.controller('MainCtrl', [
           var rankBgColor = function (rank) { return rankBgColors[(rank - 1) % rankBgColors.length]; };
           var totalRanks = $s.ids.length;
           br.tally.forEach(function (entry) {
+            html += '<div class="print-together">';
             html += '<h4 style="margin-top:18px;margin-bottom:6px">' + _.escape(entry.name) + '</h4>';
             html += '<table class="table table-bordered table-condensed borda-breakdown">';
             html += '<thead><tr><th>Rank</th><th>Votes</th><th>Value</th><th>Total</th></tr></thead><tbody>';
@@ -894,6 +895,7 @@ mainApp.controller('MainCtrl', [
             html += '</tbody>';
             html += '<tfoot><tr style="font-weight:bold"><td colspan="3" style="text-align:right">Total Score</td><td>' + entry.points + '</td></tr></tfoot>';
             html += '</table>';
+            html += '</div>';
           });
 
           // Legend + bars for detail view
