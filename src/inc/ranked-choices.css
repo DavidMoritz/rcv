@@ -306,7 +306,15 @@
 /* Print styles */
 @media print {
   nav, footer, .no-print, .delete-vote-btn { display: none !important; }
-  .panel { border: none !important; box-shadow: none !important; }
+  .panel { border: none !important; box-shadow: none !important; margin: 0 !important; }
   .panel-body { padding: 0 !important; }
+  .panel-heading { padding: 4px 0 !important; }
+  .container { padding: 0 !important; margin: 0 !important; width: 100% !important; }
+  body { margin: 0 !important; padding: 0 !important; }
+  h1 { margin: 5px 0 !important; }
+  h2 { margin: 5px 0 !important; }
+  h4 { margin: 5px 0 !important; }
+  .table { margin-bottom: 5px !important; }
+  .table td, .table th { padding: 2px 5px !important; }
   [data-testid="results-final"] * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
