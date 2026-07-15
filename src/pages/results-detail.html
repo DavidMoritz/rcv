@@ -5,7 +5,7 @@
         <div class="panel-body">
           <p ng-if="bordaTeaser" class="text-muted" style="margin-bottom: 10px">
             <span ng-bind-html="bordaTeaser"></span>
-            <a href ng-click="openBordaModal()">Learn more</a>
+            <a href ng-click="openBordaModal()" class="no-print">Learn more</a>
           </p>
           <div ng-if="!bordaActive" ng-bind-html="bodyText"></div>
           <div ng-if="bordaActive" ng-bind-html="bordaBodyText"></div>

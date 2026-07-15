@@ -305,8 +305,8 @@
 
 /* Print styles */
 @media print {
-  nav, footer, .no-print { display: none !important; }
+  nav, footer, .no-print, .delete-vote-btn { display: none !important; }
   .panel { border: none !important; box-shadow: none !important; }
   .panel-body { padding: 0 !important; }
-  .borda-rank-bar, .borda-rank-seg, .borda-legend-swatch { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  [data-testid="results-final"] * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
