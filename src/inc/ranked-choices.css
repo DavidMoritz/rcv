@@ -319,4 +319,10 @@
   [data-testid="results-final"] * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   #detailed-results * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .print-together { break-inside: avoid; }
+  #iframe-house { break-inside: avoid; }
+  #iframe-house iframe {
+    transform: scale(0.75);
+    transform-origin: top left;
+    width: 133% !important;
+  }
 }
