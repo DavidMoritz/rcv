@@ -470,6 +470,10 @@ mainApp.controller('MainCtrl', [
       });
     };
 
+    $s.printResults = function () {
+      window.print();
+    };
+
     $s.updateGraphNow = function () {
       $s.graphUpdating = true;
       $s.patchRcvis = true;

@@ -196,6 +196,9 @@
         <button ng-click="showText = !showText" class="btn btn-default">
           {{!showText ? "Show" : "Hide"}} details
         </button>
+        <button ng-click="printResults()" class="btn btn-default no-print" style="margin-left: 8px">
+          <i class="fa fa-print"></i> Print
+        </button>
       </div>
       <h4>Voting URL: {{origin}}/{{shortcode}}</h4>
       <p

@@ -302,3 +302,11 @@
 .borda-breakdown { max-width: 360px; }
 .borda-breakdown th, .borda-breakdown td { text-align: center; }
 .borda-breakdown th:first-child, .borda-breakdown td:first-child { min-width: 78px; }
+
+/* Print styles */
+@media print {
+  nav, footer, .no-print { display: none !important; }
+  .panel { border: none !important; box-shadow: none !important; }
+  .panel-body { padding: 0 !important; }
+  .borda-rank-bar, .borda-rank-seg, .borda-legend-swatch { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
