@@ -1,8 +1,8 @@
 # Expo Migration RFC
 
-- Status: Accepted for Phase 0
+- Status: Proposed for Phase 0
 - Date: 2026-08-08
-- Owners: RCV maintainers
+- Proposer: Emmanuel Jones
 - Decision horizon: architecture and first product milestone
 
 ## Summary
@@ -379,6 +379,6 @@ These do not block the first PR:
 
 ## Review gates
 
-Phase 0 was approved as the working direction on 2026-08-08. Revisit this RFC
-after the read-only device spike, before production link association, and again
-before Phase 3 authentication work.
+Seek maintainer approval before treating Phase 0 as the working direction.
+After approval, revisit this RFC after the read-only device spike, before
+production link association, and again before Phase 3 authentication work.
