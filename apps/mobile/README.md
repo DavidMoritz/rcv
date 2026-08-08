@@ -21,11 +21,16 @@ It does not submit votes or authenticate users yet.
 
 3. Configure the API URL when needed:
 
-   - iOS simulator and web default to `http://127.0.0.1:2461/api`.
+   - iOS simulator defaults to `http://127.0.0.1:2461/api`.
    - Android Emulator defaults to `http://10.0.2.2:2461/api`.
    - For a physical device, copy `.env.example` to `.env.local`, replace the
      host with the computer's LAN IP, and ensure both devices are on the same
      network.
+
+   API-backed ballot lookup on Expo web is deferred. The web app can render and
+   export, but browser requests to the PHP server on port 2461 require either a
+   same-origin development proxy or an explicit API CORS policy. Setting
+   `EXPO_PUBLIC_API_BASE_URL` to the PHP URL does not bypass that browser rule.
 
 4. Start the app:
 
@@ -49,6 +54,9 @@ npm run lint
 `EXPO_PUBLIC_API_BASE_URL` must point to the directory containing the PHP API
 scripts and should not end with a slash. Public Expo variables are embedded in
 the client bundle, so never put credentials or secrets in them.
+
+Phase 0 supports API connectivity from iOS and Android. Expo-web API
+connectivity will be designed alongside the later web deployment decision.
 
 ## Current scope
 

@@ -6,9 +6,9 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type LoadState =
-  | { status: 'loading' }
-  | { status: 'loaded'; detail: BallotDetail }
-  | { status: 'error'; error: LegacyApiError };
+  | { status: 'loading'; key: string }
+  | { status: 'loaded'; key: string; detail: BallotDetail }
+  | { status: 'error'; key: string; error: LegacyApiError };
 
 function unknownError(): LegacyApiError {
   return new LegacyApiError('network', 'The ballot could not be loaded.');
@@ -19,17 +19,18 @@ export default function BallotScreen() {
   const key = Array.isArray(params.key) ? params.key[0] : params.key ?? '';
   const client = useMemo(() => createLegacyApiClient(), []);
   const [attempt, setAttempt] = useState(0);
-  const [state, setState] = useState<LoadState>({ status: 'loading' });
+  const [state, setState] = useState<LoadState>({ status: 'loading', key });
 
   useEffect(() => {
     const controller = new AbortController();
 
     client.getBallot(key, controller.signal).then(
-      (detail) => setState({ status: 'loaded', detail }),
+      (detail) => setState({ status: 'loaded', key, detail }),
       (error: unknown) => {
         if (error instanceof Error && error.name === 'AbortError') return;
         setState({
           status: 'error',
+          key,
           error: error instanceof LegacyApiError ? error : unknownError(),
         });
       },
@@ -39,11 +40,11 @@ export default function BallotScreen() {
   }, [attempt, client, key]);
 
   const retry = () => {
-    setState({ status: 'loading' });
+    setState({ status: 'loading', key });
     setAttempt((value) => value + 1);
   };
 
-  if (state.status === 'loading') {
+  if (state.status === 'loading' || state.key !== key) {
     return (
       <SafeAreaView style={styles.centered}>
         <ActivityIndicator accessibilityLabel="Loading ballot" color="#146c43" size="large" />
