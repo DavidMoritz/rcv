@@ -40,3 +40,38 @@ jobs:
 
       - name: Run tests (Vitest + PHPUnit)
         run: npm test
+
+  mobile:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    env:
+      CI: 1
+      EXPO_NO_TELEMETRY: 1
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: apps/mobile/package-lock.json
+
+      - name: Install mobile dependencies
+        run: npm ci
+
+      - name: Run mobile tests
+        run: npm test
+
+      - name: Typecheck mobile app
+        run: npm run typecheck
+
+      - name: Lint mobile app
+        run: npm run lint
+
+      - name: Verify Expo web export
+        run: npx expo export --platform web
