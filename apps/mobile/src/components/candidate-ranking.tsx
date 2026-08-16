@@ -1,17 +1,21 @@
 import type { Candidate } from '@/api/legacy-api';
 import { createRanking, moveCandidate, removeCandidate } from '@/features/ranking';
-import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 type CandidateRankingProps = {
   candidates: readonly Candidate[];
+  onChange: (ranking: Candidate[]) => void;
   orderedEntries: boolean;
+  ranking: readonly Candidate[];
 };
 
-export function CandidateRanking({ candidates, orderedEntries }: CandidateRankingProps) {
-  const [ranking, setRanking] = useState(() => createRanking(candidates, orderedEntries));
-
-  const reset = () => setRanking(createRanking(candidates, orderedEntries));
+export function CandidateRanking({
+  candidates,
+  onChange,
+  orderedEntries,
+  ranking,
+}: CandidateRankingProps) {
+  const reset = () => onChange(createRanking(candidates, orderedEntries));
 
   return (
     <View>
@@ -35,19 +39,19 @@ export function CandidateRanking({ candidates, orderedEntries }: CandidateRankin
                   disabled={moveUpDisabled}
                   label="Up"
                   accessibilityLabel={`Move ${candidate.name} up`}
-                  onPress={() => setRanking((current) => moveCandidate(current, candidate.id, 'up'))}
+                  onPress={() => onChange(moveCandidate(ranking, candidate.id, 'up'))}
                 />
                 <RankButton
                   disabled={moveDownDisabled}
                   label="Down"
                   accessibilityLabel={`Move ${candidate.name} down`}
-                  onPress={() => setRanking((current) => moveCandidate(current, candidate.id, 'down'))}
+                  onPress={() => onChange(moveCandidate(ranking, candidate.id, 'down'))}
                 />
                 <RankButton
                   label="Remove"
                   accessibilityLabel={`Remove ${candidate.name} from ranking`}
                   destructive
-                  onPress={() => setRanking((current) => removeCandidate(current, candidate.id))}
+                  onPress={() => onChange(removeCandidate(ranking, candidate.id))}
                 />
               </View>
             </View>

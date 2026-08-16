@@ -35,11 +35,11 @@ export default function HomeScreen() {
       style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.card}>
-          <Text style={styles.eyebrow}>PHASE 0 PREVIEW</Text>
+          <Text style={styles.eyebrow}>PHASE 1</Text>
           <Text style={styles.title}>Open a ranked-choice ballot</Text>
           <Text style={styles.description}>
-            Enter the shortcode from a Ranked Choices ballot. This preview is read-only; ranking
-            and vote submission arrive in the next migration slice.
+            Enter the shortcode from a Ranked Choices ballot to rank choices and submit an
+            anonymous vote.
           </Text>
 
           <Text style={styles.label}>Ballot shortcode</Text>

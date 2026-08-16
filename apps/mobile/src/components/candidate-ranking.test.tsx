@@ -13,7 +13,12 @@ const candidates: Candidate[] = [
 describe('CandidateRanking', () => {
   it('renders ranked candidates with accessible actions and boundary states', () => {
     const html = renderToStaticMarkup(
-      <CandidateRanking candidates={candidates} orderedEntries={true} />,
+      <CandidateRanking
+        candidates={candidates}
+        onChange={() => undefined}
+        orderedEntries={true}
+        ranking={candidates}
+      />,
     );
 
     expect(html).toContain('2 choices ranked');
