@@ -1,6 +1,7 @@
 import { createLegacyApiClient } from '@/api/client';
 import { LegacyApiError, type BallotDetail, type Candidate } from '@/api/legacy-api';
 import { CandidateRanking } from '@/components/candidate-ranking';
+import { ElectionResults } from '@/components/election-results';
 import { VoteSubmission } from '@/components/vote-submission';
 import { createRanking } from '@/features/ranking';
 import { useLocalSearchParams } from 'expo-router';
@@ -128,6 +129,7 @@ export default function BallotScreen() {
         ) : null}
 
         <VoteSubmission ballot={ballot} onAccepted={() => setVoteAccepted(true)} ranking={ranking} />
+        {voteAccepted ? <ElectionResults ballotKey={ballot.key} /> : null}
       </View>
     </ScrollView>
   );

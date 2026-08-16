@@ -94,3 +94,42 @@ describe('V2ApiClient.submitVote', () => {
     await expect(client.submitVote(request)).rejects.toMatchObject({ code: 'malformed_response' });
   });
 });
+
+describe('V2ApiClient.getResults', () => {
+  it('loads typed anonymous election data', async () => {
+    const payload = {
+      ballot: { key: 'pizza night', name: 'Pizza', positions: 1, tieBreak: 'weighted' },
+      candidates: [{ id: 3, name: 'Mushroom' }],
+      votes: [[3]],
+    };
+    const fetchImpl = vi.fn(async () =>
+      new Response(JSON.stringify({ data: payload, error: null })),
+    );
+    const client = new V2ApiClient({ baseUrl: 'https://example.test/api/', fetchImpl });
+
+    await expect(client.getResults(' pizza night ')).resolves.toEqual(payload);
+    expect(fetchImpl).toHaveBeenCalledWith(
+      'https://example.test/api/v2/results.php?key=pizza%20night',
+      { signal: undefined },
+    );
+  });
+
+  it('preserves the unreleased-results state', async () => {
+    const client = new V2ApiClient({
+      baseUrl: 'https://example.test/api',
+      fetchImpl: async () =>
+        new Response(
+          JSON.stringify({
+            data: null,
+            error: { code: 'results_not_released', message: 'Not released.' },
+          }),
+          { status: 403 },
+        ),
+    });
+
+    await expect(client.getResults('private')).rejects.toMatchObject({
+      code: 'results_not_released',
+      retryable: false,
+    });
+  });
+});
