@@ -145,8 +145,11 @@ CREATE TABLE `votes` (
   `date_created` datetime DEFAULT (UTC_TIMESTAMP()),
   `fingerprint` varchar(64) NOT NULL DEFAULT '',
   `group_answers` json DEFAULT NULL,
+  `requestKey` varchar(64) DEFAULT NULL,
+  `requestHash` char(64) DEFAULT NULL,
   PRIMARY KEY (`vote_id`),
   UNIQUE KEY `NoDuplicates` (`ballotId`,`voteIds`(25),`name`,`ipAddress`,`date_created`),
+  UNIQUE KEY `idx_ballot_request` (`ballotId`,`requestKey`),
   KEY `idx_ballot_fingerprint` (`ballotId`,`fingerprint`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 

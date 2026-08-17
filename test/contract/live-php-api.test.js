@@ -120,6 +120,33 @@ afterEach(async () => {
 });
 
 describe('live PHP API contracts', () => {
+  it('records and safely replays an idempotent v2 anonymous vote', async () => {
+    const ballot = await createBallot();
+    const candidates = await requestApi('GET', 'get-candidates.php', {
+      query: { key: ballot.key }
+    });
+    const ranking = candidates.json.candidates.map((candidate) => Number(candidate.entry_id));
+    const body = {
+      key: ballot.key,
+      requestId: `contract_request_${Date.now()}`,
+      ranking
+    };
+
+    const first = await requestApi('POST', 'v2/votes.php', { body });
+    const replay = await requestApi('POST', 'v2/votes.php', { body });
+
+    expect(first.status).toBe(201);
+    expect(first.json).toMatchObject({
+      data: { status: 'accepted', replayed: false },
+      error: null
+    });
+    expect(replay.status).toBe(200);
+    expect(replay.json).toEqual({
+      data: { ...first.json.data, replayed: true },
+      error: null
+    });
+  });
+
   it('creates a ballot, returns candidates, records a vote, and returns results', async () => {
     const ballot = await createBallot();
 

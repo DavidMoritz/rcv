@@ -32,6 +32,16 @@ This will:
 
 **That's it!** Skip to the [Verify Setup](#verify-setup) section below.
 
+### Upgrade an existing database
+
+Do not re-run the full schema against an existing database. Apply any SQL files
+in `src/api/migrations/` that have not already been applied, in filename order.
+For example, Phase 1 vote idempotency requires:
+
+```bash
+mysql -u rcv_user -p rcv_db < src/api/migrations/2026-08-16-vote-idempotency.sql
+```
+
 ## Manual Setup (Alternative)
 
 If you prefer to set up step-by-step or need to customize the process:

@@ -85,7 +85,10 @@ CREATE TABLE votes (
   name varchar(40) NOT NULL DEFAULT '',
   date_created datetime DEFAULT CURRENT_TIMESTAMP,
   fingerprint varchar(64) NOT NULL DEFAULT '',
-  group_answers text DEFAULT NULL
+  group_answers text DEFAULT NULL,
+  requestKey varchar(64) DEFAULT NULL,
+  requestHash char(64) DEFAULT NULL,
+  UNIQUE (ballotId, requestKey)
 );
 CREATE INDEX idx_ballot_fingerprint ON votes (ballotId, fingerprint);
 
