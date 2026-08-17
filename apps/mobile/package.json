@@ -3,11 +3,12 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
-    "@react-native-async-storage/async-storage": "2.2.0",
     "@rankedchoices/rcv-core": "file:../../packages/rcv-core",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~57.0.11",
     "expo-constants": "~57.0.9",
     "expo-crypto": "~57.0.1",
+    "expo-dev-client": "~57.0.12",
     "expo-linking": "~57.0.5",
     "expo-router": "~57.0.11",
     "expo-splash-screen": "~57.0.5",
@@ -29,12 +30,13 @@
   },
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:android:e2e": "node scripts/android-phase1-e2e.mjs"
   },
   "private": true
 }

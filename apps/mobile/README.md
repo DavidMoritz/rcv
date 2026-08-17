@@ -44,6 +44,13 @@ TypeScript module. The app does not authenticate users yet.
 The terminal provides shortcuts for iOS, Android, and web. Incoming-link tests
 should use a development build; Expo Go has limited linking support.
 
+For a local development build, provide a disposable package identifier without
+committing the eventual store identity:
+
+```bash
+RCV_ANDROID_PACKAGE=com.rankedchoices.dev npx expo run:android
+```
+
 ## Checks
 
 ```bash
@@ -51,6 +58,29 @@ npm test
 npm run typecheck
 npm run lint
 ```
+
+With the PHP server, Metro, and an Android emulator running, the Phase 1 device
+scenario opens the canonical route as an incoming link, changes the ranking,
+submits, and waits for locally calculated results:
+
+```bash
+ADB="$ANDROID_HOME/platform-tools/adb" npm run test:android:e2e
+```
+
+Expo Go is the default target. A development build can exercise the custom
+scheme with:
+
+```bash
+RCV_E2E_APP_PACKAGE=com.rankedchoices.dev \
+RCV_E2E_INCOMING_URL=rankedchoices://ballot/pizza \
+RCV_E2E_COLD_START=0 \
+npm run test:android:e2e
+```
+
+Start the JavaScript runtime in the development client before running the
+custom-scheme form. Expo Go supports the scenario's default cold start; the
+development-client launcher must hand off to the running app before a route
+link can be delivered.
 
 ## Configuration
 
