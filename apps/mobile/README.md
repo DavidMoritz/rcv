@@ -2,7 +2,8 @@
 
 Phase 1 of the Ranked Choices Expo migration. This app currently provides a
 shortcode lookup, ballot preview, and local candidate-ranking controls backed
-by the existing PHP API. It does not submit votes or authenticate users yet.
+by the existing PHP API. Anonymous ballots can be submitted through the typed,
+idempotent v2 vote endpoint. The app does not authenticate users yet.
 
 ## Get started
 
@@ -65,10 +66,15 @@ connectivity will be designed alongside the later web deployment decision.
 - typed normalization of the legacy `get-candidates.php` response
 - ballot lookup and accessible local candidate ranking
 - move-up, move-down, remove, and reset controls
+- idempotent anonymous vote submission with loading, retry, duplicate-device,
+  cutoff, and accepted states
 - loading, closed, not-found, malformed-response, and network-error handling
 
-Vote submission, authentication, production deployment, and domain association
-files are intentionally deferred to later slices.
+Name-required ballots, secure-code entry, grouping questions, authentication,
+production deployment, and domain association files remain unavailable. The
+first three belong to the later secure-voting/ballot-creation phase; this Phase
+1 client surfaces them as explicit unsupported states instead of submitting an
+incomplete vote.
 
 ## Expo resources
 

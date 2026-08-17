@@ -1,6 +1,8 @@
 import { createLegacyApiClient } from '@/api/client';
-import { LegacyApiError, type BallotDetail } from '@/api/legacy-api';
+import { LegacyApiError, type BallotDetail, type Candidate } from '@/api/legacy-api';
 import { CandidateRanking } from '@/components/candidate-ranking';
+import { VoteSubmission } from '@/components/vote-submission';
+import { createRanking } from '@/features/ranking';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -21,12 +23,18 @@ export default function BallotScreen() {
   const client = useMemo(() => createLegacyApiClient(), []);
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<LoadState>({ status: 'loading', key });
+  const [ranking, setRanking] = useState<Candidate[]>([]);
+  const [voteAccepted, setVoteAccepted] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
 
     client.getBallot(key, controller.signal).then(
-      (detail) => setState({ status: 'loaded', key, detail }),
+      (detail) => {
+        setRanking(createRanking(detail.candidates, detail.ballot.orderedEntries));
+        setVoteAccepted(false);
+        setState({ status: 'loaded', key, detail });
+      },
       (error: unknown) => {
         if (error instanceof Error && error.name === 'AbortError') return;
         setState({
@@ -77,7 +85,7 @@ export default function BallotScreen() {
     );
   }
 
-  const { ballot, candidates, groupFields } = state.detail;
+  const { ballot, candidates } = state.detail;
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent} style={styles.screen}>
@@ -103,19 +111,23 @@ export default function BallotScreen() {
           ) : null}
         </View>
 
-        <Text style={styles.sectionTitle}>Your ranking</Text>
-        <Text style={styles.helpText}>
-          Put your favorite choice first. Use the controls to move or remove choices; you can reset
-          the ballot at any time.
-        </Text>
-        <CandidateRanking candidates={candidates} orderedEntries={ballot.orderedEntries} />
-
-        {groupFields.length ? (
-          <Text style={styles.notice}>
-            This ballot has {groupFields.length} voter question{groupFields.length === 1 ? '' : 's'}.
-            Questions will be enabled with the voting milestone.
-          </Text>
+        {!voteAccepted ? (
+          <>
+            <Text style={styles.sectionTitle}>Your ranking</Text>
+            <Text style={styles.helpText}>
+              Put your favorite choice first. Use the controls to move or remove choices; you can
+              reset the ballot at any time.
+            </Text>
+            <CandidateRanking
+              candidates={candidates}
+              onChange={setRanking}
+              orderedEntries={ballot.orderedEntries}
+              ranking={ranking}
+            />
+          </>
         ) : null}
+
+        <VoteSubmission ballot={ballot} onAccepted={() => setVoteAccepted(true)} ranking={ranking} />
       </View>
     </ScrollView>
   );
@@ -148,15 +160,6 @@ const styles = StyleSheet.create({
   metaLabel: { color: '#436251', fontSize: 12, marginTop: 2 },
   sectionTitle: { color: '#1f3143', fontSize: 22, fontWeight: '800', marginTop: 30 },
   helpText: { color: '#52697f', fontSize: 14, lineHeight: 20, marginTop: 6 },
-  notice: {
-    backgroundColor: '#fff3dc',
-    borderRadius: 12,
-    color: '#6b4600',
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 20,
-    padding: 14,
-  },
   errorCard: {
     backgroundColor: '#ffffff',
     borderRadius: 18,
