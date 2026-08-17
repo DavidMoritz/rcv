@@ -1,8 +1,8 @@
 # Ranked Choices mobile
 
-Phase 0 of the Ranked Choices Expo migration. This app currently provides a
-shortcode lookup and read-only ballot preview backed by the existing PHP API.
-It does not submit votes or authenticate users yet.
+Phase 1 of the Ranked Choices Expo migration. This app currently provides a
+shortcode lookup, ballot preview, and local candidate-ranking controls backed
+by the existing PHP API. It does not submit votes or authenticate users yet.
 
 ## Get started
 
@@ -63,11 +63,12 @@ connectivity will be designed alongside the later web deployment decision.
 - Expo Router and TypeScript scaffold
 - development API base URL selection
 - typed normalization of the legacy `get-candidates.php` response
-- ballot lookup and read-only candidate display
+- ballot lookup and accessible local candidate ranking
+- move-up, move-down, remove, and reset controls
 - loading, closed, not-found, malformed-response, and network-error handling
 
-Voting, authentication, production deployment, and domain association files
-are intentionally deferred to later RFC phases.
+Vote submission, authentication, production deployment, and domain association
+files are intentionally deferred to later slices.
 
 ## Expo resources
 

@@ -1,5 +1,6 @@
 import { createLegacyApiClient } from '@/api/client';
 import { LegacyApiError, type BallotDetail } from '@/api/legacy-api';
+import { CandidateRanking } from '@/components/candidate-ranking';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -81,7 +82,7 @@ export default function BallotScreen() {
   return (
     <ScrollView contentContainerStyle={styles.scrollContent} style={styles.screen}>
       <View style={styles.content}>
-        <Text style={styles.eyebrow}>READ-ONLY BALLOT PREVIEW</Text>
+        <Text style={styles.eyebrow}>RANK YOUR CHOICES</Text>
         <Text style={styles.title}>{ballot.name}</Text>
         <Text style={styles.shortcode}>Shortcode: {ballot.key}</Text>
 
@@ -102,21 +103,12 @@ export default function BallotScreen() {
           ) : null}
         </View>
 
-        <Text style={styles.sectionTitle}>Candidates</Text>
+        <Text style={styles.sectionTitle}>Your ranking</Text>
         <Text style={styles.helpText}>
-          Candidate ordering is shown for connectivity testing. Ranking is not enabled in this
-          scaffold.
+          Put your favorite choice first. Use the controls to move or remove choices; you can reset
+          the ballot at any time.
         </Text>
-        <View style={styles.candidateList}>
-          {candidates.map((candidate, index) => (
-            <View key={candidate.id} style={styles.candidateRow}>
-              <View style={styles.rankBadge}>
-                <Text style={styles.rankText}>{index + 1}</Text>
-              </View>
-              <Text style={styles.candidateName}>{candidate.name}</Text>
-            </View>
-          ))}
-        </View>
+        <CandidateRanking candidates={candidates} orderedEntries={ballot.orderedEntries} />
 
         {groupFields.length ? (
           <Text style={styles.notice}>
@@ -156,27 +148,6 @@ const styles = StyleSheet.create({
   metaLabel: { color: '#436251', fontSize: 12, marginTop: 2 },
   sectionTitle: { color: '#1f3143', fontSize: 22, fontWeight: '800', marginTop: 30 },
   helpText: { color: '#52697f', fontSize: 14, lineHeight: 20, marginTop: 6 },
-  candidateList: { gap: 10, marginTop: 16 },
-  candidateRow: {
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderColor: '#d9e0e7',
-    borderRadius: 14,
-    borderWidth: 1,
-    flexDirection: 'row',
-    padding: 14,
-  },
-  rankBadge: {
-    alignItems: 'center',
-    backgroundColor: '#12355b',
-    borderRadius: 18,
-    height: 36,
-    justifyContent: 'center',
-    marginRight: 13,
-    width: 36,
-  },
-  rankText: { color: '#ffffff', fontSize: 15, fontWeight: '800' },
-  candidateName: { color: '#1f3143', flex: 1, fontSize: 17, fontWeight: '700' },
   notice: {
     backgroundColor: '#fff3dc',
     borderRadius: 12,
