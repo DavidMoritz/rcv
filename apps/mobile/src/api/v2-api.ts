@@ -11,9 +11,21 @@ export type SubmitVoteResult = {
   replayed: boolean;
 };
 
+export type ElectionResults = {
+  ballot: {
+    key: string;
+    name: string;
+    positions: number;
+    tieBreak: 'weighted' | 'random';
+  };
+  candidates: { id: number; name: string }[];
+  votes: number[][];
+};
+
 export type V2ApiErrorCode =
   | 'validation_failed'
   | 'ballot_not_found'
+  | 'results_not_released'
   | 'idempotency_conflict'
   | 'voting_closed'
   | 'voter_name_required'
@@ -56,6 +68,7 @@ function isKnownErrorCode(value: unknown): value is V2ApiErrorCode {
     [
       'validation_failed',
       'ballot_not_found',
+      'results_not_released',
       'idempotency_conflict',
       'voting_closed',
       'voter_name_required',
@@ -78,6 +91,26 @@ export class V2ApiClient {
     this.fetchImpl = fetchImpl;
   }
 
+  async getResults(key: string, signal?: AbortSignal): Promise<ElectionResults> {
+    let response: Response;
+    try {
+      response = await this.fetchImpl(
+        `${this.baseUrl}/v2/results.php?key=${encodeURIComponent(key.trim())}`,
+        { signal },
+      );
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') throw error;
+      throw new V2ApiError('network', 'The results server could not be reached.', true);
+    }
+
+    const envelope = await this.parseEnvelope(response);
+    if (envelope.error !== null) throw this.normalizeError(envelope.error, response.status);
+    if (!response.ok || !isElectionResults(envelope.data)) {
+      throw new V2ApiError('malformed_response', 'The results server returned invalid data.');
+    }
+    return envelope.data;
+  }
+
   async submitVote(request: SubmitVoteRequest, signal?: AbortSignal): Promise<SubmitVoteResult> {
     let response: Response;
     try {
@@ -92,36 +125,10 @@ export class V2ApiClient {
       throw new V2ApiError('network', 'The vote server could not be reached.', true);
     }
 
-    let envelope: unknown;
-    try {
-      envelope = JSON.parse(await response.text());
-    } catch {
-      if (!response.ok) {
-        throw new V2ApiError(
-          'http',
-          'The vote server returned an error.',
-          response.status >= 500,
-          response.status,
-        );
-      }
-      throw new V2ApiError('malformed_response', 'The vote server returned invalid data.');
-    }
-
-    if (!isRecord(envelope)) {
-      throw new V2ApiError('malformed_response', 'The vote server returned invalid data.');
-    }
+    const envelope = await this.parseEnvelope(response);
 
     if (envelope.error !== null) {
-      const error = envelope.error;
-      if (!isRecord(error) || !isKnownErrorCode(error.code) || typeof error.message !== 'string') {
-        throw new V2ApiError('malformed_response', 'The vote server returned invalid error data.');
-      }
-      throw new V2ApiError(
-        error.code,
-        error.message,
-        error.code === 'server_error' || response.status >= 500,
-        response.status,
-      );
+      throw this.normalizeError(envelope.error, response.status);
     }
 
     const data = envelope.data;
@@ -141,4 +148,51 @@ export class V2ApiClient {
       replayed: data.replayed,
     };
   }
+
+  private async parseEnvelope(response: Response): Promise<Record<string, unknown>> {
+    let envelope: unknown;
+    try {
+      envelope = JSON.parse(await response.text());
+    } catch {
+      if (!response.ok) {
+        throw new V2ApiError('http', 'The server returned an error.', response.status >= 500, response.status);
+      }
+      throw new V2ApiError('malformed_response', 'The server returned invalid data.');
+    }
+    if (!isRecord(envelope) || !('error' in envelope) || !('data' in envelope)) {
+      throw new V2ApiError('malformed_response', 'The server returned invalid data.');
+    }
+    return envelope;
+  }
+
+  private normalizeError(error: unknown, status: number): V2ApiError {
+    if (!isRecord(error) || !isKnownErrorCode(error.code) || typeof error.message !== 'string') {
+      return new V2ApiError('malformed_response', 'The server returned invalid error data.');
+    }
+    return new V2ApiError(
+      error.code,
+      error.message,
+      error.code === 'server_error' || status >= 500,
+      status,
+    );
+  }
+}
+
+function isElectionResults(value: unknown): value is ElectionResults {
+  if (!isRecord(value) || !isRecord(value.ballot) || !Array.isArray(value.candidates) || !Array.isArray(value.votes)) {
+    return false;
+  }
+  const ballot = value.ballot;
+  return (
+    typeof ballot.key === 'string' &&
+    typeof ballot.name === 'string' &&
+    typeof ballot.positions === 'number' &&
+    (ballot.tieBreak === 'weighted' || ballot.tieBreak === 'random') &&
+    value.candidates.every(
+      (candidate) => isRecord(candidate) && typeof candidate.id === 'number' && typeof candidate.name === 'string',
+    ) &&
+    value.votes.every(
+      (vote) => Array.isArray(vote) && vote.every((candidateId) => typeof candidateId === 'number'),
+    )
+  );
 }

@@ -3,7 +3,9 @@
 Phase 1 of the Ranked Choices Expo migration. This app currently provides a
 shortcode lookup, ballot preview, and local candidate-ranking controls backed
 by the existing PHP API. Anonymous ballots can be submitted through the typed,
-idempotent v2 vote endpoint. The app does not authenticate users yet.
+idempotent v2 vote endpoint. Released votes are loaded through the public v2
+results contract and calculated locally by the pure `packages/rcv-core`
+TypeScript module. The app does not authenticate users yet.
 
 ## Get started
 
@@ -68,6 +70,7 @@ connectivity will be designed alongside the later web deployment decision.
 - move-up, move-down, remove, and reset controls
 - idempotent anonymous vote submission with loading, retry, duplicate-device,
   cutoff, and accepted states
+- local winner and round-by-round result rendering after an accepted vote
 - loading, closed, not-found, malformed-response, and network-error handling
 
 Name-required ballots, secure-code entry, grouping questions, authentication,
