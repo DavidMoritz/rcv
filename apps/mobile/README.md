@@ -52,8 +52,12 @@ For a local development build, provide a disposable package identifier without
 committing the eventual store identity:
 
 ```bash
-RCV_ANDROID_PACKAGE=com.rankedchoices.dev npx expo run:android
+APP_VARIANT=development npx expo run:android
 ```
+
+The dynamic app config defaults local commands to the development variant.
+`RCV_ANDROID_PACKAGE` and `RCV_IOS_BUNDLE_IDENTIFIER` remain available as
+explicit local overrides.
 
 ## Checks
 
@@ -122,6 +126,48 @@ the client bundle, so never put credentials or secrets in them.
 
 Phase 0 supports API connectivity from iOS and Android. Expo-web API
 connectivity will be designed alongside the later web deployment decision.
+
+### Build profiles
+
+`eas.json` defines three separately identifiable builds:
+
+| Profile | App identifier | API target |
+|---|---|---|
+| `development` | `com.rankedchoices.dev` | local/runtime configuration |
+| `staging` | `com.rankedchoices.app.staging` | production temporarily |
+| `production` | `com.rankedchoices.app` | production |
+
+The staging package can coexist with production. It intentionally uses the
+production API until `https://staging.rankedchoices.com` is provisioned, as
+approved for the current migration phase. Change the staging profile's
+`EXPO_PUBLIC_API_BASE_URL` when that environment exists.
+
+### Crash reporting
+
+The official Sentry React Native SDK and source-map-aware Metro configuration
+are present, but event delivery is off by default. Native crash reporting
+starts only when both `EXPO_PUBLIC_SENTRY_ENABLED=true` and
+`EXPO_PUBLIC_SENTRY_DSN` are embedded in a build. Expo web does not initialize
+Sentry.
+
+Before enabling production or staging reporting:
+
+1. Publish privacy-policy language describing Sentry collection and retention.
+2. Set `SENTRY_ORG`, `SENTRY_PROJECT`, and the public DSN in the matching EAS
+   environment. The organization and project values activate the native Expo
+   plugin.
+3. Store `SENTRY_AUTH_TOKEN` as a sensitive EAS variable so release source maps
+   can be uploaded. Never commit the token.
+4. Build a release and verify one intentionally generated test error is
+   symbolicated, then remove the test trigger.
+
+The runtime configuration disables product analytics, logs, breadcrumbs,
+performance tracing, session tracking/replay, touch tracing, failed-request
+capture, screenshots, view hierarchies, and default PII. A tested final
+sanitizer retains only stack/symbolication data and coarse app, OS, runtime,
+and device fields; it removes error messages and all application values that
+could contain ballot, candidate, ranking, shortcode, voter-code, email, route,
+request, or user data.
 
 ## Current scope
 
