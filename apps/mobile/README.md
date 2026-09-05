@@ -7,8 +7,9 @@ idempotent v2 vote endpoint. Released votes are loaded through the public v2
 results contract and calculated locally by the pure `packages/rcv-core`
 TypeScript module. Secure ballots can be submitted with an assigned voter
 code. Ballots with voter grouping enabled render and validate their select,
-checkbox, and text questions before submission. The app does not authenticate
-users yet.
+checkbox, and text questions before submission. Ballot and results screens can
+open the system share sheet with the canonical RankedChoices.com ballot link.
+The app does not authenticate users yet.
 
 ## Get started
 
@@ -89,6 +90,15 @@ ADB="$ANDROID_HOME/platform-tools/adb" \
 npm run test:android:e2e
 ```
 
+To verify the native system share sheet without submitting a vote:
+
+```bash
+RCV_E2E_BALLOT_KEY=pizza \
+RCV_E2E_SHARE_ONLY=1 \
+ADB="$ANDROID_HOME/platform-tools/adb" \
+npm run test:android:e2e
+```
+
 Expo Go is the default target. A development build can exercise the custom
 scheme with:
 
@@ -124,6 +134,7 @@ connectivity will be designed alongside the later web deployment decision.
   invalid/reused-code, duplicate-device, cutoff, and accepted states
 - accessible select, checkbox, and text grouping questions with client and
   server validation
+- canonical ballot-link sharing through the native system share sheet
 - local winner and round-by-round result rendering after an accepted vote
 - loading, closed, not-found, malformed-response, and network-error handling
 

@@ -375,6 +375,12 @@ and option ownership, required answers, types, and text length, then stores the
 normalized answers in the existing `votes.group_answers` column. Grouping
 configuration, analysis, and export remain web-only initially.
 
+Canonical sharing also does not depend on ballot ownership. The ballot and
+results experience generates `https://rankedchoices.com/ballot/<key>` and
+passes it to the native system share sheet. The URL is included in both the
+cross-platform message and the iOS URL field so shared links are canonical on
+both platforms.
+
 ### Phase 3 — authentication and management
 
 - Implement server-side password hashing, migrate legacy hashes on successful
