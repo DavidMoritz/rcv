@@ -8,16 +8,22 @@ export type VoteBlocker =
   | 'group_answers_required';
 
 export type PendingVoteRequest = {
-  rankingKey: string;
+  submissionKey: string;
   requestId: string;
 };
 
 export function getOrCreateVoteRequest(
   pending: PendingVoteRequest | null,
-  rankingKey: string,
+  submissionKey: string,
   createId: () => string,
 ): PendingVoteRequest {
-  return pending?.rankingKey === rankingKey ? pending : { rankingKey, requestId: createId() };
+  return pending?.submissionKey === submissionKey
+    ? pending
+    : { submissionKey, requestId: createId() };
+}
+
+export function normalizeVoterCode(value: string): string {
+  return value.trim().toLowerCase().replaceAll('0', 'o').replaceAll('1', 'i');
 }
 
 export function parseUtcTimestamp(value: string | null): number | null {
@@ -33,11 +39,12 @@ export function getVoteBlocker(
   ballot: Ballot,
   rankingCount: number,
   now = Date.now(),
+  voterCode = '',
 ): VoteBlocker | null {
   const cutoff = parseUtcTimestamp(ballot.voteCutoff);
   if (cutoff !== null && now >= cutoff) return 'closed';
   if (ballot.register === 1) return 'voter_name_required';
-  if (ballot.isSecure) return 'secure_code_required';
+  if (ballot.isSecure && normalizeVoterCode(voterCode).length !== 6) return 'secure_code_required';
   if (ballot.allowGrouping) return 'group_answers_required';
   if (rankingCount === 0) return 'empty_ranking';
   return null;
@@ -52,7 +59,7 @@ export function blockerMessage(blocker: VoteBlocker): string {
     case 'voter_name_required':
       return 'This ballot requires a voter name and is not available in the anonymous flow.';
     case 'secure_code_required':
-      return 'This ballot requires a voter code. Secure-code entry is not available in the anonymous flow.';
+      return 'Enter the six-character voter code to submit this ballot.';
     case 'group_answers_required':
       return 'This ballot requires voter questions that are not available in the anonymous flow.';
   }

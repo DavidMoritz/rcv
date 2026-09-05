@@ -21,24 +21,29 @@ Version 2 endpoints use one JSON envelope for success and failure:
 
 ## `POST /api/v2/votes.php`
 
-The Phase 1 anonymous-vote endpoint accepts:
+The vote endpoint accepts anonymous and secure-code ballots:
 
 ```json
 {
   "key": "ballot-shortcode",
   "requestId": "client_generated_16_to_64_chars",
   "ranking": [42, 17, 23],
-  "fingerprint": "optional-installation-identifier"
+  "fingerprint": "optional-installation-identifier",
+  "voterCode": "optional-six-character-code"
 }
 ```
 
 Candidate names and the ballot ID are derived on the server. A request ID is
-scoped to its ballot and can be safely retried with the same ranking. Reusing
-it with a different ranking returns `idempotency_conflict`.
+scoped to its ballot and can be safely retried with the same ranking and voter
+code. Reusing it with a different ranking or code returns
+`idempotency_conflict`.
 
-This endpoint intentionally stops at the Phase 1 anonymous flow. Ballots that
-require a voter name, voter code, or grouping answers return typed states for
-the client; collecting those values remains Phase 2 work.
+Secure codes are normalized to lowercase, with `0` treated as `o` and `1`
+treated as `i`, matching the legacy voting flow. Each assigned code can record
+one vote. Missing codes return `secure_code_required`; unassigned or previously
+used codes return the deliberately nonspecific `invalid_voter_code` response.
+Ballots that require a voter name or grouping answers still return typed
+unsupported states for the client.
 
 ## `GET /api/v2/results.php?key=ballot-shortcode`
 

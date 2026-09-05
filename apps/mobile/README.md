@@ -5,7 +5,8 @@ shortcode lookup, ballot preview, and local candidate-ranking controls backed
 by the existing PHP API. Anonymous ballots can be submitted through the typed,
 idempotent v2 vote endpoint. Released votes are loaded through the public v2
 results contract and calculated locally by the pure `packages/rcv-core`
-TypeScript module. The app does not authenticate users yet.
+TypeScript module. Secure ballots can be submitted with an assigned voter
+code. The app does not authenticate users yet.
 
 ## Get started
 
@@ -67,6 +68,15 @@ submits, and waits for locally calculated results:
 ADB="$ANDROID_HOME/platform-tools/adb" npm run test:android:e2e
 ```
 
+To exercise a secure ballot, provide its shortcode and six-character code:
+
+```bash
+RCV_E2E_BALLOT_KEY=my-secure-ballot \
+RCV_E2E_VOTER_CODE=abcxyz \
+ADB="$ANDROID_HOME/platform-tools/adb" \
+npm run test:android:e2e
+```
+
 Expo Go is the default target. A development build can exercise the custom
 scheme with:
 
@@ -98,16 +108,15 @@ connectivity will be designed alongside the later web deployment decision.
 - typed normalization of the legacy `get-candidates.php` response
 - ballot lookup and accessible local candidate ranking
 - move-up, move-down, remove, and reset controls
-- idempotent anonymous vote submission with loading, retry, duplicate-device,
-  cutoff, and accepted states
+- idempotent anonymous and secure-code vote submission with loading, retry,
+  invalid/reused-code, duplicate-device, cutoff, and accepted states
 - local winner and round-by-round result rendering after an accepted vote
 - loading, closed, not-found, malformed-response, and network-error handling
 
-Name-required ballots, secure-code entry, grouping questions, authentication,
-production deployment, and domain association files remain unavailable. The
-first three belong to the later secure-voting/ballot-creation phase; this Phase
-1 client surfaces them as explicit unsupported states instead of submitting an
-incomplete vote.
+Name-required ballots, grouping questions, authentication, production
+deployment, and domain association files remain unavailable. The first two
+belong to the later secure-voting/ballot-creation phase; this client surfaces
+them as explicit unsupported states instead of submitting an incomplete vote.
 
 ## Expo resources
 

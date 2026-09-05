@@ -7,6 +7,7 @@ const request = {
   requestId: '12345678-1234-4234-8234-123456789012',
   ranking: [3, 1, 2],
   fingerprint: 'installation-id',
+  voterCode: 'abcooi',
 };
 
 describe('V2ApiClient.submitVote', () => {
@@ -52,6 +53,26 @@ describe('V2ApiClient.submitVote', () => {
       code: 'duplicate_device',
       retryable: false,
       status: 409,
+    });
+  });
+
+  it('preserves invalid voter-code errors', async () => {
+    const client = new V2ApiClient({
+      baseUrl: 'https://example.test/api',
+      fetchImpl: async () =>
+        new Response(
+          JSON.stringify({
+            data: null,
+            error: { code: 'invalid_voter_code', message: 'Code not accepted.' },
+          }),
+          { status: 403 },
+        ),
+    });
+
+    await expect(client.submitVote(request)).rejects.toMatchObject({
+      code: 'invalid_voter_code',
+      retryable: false,
+      status: 403,
     });
   });
 

@@ -77,6 +77,7 @@ GRANT ALL PRIVILEGES ON ${dbName}.* TO ${sqlString(config.appUser)}@${sqlString(
 FLUSH PRIVILEGES;
 USE ${dbName};
 ${tables}
+INSERT INTO random_codes (code) VALUES ('e2eabc');
 `);
 }
 

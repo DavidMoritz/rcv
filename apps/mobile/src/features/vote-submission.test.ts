@@ -7,6 +7,7 @@ import {
   formatCutoffCountdown,
   getOrCreateVoteRequest,
   getVoteBlocker,
+  normalizeVoterCode,
   parseUtcTimestamp,
 } from './vote-submission';
 
@@ -33,13 +34,17 @@ const ballot: Ballot = {
 
 describe('vote submission states', () => {
   it('reuses a request ID only while retrying the same ranking', () => {
-    const pending = { rankingKey: '1,2', requestId: 'original-id' };
+    const pending = { submissionKey: '1,2|codeaa', requestId: 'original-id' };
 
-    expect(getOrCreateVoteRequest(pending, '1,2', () => 'new-id')).toBe(pending);
-    expect(getOrCreateVoteRequest(pending, '2,1', () => 'new-id')).toEqual({
-      rankingKey: '2,1',
+    expect(getOrCreateVoteRequest(pending, '1,2|codeaa', () => 'new-id')).toBe(pending);
+    expect(getOrCreateVoteRequest(pending, '1,2|codebb', () => 'new-id')).toEqual({
+      submissionKey: '1,2|codebb',
       requestId: 'new-id',
     });
+  });
+
+  it('normalizes voter-code case and ambiguous characters', () => {
+    expect(normalizeVoterCode(' AbC001 ')).toBe('abcooi');
   });
 
   it('parses legacy database timestamps as UTC', () => {
@@ -52,7 +57,8 @@ describe('vote submission states', () => {
 
     expect(getVoteBlocker({ ...ballot, voteCutoff: '2026-08-16 11:59:59' }, 2, now)).toBe('closed');
     expect(getVoteBlocker({ ...ballot, register: 1 }, 2, now)).toBe('voter_name_required');
-    expect(getVoteBlocker({ ...ballot, isSecure: true }, 2, now)).toBe('secure_code_required');
+    expect(getVoteBlocker({ ...ballot, isSecure: true }, 2, now, 'short')).toBe('secure_code_required');
+    expect(getVoteBlocker({ ...ballot, isSecure: true }, 2, now, 'ABC001')).toBeNull();
     expect(getVoteBlocker({ ...ballot, allowGrouping: true }, 2, now)).toBe('group_answers_required');
     expect(getVoteBlocker(ballot, 0, now)).toBe('empty_ranking');
     expect(getVoteBlocker(ballot, 2, now)).toBeNull();

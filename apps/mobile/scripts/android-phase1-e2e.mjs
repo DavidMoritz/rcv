@@ -2,11 +2,16 @@ import { execFileSync } from 'node:child_process';
 
 const adb = process.env.ADB ?? 'adb';
 const ballotKey = process.env.RCV_E2E_BALLOT_KEY ?? 'pizza';
+const voterCode = process.env.RCV_E2E_VOTER_CODE?.trim();
 const appPackage = process.env.RCV_E2E_APP_PACKAGE ?? 'host.exp.exponent';
 const incomingUrl =
   process.env.RCV_E2E_INCOMING_URL ??
   `exp://127.0.0.1:8081/--/ballot/${encodeURIComponent(ballotKey)}`;
 const coldStart = process.env.RCV_E2E_COLD_START !== '0';
+
+if (voterCode && !/^[A-Za-z0-9]{6}$/.test(voterCode)) {
+  throw new Error('RCV_E2E_VOTER_CODE must contain exactly six letters or digits.');
+}
 
 function run(...args) {
   return execFileSync(adb, args, { encoding: 'utf8' });
@@ -66,6 +71,18 @@ tapMatching(
 );
 waitFor(/content-desc="Move [^"]+ up"/, 'the updated candidate ranking');
 
+if (voterCode) {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    xml = dump();
+    if (/content-desc="Voter code"/.test(xml)) break;
+    run('shell', 'input', 'swipe', '540', '2200', '540', '350', '400');
+  }
+  xml = dump();
+  tapMatching(xml, /content-desc="Voter code"[^>]*bounds="([^"]+)"/, 'the voter-code field');
+  run('shell', 'input', 'text', voterCode);
+  run('shell', 'input', 'keyevent', '4');
+}
+
 for (let attempt = 0; attempt < 6; attempt += 1) {
   xml = dump();
   if (/content-desc="Submit vote"/.test(xml)) break;
@@ -77,4 +94,4 @@ tapMatching(xml, /content-desc="Submit vote"[^>]*bounds="([^"]+)"/, 'the submit 
 waitFor(/text="Vote recorded"/, 'the accepted vote state');
 waitFor(/text="Current results"/, 'the locally calculated election results');
 
-console.log(`Phase 1 Android E2E passed for ${incomingUrl}`);
+console.log(`Android vote E2E passed for ${incomingUrl}`);

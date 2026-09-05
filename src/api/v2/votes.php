@@ -58,6 +58,16 @@ function normalizeRanking($value): ?array
     return $ids;
 }
 
+function normalizeVoterCode($value): ?string
+{
+    if (!is_string($value)) {
+        return null;
+    }
+
+    $code = strtr(strtolower(trim($value)), '01', 'oi');
+    return strlen($code) === 6 ? $code : null;
+}
+
 function findIdempotentVote(PDO $dbh, int $ballotId, string $requestId): ?array
 {
     $statement = $dbh->prepare(
@@ -111,7 +121,17 @@ if (!$ballot) {
 }
 
 $ballotId = (int) $ballot['id'];
-$requestHash = hash('sha256', json_encode(['ranking' => $ranking], JSON_UNESCAPED_SLASHES));
+$isSecure = (int) $ballot['isSecure'] === 1;
+$voterCode = $isSecure ? normalizeVoterCode($input['voterCode'] ?? null) : null;
+if ($isSecure && $voterCode === null) {
+    fail(422, 'secure_code_required', 'Enter the six-character voter code.');
+}
+
+$requestPayload = ['ranking' => $ranking];
+if ($isSecure) {
+    $requestPayload['voterCode'] = $voterCode;
+}
+$requestHash = hash('sha256', json_encode($requestPayload, JSON_UNESCAPED_SLASHES));
 $existingVote = findIdempotentVote($dbh, $ballotId, $requestId);
 if ($existingVote) {
     if (!hash_equals((string) $existingVote['requestHash'], $requestHash)) {
@@ -130,10 +150,6 @@ if ($ballot['voteCutoff'] !== null && $ballot['voteCutoff'] < gmdate('Y-m-d H:i:
 
 if ((int) $ballot['register'] === 1) {
     fail(409, 'voter_name_required', 'This ballot requires a voter name, which is not supported in the anonymous flow.');
-}
-
-if ((int) $ballot['isSecure'] === 1) {
-    fail(409, 'secure_code_required', 'This ballot requires a voter code.');
 }
 
 if ((int) $ballot['allowGrouping'] === 1) {
@@ -178,25 +194,91 @@ if (count($candidateNames) !== count($ranking)) {
 $voteNames = array_map(fn (int $candidateId): string => $candidateNames[$candidateId], $ranking);
 $voteJson = json_encode($voteNames, JSON_UNESCAPED_SLASHES);
 $voteIds = implode(',', $ranking);
+$secureTransaction = false;
 
 try {
+    if ($isSecure) {
+        $dbh->beginTransaction();
+        $secureTransaction = true;
+
+        // Lock the ballot-code assignment until the vote is recorded. This
+        // serializes concurrent attempts to redeem the same code even though
+        // the production votes table is still MyISAM.
+        $lockSuffix = $dbh->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql' ? ' FOR UPDATE' : '';
+        $codeStatement = $dbh->prepare(
+            'SELECT bc.random_code_id FROM ballot_codes bc '
+            . 'JOIN random_codes rc ON rc.id = bc.random_code_id '
+            . 'WHERE bc.ballot_id = :ballotId AND rc.code = :voterCode LIMIT 1'
+            . $lockSuffix
+        );
+        $codeStatement->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
+        $codeStatement->bindValue(':voterCode', $voterCode, PDO::PARAM_STR);
+        $codeStatement->execute();
+        if (!$codeStatement->fetch(PDO::FETCH_ASSOC)) {
+            $dbh->rollBack();
+            $secureTransaction = false;
+            fail(403, 'invalid_voter_code', 'The voter code is invalid or has already been used.');
+        }
+
+        // A concurrent retry may have completed while this request waited for
+        // the code lock, so repeat the idempotency check before rejecting a
+        // code that now appears used.
+        $existingVote = findIdempotentVote($dbh, $ballotId, $requestId);
+        if ($existingVote) {
+            $dbh->commit();
+            $secureTransaction = false;
+            if (!hash_equals((string) $existingVote['requestHash'], $requestHash)) {
+                fail(409, 'idempotency_conflict', 'This request ID was already used for a different vote.');
+            }
+            respond(200, [
+                'status' => 'accepted',
+                'voteId' => (int) $existingVote['vote_id'],
+                'replayed' => true,
+            ], null);
+        }
+
+        $usedCodeStatement = $dbh->prepare(
+            'SELECT vote_id FROM votes WHERE ballotId = :ballotId AND name = :voterCode LIMIT 1'
+        );
+        $usedCodeStatement->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
+        $usedCodeStatement->bindValue(':voterCode', $voterCode, PDO::PARAM_STR);
+        $usedCodeStatement->execute();
+        if ($usedCodeStatement->fetch()) {
+            $dbh->rollBack();
+            $secureTransaction = false;
+            fail(403, 'invalid_voter_code', 'The voter code is invalid or has already been used.');
+        }
+    }
+
     $insert = $dbh->prepare(
         'INSERT INTO votes '
         . '(ballotId, date_created, vote, voteIds, ipAddress, name, fingerprint, group_answers, requestKey, requestHash) '
-        . 'VALUES (:ballotId, UTC_TIMESTAMP(), :vote, :voteIds, :ipAddress, \'\', :fingerprint, NULL, :requestKey, :requestHash)'
+        . 'VALUES (:ballotId, UTC_TIMESTAMP(), :vote, :voteIds, :ipAddress, :voterName, :fingerprint, NULL, :requestKey, :requestHash)'
     );
     $insert->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
     $insert->bindValue(':vote', $voteJson, PDO::PARAM_STR);
     $insert->bindValue(':voteIds', $voteIds, PDO::PARAM_STR);
     $insert->bindValue(':ipAddress', $_SERVER['REMOTE_ADDR'] ?? '', PDO::PARAM_STR);
+    $insert->bindValue(':voterName', $voterCode ?? '', PDO::PARAM_STR);
     $insert->bindValue(':fingerprint', $fingerprint, PDO::PARAM_STR);
     $insert->bindValue(':requestKey', $requestId, PDO::PARAM_STR);
     $insert->bindValue(':requestHash', $requestHash, PDO::PARAM_STR);
     $insert->execute();
     $voteId = (int) $dbh->lastInsertId();
+    if ($secureTransaction) {
+        $dbh->commit();
+        $secureTransaction = false;
+    }
 } catch (PDOException $exception) {
+    if ($secureTransaction && $dbh->inTransaction()) {
+        $dbh->rollBack();
+        $secureTransaction = false;
+    }
     $existingVote = findIdempotentVote($dbh, $ballotId, $requestId);
-    if (!$existingVote || !hash_equals((string) $existingVote['requestHash'], $requestHash)) {
+    if ($existingVote && !hash_equals((string) $existingVote['requestHash'], $requestHash)) {
+        fail(409, 'idempotency_conflict', 'This request ID was already used for a different vote.');
+    }
+    if (!$existingVote) {
         error_log('v2 vote insert failed: ' . $exception->getMessage());
         fail(500, 'server_error', 'The vote could not be recorded.');
     }
