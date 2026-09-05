@@ -1,4 +1,5 @@
 import { dataFromObj } from './utils/helpers.js';
+import { canonicalBallotUrl } from './utils/ballot-links.js';
 
 var $s, $http, $sce, $timeout;
 
@@ -883,7 +884,7 @@ export function initBallot(scope, http, sce, timeout) {
   };
 
   $s.generateQRCode = function (shortCode) {
-    var url = 'https://rankedchoices.com/' + shortCode;
+    var url = canonicalBallotUrl(window.location.origin, shortCode);
     var el = document.getElementById('qrcode');
     el.innerHTML = '';
     new QRCode(el, url);

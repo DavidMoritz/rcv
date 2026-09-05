@@ -28,7 +28,12 @@ test('creates a ballot, casts a vote, and renders results', async ({ page }) => 
   await createView.getByTestId('entries-submit').click();
   await expect(createView.getByTestId('ballot-created')).toBeVisible();
 
-  await createView.getByTestId('vote-self-link').click();
+  const voteLink = await createView.getByTestId('vote-self-link').getAttribute('href');
+  const createdShortcode = new URL(voteLink).pathname.split('/').pop();
+  expect(new URL(voteLink).pathname).toBe(`/ballot/${createdShortcode}`);
+
+  await page.goto(`/${createdShortcode}`);
+  await expect(page).toHaveURL(new RegExp(`/ballot/${createdShortcode}$`));
   const voteView = page.getByTestId('vote-view');
   const ballotForm = voteView.getByTestId('vote-ballot-form');
   await expect(ballotForm.getByTestId('vote-ballot-title')).toContainText(ballotName);

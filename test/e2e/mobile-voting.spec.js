@@ -33,7 +33,7 @@ test('supports a mobile voting sanity flow without drag and drop', async ({ page
   await expect(createView.getByTestId('ballot-created')).toBeVisible();
 
   const voteLink = await createView.getByTestId('vote-self-link').getAttribute('href');
-  const ballotKey = new URL(voteLink).hash.slice(1);
+  const ballotKey = new URL(voteLink).pathname.split('/').pop();
 
   await createView.getByTestId('vote-self-link').click();
 

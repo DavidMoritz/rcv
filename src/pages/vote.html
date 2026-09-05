@@ -234,7 +234,7 @@
           </button>
         </form>
       </div>
-      <h4>Voting URL: {{origin}}/{{ballot.key}}</h4>
+      <h4>Voting URL: {{canonicalBallotUrl(ballot.key)}}</h4>
     </div>
     <div ng-show="thanks" data-testid="vote-thanks">
       <h1 data-testid="vote-ballot-title">Ballot: {{ballot.name}}</h1>
@@ -246,7 +246,7 @@
         Visit <a href="/results#{{shortcode}}">{{origin}}/results#{{ballot.key}}</a> after
         {{resultsReleaseFormatted}} to see the results
       </h5>
-      <h5>Voting URL: {{origin}}/{{ballot.key}}</h5>
+      <h5>Voting URL: {{canonicalBallotUrl(ballot.key)}}</h5>
       <p
         ng-show="user.id && ballotCreatedBy == 'guest'"
         class="text-muted"
