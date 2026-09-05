@@ -1,16 +1,20 @@
 # Expo Migration RFC
 
-- Status: Proposed for Phase 0
+- Status: Accepted; Phases 0 and 1 implemented
 - Date: 2026-08-08
+- Last updated: 2026-09-04
 - Proposer: Emmanuel Jones
 - Decision horizon: architecture and first product milestone
+- Maintainer guidance received: 2026-08-30
 
 ## Summary
 
 Build a new Expo/React Native client alongside the existing AngularJS app. The
-new client will initially reuse the PHP/MySQL backend and preserve the current
-website in production. Migration will proceed through vertical product slices,
-starting with anonymous ballot lookup, voting, and results.
+native client supplements the website rather than replacing it and initially
+reuses the PHP/MySQL backend. RankedChoices.com remains the primary way to
+create and manage ballots. Migration will proceed through vertical product
+slices, starting with the core voter experience: ballot lookup, voting, and
+results.
 
 Do not begin with account management or owner-only ballot mutations. The
 current browser client persists a user ID and name in cookies, while many PHP
@@ -43,6 +47,8 @@ or setup workflow.
 - Replace implicit client identity with explicit server-verified authorization
   before porting account and ballot-management features.
 - Migrate incrementally without interrupting the production AngularJS site.
+- Keep RankedChoices.com as the primary ballot-creation and management surface
+  while the native app focuses on the core voter experience.
 
 ## Non-goals
 
@@ -69,8 +75,9 @@ or setup workflow.
 | Profile and ballot management | `profile.html`, `manage.html` | Milestone 3 |
 | Group questions | create, vote, results, CSV export | Milestone 4 |
 | RCVis integration | browser iframe plus cURL PHP endpoints | Milestone 4 |
-| Custom HTML/iframe content | browser-specific rendering and editing | Web-only until reviewed |
-| Admin, hall of fame, static content | separate/low-use surfaces | Later or remain web-only |
+| Custom HTML/iframe content | browser-specific rendering and editing | Permanently web-only |
+| Admin and wrapping-paper calculator | separate browser-only surfaces | Permanently web-only |
+| Hall of fame and other static content | existing website pages | Open the website from native |
 
 ### Backend and data
 
@@ -147,9 +154,12 @@ Do not mirror every Angular navigation item. Routes should follow user tasks.
 
 ### 3. Preserve links through a compatibility layer
 
-The canonical future route is `https://rankedchoices.com/ballot/<key>`. During
-migration, existing `https://rankedchoices.com/<key>` links must continue to
-work and resolve to the same ballot.
+The canonical future route is `https://rankedchoices.com/ballot/<key>`. Use it
+for newly generated links. Existing `https://rankedchoices.com/<key>` links
+must continue to work permanently as compatibility redirects to the canonical
+route. There is no need to rewrite already-shared links. Going forward, never
+recycle a previously valid shortcode as an ordinary site route or rename a
+ballot merely to reserve a root-level route.
 
 Use iOS Universal Links and Android App Links once a development build exists.
 The domain association files remain a deployment task, not part of the initial
@@ -182,7 +192,8 @@ device key-value storage: <https://docs.expo.dev/versions/latest/sdk/securestore
 Before authenticated Expo features ship:
 
 - hash new passwords server-side with PHP's password APIs;
-- define the legacy-password migration or reset policy;
+- migrate legacy passwords on successful login, then require a reset for any
+  accounts that remain after a defined migration window;
 - add token/session tables with hashed refresh-token material;
 - authorize every protected resource from the verified principal, never from
   a request-supplied user ID;
@@ -194,6 +205,10 @@ Before authenticated Expo features ship:
 Token format is deliberately undecided. Opaque access tokens reduce accidental
 data exposure and make immediate revocation straightforward; signed tokens may
 be chosen only if stateless verification is a demonstrated requirement.
+
+The migration window, deadline, rate limits, and legacy-endpoint removal plan
+are deliberately deferred until Phase 3. They should be decided as part of the
+authentication design rather than planned during anonymous or guest flows.
 
 ### 6. Do not support offline vote submission
 
@@ -230,6 +245,62 @@ Before web cutover, prove:
 - custom HTML/iframe behavior;
 - printing and downloadable results;
 - domain association files and PHP API hosting on the same deployment.
+
+### 9. Use stable native application identifiers
+
+Use `com.rankedchoices.app` as both the Apple bundle ID and Android package
+name for production. Reserve `com.rankedchoices.app.staging` for an optional,
+separately installable staging build. Development builds may continue using a
+development-only identifier until production signing and store setup begin.
+
+### 10. Defer staging infrastructure until store preparation
+
+Use `https://staging.rankedchoices.com` as the eventual device-build staging
+origin, with versioned APIs beneath `/api/v2/`. Provisioning it does not block
+the current migration work: device builds may test against production for now,
+and staging should be established closer to app-store submission.
+
+### 11. Start with crash reporting, not product analytics
+
+Use Sentry for production mobile crash and error reporting. Do not add Aptabase
+or another product-analytics service for the initial launch; revisit product
+analytics after the app has real users.
+
+Third-party telemetry is acceptable only under these constraints:
+
+- never collect ballot names, shortcodes, candidates, rankings, voter codes,
+  email addresses, other vote content, or personally identifying information;
+- do not enable session replay or automatic touch capture;
+- restrict crash context and any future events to privacy-minimizing technical
+  data such as app version, platform, safe error codes, and coarse performance;
+- document collection and retention in the privacy policy before enabling it.
+
+The obsolete Universal Analytics integration in the website should be removed
+separately; it is not part of the Expo launch scope.
+
+### 12. Keep browser-oriented features on the web
+
+The native launch scope is the core voter experience: find a ballot, vote, and
+view results. Keep these features permanently web-only:
+
+- the admin page;
+- the “It’s a Wrap!” wrapping-paper calculator;
+- custom HTML authoring and rendering;
+- arbitrary third-party iframe content;
+- any remaining legacy or experimental HQ voting page.
+
+Keep these web-only initially, but consider native versions later if demand
+justifies them:
+
+- print-optimized results and printable secure-voter-code sheets;
+- bulk CSV and JSON exports;
+- advanced voter-code and grouping administration;
+- RCVis API-key configuration and graph synchronization;
+- detailed ballot-owner management workflows.
+
+Static pages such as About, Terms of Service, secure-election instructions,
+Hall of Fame, and donation information should open on RankedChoices.com rather
+than being duplicated in the native app.
 
 ## Target architecture
 
@@ -291,7 +362,8 @@ be voted from native when supplied a valid code.
 
 ### Phase 3 — authentication and management
 
-- Implement server-side password hashing and the chosen legacy-user migration.
+- Implement server-side password hashing, migrate legacy hashes on successful
+  login, and force a reset for accounts remaining after the migration window.
 - Add token issue, refresh, rotation, and revocation endpoints.
 - Store native refresh credentials in SecureStore.
 - Port registration, login, profile, claim, edit, transfer, reset, and delete
@@ -306,7 +378,8 @@ logged-in user can safely manage only their own ballots.
 - RCVis display/synchronization.
 - Full grouping management and exports.
 - Borda views, custom entries, delayed results, and administrative tools.
-- Decide which browser-specific features remain web-only.
+- Revisit initially web-only owner workflows only where native demand warrants
+  them; permanently web-only features remain on RankedChoices.com.
 - Run the Expo-web proof and decide whether, when, and how to replace AngularJS.
 
 ### Phase 5 — retirement
@@ -347,9 +420,9 @@ and RCVis cURL seams.
 | Expo web harms SEO or dynamic routes | Preserve Angular web until a deployment proof meets web exit criteria |
 | Advanced browser features block parity | Classify each feature as universal, native-specific, or web-only |
 
-## First implementation PR
+## Initial implementation scope (completed)
 
-The first PR should contain only:
+The first implementation PR was intentionally limited to:
 
 - `apps/mobile/` scaffold with TypeScript and Expo Router;
 - environment-based API base URL configuration with a checked-in example;
@@ -359,26 +432,27 @@ The first PR should contain only:
 - adapter unit tests and setup documentation;
 - CI commands scoped to the Expo app.
 
-It should not include voting, authentication, database changes, production
-deployment, universal-link association files, or modifications to legacy API
-responses. That keeps the first review focused on repository layout,
-connectivity, and the compatibility seam.
+It excluded voting, authentication, database changes, production deployment,
+universal-link association files, and modifications to legacy API responses.
+That kept the first review focused on repository layout, connectivity, and the
+compatibility seam.
 
-## Open decisions
+## Remaining decisions
 
-These do not block the first PR:
+Maintainer guidance on 2026-08-30 resolved the original open questions about
+native/web product direction, application identifiers, staging target,
+canonical ballot URLs, the high-level legacy-password approach, launch
+telemetry, and web-only features. The following details remain intentionally
+deferred:
 
-- Is Expo ultimately expected to replace the public website, or only provide
-  native apps?
-- Which Apple bundle ID and Android package name will be used?
-- Which staging domain will device builds use?
-- Should the existing root-shortcode URL remain canonical permanently?
-- Will legacy accounts migrate passwords gradually or require a reset?
-- Which analytics and crash-reporting services are acceptable?
-- Which advanced features are explicitly web-only?
+- Define guest ballot recovery and claim behavior before Phase 2 begins.
+- Define the legacy-password migration window, reset deadline, rate limits, and
+  endpoint-removal plan during the Phase 3 authentication design.
+- Decide whether later product usage warrants privacy-minimizing product
+  analytics or native versions of the initially web-only owner workflows.
 
 ## Review gates
 
-Seek maintainer approval before treating Phase 0 as the working direction.
-After approval, revisit this RFC after the read-only device spike, before
-production link association, and again before Phase 3 authentication work.
+Phase 0 received maintainer approval and the read-only device spike is
+complete. Revisit this RFC before production link association, during
+app-store preparation, and again before Phase 3 authentication work.
