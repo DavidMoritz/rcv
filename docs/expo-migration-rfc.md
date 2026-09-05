@@ -279,6 +279,16 @@ Third-party telemetry is acceptable only under these constraints:
 The obsolete Universal Analytics integration in the website should be removed
 separately; it is not part of the Expo launch scope.
 
+Launch-readiness scaffolding follows this decision without activating data
+collection. Development, staging, and production build variants use
+`com.rankedchoices.dev`, `com.rankedchoices.app.staging`, and
+`com.rankedchoices.app`, respectively. The Sentry SDK is initialized only in a
+native build with an explicit enable flag and DSN, and it remains disabled
+until privacy-policy language and Sentry project credentials exist. A final
+event sanitizer removes application messages, request/user data, breadcrumbs,
+routes, interaction data, and stack-frame values while retaining
+symbolication fields and coarse technical context.
+
 ### 12. Keep browser-oriented features on the web
 
 The native launch scope is the core voter experience: find a ballot, vote, and
