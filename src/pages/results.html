@@ -200,7 +200,7 @@
           <i class="fa fa-print"></i> Print
         </button>
       </div>
-      <h4>Voting URL: {{origin}}/{{shortcode}}</h4>
+      <h4>Voting URL: {{canonicalBallotUrl(shortcode)}}</h4>
       <p
         ng-show="user.id && ballotCreatedBy == 'guest'"
         class="text-muted no-print"

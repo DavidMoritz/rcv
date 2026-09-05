@@ -19,6 +19,12 @@ import {
   canSeeGraph,
   shouldUsePostCutoffPath
 } from './utils/rcvis-helpers.js';
+import {
+  canonicalBallotKey,
+  canonicalBallotPath,
+  canonicalBallotUrl,
+  isLegacyBallotPath
+} from './utils/ballot-links.js';
 
 /* Iframe auto-resize: hosted pages can postMessage their height */
 window.addEventListener('message', function (e) {
@@ -120,10 +126,16 @@ mainApp.controller('MainCtrl', [
 
     var getVoteParam = function (navigate) {
       var param = $loc.$$path.substr(1);
+      var canonicalKey = canonicalBallotKey($loc.$$path);
       let key;
 
       if (!param) {
         $s.navigate('home');
+      } else if (canonicalKey !== null) {
+        if (navigate && ($s.activeLink !== 'vote' || $s.shortcode !== canonicalKey)) {
+          $s.navigate('vote', canonicalKey);
+        }
+        return canonicalKey;
       } else if (param === 'results_json.html') {
         if (navigate) {
           $s.navigate('json');
@@ -238,6 +250,9 @@ mainApp.controller('MainCtrl', [
         showWeeks: false
       },
       origin: window.location.origin,
+      canonicalBallotUrl: function (key) {
+        return canonicalBallotUrl(window.location.origin, key);
+      },
       managedBallotFilter: function (ballot) {
         return ballot.isSecure == 1 || ballot.allowGrouping == 1;
       },
@@ -317,6 +332,10 @@ mainApp.controller('MainCtrl', [
       $http
         .get('/api/get-candidates.php?key=' + $s.shortcode + '&t=' + Date.now())
         .then(function (resp) {
+          if (typeof resp.data !== 'string' && isLegacyBallotPath($loc.$$path, $s.shortcode)) {
+            $loc.path(canonicalBallotPath($s.shortcode)).replace();
+          }
+
           if (resp.data && resp.data.status === 'closed') {
             if (!resp.data.resultsRelease) {
               $s.navigate('results', $s.shortcode);

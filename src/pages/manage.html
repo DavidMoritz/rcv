@@ -5,7 +5,8 @@
           >
           <h1>{{manageBallot.name}}</h1>
           <h4>
-            Shortcode: {{manageBallot.key}} &nbsp; Voting URL: {{origin}}/{{manageBallot.key}}
+            Shortcode: {{manageBallot.key}} &nbsp; Voting URL:
+            {{canonicalBallotUrl(manageBallot.key)}}
           </h4>
           <h4>
             Vote Cutoff: {{!manageBallot.voteCutoff ? 'never' :
@@ -289,7 +290,7 @@
                 <button ng-click="duplicateBallot(manageBallot)" class="btn btn-default btn-sm">
                   <i class="fa fa-clone"></i> Duplicate Ballot
                 </button>
-                <button ng-click="copyToClipboard(origin + '/' + manageBallot.key)" class="btn btn-default btn-sm">
+                <button ng-click="copyToClipboard(canonicalBallotUrl(manageBallot.key))" class="btn btn-default btn-sm">
                   Copy Voting URL
                 </button>
                 <button ng-click="transferBallot(manageBallot)" class="btn btn-default btn-sm">
