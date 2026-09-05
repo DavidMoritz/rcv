@@ -60,6 +60,7 @@ describe('vote submission states', () => {
     expect(getVoteBlocker({ ...ballot, isSecure: true }, 2, now, 'short')).toBe('secure_code_required');
     expect(getVoteBlocker({ ...ballot, isSecure: true }, 2, now, 'ABC001')).toBeNull();
     expect(getVoteBlocker({ ...ballot, allowGrouping: true }, 2, now)).toBe('group_answers_required');
+    expect(getVoteBlocker({ ...ballot, allowGrouping: true }, 2, now, '', true)).toBeNull();
     expect(getVoteBlocker(ballot, 0, now)).toBe('empty_ranking');
     expect(getVoteBlocker(ballot, 2, now)).toBeNull();
   });

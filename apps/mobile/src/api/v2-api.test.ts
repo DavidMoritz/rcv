@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { V2ApiClient, V2ApiError } from './v2-api';
 
 const request = {
+  groupAnswers: { '12': '42', '13': false, '14': 'Blue' },
   key: 'pizza',
   requestId: '12345678-1234-4234-8234-123456789012',
   ranking: [3, 1, 2],
@@ -73,6 +74,26 @@ describe('V2ApiClient.submitVote', () => {
       code: 'invalid_voter_code',
       retryable: false,
       status: 403,
+    });
+  });
+
+  it('preserves invalid grouping-answer errors', async () => {
+    const client = new V2ApiClient({
+      baseUrl: 'https://example.test/api',
+      fetchImpl: async () =>
+        new Response(
+          JSON.stringify({
+            data: null,
+            error: { code: 'invalid_group_answers', message: 'Answers are invalid.' },
+          }),
+          { status: 422 },
+        ),
+    });
+
+    await expect(client.submitVote(request)).rejects.toMatchObject({
+      code: 'invalid_group_answers',
+      retryable: false,
+      status: 422,
     });
   });
 

@@ -68,6 +68,108 @@ function normalizeVoterCode($value): ?string
     return strlen($code) === 6 ? $code : null;
 }
 
+function canonicalizeGroupAnswers($value): ?array
+{
+    if (!is_array($value)) {
+        return null;
+    }
+
+    $answers = [];
+    foreach ($value as $fieldId => $answer) {
+        $id = is_int($fieldId) ? $fieldId : (is_string($fieldId) && ctype_digit($fieldId) ? (int) $fieldId : 0);
+        if ($id <= 0 || array_key_exists($id, $answers)) {
+            return null;
+        }
+
+        if (is_bool($answer)) {
+            $answers[$id] = $answer;
+        } elseif (is_string($answer)) {
+            $answers[$id] = trim($answer);
+        } elseif (is_int($answer) && $answer > 0) {
+            $answers[$id] = (string) $answer;
+        } else {
+            return null;
+        }
+    }
+
+    ksort($answers, SORT_NUMERIC);
+    return $answers;
+}
+
+function validateGroupAnswers(PDO $dbh, int $ballotId, array $answers): array
+{
+    $fieldStatement = $dbh->prepare(
+        'SELECT id, type, required FROM voter_group_fields WHERE ballot_id = :ballotId ORDER BY sort_order ASC, id ASC'
+    );
+    $fieldStatement->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
+    $fieldStatement->execute();
+    $groupFields = $fieldStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    $optionStatement = $dbh->prepare(
+        'SELECT o.id, o.field_id FROM voter_group_options o '
+        . 'JOIN voter_group_fields f ON f.id = o.field_id '
+        . 'WHERE f.ballot_id = :ballotId'
+    );
+    $optionStatement->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
+    $optionStatement->execute();
+    $optionIds = [];
+    foreach ($optionStatement->fetchAll(PDO::FETCH_ASSOC) as $option) {
+        $optionIds[(int) $option['field_id']][(int) $option['id']] = true;
+    }
+
+    $knownFields = [];
+    $normalized = [];
+    $errors = [];
+    foreach ($groupFields as $field) {
+        $fieldId = (int) $field['id'];
+        $knownFields[$fieldId] = true;
+        $type = (string) ($field['type'] ?: 'select');
+        $required = (int) $field['required'] === 1;
+        $hasAnswer = array_key_exists($fieldId, $answers);
+        $answer = $hasAnswer ? $answers[$fieldId] : null;
+        $errorKey = 'groupAnswers.' . $fieldId;
+
+        if ($type === 'checkbox') {
+            if ($hasAnswer && !is_bool($answer)) {
+                $errors[$errorKey] = 'Choose yes or no.';
+            } else {
+                $normalized[$fieldId] = $hasAnswer ? $answer : false;
+            }
+            continue;
+        }
+
+        if ($type === 'text') {
+            if ($hasAnswer && !is_string($answer)) {
+                $errors[$errorKey] = 'Enter a text answer.';
+            } elseif ($required && (!$hasAnswer || $answer === '')) {
+                $errors[$errorKey] = 'This question is required.';
+            } elseif ($hasAnswer && strlen($answer) > 1000) {
+                $errors[$errorKey] = 'Keep this answer under 1,000 characters.';
+            } else {
+                $normalized[$fieldId] = $hasAnswer ? $answer : '';
+            }
+            continue;
+        }
+
+        $optionId = is_string($answer) && ctype_digit($answer) ? (int) $answer : 0;
+        if ($required && (!$hasAnswer || $optionId === 0)) {
+            $errors[$errorKey] = 'This question is required.';
+        } elseif ($hasAnswer && ($optionId === 0 || empty($optionIds[$fieldId][$optionId]))) {
+            $errors[$errorKey] = 'Choose one of the available options.';
+        } else {
+            $normalized[$fieldId] = $optionId === 0 ? '' : (string) $optionId;
+        }
+    }
+
+    foreach ($answers as $fieldId => $_answer) {
+        if (empty($knownFields[$fieldId])) {
+            $errors['groupAnswers.' . $fieldId] = 'This question does not belong to the ballot.';
+        }
+    }
+
+    return ['answers' => $normalized, 'errors' => $errors];
+}
+
 function findIdempotentVote(PDO $dbh, int $ballotId, string $requestId): ?array
 {
     $statement = $dbh->prepare(
@@ -122,14 +224,29 @@ if (!$ballot) {
 
 $ballotId = (int) $ballot['id'];
 $isSecure = (int) $ballot['isSecure'] === 1;
+$allowsGrouping = (int) $ballot['allowGrouping'] === 1;
 $voterCode = $isSecure ? normalizeVoterCode($input['voterCode'] ?? null) : null;
 if ($isSecure && $voterCode === null) {
     fail(422, 'secure_code_required', 'Enter the six-character voter code.');
 }
 
+$groupAnswers = null;
+if ($allowsGrouping) {
+    if (!array_key_exists('groupAnswers', $input)) {
+        fail(422, 'group_answers_required', 'Answer the ballot questions before submitting.');
+    }
+    $groupAnswers = canonicalizeGroupAnswers($input['groupAnswers']);
+    if ($groupAnswers === null) {
+        fail(422, 'invalid_group_answers', 'One or more ballot answers are invalid.');
+    }
+}
+
 $requestPayload = ['ranking' => $ranking];
 if ($isSecure) {
     $requestPayload['voterCode'] = $voterCode;
+}
+if ($allowsGrouping) {
+    $requestPayload['groupAnswers'] = $groupAnswers;
 }
 $requestHash = hash('sha256', json_encode($requestPayload, JSON_UNESCAPED_SLASHES));
 $existingVote = findIdempotentVote($dbh, $ballotId, $requestId);
@@ -152,8 +269,13 @@ if ((int) $ballot['register'] === 1) {
     fail(409, 'voter_name_required', 'This ballot requires a voter name, which is not supported in the anonymous flow.');
 }
 
-if ((int) $ballot['allowGrouping'] === 1) {
-    fail(409, 'group_answers_required', 'This ballot requires voter questions.');
+$groupAnswersJson = null;
+if ($allowsGrouping) {
+    $groupValidation = validateGroupAnswers($dbh, $ballotId, $groupAnswers);
+    if ($groupValidation['errors'] !== []) {
+        fail(422, 'invalid_group_answers', 'One or more ballot answers are invalid.', $groupValidation['errors']);
+    }
+    $groupAnswersJson = json_encode($groupValidation['answers'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 }
 
 $fingerprint = isset($input['fingerprint']) && is_string($input['fingerprint'])
@@ -253,7 +375,7 @@ try {
     $insert = $dbh->prepare(
         'INSERT INTO votes '
         . '(ballotId, date_created, vote, voteIds, ipAddress, name, fingerprint, group_answers, requestKey, requestHash) '
-        . 'VALUES (:ballotId, UTC_TIMESTAMP(), :vote, :voteIds, :ipAddress, :voterName, :fingerprint, NULL, :requestKey, :requestHash)'
+        . 'VALUES (:ballotId, UTC_TIMESTAMP(), :vote, :voteIds, :ipAddress, :voterName, :fingerprint, :groupAnswers, :requestKey, :requestHash)'
     );
     $insert->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
     $insert->bindValue(':vote', $voteJson, PDO::PARAM_STR);
@@ -261,6 +383,11 @@ try {
     $insert->bindValue(':ipAddress', $_SERVER['REMOTE_ADDR'] ?? '', PDO::PARAM_STR);
     $insert->bindValue(':voterName', $voterCode ?? '', PDO::PARAM_STR);
     $insert->bindValue(':fingerprint', $fingerprint, PDO::PARAM_STR);
+    $insert->bindValue(
+        ':groupAnswers',
+        $groupAnswersJson,
+        $groupAnswersJson === null ? PDO::PARAM_NULL : PDO::PARAM_STR
+    );
     $insert->bindValue(':requestKey', $requestId, PDO::PARAM_STR);
     $insert->bindValue(':requestHash', $requestHash, PDO::PARAM_STR);
     $insert->execute();

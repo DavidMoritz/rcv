@@ -2,7 +2,9 @@ import { createLegacyApiClient } from '@/api/client';
 import { LegacyApiError, type BallotDetail, type Candidate } from '@/api/legacy-api';
 import { CandidateRanking } from '@/components/candidate-ranking';
 import { ElectionResults } from '@/components/election-results';
+import { GroupQuestions } from '@/components/group-questions';
 import { VoteSubmission } from '@/components/vote-submission';
+import type { GroupAnswers } from '@/features/group-answers';
 import { createRanking } from '@/features/ranking';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
@@ -25,6 +27,7 @@ export default function BallotScreen() {
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<LoadState>({ status: 'loading', key });
   const [ranking, setRanking] = useState<Candidate[]>([]);
+  const [groupAnswers, setGroupAnswers] = useState<GroupAnswers>({});
   const [voteAccepted, setVoteAccepted] = useState(false);
 
   useEffect(() => {
@@ -33,6 +36,7 @@ export default function BallotScreen() {
     client.getBallot(key, controller.signal).then(
       (detail) => {
         setRanking(createRanking(detail.candidates, detail.ballot.orderedEntries));
+        setGroupAnswers({});
         setVoteAccepted(false);
         setState({ status: 'loaded', key, detail });
       },
@@ -86,7 +90,7 @@ export default function BallotScreen() {
     );
   }
 
-  const { ballot, candidates } = state.detail;
+  const { ballot, candidates, groupFields } = state.detail;
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent} style={styles.screen}>
@@ -112,6 +116,10 @@ export default function BallotScreen() {
           ) : null}
         </View>
 
+        {!voteAccepted && ballot.allowGrouping ? (
+          <GroupQuestions answers={groupAnswers} fields={groupFields} onChange={setGroupAnswers} />
+        ) : null}
+
         {!voteAccepted ? (
           <>
             <Text style={styles.sectionTitle}>Your ranking</Text>
@@ -128,7 +136,13 @@ export default function BallotScreen() {
           </>
         ) : null}
 
-        <VoteSubmission ballot={ballot} onAccepted={() => setVoteAccepted(true)} ranking={ranking} />
+        <VoteSubmission
+          ballot={ballot}
+          groupAnswers={groupAnswers}
+          groupFields={groupFields}
+          onAccepted={() => setVoteAccepted(true)}
+          ranking={ranking}
+        />
         {voteAccepted ? <ElectionResults ballotKey={ballot.key} /> : null}
       </View>
     </ScrollView>

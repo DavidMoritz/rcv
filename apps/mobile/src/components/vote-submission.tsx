@@ -1,5 +1,5 @@
 import { createV2ApiClient } from '@/api/client';
-import type { Ballot, Candidate } from '@/api/legacy-api';
+import type { Ballot, Candidate, GroupField } from '@/api/legacy-api';
 import { V2ApiError } from '@/api/v2-api';
 import {
   blockerMessage,
@@ -10,6 +10,12 @@ import {
   type PendingVoteRequest,
 } from '@/features/vote-submission';
 import { loadInstallationId } from '@/utils/installation-id';
+import {
+  groupAnswersAreValid,
+  groupAnswersKey,
+  normalizeGroupAnswers,
+  type GroupAnswers,
+} from '@/features/group-answers';
 import * as Crypto from 'expo-crypto';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -22,11 +28,19 @@ type SubmissionState =
 
 type VoteSubmissionProps = {
   ballot: Ballot;
+  groupAnswers?: GroupAnswers;
+  groupFields?: readonly GroupField[];
   onAccepted: () => void;
   ranking: readonly Candidate[];
 };
 
-export function VoteSubmission({ ballot, onAccepted, ranking }: VoteSubmissionProps) {
+export function VoteSubmission({
+  ballot,
+  groupAnswers = {},
+  groupFields = [],
+  onAccepted,
+  ranking,
+}: VoteSubmissionProps) {
   const client = useMemo(() => createV2ApiClient(), []);
   const [now, setNow] = useState(() => Date.now());
   const [request, setRequest] = useState<PendingVoteRequest | null>(null);
@@ -34,9 +48,14 @@ export function VoteSubmission({ ballot, onAccepted, ranking }: VoteSubmissionPr
   const rankingKey = ranking.map((candidate) => candidate.id).join(',');
   const normalizedVoterCode = normalizeVoterCode(voterCode);
   const ballotRankingKey = `${ballot.key}|${rankingKey}`;
-  const submissionKey = ballot.isSecure
+  const secureSubmissionKey = ballot.isSecure
     ? `${ballotRankingKey}|${normalizedVoterCode}`
     : ballotRankingKey;
+  const normalizedGroupAnswers = normalizeGroupAnswers(groupFields, groupAnswers);
+  const groupingValid = groupAnswersAreValid(groupFields, groupAnswers);
+  const submissionKey = ballot.allowGrouping
+    ? `${secureSubmissionKey}|${groupAnswersKey(groupFields, groupAnswers)}`
+    : secureSubmissionKey;
   const [state, setState] = useState<SubmissionState>({ status: 'idle', submissionKey });
   const currentState: SubmissionState =
     state.submissionKey === submissionKey ? state : { status: 'idle', submissionKey };
@@ -47,7 +66,7 @@ export function VoteSubmission({ ballot, onAccepted, ranking }: VoteSubmissionPr
     return () => clearInterval(timer);
   }, [ballot.voteCutoff]);
 
-  const blocker = getVoteBlocker(ballot, ranking.length, now, voterCode);
+  const blocker = getVoteBlocker(ballot, ranking.length, now, voterCode, groupingValid);
   const cutoffMessage = formatCutoffCountdown(ballot.voteCutoff, now);
 
   const submit = async () => {
@@ -65,6 +84,7 @@ export function VoteSubmission({ ballot, onAccepted, ranking }: VoteSubmissionPr
         requestId: activeRequestId,
         ranking: ranking.map((candidate) => candidate.id),
         fingerprint,
+        groupAnswers: ballot.allowGrouping ? normalizedGroupAnswers : undefined,
         voterCode: ballot.isSecure ? normalizedVoterCode : undefined,
       });
       setState({

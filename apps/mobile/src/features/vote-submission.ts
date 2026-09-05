@@ -40,12 +40,13 @@ export function getVoteBlocker(
   rankingCount: number,
   now = Date.now(),
   voterCode = '',
+  groupAnswersValid = false,
 ): VoteBlocker | null {
   const cutoff = parseUtcTimestamp(ballot.voteCutoff);
   if (cutoff !== null && now >= cutoff) return 'closed';
   if (ballot.register === 1) return 'voter_name_required';
   if (ballot.isSecure && normalizeVoterCode(voterCode).length !== 6) return 'secure_code_required';
-  if (ballot.allowGrouping) return 'group_answers_required';
+  if (ballot.allowGrouping && !groupAnswersValid) return 'group_answers_required';
   if (rankingCount === 0) return 'empty_ranking';
   return null;
 }
@@ -61,7 +62,7 @@ export function blockerMessage(blocker: VoteBlocker): string {
     case 'secure_code_required':
       return 'Enter the six-character voter code to submit this ballot.';
     case 'group_answers_required':
-      return 'This ballot requires voter questions that are not available in the anonymous flow.';
+      return 'Answer all required voter questions before submitting.';
   }
 }
 
