@@ -3,6 +3,7 @@ export type SubmitVoteRequest = {
   requestId: string;
   ranking: number[];
   fingerprint?: string;
+  voterCode?: string;
 };
 
 export type SubmitVoteResult = {
@@ -30,6 +31,7 @@ export type V2ApiErrorCode =
   | 'voting_closed'
   | 'voter_name_required'
   | 'secure_code_required'
+  | 'invalid_voter_code'
   | 'group_answers_required'
   | 'fingerprint_required'
   | 'duplicate_device'
@@ -73,6 +75,7 @@ function isKnownErrorCode(value: unknown): value is V2ApiErrorCode {
       'voting_closed',
       'voter_name_required',
       'secure_code_required',
+      'invalid_voter_code',
       'group_answers_required',
       'fingerprint_required',
       'duplicate_device',

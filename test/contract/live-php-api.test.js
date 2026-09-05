@@ -39,7 +39,7 @@ async function requestApi(method, endpoint, { query, body } = {}) {
   };
 }
 
-async function createBallot() {
+async function createBallot({ isSecure = false, codeCount = 0 } = {}) {
   const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const key = `contract-${uniqueId}`;
   const createdBy = `contract-test-${uniqueId}`;
@@ -52,7 +52,9 @@ async function createBallot() {
       positions: '1',
       createdBy,
       sqlVoteCutoff: '2099-12-31 23:59:59',
-      sqlResultsRelease: '2099-12-31 23:59:59'
+      sqlResultsRelease: '2099-12-31 23:59:59',
+      isSecure,
+      codeCount
     }
   });
 
@@ -147,6 +149,42 @@ describe('live PHP API contracts', () => {
     });
   });
 
+  it('redeems a secure voter code once while preserving idempotent retries', async () => {
+    const ballot = await createBallot({ isSecure: true, codeCount: 1 });
+    const candidates = await requestApi('GET', 'get-candidates.php', {
+      query: { key: ballot.key }
+    });
+    const ranking = candidates.json.candidates.map((candidate) => Number(candidate.entry_id));
+    const body = {
+      key: ballot.key,
+      requestId: `secure_contract_${Date.now()}`,
+      ranking,
+      voterCode: 'E2EABC'
+    };
+
+    const first = await requestApi('POST', 'v2/votes.php', { body });
+    const replay = await requestApi('POST', 'v2/votes.php', { body });
+    const reused = await requestApi('POST', 'v2/votes.php', {
+      body: { ...body, requestId: `secure_reuse_${Date.now()}` }
+    });
+
+    expect(first.status).toBe(201);
+    expect(first.json).toMatchObject({
+      data: { status: 'accepted', replayed: false },
+      error: null
+    });
+    expect(replay.status).toBe(200);
+    expect(replay.json).toEqual({
+      data: { ...first.json.data, replayed: true },
+      error: null
+    });
+    expect(reused.status).toBe(403);
+    expect(reused.json).toMatchObject({
+      data: null,
+      error: { code: 'invalid_voter_code' }
+    });
+  });
+
   it('creates a ballot, returns candidates, records a vote, and returns results', async () => {
     const ballot = await createBallot();
 
@@ -159,7 +197,7 @@ describe('live PHP API contracts', () => {
         id: ballot.ballotId,
         key: ballot.key,
         name: ballot.ballotName,
-        positions: '1'
+        positions: 1
       }),
       candidates: expect.arrayContaining([
         expect.objectContaining({ candidate: 'Alpha' }),

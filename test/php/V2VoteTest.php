@@ -62,6 +62,93 @@ class V2VoteTest extends ApiTestCase
         $this->assertSame(1, (int) $this->db->query('SELECT COUNT(*) FROM votes')->fetchColumn());
     }
 
+    public function testRecordsASecureVoteUsingTheNormalizedVoterCode(): void
+    {
+        $key = 'secure-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key, 'isSecure' => 1]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice', 'Bob']);
+        $this->seedVoterCode($ballotId, 'abcooi');
+
+        $result = $this->callApi('v2/votes.php', $this->validRequest($key, $entryIds, [
+            'voterCode' => ' ABC001 ',
+        ]));
+
+        $this->assertSame('accepted', $result['body']['data']['status']);
+        $this->assertFalse($result['body']['data']['replayed']);
+        $this->assertNull($result['body']['error']);
+        $this->assertSame('abcooi', $this->db->query('SELECT name FROM votes')->fetchColumn());
+    }
+
+    public function testRejectsAnUnassignedSecureVoterCode(): void
+    {
+        $key = 'secure-invalid-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key, 'isSecure' => 1]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice']);
+        $this->seedRandomCode('unused');
+
+        $result = $this->callApi('v2/votes.php', $this->validRequest($key, $entryIds, [
+            'voterCode' => 'unused',
+        ]));
+
+        $this->assertSame('invalid_voter_code', $result['body']['error']['code']);
+        $this->assertSame(0, (int) $this->db->query('SELECT COUNT(*) FROM votes')->fetchColumn());
+    }
+
+    public function testRejectsASecondVoteUsingTheSameSecureCode(): void
+    {
+        $key = 'secure-used-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key, 'isSecure' => 1]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice', 'Bob']);
+        $this->seedVoterCode($ballotId, 'usemeq');
+
+        $this->callApi('v2/votes.php', $this->validRequest($key, $entryIds, [
+            'voterCode' => 'usemeq',
+        ]));
+        $result = $this->callApi('v2/votes.php', $this->validRequest($key, array_reverse($entryIds), [
+            'requestId' => 'different_request_12345',
+            'voterCode' => 'usemeq',
+        ]));
+
+        $this->assertSame('invalid_voter_code', $result['body']['error']['code']);
+        $this->assertSame(1, (int) $this->db->query('SELECT COUNT(*) FROM votes')->fetchColumn());
+    }
+
+    public function testReplaysASecureVoteWithTheSameRequestAndCode(): void
+    {
+        $key = 'secure-replay-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key, 'isSecure' => 1]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice']);
+        $this->seedVoterCode($ballotId, 'replay');
+        $request = $this->validRequest($key, $entryIds, ['voterCode' => 'replay']);
+
+        $first = $this->callApi('v2/votes.php', $request);
+        $second = $this->callApi('v2/votes.php', $request);
+
+        $this->assertFalse($first['body']['data']['replayed']);
+        $this->assertTrue($second['body']['data']['replayed']);
+        $this->assertSame($first['body']['data']['voteId'], $second['body']['data']['voteId']);
+        $this->assertSame(1, (int) $this->db->query('SELECT COUNT(*) FROM votes')->fetchColumn());
+    }
+
+    public function testRejectsAReusedSecureRequestIdWithADifferentCode(): void
+    {
+        $key = 'secure-conflict-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key, 'isSecure' => 1]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice']);
+        $this->seedVoterCode($ballotId, 'firstx');
+        $this->seedVoterCode($ballotId, 'second');
+
+        $this->callApi('v2/votes.php', $this->validRequest($key, $entryIds, [
+            'voterCode' => 'firstx',
+        ]));
+        $result = $this->callApi('v2/votes.php', $this->validRequest($key, $entryIds, [
+            'voterCode' => 'second',
+        ]));
+
+        $this->assertSame('idempotency_conflict', $result['body']['error']['code']);
+        $this->assertSame(1, (int) $this->db->query('SELECT COUNT(*) FROM votes')->fetchColumn());
+    }
+
     public function testRejectsInvalidRequestFields(): void
     {
         $result = $this->callApi('v2/votes.php', [

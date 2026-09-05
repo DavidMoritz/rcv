@@ -360,6 +360,13 @@ and Android, including failure recovery, without regressing the website.
 Exit criteria: a guest can create and share a basic ballot; secure ballots can
 be voted from native when supplied a valid code.
 
+Secure-code voting can ship as an independent first slice while guest-ballot
+recovery remains unresolved. The native request carries the normalized code;
+the server verifies that it is assigned to the ballot, serializes redemption,
+stores the code in the legacy vote-name field, and preserves idempotent replay
+for an identical request. Invalid and previously used codes intentionally
+share one nonspecific client error.
+
 ### Phase 3 — authentication and management
 
 - Implement server-side password hashing, migrate legacy hashes on successful
@@ -445,7 +452,8 @@ canonical ballot URLs, the high-level legacy-password approach, launch
 telemetry, and web-only features. The following details remain intentionally
 deferred:
 
-- Define guest ballot recovery and claim behavior before Phase 2 begins.
+- Define guest ballot recovery and claim behavior before native guest creation
+  and owner workflows begin.
 - Define the legacy-password migration window, reset deadline, rate limits, and
   endpoint-removal plan during the Phase 3 authentication design.
 - Decide whether later product usage warrants privacy-minimizing product
