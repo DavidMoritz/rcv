@@ -39,7 +39,7 @@ async function requestApi(method, endpoint, { query, body } = {}) {
   };
 }
 
-async function createBallot({ isSecure = false, codeCount = 0 } = {}) {
+async function createBallot({ isSecure = false, codeCount = 0, allowGrouping = false } = {}) {
   const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const key = `contract-${uniqueId}`;
   const createdBy = `contract-test-${uniqueId}`;
@@ -54,7 +54,8 @@ async function createBallot({ isSecure = false, codeCount = 0 } = {}) {
       sqlVoteCutoff: '2099-12-31 23:59:59',
       sqlResultsRelease: '2099-12-31 23:59:59',
       isSecure,
-      codeCount
+      codeCount,
+      allowGrouping
     }
   });
 
@@ -154,12 +155,16 @@ describe('live PHP API contracts', () => {
     const candidates = await requestApi('GET', 'get-candidates.php', {
       query: { key: ballot.key }
     });
+    const codes = await requestApi('POST', 'get-ballot-codes.php', {
+      body: { ballotId: ballot.ballotId, createdBy: ballot.createdBy }
+    });
+    const voterCode = codes.json.codes[0].code;
     const ranking = candidates.json.candidates.map((candidate) => Number(candidate.entry_id));
     const body = {
       key: ballot.key,
       requestId: `secure_contract_${Date.now()}`,
       ranking,
-      voterCode: 'E2EABC'
+      voterCode: voterCode.toUpperCase()
     };
 
     const first = await requestApi('POST', 'v2/votes.php', { body });
@@ -185,6 +190,93 @@ describe('live PHP API contracts', () => {
     });
   });
 
+  it('validates and records grouping answers through the v2 vote contract', async () => {
+    const ballot = await createBallot({ allowGrouping: true });
+    const savedFields = await requestApi('POST', 'save-group-fields.php', {
+      body: {
+        ballotId: ballot.ballotId,
+        createdBy: ballot.createdBy,
+        fields: [
+          {
+            title: 'Region',
+            question_text: 'Where do you live?',
+            type: 'select',
+            required: true,
+            options: ['North', 'South']
+          },
+          {
+            title: 'Member',
+            question_text: 'Are you a member?',
+            type: 'checkbox',
+            required: true,
+            options: []
+          },
+          {
+            title: 'Team',
+            question_text: 'Which team?',
+            type: 'text',
+            required: false,
+            options: []
+          }
+        ]
+      }
+    });
+
+    expect(savedFields.json).toEqual({ data: { success: true } });
+
+    const candidates = await requestApi('GET', 'get-candidates.php', {
+      query: { key: ballot.key }
+    });
+    const [region, member, team] = candidates.json.groupFields;
+    const north = region.options.find((option) => option.label === 'North');
+    const ranking = candidates.json.candidates.map((candidate) => Number(candidate.entry_id));
+    const groupAnswers = {
+      [region.id]: String(north.id),
+      [member.id]: false,
+      [team.id]: '  Blue  '
+    };
+
+    const invalid = await requestApi('POST', 'v2/votes.php', {
+      body: {
+        key: ballot.key,
+        requestId: `group_invalid_${Date.now()}`,
+        ranking,
+        groupAnswers: { ...groupAnswers, [region.id]: '999999999' }
+      }
+    });
+    expect(invalid.status).toBe(422);
+    expect(invalid.json).toMatchObject({
+      data: null,
+      error: {
+        code: 'invalid_group_answers',
+        fields: { [`groupAnswers.${region.id}`]: expect.any(String) }
+      }
+    });
+
+    const accepted = await requestApi('POST', 'v2/votes.php', {
+      body: {
+        key: ballot.key,
+        requestId: `group_contract_${Date.now()}`,
+        ranking,
+        groupAnswers
+      }
+    });
+    expect(accepted.status).toBe(201);
+    expect(accepted.json).toMatchObject({
+      data: { status: 'accepted', replayed: false },
+      error: null
+    });
+
+    const votes = await requestApi('GET', 'get-votes.php', {
+      query: { key: ballot.key }
+    });
+    expect(JSON.parse(votes.json.votes[0].group_answers)).toEqual({
+      [region.id]: String(north.id),
+      [member.id]: false,
+      [team.id]: 'Blue'
+    });
+  });
+
   it('creates a ballot, returns candidates, records a vote, and returns results', async () => {
     const ballot = await createBallot();
 
@@ -196,8 +288,7 @@ describe('live PHP API contracts', () => {
       ballot: expect.objectContaining({
         id: ballot.ballotId,
         key: ballot.key,
-        name: ballot.ballotName,
-        positions: 1
+        name: ballot.ballotName
       }),
       candidates: expect.arrayContaining([
         expect.objectContaining({ candidate: 'Alpha' }),
@@ -206,6 +297,7 @@ describe('live PHP API contracts', () => {
       ]),
       groupFields: []
     });
+    expect(Number(candidates.json.ballot.positions)).toBe(1);
 
     const candidateIds = candidates.json.candidates.map((candidate) => candidate.entry_id);
 

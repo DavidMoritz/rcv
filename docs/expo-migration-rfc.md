@@ -1,8 +1,8 @@
 # Expo Migration RFC
 
-- Status: Accepted; Phases 0 and 1 implemented
+- Status: Accepted; Phases 0 and 1 implemented; Phase 2 in progress
 - Date: 2026-08-08
-- Last updated: 2026-09-04
+- Last updated: 2026-09-05
 - Proposer: Emmanuel Jones
 - Decision horizon: architecture and first product milestone
 - Maintainer guidance received: 2026-08-30
@@ -73,7 +73,8 @@ or setup workflow.
 | Secure voter codes | `code.html`, validation and management endpoints | Milestone 2 |
 | Registration and login | `register.html`, `auth.js` | Milestone 3 |
 | Profile and ballot management | `profile.html`, `manage.html` | Milestone 3 |
-| Group questions | create, vote, results, CSV export | Milestone 4 |
+| Group-question collection while voting | vote flow | Milestone 2 |
+| Grouping configuration, analysis, and export | create, results, CSV export | Milestone 4 |
 | RCVis integration | browser iframe plus cURL PHP endpoints | Milestone 4 |
 | Custom HTML/iframe content | browser-specific rendering and editing | Permanently web-only |
 | Admin and wrapping-paper calculator | separate browser-only surfaces | Permanently web-only |
@@ -366,6 +367,13 @@ the server verifies that it is assigned to the ballot, serializes redemption,
 stores the code in the legacy vote-name field, and preserves idempotent replay
 for an identical request. Invalid and previously used codes intentionally
 share one nonspecific client error.
+
+Grouping-question collection is likewise independent of guest-ballot
+ownership. The native client renders the existing select, checkbox, and text
+field definitions returned with a ballot. The v2 vote endpoint validates field
+and option ownership, required answers, types, and text length, then stores the
+normalized answers in the existing `votes.group_answers` column. Grouping
+configuration, analysis, and export remain web-only initially.
 
 ### Phase 3 — authentication and management
 

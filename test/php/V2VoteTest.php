@@ -149,6 +149,80 @@ class V2VoteTest extends ApiTestCase
         $this->assertSame(1, (int) $this->db->query('SELECT COUNT(*) FROM votes')->fetchColumn());
     }
 
+    public function testRecordsValidatedGroupingAnswers(): void
+    {
+        $key = 'grouped-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key, 'allowGrouping' => 1]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice', 'Bob']);
+        $selectId = $this->seedGroupField($ballotId, ['title' => 'Region', 'type' => 'select']);
+        $northId = $this->seedGroupOption($selectId, 'North');
+        $checkboxId = $this->seedGroupField($ballotId, [
+            'title' => 'Member',
+            'type' => 'checkbox',
+            'sort_order' => 1,
+        ]);
+        $textId = $this->seedGroupField($ballotId, [
+            'title' => 'Team',
+            'type' => 'text',
+            'sort_order' => 2,
+        ]);
+
+        $result = $this->callApi('v2/votes.php', $this->validRequest($key, $entryIds, [
+            'groupAnswers' => [
+                (string) $selectId => (string) $northId,
+                (string) $checkboxId => false,
+                (string) $textId => '  Blue team  ',
+            ],
+        ]));
+
+        $this->assertSame('accepted', $result['body']['data']['status']);
+        $stored = json_decode($this->db->query('SELECT group_answers FROM votes')->fetchColumn(), true);
+        $this->assertSame((string) $northId, $stored[$selectId]);
+        $this->assertFalse($stored[$checkboxId]);
+        $this->assertSame('Blue team', $stored[$textId]);
+    }
+
+    public function testRejectsInvalidGroupingAnswers(): void
+    {
+        $key = 'grouped-invalid-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key, 'allowGrouping' => 1]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice']);
+        $selectId = $this->seedGroupField($ballotId, ['title' => 'Region', 'type' => 'select']);
+        $otherBallotId = $this->seedBallot();
+        $otherFieldId = $this->seedGroupField($otherBallotId, ['title' => 'Other']);
+        $foreignOptionId = $this->seedGroupOption($otherFieldId, 'Elsewhere');
+
+        $result = $this->callApi('v2/votes.php', $this->validRequest($key, $entryIds, [
+            'groupAnswers' => [
+                (string) $selectId => (string) $foreignOptionId,
+                (string) $otherFieldId => 'unexpected',
+            ],
+        ]));
+
+        $this->assertSame('invalid_group_answers', $result['body']['error']['code']);
+        $this->assertArrayHasKey('groupAnswers.' . $selectId, $result['body']['error']['fields']);
+        $this->assertArrayHasKey('groupAnswers.' . $otherFieldId, $result['body']['error']['fields']);
+        $this->assertSame(0, (int) $this->db->query('SELECT COUNT(*) FROM votes')->fetchColumn());
+    }
+
+    public function testRejectsAReusedRequestIdWithDifferentGroupingAnswers(): void
+    {
+        $key = 'grouped-conflict-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key, 'allowGrouping' => 1]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice']);
+        $fieldId = $this->seedGroupField($ballotId, ['title' => 'Team', 'type' => 'text']);
+
+        $this->callApi('v2/votes.php', $this->validRequest($key, $entryIds, [
+            'groupAnswers' => [(string) $fieldId => 'Blue'],
+        ]));
+        $result = $this->callApi('v2/votes.php', $this->validRequest($key, $entryIds, [
+            'groupAnswers' => [(string) $fieldId => 'Green'],
+        ]));
+
+        $this->assertSame('idempotency_conflict', $result['body']['error']['code']);
+        $this->assertSame(1, (int) $this->db->query('SELECT COUNT(*) FROM votes')->fetchColumn());
+    }
+
     public function testRejectsInvalidRequestFields(): void
     {
         $result = $this->callApi('v2/votes.php', [

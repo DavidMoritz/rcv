@@ -29,7 +29,12 @@ The vote endpoint accepts anonymous and secure-code ballots:
   "requestId": "client_generated_16_to_64_chars",
   "ranking": [42, 17, 23],
   "fingerprint": "optional-installation-identifier",
-  "voterCode": "optional-six-character-code"
+  "voterCode": "optional-six-character-code",
+  "groupAnswers": {
+    "7": "19",
+    "8": false,
+    "9": "optional text answer"
+  }
 }
 ```
 
@@ -42,8 +47,17 @@ Secure codes are normalized to lowercase, with `0` treated as `o` and `1`
 treated as `i`, matching the legacy voting flow. Each assigned code can record
 one vote. Missing codes return `secure_code_required`; unassigned or previously
 used codes return the deliberately nonspecific `invalid_voter_code` response.
-Ballots that require a voter name or grouping answers still return typed
-unsupported states for the client.
+
+For ballots with grouping enabled, `groupAnswers` is required and keyed by
+group-field ID. Select answers contain an option ID, checkbox answers are JSON
+booleans, and text answers are strings of at most 1,000 characters. The server
+verifies that every field and selected option belongs to the ballot, supplies
+`false`/empty defaults for optional answers, and returns
+`invalid_group_answers` with field-specific errors when validation fails.
+Grouping answers are included in the idempotency hash.
+
+Ballots that require a voter name still return a typed unsupported state for
+the anonymous client.
 
 ## `GET /api/v2/results.php?key=ballot-shortcode`
 

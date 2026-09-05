@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 const adb = process.env.ADB ?? 'adb';
 const ballotKey = process.env.RCV_E2E_BALLOT_KEY ?? 'pizza';
 const voterCode = process.env.RCV_E2E_VOTER_CODE?.trim();
+const groupOptionLabel = process.env.RCV_E2E_GROUP_OPTION_LABEL?.trim();
 const appPackage = process.env.RCV_E2E_APP_PACKAGE ?? 'host.exp.exponent';
 const incomingUrl =
   process.env.RCV_E2E_INCOMING_URL ??
@@ -36,6 +37,19 @@ function waitFor(pattern, description, timeout = 30_000) {
   throw new Error(`Timed out waiting for ${description}.`);
 }
 
+function scrollUntil(pattern, description, attempts = 6) {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const xml = dump();
+    if (pattern.test(xml)) return xml;
+    run('shell', 'input', 'swipe', '540', '2200', '540', '350', '400');
+  }
+  throw new Error(`Could not locate ${description} after scrolling.`);
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function center(bounds) {
   const match = bounds.match(/\[(\d+),(\d+)\]\[(\d+),(\d+)\]/);
   if (!match) throw new Error(`Invalid Android bounds: ${bounds}`);
@@ -64,6 +78,16 @@ const startArguments = [
 run(...startArguments);
 
 let xml = waitFor(/text="Shortcode: [^"]+"/, 'the incoming ballot link');
+
+if (groupOptionLabel) {
+  const optionPattern = new RegExp(
+    `content-desc="${escapeRegExp(groupOptionLabel)}"[^>]*bounds="([^"]+)"`,
+  );
+  xml = scrollUntil(optionPattern, `group option ${groupOptionLabel}`);
+  tapMatching(xml, optionPattern, `group option ${groupOptionLabel}`);
+}
+
+xml = scrollUntil(/content-desc="Move [^"]+ down"/, 'an accessible move-down control');
 tapMatching(
   xml,
   /content-desc="Move [^"]+ down"[^>]*bounds="([^"]+)"/,
@@ -72,23 +96,13 @@ tapMatching(
 waitFor(/content-desc="Move [^"]+ up"/, 'the updated candidate ranking');
 
 if (voterCode) {
-  for (let attempt = 0; attempt < 6; attempt += 1) {
-    xml = dump();
-    if (/content-desc="Voter code"/.test(xml)) break;
-    run('shell', 'input', 'swipe', '540', '2200', '540', '350', '400');
-  }
-  xml = dump();
+  xml = scrollUntil(/content-desc="Voter code"/, 'the voter-code field');
   tapMatching(xml, /content-desc="Voter code"[^>]*bounds="([^"]+)"/, 'the voter-code field');
   run('shell', 'input', 'text', voterCode);
   run('shell', 'input', 'keyevent', '4');
 }
 
-for (let attempt = 0; attempt < 6; attempt += 1) {
-  xml = dump();
-  if (/content-desc="Submit vote"/.test(xml)) break;
-  run('shell', 'input', 'swipe', '540', '2200', '540', '350', '400');
-}
-xml = dump();
+xml = scrollUntil(/content-desc="Submit vote"/, 'the submit button');
 tapMatching(xml, /content-desc="Submit vote"[^>]*bounds="([^"]+)"/, 'the submit button');
 
 waitFor(/text="Vote recorded"/, 'the accepted vote state');

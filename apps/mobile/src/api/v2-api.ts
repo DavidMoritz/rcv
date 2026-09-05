@@ -1,4 +1,5 @@
 export type SubmitVoteRequest = {
+  groupAnswers?: Record<string, string | boolean>;
   key: string;
   requestId: string;
   ranking: number[];
@@ -33,6 +34,7 @@ export type V2ApiErrorCode =
   | 'secure_code_required'
   | 'invalid_voter_code'
   | 'group_answers_required'
+  | 'invalid_group_answers'
   | 'fingerprint_required'
   | 'duplicate_device'
   | 'invalid_ranking'
@@ -77,6 +79,7 @@ function isKnownErrorCode(value: unknown): value is V2ApiErrorCode {
       'secure_code_required',
       'invalid_voter_code',
       'group_answers_required',
+      'invalid_group_answers',
       'fingerprint_required',
       'duplicate_device',
       'invalid_ranking',
