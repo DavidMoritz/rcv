@@ -4,6 +4,7 @@ const adb = process.env.ADB ?? 'adb';
 const ballotKey = process.env.RCV_E2E_BALLOT_KEY ?? 'pizza';
 const voterCode = process.env.RCV_E2E_VOTER_CODE?.trim();
 const groupOptionLabel = process.env.RCV_E2E_GROUP_OPTION_LABEL?.trim();
+const shareOnly = process.env.RCV_E2E_SHARE_ONLY === '1';
 const appPackage = process.env.RCV_E2E_APP_PACKAGE ?? 'host.exp.exponent';
 const incomingUrl =
   process.env.RCV_E2E_INCOMING_URL ??
@@ -78,6 +79,19 @@ const startArguments = [
 run(...startArguments);
 
 let xml = waitFor(/text="Shortcode: [^"]+"/, 'the incoming ballot link');
+
+if (shareOnly) {
+  tapMatching(
+    xml,
+    /content-desc="Share ballot"[^>]*bounds="([^"]+)"/,
+    'the native share action',
+  );
+  const canonicalUrl = `https://rankedchoices.com/ballot/${encodeURIComponent(ballotKey)}`;
+  waitFor(new RegExp(escapeRegExp(canonicalUrl)), 'the canonical link in the system share sheet');
+  run('shell', 'input', 'keyevent', '4');
+  console.log(`Android share E2E passed for ${canonicalUrl}`);
+  process.exit(0);
+}
 
 if (groupOptionLabel) {
   const optionPattern = new RegExp(

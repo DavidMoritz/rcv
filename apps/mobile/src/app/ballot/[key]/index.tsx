@@ -1,5 +1,6 @@
 import { createLegacyApiClient } from '@/api/client';
 import { LegacyApiError, type BallotDetail, type Candidate } from '@/api/legacy-api';
+import { BallotShareButton } from '@/components/ballot-share-button';
 import { CandidateRanking } from '@/components/candidate-ranking';
 import { ElectionResults } from '@/components/election-results';
 import { GroupQuestions } from '@/components/group-questions';
@@ -98,6 +99,7 @@ export default function BallotScreen() {
         <Text style={styles.eyebrow}>RANK YOUR CHOICES</Text>
         <Text style={styles.title}>{ballot.name}</Text>
         <Text style={styles.shortcode}>Shortcode: {ballot.key}</Text>
+        <BallotShareButton ballotKey={ballot.key} ballotName={ballot.name} />
 
         <View style={styles.metaRow}>
           <View style={styles.metaCard}>
@@ -143,7 +145,16 @@ export default function BallotScreen() {
           onAccepted={() => setVoteAccepted(true)}
           ranking={ranking}
         />
-        {voteAccepted ? <ElectionResults ballotKey={ballot.key} /> : null}
+        {voteAccepted ? (
+          <>
+            <ElectionResults ballotKey={ballot.key} />
+            <BallotShareButton
+              ballotKey={ballot.key}
+              ballotName={ballot.name}
+              label="Share this ballot"
+            />
+          </>
+        ) : null}
       </View>
     </ScrollView>
   );
