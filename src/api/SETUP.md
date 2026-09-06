@@ -42,6 +42,15 @@ For example, Phase 1 vote idempotency requires:
 mysql -u rcv_user -p rcv_db < src/api/migrations/2026-08-16-vote-idempotency.sql
 ```
 
+Native guest ballot creation additionally requires:
+
+```bash
+mysql -u rcv_user -p rcv_db < src/api/migrations/2026-09-06-ballot-management-tokens.sql
+```
+
+Apply this migration before deploying the guest-creation API and its legacy
+mutation guards.
+
 ## Manual Setup (Alternative)
 
 If you prefer to set up step-by-step or need to customize the process:

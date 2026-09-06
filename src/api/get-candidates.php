@@ -25,6 +25,12 @@ if(!empty($key)) {
 	if (!$ballot) {
 		echo "Shortcode not found.";
 	} else {
+		// Token-managed native ballots use a non-public owner marker so legacy
+		// owner endpoints cannot bypass the management credential.
+		if (strpos($ballot['createdBy'], 'native:') === 0) {
+			$ballot['createdBy'] = 'guest';
+		}
+
 		// Check voting cutoff for non-edit requests
 		if (!$edit) {
 			$cutoffSth = $dbh->prepare("SELECT 1 FROM ballots WHERE id = :id AND (voteCutoff IS NULL OR UTC_TIMESTAMP() < voteCutoff)");

@@ -63,6 +63,17 @@ CREATE TABLE ballot_codes (
 );
 CREATE INDEX random_code_idx ON ballot_codes (random_code_id);
 
+CREATE TABLE ballot_management_tokens (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ballot_id int NOT NULL,
+  token_digest char(64) NOT NULL,
+  created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  claimed_at datetime DEFAULT NULL,
+  revoked_at datetime DEFAULT NULL,
+  UNIQUE (token_digest)
+);
+CREATE INDEX ballot_management_token_ballot_id ON ballot_management_tokens (ballot_id);
+
 CREATE TABLE users (
   id bigint NOT NULL,
   username varchar(64) NOT NULL,

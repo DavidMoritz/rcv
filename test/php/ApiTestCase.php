@@ -23,7 +23,7 @@ abstract class ApiTestCase extends TestCase
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // Clean all tables for test isolation
-        foreach (['votes', 'entries', 'ballot_codes', 'random_codes', 'voter_group_options', 'voter_group_fields', 'ballots', 'users', 'contributions'] as $table) {
+        foreach (['votes', 'entries', 'ballot_codes', 'ballot_management_tokens', 'random_codes', 'voter_group_options', 'voter_group_fields', 'ballots', 'users', 'contributions'] as $table) {
             $this->db->exec("DELETE FROM $table");
         }
     }

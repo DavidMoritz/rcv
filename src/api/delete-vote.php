@@ -48,6 +48,10 @@ if(!empty($voteId)) {
         `graphUpdated` = NULL
       WHERE
         `key` = :ballotShortcode
+		AND NOT EXISTS (
+			SELECT 1 FROM ballot_management_tokens
+			WHERE ballot_management_tokens.ballot_id = ballots.id
+		)
     ;";
     $sth2 = $dbh->prepare($query2);
     $sth2->bindValue(':ballotShortcode', $ballotShortcode, PDO::PARAM_STR);

@@ -23,6 +23,14 @@ if (!empty($_POST['entries'])) {
 if (empty($ballotId))
 	$errors['ballotId'] = 'Ballot ID is required.';
 
+if (!empty($ballotId)) {
+	$managedBallot = $dbh->prepare('SELECT 1 FROM ballot_management_tokens WHERE ballot_id = :ballotId LIMIT 1');
+	$managedBallot->execute([':ballotId' => $ballotId]);
+	if ($managedBallot->fetchColumn()) {
+		$errors['authorization'] = 'This ballot requires a management token.';
+	}
+}
+
 function sanitizeName($name) {
 	$name = html_entity_decode($name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 	$name = preg_replace(
