@@ -20,21 +20,19 @@ This is a Ranked Choice Voting (RCV) calculator web application hosted at ranked
 # Install dependencies
 npm install
 
-# Start development server (frontend only, port 3000)
+# Start development server (frontend only, port 2460)
 npm run dev
 
 # Build for production
 npm run build
 
 # Preview production build
-npm preview
+npm run preview
 
 # Start PHP backend (required for API calls during development)
 # IMPORTANT: Always start this when testing locally — Vite proxies /api to localhost:2461
 cd src && php -S localhost:2461
 
-# Alternative: Use Docker Compose for full stack
-docker-compose up
 ```
 
 ## Architecture
@@ -68,36 +66,33 @@ PHP backend in `src/api/` directory. All API endpoints:
 - Use PDO for database access
 - No authentication framework - uses simple cookie-based sessions
 
-**Database connection**: Configure in `src/api/config.php` (copy from `config_sample.php`). For Docker, set SERVER to `'db:3306'`.
+**Database connection**: Configure in `src/api/config.php` (copy from `config_sample.php`).
 
 ### Database Schema
 
-MySQL database with 4 main tables:
+The MySQL database has four core application tables:
 - `ballots` - Ballot metadata (name, key/shortcode, positions, settings, timestamps)
 - `entries` - Candidates/choices for each ballot
 - `votes` - Individual votes (stores serialized ranking data)
 - `users` - User accounts (supports Google/Facebook OAuth and local accounts)
 
-Schema in `Schema.sql`. Important: Production database (`public_html/` folder) may have different schema than `Schema.sql` - see seed data scripts for current production structure.
+The complete fresh-install schema is `src/api/setup-database-prod.sql`. Upgrade
+an existing database by applying unapplied files in `src/api/migrations/` in
+filename order; do not re-run the full schema over existing data. See
+`src/api/SETUP.md` for commands, verification, and safe rollout guidance.
 
 ## Development Workflow
 
 ### Local Development Setup
 
 1. Create `src/api/config.php` from `src/api/config_sample.php`
-2. Set up MySQL database using `Schema.sql`
+2. Set up a fresh MySQL database using `src/api/setup-database-prod.sql`, or
+   upgrade an existing database with the ordered files in `src/api/migrations/`
 3. Run `npm install`
 4. Start two terminals:
-   - Terminal 1: `npm run dev` (frontend dev server on port 3000)
+   - Terminal 1: `npm run dev` (frontend dev server on port 2460)
    - Terminal 2: `cd src && php -S localhost:2461` (PHP backend)
 5. The Vite dev server proxies `/api` requests to `localhost:2461`
-
-### Docker Development
-
-Alternatively, use Docker Compose which sets up both frontend and MySQL:
-- Ensure `src/api/config.php` has SERVER set to `'db:3306'`
-- Run `docker-compose up`
-- Access at `localhost:1337`
 
 ### Deployment
 
@@ -105,7 +100,10 @@ Run `./deploy.sh` to build and deploy to production via rsync over SSH. Requires
 
 ### Production vs Development Code Split
 
-**Important context**: This repo was historically far removed from production. The `public_html/` folder contains what's currently in production and may have features/fixes not in `src/`. Recent work has modernized the build system to bridge this gap.
+**Important context**: This repo was historically far removed from production.
+Recent work modernized the build and maintains the production-aligned database
+shape in `src/api/setup-database-prod.sql`; migrations remain necessary for
+existing deployments.
 
 ## Key Files
 
@@ -115,7 +113,9 @@ Run `./deploy.sh` to build and deploy to production via rsync over SSH. Requires
 - `src/main-entry.js` - Vite entry point (imports app code and bundled dependencies)
 - `vite.config.js` - Build configuration with proxy setup
 - `src/api/config.php` - Database credentials (gitignored, copy from sample)
-- `Schema.sql` - Database schema
+- `src/api/setup-database-prod.sql` - Complete fresh-install database schema
+- `src/api/migrations/` - Ordered upgrades for existing databases
+- `src/api/SETUP.md` - Local setup and migration verification guide
 
 ## API Patterns
 

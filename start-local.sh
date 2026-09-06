@@ -49,7 +49,7 @@ echo "Starting PHP server on http://localhost:2461 ..."
 (cd src && php -S localhost:2461) &
 PHP_PID=$!
 
-echo "Starting Vite dev server on http://localhost:3000 ..."
+echo "Starting Vite dev server on http://localhost:2460 ..."
 npm run dev &
 VITE_PID=$!
 
