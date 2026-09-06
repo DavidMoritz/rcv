@@ -24,6 +24,10 @@ if(!empty($key)) {
 	if (!$ballot) {
 		echo "Shortcode not found.";
 	} else {
+		if (strpos($ballot['createdBy'], 'native:') === 0) {
+			$ballot['createdBy'] = 'guest';
+		}
+
 		$ballotId = $ballot['id'];
 
 		// Fetch votes (vote data only, no ballot metadata on each row)

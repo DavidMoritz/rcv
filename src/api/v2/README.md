@@ -19,6 +19,34 @@ Version 2 endpoints use one JSON envelope for success and failure:
 }
 ```
 
+## `POST /api/v2/ballots.php`
+
+Creates a deliberately basic guest ballot:
+
+```json
+{
+  "name": "Lunch choice",
+  "candidates": ["Tacos", "Curry", "Pizza"]
+}
+```
+
+The server validates and trims the name and 2–100 unique candidate names,
+generates an eight-character shortcode, and applies the ordinary single-seat
+defaults. Client-supplied owner IDs, shortcodes, or advanced settings are not
+accepted as authority and do not change those defaults.
+
+The successful response includes a 256-bit URL-safe `managementToken`. It is
+returned only in this response and must be stored in native SecureStore. The
+database stores only its SHA-256 digest in `ballot_management_tokens`. The raw
+token must not be logged, placed in URLs, included in telemetry, or shared with
+the public ballot link. A later authenticated claim contract will require both
+account authentication and this credential, then revoke or rotate it.
+
+Token-managed ballots also receive an unpredictable internal owner marker that
+public ballot responses mask as `guest`. Legacy mutation paths that do not
+verify an owner are blocked for these ballots, closing the otherwise-available
+legacy bypass around the new credential.
+
 ## `POST /api/v2/votes.php`
 
 The vote endpoint accepts anonymous and secure-code ballots:

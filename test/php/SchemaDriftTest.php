@@ -115,6 +115,7 @@ class SchemaDriftTest extends TestCase
         'entries',
         'random_codes',
         'ballot_codes',
+        'ballot_management_tokens',
         'users',
         'votes',
         'voter_group_fields',
