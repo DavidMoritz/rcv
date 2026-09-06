@@ -14,6 +14,7 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: '#f5f7fa' },
         }}>
         <Stack.Screen name="index" options={{ title: 'Ranked Choices' }} />
+        <Stack.Screen name="create" options={{ title: 'Create ballot' }} />
         <Stack.Screen name="ballot/[key]/index" options={{ title: 'Ballot' }} />
       </Stack>
       <StatusBar style="light" />

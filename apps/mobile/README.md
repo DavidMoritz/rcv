@@ -1,6 +1,6 @@
 # Ranked Choices mobile
 
-Phase 1 of the Ranked Choices Expo migration. This app currently provides a
+Phase 2 of the Ranked Choices Expo migration is in progress. This app currently provides a
 shortcode lookup, ballot preview, and local candidate-ranking controls backed
 by the existing PHP API. Anonymous ballots can be submitted through the typed,
 idempotent v2 vote endpoint. Released votes are loaded through the public v2
@@ -9,7 +9,11 @@ TypeScript module. Secure ballots can be submitted with an assigned voter
 code. Ballots with voter grouping enabled render and validate their select,
 checkbox, and text questions before submission. Ballot and results screens can
 open the system share sheet with the canonical RankedChoices.com ballot link.
-The app does not authenticate users yet.
+The native app can also create a basic guest ballot from a name and candidate
+list. The API generates its shortcode and a one-time management credential;
+only the credential digest is stored on the server, while the native client
+protects the credential with Expo SecureStore. The app does not authenticate
+users yet, and advanced ballot creation remains on RankedChoices.com.
 
 ## Get started
 
@@ -54,6 +58,14 @@ committing the eventual store identity:
 ```bash
 APP_VARIANT=development npx expo run:android
 ```
+
+Basic ballot creation uses a native SecureStore module and is disabled on Expo
+web. Rebuild a development client after adding or updating that dependency. If
+encrypted storage is unavailable, the client refuses to create a ballot. If
+storage fails after the server responds, keep the success screen open and retry
+saving access; the app retains the credential only in memory during that
+recovery state and never shows it in a URL, share payload, log, or error
+message.
 
 The dynamic app config defaults local commands to the development variant.
 `RCV_ANDROID_PACKAGE` and `RCV_IOS_BUNDLE_IDENTIFIER` remain available as
@@ -102,6 +114,21 @@ RCV_E2E_SHARE_ONLY=1 \
 ADB="$ANDROID_HOME/platform-tools/adb" \
 npm run test:android:e2e
 ```
+
+To create a disposable basic ballot, verify that its management credential was
+saved, and open the new ballot in a development build:
+
+```bash
+RCV_E2E_CREATE_BALLOT=1 \
+RCV_E2E_APP_PACKAGE=com.rankedchoices.dev \
+RCV_E2E_INCOMING_URL=rankedchoices:///create \
+RCV_E2E_COLD_START=0 \
+ADB="$ANDROID_HOME/platform-tools/adb" \
+npm run test:android:e2e
+```
+
+This scenario creates a real local database row. Remove the generated
+shortcode from the disposable development database after the test.
 
 Expo Go is the default target. A development build can exercise the custom
 scheme with:
@@ -181,6 +208,8 @@ request, or user data.
 - accessible select, checkbox, and text grouping questions with client and
   server validation
 - canonical ballot-link sharing through the native system share sheet
+- basic guest ballot creation with server-generated shortcodes and encrypted,
+  device-local management credentials
 - local winner and round-by-round result rendering after an accepted vote
 - loading, closed, not-found, malformed-response, and network-error handling
 
