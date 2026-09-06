@@ -13,6 +13,23 @@ export type SubmitVoteResult = {
   replayed: boolean;
 };
 
+export type CreateBallotRequest = {
+  name: string;
+  candidates: string[];
+};
+
+export type CreatedBallot = {
+  status: 'created';
+  ballot: {
+    id: number;
+    key: string;
+    name: string;
+    positions: number;
+  };
+  candidates: { id: number; name: string }[];
+  managementToken: string;
+};
+
 export type ElectionResults = {
   ballot: {
     key: string;
@@ -25,6 +42,7 @@ export type ElectionResults = {
 };
 
 export type V2ApiErrorCode =
+  | 'invalid_json'
   | 'validation_failed'
   | 'ballot_not_found'
   | 'results_not_released'
@@ -40,6 +58,7 @@ export type V2ApiErrorCode =
   | 'invalid_ranking'
   | 'server_error'
   | 'network'
+  | 'creation_unknown'
   | 'http'
   | 'malformed_response';
 
@@ -49,6 +68,7 @@ export class V2ApiError extends Error {
     message: string,
     public readonly retryable = false,
     public readonly status?: number,
+    public readonly fields?: Record<string, string>,
   ) {
     super(message);
     this.name = 'V2ApiError';
@@ -71,6 +91,7 @@ function isKnownErrorCode(value: unknown): value is V2ApiErrorCode {
     typeof value === 'string' &&
     [
       'validation_failed',
+      'invalid_json',
       'ballot_not_found',
       'results_not_released',
       'idempotency_conflict',
@@ -95,6 +116,34 @@ export class V2ApiClient {
   constructor({ baseUrl, fetchImpl = fetch }: V2ApiClientOptions) {
     this.baseUrl = baseUrl.replace(/\/+$/, '');
     this.fetchImpl = fetchImpl;
+  }
+
+  async createBallot(
+    request: CreateBallotRequest,
+    signal?: AbortSignal,
+  ): Promise<CreatedBallot> {
+    let response: Response;
+    try {
+      response = await this.fetchImpl(`${this.baseUrl}/v2/ballots.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request),
+        signal,
+      });
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') throw error;
+      throw new V2ApiError(
+        'creation_unknown',
+        'The connection ended before creation could be confirmed. The ballot may have been created, so do not submit it again yet.',
+      );
+    }
+
+    const envelope = await this.parseEnvelope(response);
+    if (envelope.error !== null) throw this.normalizeError(envelope.error, response.status);
+    if (!response.ok || !isCreatedBallot(envelope.data)) {
+      throw new V2ApiError('malformed_response', 'The ballot server returned invalid success data.');
+    }
+    return envelope.data;
   }
 
   async getResults(key: string, signal?: AbortSignal): Promise<ElectionResults> {
@@ -180,8 +229,47 @@ export class V2ApiClient {
       error.message,
       error.code === 'server_error' || status >= 500,
       status,
+      normalizeErrorFields(error.fields),
     );
   }
+}
+
+function normalizeErrorFields(value: unknown): Record<string, string> | undefined {
+  if (!isRecord(value)) return undefined;
+  const entries = Object.entries(value);
+  if (!entries.every(([, message]) => typeof message === 'string')) return undefined;
+  return Object.fromEntries(entries) as Record<string, string>;
+}
+
+function isCreatedBallot(value: unknown): value is CreatedBallot {
+  if (
+    !isRecord(value) ||
+    value.status !== 'created' ||
+    !isRecord(value.ballot) ||
+    !Array.isArray(value.candidates) ||
+    typeof value.managementToken !== 'string'
+  ) {
+    return false;
+  }
+
+  const ballot = value.ballot;
+  return (
+    Number.isInteger(ballot.id) &&
+    (ballot.id as number) > 0 &&
+    typeof ballot.key === 'string' &&
+    /^[a-f0-9]{8}$/.test(ballot.key) &&
+    typeof ballot.name === 'string' &&
+    ballot.positions === 1 &&
+    value.candidates.length >= 2 &&
+    value.candidates.every(
+      (candidate) =>
+        isRecord(candidate) &&
+        Number.isInteger(candidate.id) &&
+        (candidate.id as number) > 0 &&
+        typeof candidate.name === 'string',
+    ) &&
+    /^[A-Za-z0-9_-]{43}$/.test(value.managementToken)
+  );
 }
 
 function isElectionResults(value: unknown): value is ElectionResults {

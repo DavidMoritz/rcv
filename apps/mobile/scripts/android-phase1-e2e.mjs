@@ -5,10 +5,13 @@ const ballotKey = process.env.RCV_E2E_BALLOT_KEY ?? 'pizza';
 const voterCode = process.env.RCV_E2E_VOTER_CODE?.trim();
 const groupOptionLabel = process.env.RCV_E2E_GROUP_OPTION_LABEL?.trim();
 const shareOnly = process.env.RCV_E2E_SHARE_ONLY === '1';
+const createBallot = process.env.RCV_E2E_CREATE_BALLOT === '1';
 const appPackage = process.env.RCV_E2E_APP_PACKAGE ?? 'host.exp.exponent';
 const incomingUrl =
   process.env.RCV_E2E_INCOMING_URL ??
-  `exp://127.0.0.1:8081/--/ballot/${encodeURIComponent(ballotKey)}`;
+  (createBallot
+    ? 'exp://127.0.0.1:8081/--/create'
+    : `exp://127.0.0.1:8081/--/ballot/${encodeURIComponent(ballotKey)}`);
 const coldStart = process.env.RCV_E2E_COLD_START !== '0';
 
 if (voterCode && !/^[A-Za-z0-9]{6}$/.test(voterCode)) {
@@ -78,7 +81,41 @@ const startArguments = [
 ];
 run(...startArguments);
 
-let xml = waitFor(/text="Shortcode: [^"]+"/, 'the incoming ballot link');
+let xml;
+
+if (createBallot) {
+  const suffix = String(Date.now()).slice(-6);
+  const fields = [
+    ['Ballot name', `E2E-${suffix}`],
+    ['Candidate 1', `Alpha-${suffix}`],
+    ['Candidate 2', `Beta-${suffix}`],
+  ];
+
+  xml = waitFor(/content-desc="Ballot name"/, 'the basic ballot form');
+  for (const [label, value] of fields) {
+    const pattern = new RegExp(`content-desc="${escapeRegExp(label)}"[^>]*bounds="([^"]+)"`);
+    xml = scrollUntil(pattern, `${label} field`);
+    tapMatching(xml, pattern, `${label} field`);
+    run('shell', 'input', 'text', value);
+    run('shell', 'input', 'keyevent', '4');
+  }
+
+  xml = scrollUntil(/content-desc="Create ballot"[^>]*bounds="([^"]+)"/, 'the create button');
+  tapMatching(xml, /content-desc="Create ballot"[^>]*bounds="([^"]+)"/, 'the create button');
+  xml = waitFor(/text="BALLOT CREATED"/, 'the created-ballot state');
+  waitFor(/text="Management access is protected on this device\."/, 'encrypted credential storage');
+
+  const shortcode = xml.match(/text="([a-f0-9]{8})"/)?.[1];
+  if (!shortcode) throw new Error('Could not read the created ballot shortcode.');
+
+  xml = scrollUntil(/content-desc="Open ballot"[^>]*bounds="([^"]+)"/, 'the open-ballot button');
+  tapMatching(xml, /content-desc="Open ballot"[^>]*bounds="([^"]+)"/, 'the open-ballot button');
+  waitFor(new RegExp(`text="Shortcode: ${shortcode}"`), 'the newly created ballot');
+  console.log(`Android guest-ballot creation E2E passed for shortcode ${shortcode}`);
+  process.exit(0);
+}
+
+xml = waitFor(/text="Shortcode: [^"]+"/, 'the incoming ballot link');
 
 if (shareOnly) {
   tapMatching(

@@ -382,6 +382,11 @@ and Android, including failure recovery, without regressing the website.
 
 ### Phase 2 — ballot creation and secure voting
 
+Implementation status: secure-code voting, grouping questions, canonical
+sharing, the guest-creation API, and native basic creation are implemented in
+reviewable vertical slices. Advanced creation and authenticated claiming remain
+deferred as described below.
+
 - Port a name-and-candidates version of the 15-second create flow first.
 - Add optional settings progressively, not as an initial wizard.
 - Issue a server-generated guest management token, store only its digest on the

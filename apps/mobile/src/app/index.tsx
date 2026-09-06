@@ -35,7 +35,7 @@ export default function HomeScreen() {
       style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.card}>
-          <Text style={styles.eyebrow}>PHASE 1</Text>
+          <Text style={styles.eyebrow}>OPEN A BALLOT</Text>
           <Text style={styles.title}>Open a ranked-choice ballot</Text>
           <Text style={styles.description}>
             Enter the shortcode from a Ranked Choices ballot to rank choices and submit an
@@ -61,6 +61,15 @@ export default function HomeScreen() {
             onPress={openBallot}
             style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}>
             <Text style={styles.buttonText}>Find ballot</Text>
+          </Pressable>
+
+          <View style={styles.divider} />
+          <Text style={styles.createPrompt}>Starting a new vote?</Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.push('/create')}
+            style={({ pressed }) => [styles.createButton, pressed && styles.buttonPressed]}>
+            <Text style={styles.createButtonText}>Create a basic ballot</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -145,6 +154,30 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  divider: {
+    backgroundColor: '#dce3e9',
+    height: 1,
+    marginVertical: 24,
+  },
+  createPrompt: {
+    color: '#40556b',
+    fontSize: 15,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  createButton: {
+    alignItems: 'center',
+    borderColor: '#146c43',
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingHorizontal: 18,
+    paddingVertical: 13,
+  },
+  createButtonText: {
+    color: '#146c43',
     fontSize: 16,
     fontWeight: '800',
   },
