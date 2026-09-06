@@ -51,6 +51,69 @@ mysql -u rcv_user -p rcv_db < src/api/migrations/2026-09-06-ballot-management-to
 Apply this migration before deploying the guest-creation API and its legacy
 mutation guards.
 
+#### Safe rollout checklist for the management-token migration
+
+This migration is an additive `CREATE TABLE`: it does not alter or copy any
+existing ballot, entry, vote, or user row. MySQL DDL commits independently,
+however, so treat the schema change and application deployment as two explicit
+steps rather than expecting a transaction to roll both back.
+
+1. **Take the normal verified database snapshot or backup.** Confirm that the
+   backup can be located and restored before changing production. This is a
+   standard deployment guard even though this migration does not mutate an
+   existing table.
+2. **Check for a conflicting table before applying the file:**
+
+   ```sql
+   SELECT TABLE_NAME
+   FROM information_schema.TABLES
+   WHERE TABLE_SCHEMA = 'rcv_db'
+     AND TABLE_NAME = 'ballot_management_tokens';
+   ```
+
+   No row is the expected starting state. If a row is returned, inspect the
+   table with `SHOW CREATE TABLE ballot_management_tokens;` and compare it with
+   the migration. `IF NOT EXISTS` makes an exact re-run harmless, but it does
+   not repair a pre-existing table with the wrong columns or indexes.
+3. **Apply the migration before the application code:**
+
+   ```bash
+   mysql -u rcv_user -p rcv_db < src/api/migrations/2026-09-06-ballot-management-tokens.sql
+   ```
+
+   Deploying in this order matters because the guest-creation endpoint and its
+   legacy mutation guards query the new table.
+4. **Verify the resulting shape before deploying PHP:**
+
+   ```sql
+   SHOW CREATE TABLE ballot_management_tokens;
+   SHOW INDEX FROM ballot_management_tokens;
+   SELECT COUNT(*) FROM ballot_management_tokens;
+   ```
+
+   Confirm that the table uses InnoDB; has `id`, `ballot_id`, `token_digest`,
+   `created_at`, `claimed_at`, and `revoked_at`; has a unique index on
+   `token_digest` and an index on `ballot_id`; and is empty before the feature
+   is used.
+5. **Run the API checks, then deploy a canary:**
+
+   ```bash
+   ./vendor/bin/phpunit test/php/V2BallotTest.php
+   ```
+
+   On a local or staging MySQL database, create one disposable basic ballot
+   through the native flow. Verify one token row exists for its ballot, that
+   `token_digest` is 64 lowercase hexadecimal characters, that public ballot
+   reads expose `createdBy` as `guest`, and that the guarded legacy mutations
+   reject the ballot. Do not print the raw management token in terminal or CI
+   logs. Remove the disposable ballot, entries, and token row afterward.
+6. **Monitor and roll back conservatively.** Watch guest-creation HTTP 5xx
+   responses and database errors. If the application must be rolled back,
+   revert the application code first. The unused table can safely remain. Drop
+   it only after confirming it contains no management credentials and no
+   deployed code references it; once real rows exist, preserve the table for a
+   forward fix instead of destroying access credentials.
+
 ## Manual Setup (Alternative)
 
 If you prefer to set up step-by-step or need to customize the process:
@@ -106,19 +169,20 @@ mysql -u rcv_user -p'rcv_password' rcv_db -e "SHOW TABLES;"
 You should see:
 
 ```
-+-----------------------+
-| Tables_in_rcv_db      |
-+-----------------------+
-| ballot_codes          |
-| ballots               |
-| contributions         |
-| entries               |
-| random_codes          |
-| users                 |
-| voter_group_fields    |
-| voter_group_options   |
-| votes                 |
-+-----------------------+
++--------------------------+
+| Tables_in_rcv_db         |
++--------------------------+
+| ballot_codes             |
+| ballot_management_tokens |
+| ballots                  |
+| contributions            |
+| entries                  |
+| random_codes             |
+| users                    |
+| voter_group_fields       |
+| voter_group_options      |
+| votes                    |
++--------------------------+
 ```
 
 ## Create Config File
@@ -217,6 +281,7 @@ systemctl status mysql
 The complete schema is maintained in `setup-database-prod.sql`, which is synchronized with production. Key tables:
 
 - **ballots** - Ballot metadata, configuration, and settings
+- **ballot_management_tokens** - One-way guest management-token digests and lifecycle timestamps
 - **entries** - Candidates/choices for each ballot
 - **votes** - Individual votes with rankings
 - **users** - User accounts (supports OAuth and local auth)
