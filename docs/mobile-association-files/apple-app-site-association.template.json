@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "APPLE_TEAM_ID.com.rankedchoices.app"
+        ],
+        "components": [
+          {
+            "/": "/ballot/*",
+            "comment": "Open public Ranked Choices ballot links in the production app."
+          }
+        ]
+      }
+    ]
+  }
+}

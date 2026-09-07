@@ -2,7 +2,7 @@
 
 - Status: Accepted; Phases 0 and 1 implemented; Phase 2 in progress
 - Date: 2026-08-08
-- Last updated: 2026-09-06
+- Last updated: 2026-09-07
 - Proposer: Emmanuel Jones
 - Decision horizon: architecture and first product milestone
 - Maintainer guidance received: 2026-08-30 and 2026-09-05
@@ -517,5 +517,18 @@ deferred:
 ## Review gates
 
 Phase 0 received maintainer approval and the read-only device spike is
-complete. Revisit this RFC before production link association, during
-app-store preparation, and again before Phase 3 authentication work.
+complete. Phase 2's guest create -> store credential -> open ballot -> vote ->
+results path has now passed on both Android and an iOS simulator against the
+real local PHP/MySQL backend. Xcode MCP also completed a clean native iOS build.
+
+Production distribution follows `docs/mobile-release-checklist.md`. Store
+account ownership must be settled before registering or uploading the
+production identifiers. The app-side production/staging link declarations and
+non-deployable association templates may be reviewed in advance, but the
+server files require the final Apple Team ID and Google Play app-signing
+fingerprint. The privacy policy, support path, production API deployment,
+association files, signed physical-device testing, and TestFlight/Play internal
+testing are release gates.
+
+Revisit this RFC during store-account setup and again before Phase 3
+authentication work.

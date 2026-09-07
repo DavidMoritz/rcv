@@ -59,6 +59,37 @@ committing the eventual store identity:
 APP_VARIANT=development npx expo run:android
 ```
 
+For iOS, install full Xcode, an iOS simulator runtime, CocoaPods, and CMake.
+The ordinary development-build command generates the ignored native workspace,
+installs pods, builds, and starts the simulator:
+
+```bash
+APP_VARIANT=development npx expo run:ios
+```
+
+To build through Xcode or Xcode MCP, generate and open the workspace explicitly:
+
+```bash
+APP_VARIANT=development npx expo prebuild --platform ios --no-install
+cd ios
+APP_VARIANT=development pod install
+open RankedChoicesDev.xcworkspace
+```
+
+Run the PHP API in a separate terminal. If Expo's development launcher cannot
+reach `127.0.0.1` because Metro selected IPv6 localhost, start Metro with IPv4
+resolution while keeping it off the LAN:
+
+```bash
+NODE_OPTIONS=--dns-result-order=ipv4first \
+APP_VARIANT=development \
+npx expo start --dev-client --host localhost
+```
+
+The first native build compiles the CocoaPods dependency graph and can take
+several minutes. Always open the `.xcworkspace`, not the `.xcodeproj`, after
+pods are installed.
+
 Basic ballot creation uses a native SecureStore module and is disabled on Expo
 web. Rebuild a development client after adding or updating that dependency. If
 encrypted storage is unavailable, the client refuses to create a ballot. If
@@ -168,6 +199,16 @@ The staging package can coexist with production. It intentionally uses the
 production API until `https://staging.rankedchoices.com` is provisioned, as
 approved for the current migration phase. Change the staging profile's
 `EXPO_PUBLIC_API_BASE_URL` when that environment exists.
+
+Production and staging builds also declare verified `https` ballot links for
+their respective domains. The server-side files must be generated from the
+templates in `docs/mobile-association-files/` after the store account owner,
+Apple Team ID, and Google Play app-signing certificate are final. Development
+builds intentionally rely on the `rankedchoices://` scheme and do not claim a
+web domain.
+
+See `docs/mobile-release-checklist.md` for deployment, privacy, TestFlight,
+store-submission, and rollback gates.
 
 ### Crash reporting
 

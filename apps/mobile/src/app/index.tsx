@@ -71,6 +71,14 @@ export default function HomeScreen() {
             style={({ pressed }) => [styles.createButton, pressed && styles.buttonPressed]}>
             <Text style={styles.createButtonText}>Create a basic ballot</Text>
           </Pressable>
+
+          <Pressable
+            accessibilityHint="Opens privacy, terms, contact, and source-code information"
+            accessibilityRole="link"
+            onPress={() => router.push('./about')}
+            style={({ pressed }) => [styles.aboutLink, pressed && styles.buttonPressed]}>
+            <Text style={styles.aboutLinkText}>Privacy & support</Text>
+          </Pressable>
         </View>
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -180,5 +188,16 @@ const styles = StyleSheet.create({
     color: '#146c43',
     fontSize: 16,
     fontWeight: '800',
+  },
+  aboutLink: {
+    alignSelf: 'center',
+    marginTop: 22,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  aboutLinkText: {
+    color: '#40556b',
+    fontSize: 14,
+    textDecorationLine: 'underline',
   },
 });

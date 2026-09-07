@@ -144,6 +144,10 @@ export default defineConfig({
           dest: '.'
         },
         {
+          src: 'privacy-policy.html',
+          dest: '.'
+        },
+        {
           src: 'secure-elections-instructions.html',
           dest: '.'
         },
