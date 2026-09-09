@@ -10,9 +10,17 @@ type ExpoConfigInput = {
 };
 
 type ExpoConfigResult = {
-  android: { package: string };
+  android: {
+    intentFilters?: {
+      action: string;
+      autoVerify: boolean;
+      category: string[];
+      data: { host: string; pathPrefix: string; scheme: string }[];
+    }[];
+    package: string;
+  };
   extra: { buildVariant: string };
-  ios: { bundleIdentifier: string };
+  ios: { associatedDomains?: string[]; bundleIdentifier: string };
   name: string;
   plugins: unknown[];
 };
@@ -57,10 +65,32 @@ describe('mobile app build variants', () => {
   });
 
   it('uses the development identity for an unset or invalid variant', () => {
-    expect(resolveConfig().android.package).toBe('com.rankedchoices.dev');
+    const development = resolveConfig();
+    expect(development.android.package).toBe('com.rankedchoices.dev');
+    expect(development.android.intentFilters).toBeUndefined();
+    expect(development.ios.associatedDomains).toBeUndefined();
 
     process.env.APP_VARIANT = 'unexpected';
     expect(resolveConfig().extra.buildVariant).toBe('development');
+  });
+
+  it.each([
+    ['staging', 'staging.rankedchoices.com'],
+    ['production', 'rankedchoices.com'],
+  ])('configures verified ballot links for %s', (variant, host) => {
+    process.env.APP_VARIANT = variant;
+
+    const config = resolveConfig();
+
+    expect(config.ios.associatedDomains).toEqual([`applinks:${host}`]);
+    expect(config.android.intentFilters).toEqual([
+      {
+        action: 'VIEW',
+        autoVerify: true,
+        category: ['BROWSABLE', 'DEFAULT'],
+        data: [{ host, pathPrefix: '/ballot/', scheme: 'https' }],
+      },
+    ]);
   });
 
   it('preserves explicit platform identifier overrides', () => {

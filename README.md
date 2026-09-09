@@ -305,3 +305,6 @@ This project is open source and free to use. See [LICENSE](LICENSE) file for det
 If you find this app useful, consider [supporting the project](https://paypal.me/rankedchoices).
 
 For questions or feedback, email [davidmoritz@gmail.com](mailto:davidmoritz@gmail.com).
+
+Review the [privacy policy](https://rankedchoices.com/privacy-policy.html) for how the website and
+mobile apps handle ballot, vote, account, device, and diagnostic data.
