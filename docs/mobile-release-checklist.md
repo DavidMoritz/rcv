@@ -7,8 +7,8 @@ or store API credentials in the repository.
 
 ## 1. Ownership and access
 
-- [ ] The maintainer has recorded which durable legal person or entity owns
-  the App Store Connect and Google Play Console listings.
+- [x] David Moritz confirmed on September 9, 2026 that he will own and retain
+  control of the App Store Connect and Google Play Console listings.
 - [ ] The selected accounts, rather than a temporary contributor account, own
   the production identifiers and signing identities.
 - [ ] Release contributors have least-privilege App Manager/Developer access;
@@ -79,6 +79,9 @@ be cached by the device.
 
 ## 5. Privacy, support, and store metadata
 
+- [ ] The maintainer reviews the draft store copy, screenshot plan, privacy
+  matrix, and review notes in `docs/mobile-store-submission.md`; copyable
+  metadata remains versioned in `apps/mobile/store/metadata/en-US.json`.
 - [ ] The maintainer reviews `src/privacy-policy.html` against actual hosting,
   log, backup, analytics, Sentry, and deletion practices and obtains legal
   review if appropriate.
@@ -92,16 +95,34 @@ be cached by the device.
 - [ ] Screenshots contain only disposable ballots and no personal, voter-code,
   management-token, production-account, or private test information.
 - [ ] Export-compliance answers are reviewed for HTTPS and SecureStore usage.
+- [ ] The current Expo placeholder icon is replaced with approved production
+  icon/adaptive-icon assets, and an approved Play feature graphic is exported.
+
+## 6. User-generated content and moderation
+
+- [x] Native ballot creation requires explicit acceptance of content rules,
+  and the Terms prohibit abusive and rights-infringing ballot content.
+- [x] Every native ballot exposes an accessible report action that includes
+  only its public shortcode and canonical link.
+- [ ] The maintainer approves who monitors reports, the response target,
+  evidence-minimization rules, enforcement steps, and backup coverage.
+- [ ] A release rehearsal confirms a report reaches the monitored channel and
+  a moderator can locate and remove a disposable violating ballot.
+- [ ] Store review confirms whether the mail-composer flow is sufficient; if
+  not, ship a first-party report API and moderation queue before release.
 
 Safety check: have one reviewer trace every privacy disclosure back to code or
 an operating practice and a second reviewer compare the final store forms with
-the published policy.
+the published policy. Moderation testing must use fictional content and must
+never place voter codes or management credentials in a report.
 
-## 6. Automated and device verification
+## 7. Automated and device verification
 
 - [ ] Root Vitest, PHPUnit, Playwright, live MySQL contracts, and production
   Vite build pass from the release commit.
 - [ ] Mobile Vitest, TypeScript, Expo lint, and static export pass.
+- [ ] `npm run validate:release` passes and
+  `npm run validate:release:strict` reports no unresolved blockers.
 - [ ] Xcode builds the production scheme without errors or unresolved signing
   warnings; Android produces a signed release bundle.
 - [ ] Android device E2E covers incoming link -> rank -> submit -> results,
@@ -115,7 +136,7 @@ Safety check: use disposable records and record the shortcode or database ID
 before each mutation so cleanup targets only test data. Never capture raw
 management tokens in screenshots, logs, CI artifacts, or bug reports.
 
-## 7. TestFlight and Play internal testing
+## 8. TestFlight and Play internal testing
 
 - [ ] Upload signed release candidates and resolve all processing, privacy,
   compliance, and symbol warnings.
@@ -132,7 +153,7 @@ management tokens in screenshots, logs, CI artifacts, or bug reports.
 Safety check: upload does not authorize release. Keep manual release control
 for version 1.0 so approval cannot publish an unreviewed backend/build pairing.
 
-## 8. Public release and rollback
+## 9. Public release and rollback
 
 - [ ] Re-run external API, policy/support URL, and association-file checks
   immediately before submission and release.
@@ -155,5 +176,7 @@ for diagnosis. Do not drop additive schema during an active rollback.
 - [App Store Connect accounts and roles](https://developer.apple.com/help/app-store-connect/manage-your-team/overview-of-accounts-and-roles/)
 - [TestFlight overview](https://developer.apple.com/help/app-store-connect/test-a-beta-version/testflight-overview)
 - [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
+- [Google Play user-generated-content policy](https://support.google.com/googleplay/android-developer/answer/9876937)
+- [Google Play Data safety guidance](https://support.google.com/googleplay/android-developer/answer/10787469)
 - [Apple app-transfer criteria](https://developer.apple.com/help/app-store-connect/transfer-an-app/app-transfer-criteria)
 - [Expo app-store submission](https://docs.expo.dev/submit/ios/)

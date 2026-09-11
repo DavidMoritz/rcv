@@ -2,10 +2,10 @@
 
 - Status: Accepted; Phases 0 and 1 implemented; Phase 2 in progress
 - Date: 2026-08-08
-- Last updated: 2026-09-07
+- Last updated: 2026-09-11
 - Proposer: Emmanuel Jones
 - Decision horizon: architecture and first product milestone
-- Maintainer guidance received: 2026-08-30 and 2026-09-05
+- Maintainer guidance received: 2026-08-30, 2026-09-05, and 2026-09-09
 
 ## Summary
 
@@ -334,6 +334,34 @@ token, then revoke or rotate the guest credential. Advanced owner workflows
 remain deferred until their endpoints enforce the same server-verified
 authorization boundary.
 
+### 14. Keep the store records under maintainer control
+
+David Moritz will own and control the App Store Connect and Google Play
+Console listings. Release contributors should receive least-privilege access
+to prepare and upload builds; account agreements, recovery, and final release
+control remain with the maintainer. The Expo project and signing identities
+must likewise live under durable maintainer-controlled accounts rather than a
+temporary contributor account.
+
+This ownership decision does not itself authorize a release. Production API
+deployment, signed beta verification, metadata and privacy review, and final
+maintainer approval remain separate gates.
+
+### 15. Treat ballot text as user-generated content
+
+Ballot names and candidate or choice names are user-generated content even
+though the app has no public ballot directory, feed, messaging, or
+recommendations. Native ballot creation therefore requires explicit
+acceptance of content rules, every loaded ballot provides a reporting action,
+and the Terms prohibit abusive, unlawful, deceptive, privacy-violating, and
+rights-infringing content.
+
+These UI controls require a corresponding moderation operation before store
+submission: a monitored channel, response target, evidence-minimizing review,
+ballot-removal capability, escalation rules, and backup coverage. If store
+review does not accept an email-composer report as sufficiently in-app, a
+first-party reporting endpoint and moderation queue must ship before release.
+
 ## Target architecture
 
 ```text
@@ -521,14 +549,19 @@ complete. Phase 2's guest create -> store credential -> open ballot -> vote ->
 results path has now passed on both Android and an iOS simulator against the
 real local PHP/MySQL backend. Xcode MCP also completed a clean native iOS build.
 
-Production distribution follows `docs/mobile-release-checklist.md`. Store
-account ownership must be settled before registering or uploading the
-production identifiers. The app-side production/staging link declarations and
+Production distribution follows `docs/mobile-release-checklist.md`. David
+Moritz has confirmed that he will own and control both store listings. The
+Apple account type, team access, Expo ownership, and signing workflow still
+must be confirmed before registering or uploading the production identifiers.
+The app-side production/staging link declarations and
 non-deployable association templates may be reviewed in advance, but the
 server files require the final Apple Team ID and Google Play app-signing
-fingerprint. The privacy policy, support path, production API deployment,
-association files, signed physical-device testing, and TestFlight/Play internal
-testing are release gates.
+fingerprint. The privacy policy, moderation operation, support path,
+production API deployment, association files, signed physical-device testing,
+and TestFlight/Play internal testing are release gates. Draft store copy,
+privacy answers, screenshot scenes, and reviewer notes live in
+`docs/mobile-store-submission.md`; machine-readable status is checked from
+`apps/mobile/store/`.
 
 Revisit this RFC during store-account setup and again before Phase 3
 authentication work.

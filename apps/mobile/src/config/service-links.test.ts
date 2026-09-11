@@ -6,6 +6,7 @@ import {
   SUPPORT_EMAIL,
   SUPPORT_URL,
   TERMS_OF_SERVICE_URL,
+  createBallotReportUrl,
 } from './service-links';
 
 describe('service links', () => {
@@ -30,5 +31,16 @@ describe('service links', () => {
     expect(SUPPORT_URL).toBe(
       `mailto:${SUPPORT_EMAIL}?subject=Ranked%20Choices%20support`,
     );
+  });
+
+  it('builds a report email containing only the public ballot reference', () => {
+    const reportUrl = createBallotReportUrl(' garden/2026 ');
+
+    expect(reportUrl).toContain(`mailto:${SUPPORT_EMAIL}`);
+    expect(decodeURIComponent(reportUrl)).toContain('Report Ranked Choices ballot garden/2026');
+    expect(decodeURIComponent(reportUrl)).toContain(
+      'https://rankedchoices.com/ballot/garden%2F2026',
+    );
+    expect(reportUrl).not.toContain('managementToken');
   });
 });

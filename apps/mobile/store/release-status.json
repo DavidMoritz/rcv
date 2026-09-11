@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "lastReviewed": "2026-09-11",
+  "resolved": [
+    {
+      "id": "store-owner",
+      "summary": "David Moritz owns and controls the Apple and Google store listings.",
+      "source": "Maintainer email received 2026-09-09"
+    },
+    {
+      "id": "production-identifiers",
+      "summary": "The production Apple bundle ID and Android package are com.rankedchoices.app.",
+      "source": "Maintainer guidance incorporated in the Expo migration RFC"
+    },
+    {
+      "id": "ios-simulator-smoke",
+      "summary": "The guest create, encrypted credential storage, vote, and results flow passed on an iOS simulator.",
+      "source": "Local verification completed 2026-09-07"
+    },
+    {
+      "id": "ios-development-build",
+      "summary": "The regenerated development workspace compiled without signing and the installed app loaded through Metro on an iPhone 17 Pro simulator; the content-rules control was verified through accessibility state.",
+      "source": "Local verification completed 2026-09-11"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "store-access-and-signing",
+      "owner": "David",
+      "summary": "Confirm the Apple account type/signing workflow and invite the release contributor to App Store Connect and Play Console.",
+      "gate": "signed-build"
+    },
+    {
+      "id": "eas-ownership",
+      "owner": "David",
+      "summary": "Create or select the durable Expo organization/project and grant the release contributor access.",
+      "gate": "signed-build"
+    },
+    {
+      "id": "branded-assets",
+      "owner": "David",
+      "summary": "Approve production app icons and a Play feature graphic; the current Expo icon is a placeholder.",
+      "gate": "store-record"
+    },
+    {
+      "id": "production-backend",
+      "owner": "David",
+      "summary": "Back up and migrate production, deploy the v2 APIs, and complete production smoke verification.",
+      "gate": "beta"
+    },
+    {
+      "id": "privacy-metadata",
+      "owner": "David",
+      "summary": "Reconcile and approve the privacy policy, App Privacy answers, and Play Data safety answers against production operations.",
+      "gate": "store-review"
+    },
+    {
+      "id": "moderation-operations",
+      "owner": "David",
+      "summary": "Approve a monitored reporting channel, response target, enforcement process, and backup coverage for user-generated ballot content.",
+      "gate": "store-review"
+    },
+    {
+      "id": "verified-link-identities",
+      "owner": "David",
+      "summary": "Provide the final Apple Team ID and Google Play app-signing SHA-256 fingerprint, then publish and verify association files.",
+      "gate": "beta"
+    },
+    {
+      "id": "staging-environment",
+      "owner": "David",
+      "summary": "Provision staging.rankedchoices.com and point the staging EAS profile to its isolated database and API.",
+      "gate": "beta"
+    },
+    {
+      "id": "beta-verification",
+      "owner": "Release team",
+      "summary": "Complete signed physical-device, TestFlight, and Play internal-testing verification with disposable data.",
+      "gate": "store-review"
+    },
+    {
+      "id": "release-approval",
+      "owner": "David",
+      "summary": "Approve the final build numbers, store copy/assets, review notes, availability, and manual or phased release settings.",
+      "gate": "public-release"
+    }
+  ]
+}

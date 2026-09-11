@@ -2,15 +2,18 @@
   "expo": {
     "name": "Ranked Choices",
     "slug": "ranked-choices",
+    "description": "Create and participate in ranked-choice ballots, then view round-by-round results.",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "rankedchoices",
     "userInterfaceStyle": "automatic",
     "ios": {
+      "buildNumber": "1",
       "icon": "./assets/expo.icon"
     },
     "android": {
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

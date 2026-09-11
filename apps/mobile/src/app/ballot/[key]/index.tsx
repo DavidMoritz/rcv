@@ -1,6 +1,7 @@
 import { createLegacyApiClient } from '@/api/client';
 import { LegacyApiError, type BallotDetail, type Candidate } from '@/api/legacy-api';
 import { BallotShareButton } from '@/components/ballot-share-button';
+import { BallotReportLink } from '@/components/ballot-report-link';
 import { CandidateRanking } from '@/components/candidate-ranking';
 import { ElectionResults } from '@/components/election-results';
 import { GroupQuestions } from '@/components/group-questions';
@@ -155,6 +156,7 @@ export default function BallotScreen() {
             />
           </>
         ) : null}
+        <BallotReportLink ballotKey={ballot.key} />
       </View>
     </ScrollView>
   );

@@ -210,6 +210,27 @@ web domain.
 See `docs/mobile-release-checklist.md` for deployment, privacy, TestFlight,
 store-submission, and rollback gates.
 
+### Store preparation
+
+Versioned release material lives under `store/`:
+
+- `metadata/en-US.json` is the source for the initial English store copy and
+  screenshot captions; and
+- `release-status.json` records decisions that are settled and manual gates
+  that still block a signed beta or public release.
+
+Run `npm run validate:release` during ordinary development to check version
+numbers, build variants, verified-link declarations, store character limits,
+safe association placeholders, and the required content-safety controls. CI
+runs the same command. Immediately before a release, run
+`npm run validate:release:strict`; it intentionally fails while any recorded
+manual blocker remains.
+
+The fuller copy review, screenshot plan, provisional privacy/data-safety
+matrix, moderation requirements, and private reviewer-note draft are in
+`docs/mobile-store-submission.md`. The current Expo placeholder icon is not a
+production asset.
+
 ### Crash reporting
 
 The official Sentry React Native SDK and source-map-aware Metro configuration

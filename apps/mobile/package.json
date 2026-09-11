@@ -38,7 +38,9 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:android:e2e": "node scripts/android-phase1-e2e.mjs"
+    "test:android:e2e": "node scripts/android-phase1-e2e.mjs",
+    "validate:release": "node scripts/validate-release-readiness.mjs",
+    "validate:release:strict": "node scripts/validate-release-readiness.mjs --strict"
   },
   "private": true
 }

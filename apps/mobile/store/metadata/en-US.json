@@ -1,0 +1,58 @@
+{
+  "locale": "en-US",
+  "shared": {
+    "appName": "Ranked Choices",
+    "price": "Free",
+    "availability": ["United States"],
+    "primaryCategory": "Utilities",
+    "secondaryCategory": "Productivity"
+  },
+  "apple": {
+    "subtitle": "Rank choices. See results.",
+    "promotionalText": "Create a simple ballot, share its link, rank choices, and follow transparent round-by-round results without creating an account.",
+    "description": "Ranked Choices helps groups make decisions with ranked-choice voting.\n\nOpen a ballot from a shared link or shortcode, arrange the choices in your order of preference, and submit your vote. When results are available, see the winner and round-by-round totals calculated directly in the app.\n\nYou can also create a basic ballot with a name and at least two choices, then share its canonical RankedChoices.com link. Advanced configuration and ballot management remain available on the website.\n\nSupported voting experiences include anonymous ballots, organizer-provided voter codes, multiple winners, and optional group questions. The app provides clear states when a ballot is closed, unavailable, or requires a feature that is not yet supported natively.\n\nRanked Choices does not contain advertising or product analytics. The source code is public, and privacy, support, and reporting links are available inside the app.\n\nRanked Choices is intended for informal and community decision-making. It is not an official election-administration system and should not be relied on for critical or legally binding voting.",
+    "keywords": "ballot,poll,voting,ranked choice,instant runoff,STV,election,group decision",
+    "supportUrl": "https://rankedchoices.com/about",
+    "marketingUrl": "https://rankedchoices.com/",
+    "privacyPolicyUrl": "https://rankedchoices.com/privacy-policy.html"
+  },
+  "googlePlay": {
+    "shortDescription": "Create ballots, rank choices, vote by code, and see round-by-round results.",
+    "fullDescription": "Ranked Choices helps groups make decisions with ranked-choice voting.\n\nOpen a ballot from a shared link or shortcode, arrange the choices in your order of preference, and submit your vote. When results are available, see the winner and round-by-round totals calculated directly in the app.\n\nCreate a basic ballot with a name and at least two choices, then share its canonical RankedChoices.com link. Advanced configuration and ballot management remain available on the website.\n\nThe app supports anonymous ballots, organizer-provided voter codes, multiple winners, and optional group questions. Clear messages explain when a ballot is closed, unavailable, or requires a feature that is not yet supported natively.\n\nThere are no ads or product analytics. Privacy, support, Terms of Use, and content-reporting links are available from within the app. Ranked Choices is open source.\n\nRanked Choices is intended for informal and community decision-making. It is not an official election-administration system and should not be relied on for critical or legally binding voting.",
+    "supportEmail": "davidmoritz@gmail.com",
+    "website": "https://rankedchoices.com/",
+    "privacyPolicyUrl": "https://rankedchoices.com/privacy-policy.html"
+  },
+  "screenshots": [
+    {
+      "order": 1,
+      "screen": "home",
+      "caption": "Open any shared ballot",
+      "altText": "Ranked Choices home screen with a field for entering a ballot shortcode."
+    },
+    {
+      "order": 2,
+      "screen": "ranking",
+      "caption": "Rank choices your way",
+      "altText": "A sample community garden ballot with accessible controls for reordering choices."
+    },
+    {
+      "order": 3,
+      "screen": "secure-vote",
+      "caption": "Support voter codes and group questions",
+      "altText": "A sample ballot requesting an organizer-provided voter code and a group answer."
+    },
+    {
+      "order": 4,
+      "screen": "results",
+      "caption": "Understand every round",
+      "altText": "Round-by-round ranked-choice results for a fictional community garden ballot."
+    },
+    {
+      "order": 5,
+      "screen": "create",
+      "caption": "Create and share a basic ballot",
+      "altText": "Basic ballot creation form with a ballot name, candidate fields, and content rules."
+    }
+  ]
+}
