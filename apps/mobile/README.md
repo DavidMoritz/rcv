@@ -219,6 +219,27 @@ Versioned release material lives under `store/`:
 - `release-status.json` records decisions that are settled and manual gates
   that still block a signed beta or public release.
 
+### OTA updates (EAS Update)
+
+The app includes `expo-updates` so JavaScript changes can be pushed
+over-the-air without a new store review. Each EAS build profile is assigned a
+`channel` in `eas.json` (development, staging, production).
+
+**Publish an update:**
+
+```bash
+eas update --channel production --message "Fix results rounding bug"
+```
+
+**Roll back:** repoint the channel to a prior update branch via the Expo
+dashboard or `eas channel:rollback`.
+
+**What can be pushed OTA:** any JavaScript, TypeScript, or asset change.
+**What requires a new store build:** native dependency additions/upgrades,
+`app.json` config changes that affect the native layer, or Expo SDK upgrades
+(the `fingerprint` runtime-version policy prevents incompatible updates from
+being served).
+
 Run `npm run validate:release` during ordinary development to check version
 numbers, build variants, verified-link declarations, store character limits,
 safe association placeholders, and the required content-safety controls. CI

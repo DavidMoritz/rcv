@@ -4,13 +4,15 @@
       "developmentClient": true,
       "distribution": "internal",
       "environment": "development",
+      "channel": "development",
       "env": {
         "APP_VARIANT": "development"
       }
     },
     "staging": {
-      "distribution": "internal",
+      "distribution": "store",
       "environment": "preview",
+      "channel": "staging",
       "env": {
         "APP_VARIANT": "staging",
         "EXPO_PUBLIC_API_BASE_URL": "https://rankedchoices.com/api"
@@ -18,6 +20,7 @@
     },
     "production": {
       "environment": "production",
+      "channel": "production",
       "env": {
         "APP_VARIANT": "production",
         "EXPO_PUBLIC_API_BASE_URL": "https://rankedchoices.com/api"

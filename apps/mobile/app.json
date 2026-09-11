@@ -38,9 +38,23 @@
         }
       ]
     ],
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/46dc0277-6e65-4e0d-ac0e-562113394b3a"
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "buildVariant": "development",
+      "router": {},
+      "eas": {
+        "projectId": "46dc0277-6e65-4e0d-ac0e-562113394b3a"
+      }
+    },
+    "owner": "davisomalley"
   }
 }
