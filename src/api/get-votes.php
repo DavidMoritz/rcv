@@ -42,6 +42,14 @@ if(!empty($key)) {
 		$voteSth->execute();
 		$votes = $voteSth->fetchAll(PDO::FETCH_ASSOC);
 
+		// Normalize voteIds to JSON array format (e.g. "[1,2,3]")
+		foreach ($votes as &$v) {
+			if (!empty($v['voteIds']) && $v['voteIds'][0] !== '[') {
+				$v['voteIds'] = '[' . $v['voteIds'] . ']';
+			}
+		}
+		unset($v);
+
 		if (empty($votes)) {
 			echo "No one has voted yet on this ballot.";
 		} else {

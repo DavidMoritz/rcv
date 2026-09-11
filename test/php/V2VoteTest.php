@@ -28,7 +28,7 @@ class V2VoteTest extends ApiTestCase
 
         $vote = $this->db->query('SELECT vote, voteIds, requestKey, requestHash FROM votes')->fetch(PDO::FETCH_ASSOC);
         $this->assertSame(json_encode(['Bob', 'Alice']), $vote['vote']);
-        $this->assertSame(implode(',', array_reverse($entryIds)), $vote['voteIds']);
+        $this->assertSame('[' . implode(',', array_reverse($entryIds)) . ']', $vote['voteIds']);
         $this->assertSame('request_1234567890', $vote['requestKey']);
         $this->assertSame(64, strlen($vote['requestHash']));
     }

@@ -60,7 +60,7 @@ $validIds = array_fill_keys(array_column($entries, 'id'), true);
 $votes = [];
 foreach ($voteStatement->fetchAll(PDO::FETCH_COLUMN) as $voteIds) {
     $ranking = array_values(array_filter(
-        array_map('intval', explode(',', (string) $voteIds)),
+        array_map('intval', explode(',', trim((string) $voteIds, '[]'))),
         fn (int $id): bool => isset($validIds[$id])
     ));
     if ($ranking !== []) {

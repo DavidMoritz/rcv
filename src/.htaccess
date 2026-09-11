@@ -9,6 +9,7 @@ RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^.*$ - [L]
 
 RewriteRule ^/?ballot/[^/]+/?$ /index.html [L,QSA]
+RewriteRule ^/?results/[^/]+/?$ /index.html [L,QSA]
 
 RewriteRule ^/?([^/]+)/?$ #$1 [L,QSA]
 

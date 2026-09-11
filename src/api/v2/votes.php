@@ -321,7 +321,7 @@ if (count($candidateNames) !== count($ranking)) {
 
 $voteNames = array_map(fn (int $candidateId): string => $candidateNames[$candidateId], $ranking);
 $voteJson = json_encode($voteNames, JSON_UNESCAPED_SLASHES);
-$voteIds = implode(',', $ranking);
+$voteIds = '[' . implode(',', $ranking) . ']';
 $secureTransaction = false;
 
 try {
