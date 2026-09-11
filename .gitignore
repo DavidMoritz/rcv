@@ -13,6 +13,7 @@ lib
 **/config.php
 **/config.prod.php
 /src/api/config.php
+/src/hq/firebase-config.js
 .ftppass
 
 # Runtime cache

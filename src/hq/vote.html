@@ -2,17 +2,13 @@
 <html ng-app="mainApp">
   <head>
     <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+    <!-- firebase-config.js is gitignored and must define window.HQ_FIREBASE_CONFIG
+         with your Firebase project's apiKey, authDomain, databaseURL, projectId,
+         storageBucket, and messagingSenderId. -->
+    <script src="./firebase-config.js"></script>
     <script>
-      // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyC8QdEVs7xPHYwqHY9czN8jvH0-u1HylFI",
-        authDomain: "voting-hq.firebaseapp.com",
-        databaseURL: "https://voting-hq.firebaseio.com",
-        projectId: "voting-hq",
-        storageBucket: "voting-hq.appspot.com",
-        messagingSenderId: "813185634153"
-      };
-      firebase.initializeApp(config);
+      // Initialize Firebase using config loaded from firebase-config.js
+      firebase.initializeApp(window.HQ_FIREBASE_CONFIG);
     </script>
   <script type="text/javascript"></script></head>
   <body>
