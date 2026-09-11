@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -16,7 +17,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { V2ApiClient, V2ApiError, type CreatedBallot } from '@/api/v2-api';
 import { BallotShareButton } from '@/components/ballot-share-button';
+import { TermsAcceptance } from '@/components/terms-acceptance';
 import { getApiBaseUrl } from '@/config/api';
+import { TERMS_OF_SERVICE_URL } from '@/config/service-links';
 import { validateGuestBallot, type GuestBallotFieldErrors } from '@/features/guest-ballot';
 import { saveBallotManagementToken } from '@/utils/ballot-management-token-store';
 
@@ -35,6 +38,7 @@ export default function CreateBallotScreen() {
   const [message, setMessage] = useState('');
   const [createdBallot, setCreatedBallot] = useState<CreatedBallotSummary | null>(null);
   const [pendingManagementToken, setPendingManagementToken] = useState<string | null>(null);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const updateCandidate = (index: number, value: string) => {
     setCandidates((current) => current.map((candidate, candidateIndex) =>
@@ -68,6 +72,12 @@ export default function CreateBallotScreen() {
   };
 
   const createBallot = async () => {
+    if (!acceptedTerms) {
+      setMessage('Accept the ballot content rules before creating a ballot.');
+      setSubmissionState('error');
+      return;
+    }
+
     const validation = validateGuestBallot(name, candidates);
     if (!validation.ok) {
       setFieldErrors(validation.errors);
@@ -111,6 +121,15 @@ export default function CreateBallotScreen() {
       } else {
         setMessage('The ballot could not be created. Try again.');
       }
+      setSubmissionState('error');
+    }
+  };
+
+  const openTerms = async () => {
+    try {
+      await Linking.openURL(TERMS_OF_SERVICE_URL);
+    } catch {
+      setMessage('The Terms of Use could not be opened. Visit rankedchoices.com before continuing.');
       setSubmissionState('error');
     }
   };
@@ -265,6 +284,13 @@ export default function CreateBallotScreen() {
                 <Text style={styles.secondaryButtonText}>Add candidate</Text>
               </Pressable>
             ) : null}
+
+            <TermsAcceptance
+              accepted={acceptedTerms}
+              disabled={submitting}
+              onChange={setAcceptedTerms}
+              onOpenTerms={() => void openTerms()}
+            />
 
             {message ? (
               <Text accessibilityLiveRegion="assertive" style={styles.error}>{message}</Text>
