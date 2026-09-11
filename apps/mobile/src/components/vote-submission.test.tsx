@@ -42,4 +42,16 @@ describe('VoteSubmission', () => {
     expect(html).toContain('Enter the six-character voter code');
     expect(html).toMatch(/<button[^>]*aria-disabled="true"[^>]*aria-label="Submit vote"/);
   });
+
+  it('renders a name field and blocks submission when name is required', () => {
+    const nameRequiredBallot = { ...ballot, isSecure: false, register: 1 as const };
+    const html = renderToStaticMarkup(
+      <VoteSubmission ballot={nameRequiredBallot} onAccepted={() => undefined} ranking={ranking} />,
+    );
+
+    expect(html).toContain('aria-label="Voter name"');
+    expect(html).toContain('Your name');
+    expect(html).toContain('Enter your name before submitting.');
+    expect(html).toMatch(/<button[^>]*aria-disabled="true"[^>]*aria-label="Submit vote"/);
+  });
 });

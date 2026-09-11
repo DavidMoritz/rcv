@@ -45,12 +45,16 @@ export function VoteSubmission({
   const [now, setNow] = useState(() => Date.now());
   const [request, setRequest] = useState<PendingVoteRequest | null>(null);
   const [voterCode, setVoterCode] = useState('');
+  const [voterName, setVoterName] = useState('');
   const rankingKey = ranking.map((candidate) => candidate.id).join(',');
   const normalizedVoterCode = normalizeVoterCode(voterCode);
   const ballotRankingKey = `${ballot.key}|${rankingKey}`;
-  const secureSubmissionKey = ballot.isSecure
-    ? `${ballotRankingKey}|${normalizedVoterCode}`
+  const nameSubmissionKey = ballot.register === 1
+    ? `${ballotRankingKey}|name:${voterName.trim()}`
     : ballotRankingKey;
+  const secureSubmissionKey = ballot.isSecure
+    ? `${nameSubmissionKey}|${normalizedVoterCode}`
+    : nameSubmissionKey;
   const normalizedGroupAnswers = normalizeGroupAnswers(groupFields, groupAnswers);
   const groupingValid = groupAnswersAreValid(groupFields, groupAnswers);
   const submissionKey = ballot.allowGrouping
@@ -66,7 +70,7 @@ export function VoteSubmission({
     return () => clearInterval(timer);
   }, [ballot.voteCutoff]);
 
-  const blocker = getVoteBlocker(ballot, ranking.length, now, voterCode, groupingValid);
+  const blocker = getVoteBlocker(ballot, ranking.length, now, voterCode, groupingValid, voterName);
   const cutoffMessage = formatCutoffCountdown(ballot.voteCutoff, now);
 
   const submit = async () => {
@@ -85,6 +89,7 @@ export function VoteSubmission({
         ranking: ranking.map((candidate) => candidate.id),
         fingerprint,
         groupAnswers: ballot.allowGrouping ? normalizedGroupAnswers : undefined,
+        voterName: ballot.register === 1 ? voterName.trim() : undefined,
         voterCode: ballot.isSecure ? normalizedVoterCode : undefined,
       });
       setState({
@@ -140,6 +145,25 @@ export function VoteSubmission({
             style={styles.codeInput}
             textContentType="oneTimeCode"
             value={voterCode}
+          />
+        </View>
+      ) : null}
+
+      {ballot.register === 1 ? (
+        <View style={styles.codeField}>
+          <Text style={styles.codeLabel}>Your name</Text>
+          <TextInput
+            accessibilityLabel="Voter name"
+            autoCapitalize="words"
+            autoComplete="name"
+            autoCorrect={false}
+            editable={currentState.status !== 'submitting'}
+            maxLength={100}
+            onChangeText={setVoterName}
+            placeholder="Your name"
+            style={styles.nameInput}
+            textContentType="name"
+            value={voterName}
           />
         </View>
       ) : null}
@@ -226,6 +250,17 @@ const styles = StyleSheet.create({
     color: '#172b23',
     fontSize: 18,
     letterSpacing: 2,
+    minHeight: 48,
+    paddingHorizontal: 13,
+    paddingVertical: 10,
+  },
+  nameInput: {
+    backgroundColor: '#ffffff',
+    borderColor: '#8aa097',
+    borderRadius: 10,
+    borderWidth: 1,
+    color: '#172b23',
+    fontSize: 16,
     minHeight: 48,
     paddingHorizontal: 13,
     paddingVertical: 10,

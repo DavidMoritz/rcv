@@ -56,7 +56,9 @@ describe('vote submission states', () => {
     const now = Date.parse('2026-08-16T12:00:00Z');
 
     expect(getVoteBlocker({ ...ballot, voteCutoff: '2026-08-16 11:59:59' }, 2, now)).toBe('closed');
-    expect(getVoteBlocker({ ...ballot, register: 1 }, 2, now)).toBe('voter_name_required');
+    expect(getVoteBlocker({ ...ballot, register: 1 }, 2, now, '', false, '')).toBe('voter_name_required');
+    expect(getVoteBlocker({ ...ballot, register: 1 }, 2, now, '', false, '  ')).toBe('voter_name_required');
+    expect(getVoteBlocker({ ...ballot, register: 1 }, 2, now, '', false, 'Alice')).toBeNull();
     expect(getVoteBlocker({ ...ballot, isSecure: true }, 2, now, 'short')).toBe('secure_code_required');
     expect(getVoteBlocker({ ...ballot, isSecure: true }, 2, now, 'ABC001')).toBeNull();
     expect(getVoteBlocker({ ...ballot, allowGrouping: true }, 2, now)).toBe('group_answers_required');

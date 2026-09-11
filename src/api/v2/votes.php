@@ -242,6 +242,9 @@ if ($allowsGrouping) {
 }
 
 $requestPayload = ['ranking' => $ranking];
+if ($voterName !== '') {
+    $requestPayload['voterName'] = $voterName;
+}
 if ($isSecure) {
     $requestPayload['voterCode'] = $voterCode;
 }
@@ -265,8 +268,17 @@ if ($ballot['voteCutoff'] !== null && $ballot['voteCutoff'] < gmdate('Y-m-d H:i:
     fail(409, 'voting_closed', 'Voting has closed for this ballot.');
 }
 
+$voterName = '';
 if ((int) $ballot['register'] === 1) {
-    fail(409, 'voter_name_required', 'This ballot requires a voter name, which is not supported in the anonymous flow.');
+    $voterName = isset($input['voterName']) && is_string($input['voterName'])
+        ? trim($input['voterName'])
+        : '';
+    if ($voterName === '') {
+        fail(422, 'voter_name_required', 'Enter your name before submitting.');
+    }
+    if (strlen($voterName) > 100) {
+        fail(422, 'voter_name_required', 'Name must be 100 characters or fewer.');
+    }
 }
 
 $groupAnswersJson = null;
@@ -381,7 +393,7 @@ try {
     $insert->bindValue(':vote', $voteJson, PDO::PARAM_STR);
     $insert->bindValue(':voteIds', $voteIds, PDO::PARAM_STR);
     $insert->bindValue(':ipAddress', $_SERVER['REMOTE_ADDR'] ?? '', PDO::PARAM_STR);
-    $insert->bindValue(':voterName', $voterCode ?? '', PDO::PARAM_STR);
+    $insert->bindValue(':voterName', $voterName !== '' ? $voterName : ($voterCode ?? ''), PDO::PARAM_STR);
     $insert->bindValue(':fingerprint', $fingerprint, PDO::PARAM_STR);
     $insert->bindValue(
         ':groupAnswers',

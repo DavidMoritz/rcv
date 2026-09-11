@@ -255,23 +255,54 @@ class V2VoteTest extends ApiTestCase
         $this->assertSame(0, (int) $this->db->query('SELECT COUNT(*) FROM votes')->fetchColumn());
     }
 
+    public function testRecordsANameRequiredVoteWithVoterName(): void
+    {
+        $key = 'named-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key, 'register' => 1]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice', 'Bob']);
+
+        $result = $this->callApi('v2/votes.php', $this->validRequest($key, $entryIds, [
+            'voterName' => '  Jane Doe  ',
+        ]));
+
+        $this->assertSame('accepted', $result['body']['data']['status']);
+        $this->assertFalse($result['body']['data']['replayed']);
+        $this->assertNull($result['body']['error']);
+        $this->assertSame('Jane Doe', $this->db->query('SELECT name FROM votes')->fetchColumn());
+    }
+
+    public function testRejectsNameRequiredVoteWithoutVoterName(): void
+    {
+        $key = 'named-missing-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key, 'register' => 1]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice']);
+
+        $result = $this->callApi('v2/votes.php', $this->validRequest($key, $entryIds));
+
+        $this->assertSame('voter_name_required', $result['body']['error']['code']);
+        $this->assertSame(0, (int) $this->db->query('SELECT COUNT(*) FROM votes')->fetchColumn());
+    }
+
     public function testReturnsPhaseSpecificBallotStates(): void
     {
         $cases = [
-            [['voteCutoff' => '2000-01-01 00:00:00'], 'voting_closed'],
-            [['register' => 1], 'voter_name_required'],
-            [['isSecure' => 1], 'secure_code_required'],
-            [['allowGrouping' => 1], 'group_answers_required'],
+            [['voteCutoff' => '2000-01-01 00:00:00'], 'voting_closed', []],
+            [['register' => 1], 'voter_name_required', []],
+            [['isSecure' => 1], 'secure_code_required', []],
+            [['allowGrouping' => 1], 'group_answers_required', []],
         ];
 
-        foreach ($cases as $index => [$settings, $expectedCode]) {
+        foreach ($cases as $index => [$settings, $expectedCode, $extraParams]) {
             $key = "state-$index-" . uniqid();
             $ballotId = $this->seedBallot(array_merge(['key' => $key], $settings));
             $entryIds = $this->seedEntries($ballotId, ['Alice']);
 
             $result = $this->callApi(
                 'v2/votes.php',
-                $this->validRequest($key, $entryIds, ['requestId' => "state_request_12345_$index"])
+                $this->validRequest($key, $entryIds, array_merge(
+                    ['requestId' => "state_request_12345_$index"],
+                    $extraParams
+                ))
             );
 
             $this->assertSame($expectedCode, $result['body']['error']['code']);

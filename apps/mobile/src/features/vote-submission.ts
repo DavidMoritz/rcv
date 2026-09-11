@@ -41,10 +41,11 @@ export function getVoteBlocker(
   now = Date.now(),
   voterCode = '',
   groupAnswersValid = false,
+  voterName = '',
 ): VoteBlocker | null {
   const cutoff = parseUtcTimestamp(ballot.voteCutoff);
   if (cutoff !== null && now >= cutoff) return 'closed';
-  if (ballot.register === 1) return 'voter_name_required';
+  if (ballot.register === 1 && voterName.trim() === '') return 'voter_name_required';
   if (ballot.isSecure && normalizeVoterCode(voterCode).length !== 6) return 'secure_code_required';
   if (ballot.allowGrouping && !groupAnswersValid) return 'group_answers_required';
   if (rankingCount === 0) return 'empty_ranking';
@@ -58,7 +59,7 @@ export function blockerMessage(blocker: VoteBlocker): string {
     case 'empty_ranking':
       return 'Rank at least one choice before submitting.';
     case 'voter_name_required':
-      return 'This ballot requires a voter name and is not available in the anonymous flow.';
+      return 'Enter your name before submitting.';
     case 'secure_code_required':
       return 'Enter the six-character voter code to submit this ballot.';
     case 'group_answers_required':

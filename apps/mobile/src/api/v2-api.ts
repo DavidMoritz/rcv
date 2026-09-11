@@ -5,6 +5,7 @@ export type SubmitVoteRequest = {
   ranking: number[];
   fingerprint?: string;
   voterCode?: string;
+  voterName?: string;
 };
 
 export type SubmitVoteResult = {
