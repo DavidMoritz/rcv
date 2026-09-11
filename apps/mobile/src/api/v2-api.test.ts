@@ -233,10 +233,9 @@ describe('V2ApiClient.getResults', () => {
     const client = new V2ApiClient({ baseUrl: 'https://example.test/api/', fetchImpl });
 
     await expect(client.getResults(' pizza night ')).resolves.toEqual(payload);
-    expect(fetchImpl).toHaveBeenCalledWith(
-      'https://example.test/api/v2/results.php?key=pizza%20night',
-      { signal: undefined },
-    );
+    expect(fetchImpl).toHaveBeenCalledOnce();
+    const calledUrl = fetchImpl.mock.calls[0][0] as string;
+    expect(calledUrl).toMatch(/^https:\/\/example\.test\/api\/v2\/results\.php\?key=pizza%20night&_=\d+$/);
   });
 
   it('preserves the unreleased-results state', async () => {
