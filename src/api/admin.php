@@ -21,6 +21,17 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 $data = [];
 $errors = [];
 
+function auditLog($action, $details) {
+    $entry = [
+        'time' => date('c'),
+        'action' => $action,
+        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+        'adminTokenHash' => isset($_SESSION['admin_token']) ? hash('sha256', $_SESSION['admin_token']) : null,
+        'details' => $details,
+    ];
+    error_log('ADMIN_AUDIT: ' . json_encode($entry));
+}
+
 // Validate admin token for all actions except login
 if ($action !== 'login') {
     $token = $_SERVER['HTTP_X_ADMIN_TOKEN'] ?? '';
@@ -181,6 +192,7 @@ switch ($action) {
             $stmt->execute([':id' => $ballotId]);
 
             $dbh->commit();
+            auditLog('delete-ballot', ['ballotId' => $ballotId]);
             $data['success'] = true;
         } catch (Exception $e) {
             $dbh->rollBack();
@@ -198,6 +210,7 @@ switch ($action) {
         $stmt = $dbh->prepare("DELETE FROM votes WHERE ballotId = :id");
         $stmt->execute([':id' => $ballotId]);
         $data['deletedCount'] = $stmt->rowCount();
+        auditLog('delete-votes', ['ballotId' => $ballotId, 'deletedCount' => $data['deletedCount']]);
         $data['success'] = true;
         break;
 
@@ -223,6 +236,7 @@ switch ($action) {
 
         $stmt = $dbh->prepare("UPDATE ballots SET createdBy = :owner WHERE id = :id");
         $stmt->execute([':owner' => $newOwnerId, ':id' => $ballotId]);
+        auditLog('transfer-ballot', ['ballotId' => $ballotId, 'newOwnerId' => $newOwnerId]);
         $data['success'] = true;
         break;
 
