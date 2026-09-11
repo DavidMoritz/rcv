@@ -17,6 +17,25 @@ export function canonicalBallotKey(pathname) {
   }
 }
 
+export function canonicalResultsPath(key) {
+  return '/results/' + encodeURIComponent(String(key || '').trim());
+}
+
+export function canonicalResultsUrl(origin, key) {
+  return String(origin || '').replace(/\/+$/, '') + canonicalResultsPath(key);
+}
+
+export function canonicalResultsKey(pathname) {
+  var match = String(pathname || '').match(/^\/results\/([^/]+)\/?$/);
+  if (!match) return null;
+
+  try {
+    return decodeURIComponent(match[1]);
+  } catch (_error) {
+    return null;
+  }
+}
+
 export function isLegacyBallotPath(pathname, key) {
   return String(pathname || '') === '/' + encodeURIComponent(String(key || '').trim());
 }

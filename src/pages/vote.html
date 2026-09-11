@@ -240,10 +240,10 @@
       <h1 data-testid="vote-ballot-title">Ballot: {{ballot.name}}</h1>
       <h3>Thank you for voting!</h3>
       <h4 ng-if="resultsReady">
-        <a href="/results#{{shortcode}}" data-testid="results-link">Click here to see the results</a>
+        <a href="/results/{{shortcode}}" data-testid="results-link">Click here to see the results</a>
       </h4>
       <h5 ng-if="ballot.isSecure && !resultsReady">
-        Visit <a href="/results#{{shortcode}}">{{origin}}/results#{{ballot.key}}</a> after
+        Visit <a href="/results/{{shortcode}}">{{canonicalResultsUrl(ballot.key)}}</a> after
         {{resultsReleaseFormatted}} to see the results
       </h5>
       <h5>Voting URL: {{canonicalBallotUrl(ballot.key)}}</h5>

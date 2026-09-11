@@ -271,7 +271,7 @@
                   <span ng-if="!graphStatus.isStale && !graphUpdating">Graph is current</span>
                   <span ng-if="graphUpdating">Updating...</span>
                 </button>
-                <a ng-if="manageBallot.totalVotes > 0" href="/results#{{manageBallot.key}}" target="_blank" class="btn btn-default btn-sm">
+                <a ng-if="manageBallot.totalVotes > 0" href="/results/{{manageBallot.key}}" target="_blank" class="btn btn-default btn-sm">
                   View Results
                 </a>
                 <button ng-if="manageBallot.totalVotes > 0" ng-click="exportCsv(manageBallot)" class="btn btn-default btn-sm">

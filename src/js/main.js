@@ -23,6 +23,8 @@ import {
   canonicalBallotKey,
   canonicalBallotPath,
   canonicalBallotUrl,
+  canonicalResultsKey,
+  canonicalResultsUrl,
   isLegacyBallotPath
 } from './utils/ballot-links.js';
 
@@ -127,10 +129,16 @@ mainApp.controller('MainCtrl', [
     var getVoteParam = function (navigate) {
       var param = $loc.$$path.substr(1);
       var canonicalKey = canonicalBallotKey($loc.$$path);
+      var resultsKey = canonicalResultsKey($loc.$$path);
       let key;
 
       if (!param) {
         $s.navigate('home');
+      } else if (resultsKey !== null) {
+        if (navigate && ($s.activeLink !== 'results' || $s.shortcode !== resultsKey)) {
+          $s.navigate('results', resultsKey);
+        }
+        return resultsKey;
       } else if (canonicalKey !== null) {
         if (navigate && ($s.activeLink !== 'vote' || $s.shortcode !== canonicalKey)) {
           $s.navigate('vote', canonicalKey);
@@ -252,6 +260,9 @@ mainApp.controller('MainCtrl', [
       origin: window.location.origin,
       canonicalBallotUrl: function (key) {
         return canonicalBallotUrl(window.location.origin, key);
+      },
+      canonicalResultsUrl: function (key) {
+        return canonicalResultsUrl(window.location.origin, key);
       },
       managedBallotFilter: function (ballot) {
         return ballot.isSecure == 1 || ballot.allowGrouping == 1;
@@ -1215,8 +1226,13 @@ mainApp.controller('MainCtrl', [
     $s.shortcode = getVoteParam();
 
     if ($s.shortcode) {
-      $s.activeLink = 'vote';
-      $s.getCandidates();
+      if (canonicalResultsKey($loc.$$path) !== null) {
+        $s.activeLink = 'results';
+        $s.getResults();
+      } else {
+        $s.activeLink = 'vote';
+        $s.getCandidates();
+      }
     }
   }
 ]);

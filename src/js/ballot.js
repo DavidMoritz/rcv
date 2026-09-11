@@ -1178,7 +1178,7 @@ export function initBallot(scope, http, sce, timeout) {
       var key = $s.shortcode || $s.ballot.key;
       $http.get('/api/create-graph.php?key=' + key).then(function () {
         var cacheTime = Math.random().toString().slice(-4);
-        window.location = '/results?t=' + cacheTime + '#' + key;
+        window.location = '/results/' + encodeURIComponent(key) + '?t=' + cacheTime;
       });
     }
   };

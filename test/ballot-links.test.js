@@ -3,6 +3,9 @@ import {
   canonicalBallotKey,
   canonicalBallotPath,
   canonicalBallotUrl,
+  canonicalResultsKey,
+  canonicalResultsPath,
+  canonicalResultsUrl,
   isLegacyBallotPath
 } from '@src/js/utils/ballot-links.js';
 
@@ -19,6 +22,21 @@ describe('canonical ballot links', () => {
     expect(canonicalBallotKey('/ballot/pizza/')).toBe('pizza');
     expect(canonicalBallotKey('/results')).toBeNull();
     expect(canonicalBallotKey('/ballot/too/many')).toBeNull();
+  });
+
+  it('builds the canonical results path and URL', () => {
+    expect(canonicalResultsPath(' pizza ')).toBe('/results/pizza');
+    expect(canonicalResultsUrl('https://rankedchoices.com/', 'pizza')).toBe(
+      'https://rankedchoices.com/results/pizza'
+    );
+  });
+
+  it('extracts a shortcode only from a canonical results path', () => {
+    expect(canonicalResultsKey('/results/pizza')).toBe('pizza');
+    expect(canonicalResultsKey('/results/pizza/')).toBe('pizza');
+    expect(canonicalResultsKey('/results')).toBeNull();
+    expect(canonicalResultsKey('/ballot/pizza')).toBeNull();
+    expect(canonicalResultsKey('/results/too/many')).toBeNull();
   });
 
   it('recognizes the legacy root-shortcode path', () => {
