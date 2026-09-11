@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../config.php';
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-cache, no-store, must-revalidate');
 
 function resultsRespond(int $status, ?array $data, ?array $error): void
 {

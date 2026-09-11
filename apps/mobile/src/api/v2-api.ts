@@ -152,7 +152,7 @@ export class V2ApiClient {
     let response: Response;
     try {
       response = await this.fetchImpl(
-        `${this.baseUrl}/v2/results.php?key=${encodeURIComponent(key.trim())}`,
+        `${this.baseUrl}/v2/results.php?key=${encodeURIComponent(key.trim())}&_=${Date.now()}`,
         { signal },
       );
     } catch (error) {
