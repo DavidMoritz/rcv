@@ -9,8 +9,7 @@
     "scheme": "rankedchoices",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "buildNumber": "1",
-      "icon": "./assets/expo.icon"
+      "buildNumber": "1"
     },
     "android": {
       "versionCode": 1,
