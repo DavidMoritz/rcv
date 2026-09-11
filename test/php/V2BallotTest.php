@@ -18,11 +18,11 @@ class V2BallotTest extends ApiTestCase
         $this->assertNull($result['body']['error']);
         $this->assertSame('Lunch choice', $result['body']['data']['ballot']['name']);
         $this->assertSame(1, $result['body']['data']['ballot']['positions']);
-        $this->assertMatchesRegularExpression('/^[a-f0-9]{8}$/', $result['body']['data']['ballot']['key']);
+        $this->assertMatchesRegularExpression('/^[a-z0-9]{4,}$/', $result['body']['data']['ballot']['key']);
         $this->assertMatchesRegularExpression('/^[A-Za-z0-9_-]{43}$/', $result['body']['data']['managementToken']);
 
         $ballot = $this->db->query('SELECT * FROM ballots')->fetch(PDO::FETCH_ASSOC);
-        $this->assertMatchesRegularExpression('/^native:[a-f0-9]{32}$/', $ballot['createdBy']);
+        $this->assertSame('native:anonymous', $ballot['createdBy']);
         $this->assertSame(1, (int) $ballot['positions']);
         $this->assertSame('weighted', $ballot['tieBreak']);
         $this->assertSame(1, (int) $ballot['maxVotes']);
@@ -62,6 +62,19 @@ class V2BallotTest extends ApiTestCase
         $this->assertNotSame($first['body']['data']['managementToken'], $second['body']['data']['managementToken']);
         $this->assertSame(2, (int) $this->db->query('SELECT COUNT(*) FROM ballots')->fetchColumn());
         $this->assertSame(2, (int) $this->db->query('SELECT COUNT(*) FROM ballot_management_tokens')->fetchColumn());
+    }
+
+    public function testStoresInstallationIdAsOwnerMarker(): void
+    {
+        $result = $this->callApi('v2/ballots.php', [
+            'name' => 'Owned ballot',
+            'candidates' => ['A', 'B'],
+            'installationId' => 'abc12345-device-uuid',
+        ]);
+
+        $this->assertSame('created', $result['body']['data']['status']);
+        $ballot = $this->db->query('SELECT createdBy FROM ballots')->fetchColumn();
+        $this->assertSame('native:abc12345-device-uuid', $ballot);
     }
 
     public function testRejectsInvalidBallotDetailsWithoutWritingData(): void

@@ -22,6 +22,7 @@ import { getApiBaseUrl } from '@/config/api';
 import { TERMS_OF_SERVICE_URL } from '@/config/service-links';
 import { validateGuestBallot, type GuestBallotFieldErrors } from '@/features/guest-ballot';
 import { saveBallotManagementToken } from '@/utils/ballot-management-token-store';
+import { loadInstallationId } from '@/utils/installation-id';
 
 type CreatedBallotSummary = Omit<CreatedBallot, 'managementToken'>;
 type SubmissionState = 'editing' | 'submitting' | 'created' | 'storage-error' | 'error';
@@ -103,7 +104,8 @@ export default function CreateBallotScreen() {
 
     setSubmissionState('submitting');
     try {
-      await storeCreatedBallot(await client.createBallot(validation.request));
+      const installationId = await loadInstallationId();
+      await storeCreatedBallot(await client.createBallot({ ...validation.request, installationId }));
     } catch (error) {
       if (error instanceof V2ApiError) {
         const serverFields = error.fields ?? {};

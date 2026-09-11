@@ -17,6 +17,7 @@ export type SubmitVoteResult = {
 export type CreateBallotRequest = {
   name: string;
   candidates: string[];
+  installationId?: string;
 };
 
 export type CreatedBallot = {
@@ -258,7 +259,7 @@ function isCreatedBallot(value: unknown): value is CreatedBallot {
     Number.isInteger(ballot.id) &&
     (ballot.id as number) > 0 &&
     typeof ballot.key === 'string' &&
-    /^[a-f0-9]{8}$/.test(ballot.key) &&
+    /^[a-z0-9]{4,}$/.test(ballot.key) &&
     typeof ballot.name === 'string' &&
     ballot.positions === 1 &&
     value.candidates.length >= 2 &&

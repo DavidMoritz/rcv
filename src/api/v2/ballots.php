@@ -95,18 +95,23 @@ $ballotId = null;
 try {
     $managementToken = randomUrlSafeString(32);
     $tokenDigest = hash('sha256', $managementToken);
-    $ownerMarker = 'native:' . bin2hex(random_bytes(16));
+    $installationId = isset($request['installationId']) && is_string($request['installationId'])
+        ? trim($request['installationId'])
+        : '';
+    $ownerMarker = $installationId !== '' ? 'native:' . substr($installationId, 0, 64) : 'native:anonymous';
 
-    for ($attempt = 0; $attempt < 5; $attempt++) {
-        $key = bin2hex(random_bytes(4));
+    $keyLength = 4;
+    for ($attempt = 0; $attempt < 10; $attempt++) {
+        $key = substr(base_convert(bin2hex(random_bytes(4)), 16, 36), 0, $keyLength);
         $keyStatement = $dbh->prepare('SELECT COUNT(*) FROM ballots WHERE `key` = :key');
         $keyStatement->execute([':key' => $key]);
         if ((int) $keyStatement->fetchColumn() === 0) {
             break;
         }
+        $keyLength++;
     }
 
-    if (!isset($key) || $attempt === 5) {
+    if (!isset($key) || $attempt === 10) {
         throw new RuntimeException('Could not allocate a ballot shortcode.');
     }
 
