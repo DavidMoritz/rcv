@@ -210,6 +210,18 @@ web domain.
 See `docs/mobile-release-checklist.md` for deployment, privacy, TestFlight,
 store-submission, and rollback gates.
 
+### Building and submitting
+
+```bash
+npm run build:ios        # local production build, output in builds/
+npm run build:android    # remote EAS production build
+npm run submit:ios       # submit latest .ipa from builds/ to TestFlight
+```
+
+iOS builds run locally (`--local`) to preserve the free EAS tier for Android.
+The `build:ios` script automatically moves the `.ipa` to `builds/` (gitignored).
+`submit:ios` picks the newest `.ipa` from that directory.
+
 ### Store preparation
 
 Versioned release material lives under `store/`:
@@ -249,8 +261,8 @@ manual blocker remains.
 
 The fuller copy review, screenshot plan, provisional privacy/data-safety
 matrix, moderation requirements, and private reviewer-note draft are in
-`docs/mobile-store-submission.md`. The current Expo placeholder icon is not a
-production asset.
+`docs/mobile-store-submission.md`. The app icon and Android adaptive icon assets use the
+branded spraycan mascot.
 
 ### Crash reporting
 

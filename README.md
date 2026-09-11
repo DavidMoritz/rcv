@@ -243,7 +243,7 @@ This runs 115 automated tests (83 frontend via Vitest + 32 PHP API via PHPUnit) 
 
 ### Ideas for Contribution
 
-- **Native mobile app** — A React Native, Flutter, or Swift/Kotlin app that uses the existing PHP API would be a huge win. Over half of all traffic is mobile, and a native app with the same backend would provide cross-platform compatibility out of the box.
+- **Native mobile app** — An Expo React Native app lives in `apps/mobile/` and is preparing for App Store and Google Play submission. See [`apps/mobile/README.md`](apps/mobile/README.md) for building, submitting, and OTA update workflows.
 - **Accessibility enhancements** — Screen reader support, keyboard navigation, ARIA labels
 - **Additional voting methods** — STAR voting, Condorcet, etc. (see [#26](https://github.com/DavidMoritz/rcv/issues/26), [#18](https://github.com/DavidMoritz/rcv/issues/18))
 
