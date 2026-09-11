@@ -10,7 +10,7 @@ import type { GroupAnswers } from '@/features/group-answers';
 import { createRanking } from '@/features/ranking';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type LoadState =
@@ -95,8 +95,12 @@ export default function BallotScreen() {
   const { ballot, candidates, groupFields } = state.detail;
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContent} style={styles.screen}>
-      <View style={styles.content}>
+    <ScrollView
+      contentContainerStyle={styles.scrollContent}
+      keyboardShouldPersistTaps="handled"
+      onScrollBeginDrag={Keyboard.dismiss}
+      style={styles.screen}>
+      <Pressable onPress={Keyboard.dismiss} style={styles.content}>
         <Text style={styles.eyebrow}>RANK YOUR CHOICES</Text>
         <Text style={styles.title}>{ballot.name}</Text>
         <Text style={styles.shortcode}>Shortcode: {ballot.key}</Text>
@@ -157,7 +161,7 @@ export default function BallotScreen() {
           </>
         ) : null}
         <BallotReportLink ballotKey={ballot.key} />
-      </View>
+      </Pressable>
     </ScrollView>
   );
 }

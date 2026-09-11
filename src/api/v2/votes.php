@@ -268,17 +268,11 @@ if ($ballot['voteCutoff'] !== null && $ballot['voteCutoff'] < gmdate('Y-m-d H:i:
     fail(409, 'voting_closed', 'Voting has closed for this ballot.');
 }
 
-$voterName = '';
-if ((int) $ballot['register'] === 1) {
-    $voterName = isset($input['voterName']) && is_string($input['voterName'])
-        ? trim($input['voterName'])
-        : '';
-    if ($voterName === '') {
-        fail(422, 'voter_name_required', 'Enter your name before submitting.');
-    }
-    if (strlen($voterName) > 100) {
-        fail(422, 'voter_name_required', 'Name must be 100 characters or fewer.');
-    }
+$voterName = isset($input['voterName']) && is_string($input['voterName'])
+    ? substr(trim($input['voterName']), 0, 100)
+    : '';
+if ((int) $ballot['register'] === 1 && $voterName === '') {
+    fail(422, 'voter_name_required', 'Enter your name before submitting.');
 }
 
 $groupAnswersJson = null;

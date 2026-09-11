@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Keyboard,
   KeyboardAvoidingView,
   Linking,
   Platform,
@@ -221,8 +222,9 @@ export default function CreateBallotScreen() {
       <SafeAreaView edges={['bottom']} style={styles.safeArea}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled">
-          <View style={styles.card}>
+          keyboardShouldPersistTaps="handled"
+          onScrollBeginDrag={Keyboard.dismiss}>
+          <Pressable onPress={Keyboard.dismiss} style={styles.card}>
             <Text style={styles.eyebrow}>BASIC BALLOT</Text>
             <Text style={styles.title}>Create a ranked-choice ballot</Text>
             <Text style={styles.description}>
@@ -307,7 +309,7 @@ export default function CreateBallotScreen() {
                 <Text style={styles.primaryButtonText}>Create ballot</Text>
               )}
             </Pressable>
-          </View>
+          </Pressable>
         </ScrollView>
       </SafeAreaView>
     </KeyboardAvoidingView>

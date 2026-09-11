@@ -1,9 +1,11 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -33,8 +35,12 @@ export default function HomeScreen() {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.card}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        onScrollBeginDrag={Keyboard.dismiss}>
+        <SafeAreaView style={styles.safeArea}>
+          <Pressable onPress={Keyboard.dismiss} style={styles.card}>
           <Text style={styles.eyebrow}>OPEN A BALLOT</Text>
           <Text style={styles.title}>Open a ranked-choice ballot</Text>
           <Text style={styles.description}>
@@ -79,8 +85,9 @@ export default function HomeScreen() {
             style={({ pressed }) => [styles.aboutLink, pressed && styles.buttonPressed]}>
             <Text style={styles.aboutLinkText}>Privacy & support</Text>
           </Pressable>
-        </View>
-      </SafeAreaView>
+          </Pressable>
+        </SafeAreaView>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -88,12 +95,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     backgroundColor: '#f5f7fa',
   },
-  safeArea: {
-    flex: 1,
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
+  },
+  safeArea: {
     padding: 24,
   },
   card: {

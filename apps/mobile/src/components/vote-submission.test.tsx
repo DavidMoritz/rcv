@@ -51,7 +51,30 @@ describe('VoteSubmission', () => {
 
     expect(html).toContain('aria-label="Voter name"');
     expect(html).toContain('Your name');
+    expect(html).not.toContain('(optional)');
     expect(html).toContain('Enter your name before submitting.');
     expect(html).toMatch(/<button[^>]*aria-disabled="true"[^>]*aria-label="Submit vote"/);
+  });
+
+  it('renders an optional name field for register=0 without blocking submission', () => {
+    const optionalNameBallot = { ...ballot, isSecure: false, register: 0 as const };
+    const html = renderToStaticMarkup(
+      <VoteSubmission ballot={optionalNameBallot} onAccepted={() => undefined} ranking={ranking} />,
+    );
+
+    expect(html).toContain('aria-label="Voter name"');
+    expect(html).toContain('(optional)');
+    expect(html).not.toContain('Enter your name before submitting.');
+    expect(html).toMatch(/<button[^>]*aria-label="Submit vote"/);
+    expect(html).not.toContain('aria-disabled="true"');
+  });
+
+  it('hides the name field for anonymous ballots (register=2)', () => {
+    const anonymousBallot = { ...ballot, isSecure: false, register: 2 as const };
+    const html = renderToStaticMarkup(
+      <VoteSubmission ballot={anonymousBallot} onAccepted={() => undefined} ranking={ranking} />,
+    );
+
+    expect(html).not.toContain('aria-label="Voter name"');
   });
 });

@@ -49,7 +49,7 @@ export function VoteSubmission({
   const rankingKey = ranking.map((candidate) => candidate.id).join(',');
   const normalizedVoterCode = normalizeVoterCode(voterCode);
   const ballotRankingKey = `${ballot.key}|${rankingKey}`;
-  const nameSubmissionKey = ballot.register === 1
+  const nameSubmissionKey = ballot.register !== 2
     ? `${ballotRankingKey}|name:${voterName.trim()}`
     : ballotRankingKey;
   const secureSubmissionKey = ballot.isSecure
@@ -89,7 +89,7 @@ export function VoteSubmission({
         ranking: ranking.map((candidate) => candidate.id),
         fingerprint,
         groupAnswers: ballot.allowGrouping ? normalizedGroupAnswers : undefined,
-        voterName: ballot.register === 1 ? voterName.trim() : undefined,
+        voterName: ballot.register !== 2 && voterName.trim() !== '' ? voterName.trim() : undefined,
         voterCode: ballot.isSecure ? normalizedVoterCode : undefined,
       });
       setState({
@@ -149,9 +149,11 @@ export function VoteSubmission({
         </View>
       ) : null}
 
-      {ballot.register === 1 ? (
+      {ballot.register !== 2 ? (
         <View style={styles.codeField}>
-          <Text style={styles.codeLabel}>Your name</Text>
+          <Text style={styles.codeLabel}>
+            Your name{ballot.register === 0 ? ' (optional)' : ''}
+          </Text>
           <TextInput
             accessibilityLabel="Voter name"
             autoCapitalize="words"
