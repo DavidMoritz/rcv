@@ -9,10 +9,10 @@
     "scheme": "rankedchoices",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "buildNumber": "2"
+      "buildNumber": "3"
     },
     "android": {
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
