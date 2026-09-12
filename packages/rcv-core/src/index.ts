@@ -40,10 +40,13 @@ function round(value: number, precision: number): number {
 }
 
 function deterministicScore(ballotKey: string, candidateId: CandidateId, roundNumber: number) {
-  const input = `${ballotKey.replace(/\W/g, '')}${candidateId}${roundNumber}`;
-  const parsed = Number.parseInt(input, 36);
-  const firstTenDigits = Number(String(parsed).slice(0, 10));
-  return (firstTenDigits * 9301 + 49297) % 233280;
+  const str = `${candidateId % 1000}${ballotKey}${roundNumber}`;
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) + str.charCodeAt(i);
+    hash = hash & hash;
+  }
+  return Math.abs(hash);
 }
 
 function chooseTiedCandidate(

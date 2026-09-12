@@ -402,13 +402,16 @@ export default function VoteFactory() {
     // Deterministic tiebreak using ballot key + candidate id as stable seed
     breakTieRandom: function (value) {
       var model = this;
-      var ballotKey = ($s.shortcode || '').replace(/\W/g, '');
+      var ballotKey = $s.shortcode || '';
       var tieArray = [];
       var randomize = function (candidateId) {
-        var string = ballotKey + candidateId + model.roundnum;
-        var numString = '' + parseInt(string, 36);
-        var newNumber = Number(numString.substr(0, 10));
-        return (newNumber * 9301 + 49297) % 233280;
+        var str = '' + (candidateId % 1000) + ballotKey + model.roundnum;
+        var hash = 5381;
+        for (var i = 0; i < str.length; i++) {
+          hash = ((hash << 5) + hash) + str.charCodeAt(i);
+          hash = hash & hash;
+        }
+        return Math.abs(hash);
       };
       // populate tieArray only with tie breakers
       this.votenum.map(function (val, idx) {
