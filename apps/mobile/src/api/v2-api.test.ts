@@ -234,7 +234,8 @@ describe('V2ApiClient.getResults', () => {
 
     await expect(client.getResults(' pizza night ')).resolves.toEqual(payload);
     expect(fetchImpl).toHaveBeenCalledOnce();
-    const calledUrl = fetchImpl.mock.calls[0][0] as string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const calledUrl = (fetchImpl.mock.calls as any)[0][0] as string;
     expect(calledUrl).toMatch(/^https:\/\/example\.test\/api\/v2\/results\.php\?key=pizza%20night&_=\d+$/);
   });
 
