@@ -24,6 +24,7 @@ import {
   canonicalBallotPath,
   canonicalBallotUrl,
   canonicalResultsKey,
+  canonicalResultsPath,
   canonicalResultsUrl,
   isLegacyBallotPath
 } from './utils/ballot-links.js';
@@ -517,6 +518,10 @@ mainApp.controller('MainCtrl', [
           $s.errors.shortcode = resp.data;
 
           return;
+        }
+
+        if ($loc.$$path !== canonicalResultsPath(key)) {
+          $loc.path(canonicalResultsPath(key)).replace();
         }
 
         var ballot = resp.data.ballot;
