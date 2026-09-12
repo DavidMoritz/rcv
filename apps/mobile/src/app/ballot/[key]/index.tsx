@@ -6,6 +6,7 @@ import { CandidateRanking } from '@/components/candidate-ranking';
 import { ElectionResults } from '@/components/election-results';
 import { GroupQuestions } from '@/components/group-questions';
 import { VoteSubmission } from '@/components/vote-submission';
+import { PLACEHOLDER_TEXT_COLOR } from '@/theme/colors';
 import type { GroupAnswers } from '@/features/group-answers';
 import { createRanking } from '@/features/ranking';
 import { useLocalSearchParams } from 'expo-router';
@@ -153,6 +154,7 @@ export default function BallotScreen() {
                   maxLength={100}
                   onChangeText={setVoterName}
                   placeholder="Your name"
+                  placeholderTextColor={PLACEHOLDER_TEXT_COLOR}
                   style={styles.nameInput}
                   textContentType="name"
                   value={voterName}

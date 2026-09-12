@@ -1,5 +1,6 @@
 import type { GroupField } from '@/api/legacy-api';
 import type { GroupAnswers, GroupAnswerValue } from '@/features/group-answers';
+import { PLACEHOLDER_TEXT_COLOR } from '@/theme/colors';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 type GroupQuestionsProps = {
@@ -58,6 +59,7 @@ export function GroupQuestions({ answers, disabled = false, fields, onChange }: 
                 maxLength={1000}
                 onChangeText={(value) => updateAnswer(field.id, value)}
                 placeholder="Enter your answer"
+                placeholderTextColor={PLACEHOLDER_TEXT_COLOR}
                 style={styles.textInput}
                 value={typeof answer === 'string' ? answer : ''}
               />

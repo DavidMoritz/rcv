@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PLACEHOLDER_TEXT_COLOR } from '@/theme/colors';
 import { normalizeShortcode } from '@/utils/shortcode';
 
 export default function HomeScreen() {
@@ -56,6 +57,7 @@ export default function HomeScreen() {
             onChangeText={setShortcode}
             onSubmitEditing={openBallot}
             placeholder="For example: pizza"
+            placeholderTextColor={PLACEHOLDER_TEXT_COLOR}
             returnKeyType="go"
             style={styles.input}
             value={shortcode}
