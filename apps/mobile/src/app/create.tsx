@@ -22,6 +22,7 @@ import { TermsAcceptance } from '@/components/terms-acceptance';
 import { getApiBaseUrl } from '@/config/api';
 import { TERMS_OF_SERVICE_URL } from '@/config/service-links';
 import { validateGuestBallot, type GuestBallotFieldErrors } from '@/features/guest-ballot';
+import { PLACEHOLDER_TEXT_COLOR } from '@/theme/colors';
 import { saveBallotManagementToken } from '@/utils/ballot-management-token-store';
 import { loadInstallationId } from '@/utils/installation-id';
 
@@ -241,6 +242,7 @@ export default function CreateBallotScreen() {
               maxLength={64}
               onChangeText={setName}
               placeholder="For example: Team lunch"
+              placeholderTextColor={PLACEHOLDER_TEXT_COLOR}
               returnKeyType="next"
               style={[styles.input, fieldErrors.name && styles.inputError]}
               value={name}
@@ -269,6 +271,7 @@ export default function CreateBallotScreen() {
                   maxLength={256}
                   onChangeText={(value) => updateCandidate(index, value)}
                   placeholder="Candidate name"
+                  placeholderTextColor={PLACEHOLDER_TEXT_COLOR}
                   returnKeyType="next"
                   style={[styles.input, fieldErrors.candidateNames[index] && styles.inputError]}
                   value={candidate}

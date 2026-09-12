@@ -1,0 +1,1 @@
+export const PLACEHOLDER_TEXT_COLOR = '#52697f';

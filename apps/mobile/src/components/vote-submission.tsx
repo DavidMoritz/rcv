@@ -9,6 +9,7 @@ import {
   normalizeVoterCode,
   type PendingVoteRequest,
 } from '@/features/vote-submission';
+import { PLACEHOLDER_TEXT_COLOR } from '@/theme/colors';
 import { loadInstallationId } from '@/utils/installation-id';
 import {
   groupAnswersAreValid,
@@ -144,6 +145,7 @@ export function VoteSubmission({
             maxLength={6}
             onChangeText={(value) => setVoterCode(value.replace(/\s/g, ''))}
             placeholder="Six-character code"
+            placeholderTextColor={PLACEHOLDER_TEXT_COLOR}
             style={styles.codeInput}
             textContentType="oneTimeCode"
             value={voterCode}
