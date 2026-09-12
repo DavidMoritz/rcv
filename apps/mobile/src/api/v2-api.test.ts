@@ -223,7 +223,13 @@ describe('V2ApiClient.submitVote', () => {
 describe('V2ApiClient.getResults', () => {
   it('loads typed anonymous election data', async () => {
     const payload = {
-      ballot: { key: 'pizza night', name: 'Pizza', positions: 1, tieBreak: 'weighted' },
+      ballot: {
+        key: 'pizza night',
+        name: 'Pizza',
+        positions: 1,
+        resultMethod: 'borda',
+        tieBreak: 'weighted',
+      },
       candidates: [{ id: 3, name: 'Mushroom' }],
       votes: [[3]],
     };
@@ -234,9 +240,27 @@ describe('V2ApiClient.getResults', () => {
 
     await expect(client.getResults(' pizza night ')).resolves.toEqual(payload);
     expect(fetchImpl).toHaveBeenCalledOnce();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const calledUrl = (fetchImpl.mock.calls as any)[0][0] as string;
     expect(calledUrl).toMatch(/^https:\/\/example\.test\/api\/v2\/results\.php\?key=pizza%20night&_=\d+$/);
+  });
+
+  it('rejects results without a recognized calculation method', async () => {
+    const client = new V2ApiClient({
+      baseUrl: 'https://example.test/api',
+      fetchImpl: async () =>
+        new Response(
+          JSON.stringify({
+            data: {
+              ballot: { key: 'old', name: 'Old response', positions: 1, tieBreak: 'weighted' },
+              candidates: [{ id: 1, name: 'A' }],
+              votes: [[1]],
+            },
+            error: null,
+          }),
+        ),
+    });
+
+    await expect(client.getResults('old')).rejects.toMatchObject({ code: 'malformed_response' });
   });
 
   it('preserves the unreleased-results state', async () => {

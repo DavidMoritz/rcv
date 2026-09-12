@@ -22,9 +22,27 @@ class V2ResultsTest extends ApiTestCase
         $this->assertNull($result['body']['error']);
         $this->assertSame('Favorite fruit', $result['body']['data']['ballot']['name']);
         $this->assertSame(2, $result['body']['data']['ballot']['positions']);
+        $this->assertSame('rcv', $result['body']['data']['ballot']['resultMethod']);
         $this->assertSame('weighted', $result['body']['data']['ballot']['tieBreak']);
         $this->assertSame($entryIds, array_column($result['body']['data']['candidates'], 'id'));
         $this->assertSame([array_reverse($entryIds)], $result['body']['data']['votes']);
+    }
+
+    public function testReturnsNormalizedBordaResultMethod(): void
+    {
+        $key = 'borda-results-' . uniqid();
+        $ballotId = $this->seedBallot([
+            'key' => $key,
+            'bordaActive' => 1,
+            'resultsRelease' => '2000-01-01 00:00:00',
+        ]);
+        $entryIds = $this->seedEntries($ballotId, ['Apple', 'Pear']);
+        $this->seedVote($ballotId, '["Apple","Pear"]', implode(',', $entryIds));
+
+        $result = $this->callApi('v2/results.php', [], ['key' => $key]);
+
+        $this->assertNull($result['body']['error']);
+        $this->assertSame('borda', $result['body']['data']['ballot']['resultMethod']);
     }
 
     public function testDoesNotExposeUnreleasedResults(): void

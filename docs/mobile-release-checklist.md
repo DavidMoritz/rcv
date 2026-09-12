@@ -30,6 +30,9 @@ only under store-specific eligibility rules and should not be the launch plan.
   the management-token table, unique digest index, and ballot lookup index.
 - [ ] Deploy the v2 ballot, vote, and results endpoints plus their guarded
   legacy dependencies.
+- [ ] Deploy the additive results `resultMethod` contract before uploading a
+  mobile build that requires it; verify ordinary ballots return `rcv` and a
+  maintainer-approved Borda ballot returns `borda`.
 - [ ] Verify GET requests receive the documented method/error envelope and run
   a disposable production smoke ballot approved by the maintainer. Remove all
   smoke data after verification.
@@ -130,6 +133,8 @@ never place voter codes or management credentials in a report.
 - [ ] iOS simulator and at least one physical iPhone cover lookup, guest
   creation, SecureStore recovery messaging, voting, results, sharing, cold
   launch links, network failure/retry, larger text, and VoiceOver basics.
+- [ ] Compare one released Borda ballot's native winners and point totals with
+  the website, and confirm the native view does not show RCV rounds.
 - [ ] Test current and oldest supported OS versions where practical.
 
 Safety check: use disposable records and record the shortcode or database ID

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { computeBorda } from '@src/js/utils/borda.js';
+import { calculateBorda } from '../packages/rcv-core/src/index.ts';
 
 function makeEntryMap(names) {
   var map = {};
@@ -7,6 +8,12 @@ function makeEntryMap(names) {
     map[i + 1] = { name: name, image: '', color: '', hyperlink: '' };
   });
   return map;
+}
+
+function makeCandidates(names) {
+  return names.map(function (name, index) {
+    return { id: index + 1, name: name };
+  });
 }
 
 describe('computeBorda', () => {
@@ -340,5 +347,43 @@ describe('computeBorda', () => {
 
     expect(result.tally[0].image).toBe('alice.png');
     expect(result.tally[0].color).toBe('ff0000');
+  });
+});
+
+describe('native Borda parity', () => {
+  it('matches the website scoring and seat-boundary tie break', () => {
+    var names = ['Alice', 'Bob', 'Carol'];
+    var ids = [1, 2, 3];
+    var votes = [
+      [1, 2],
+      [1, 2],
+      [3, 2],
+      [3, 2]
+    ];
+    var web = computeBorda(votes, ids, makeEntryMap(names), 2);
+    var native = calculateBorda({ candidates: makeCandidates(names), ballots: votes, seats: 2 });
+
+    expect(native.cap).toBe(web.cap);
+    expect(native.tieBreakApplied).toBe(web.tieBreakApplied);
+    expect(native.winners[0].name).toBe(web.winner.name);
+    expect(native.tally.map(function (candidate) {
+      return {
+        name: candidate.name,
+        points: candidate.points,
+        firstPlaceVotes: candidate.firstPlaceVotes,
+        percent: candidate.percent,
+        rankCounts: candidate.rankCounts,
+        avgRank: candidate.averageRank
+      };
+    })).toEqual(web.tally.map(function (candidate) {
+      return {
+        name: candidate.name,
+        points: candidate.points,
+        firstPlaceVotes: candidate.firstPlaceVotes,
+        percent: candidate.percent,
+        rankCounts: candidate.rankCounts,
+        avgRank: candidate.avgRank
+      };
+    }));
   });
 });

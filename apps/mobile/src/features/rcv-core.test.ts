@@ -1,4 +1,4 @@
-import { calculateElection } from '@rankedchoices/rcv-core';
+import { calculateBorda, calculateElection } from '@rankedchoices/rcv-core';
 import { describe, expect, it } from 'vitest';
 
 const candidates = ['A', 'B', 'C', 'D'].map((name, index) => ({ id: index + 1, name }));
@@ -79,5 +79,73 @@ describe('calculateElection legacy parity fixtures', () => {
     };
 
     expect(calculateElection(input)).toEqual(calculateElection(input));
+  });
+});
+
+describe('calculateBorda legacy parity fixtures', () => {
+  it('awards descending rank points and elects the configured number of candidates', () => {
+    const result = calculateBorda({
+      candidates,
+      ballots: ballots([
+        ['A', 'B', 'C', 'D'],
+        ['B', 'A', 'C', 'D'],
+        ['C', 'A', 'B', 'D'],
+      ]),
+      seats: 2,
+    });
+
+    expect(result.cap).toBe(4);
+    expect(result.tally.map(({ name, points }) => [name, points])).toEqual([
+      ['A', 7],
+      ['B', 6],
+      ['C', 5],
+      ['D', 0],
+    ]);
+    expect(result.winners.map((candidate) => candidate.name)).toEqual(['A', 'B']);
+  });
+
+  it('uses first-place votes only to resolve a tie spanning the seat boundary', () => {
+    const result = calculateBorda({
+      candidates: candidates.slice(0, 3),
+      ballots: ballots([
+        ['A', 'B'],
+        ['A', 'B'],
+        ['C', 'B'],
+        ['C', 'B'],
+      ]),
+      seats: 2,
+    });
+
+    expect(result.tally.map(({ name, points, firstPlaceVotes }) => [name, points, firstPlaceVotes])).toEqual([
+      ['A', 4, 2],
+      ['C', 4, 2],
+      ['B', 4, 0],
+    ]);
+    expect(result.winners.map((candidate) => candidate.name)).toEqual(['A', 'C']);
+    expect(result.tieBreakApplied).toBe(true);
+  });
+
+  it('gives no points to unranked choices and reports average rank', () => {
+    const result = calculateBorda({
+      candidates: candidates.slice(0, 3),
+      ballots: ballots([
+        ['A', 'B'],
+        ['B', 'A'],
+        ['A'],
+      ]),
+    });
+
+    expect(result.tally.find((candidate) => candidate.name === 'A')).toMatchObject({
+      points: 5,
+      firstPlaceVotes: 2,
+      rankCounts: { 1: 2, 2: 1 },
+      averageRank: 1.3,
+    });
+    expect(result.tally.find((candidate) => candidate.name === 'C')).toMatchObject({
+      points: 0,
+      firstPlaceVotes: 0,
+      rankCounts: {},
+      averageRank: null,
+    });
   });
 });

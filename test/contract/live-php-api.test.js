@@ -39,7 +39,13 @@ async function requestApi(method, endpoint, { query, body } = {}) {
   };
 }
 
-async function createBallot({ isSecure = false, codeCount = 0, allowGrouping = false } = {}) {
+async function createBallot({
+  isSecure = false,
+  codeCount = 0,
+  allowGrouping = false,
+  bordaActive = false,
+  resultsReleased = false
+} = {}) {
   const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const key = `contract-${uniqueId}`;
   const createdBy = `contract-test-${uniqueId}`;
@@ -52,7 +58,7 @@ async function createBallot({ isSecure = false, codeCount = 0, allowGrouping = f
       positions: '1',
       createdBy,
       sqlVoteCutoff: '2099-12-31 23:59:59',
-      sqlResultsRelease: '2099-12-31 23:59:59',
+      sqlResultsRelease: resultsReleased ? '2000-01-01 00:00:00' : '2099-12-31 23:59:59',
       isSecure,
       codeCount,
       allowGrouping
@@ -75,6 +81,21 @@ async function createBallot({ isSecure = false, codeCount = 0, allowGrouping = f
   });
 
   expect(addEntries.text).toBe('Success');
+
+  if (bordaActive) {
+    const updated = await requestApi('POST', 'update-ballot.php', {
+      body: {
+        id: ballotId,
+        key,
+        name: ballotName,
+        positions: '1',
+        createdBy,
+        sqlResultsRelease: '2000-01-01 00:00:00',
+        bordaActive: 1
+      }
+    });
+    expect(updated.json).toEqual({ data: { success: true } });
+  }
 
   return {
     ballotId,
@@ -123,6 +144,27 @@ afterEach(async () => {
 });
 
 describe('live PHP API contracts', () => {
+  it('returns normalized RCV and Borda result methods', async () => {
+    const rcvBallot = await createBallot({ resultsReleased: true });
+    const bordaBallot = await createBallot({ bordaActive: true, resultsReleased: true });
+
+    const rcvResults = await requestApi('GET', 'v2/results.php', {
+      query: { key: rcvBallot.key }
+    });
+    const bordaResults = await requestApi('GET', 'v2/results.php', {
+      query: { key: bordaBallot.key }
+    });
+
+    expect(rcvResults).toMatchObject({
+      status: 200,
+      json: { data: { ballot: { resultMethod: 'rcv' } }, error: null }
+    });
+    expect(bordaResults).toMatchObject({
+      status: 200,
+      json: { data: { ballot: { resultMethod: 'borda' } }, error: null }
+    });
+  });
+
   it('records and safely replays an idempotent v2 anonymous vote', async () => {
     const ballot = await createBallot();
     const candidates = await requestApi('GET', 'get-candidates.php', {
