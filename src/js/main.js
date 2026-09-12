@@ -343,7 +343,7 @@ mainApp.controller('MainCtrl', [
       $http
         .get('/api/get-candidates.php?key=' + $s.shortcode + '&t=' + Date.now())
         .then(function (resp) {
-          if (typeof resp.data !== 'string' && isLegacyBallotPath($loc.$$path, $s.shortcode)) {
+          if (typeof resp.data !== 'string' && $loc.$$path !== canonicalBallotPath($s.shortcode)) {
             $loc.path(canonicalBallotPath($s.shortcode)).replace();
           }
 
