@@ -42,7 +42,7 @@
     "test:android:e2e": "node scripts/android-phase1-e2e.mjs",
     "validate:release": "node scripts/validate-release-readiness.mjs",
     "validate:release:strict": "node scripts/validate-release-readiness.mjs --strict",
-    "build:ios": "eas build --profile production --platform ios --local --non-interactive && mkdir -p builds && mv \"$(ls -t build-*.ipa 2>/dev/null | head -1)\" builds/",
+    "build:ios": "node -e \"const f='app.json',a=JSON.parse(require('fs').readFileSync(f));a.expo.ios.buildNumber=String(Number(a.expo.ios.buildNumber)+1);a.expo.android.versionCode=Number(a.expo.ios.buildNumber);require('fs').writeFileSync(f,JSON.stringify(a,null,2)+'\\n');console.log('Build number:',a.expo.ios.buildNumber)\" && git add app.json && git commit -m \"Bump mobile build number\" && eas build --profile production --platform ios --local --non-interactive && mkdir -p builds && mv \"$(ls -t build-*.ipa 2>/dev/null | head -1)\" builds/",
     "build:android": "eas build --profile production --platform android --non-interactive",
     "submit:ios": "eas submit --platform ios --non-interactive --path \"$(ls -t builds/build-*.ipa 2>/dev/null | head -1)\""
   },
