@@ -22,7 +22,6 @@ describe('ballot share payload', () => {
     expect(ballotShareContent(' Pizza night ', 'pizza')).toEqual({
       message: 'Vote in “Pizza night” on Ranked Choices: https://rankedchoices.com/ballot/pizza',
       title: 'Share Pizza night',
-      url: 'https://rankedchoices.com/ballot/pizza',
     });
     expect(ballotShareOptions(' Pizza night ')).toEqual({
       dialogTitle: 'Share Pizza night',

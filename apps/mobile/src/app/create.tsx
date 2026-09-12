@@ -221,6 +221,7 @@ export default function CreateBallotScreen() {
       style={styles.container}>
       <SafeAreaView edges={['bottom']} style={styles.safeArea}>
         <ScrollView
+          automaticallyAdjustKeyboardInsets
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           onScrollBeginDrag={Keyboard.dismiss}>

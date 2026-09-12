@@ -26,6 +26,7 @@ export function ElectionResults({ ballotKey }: { ballotKey: string }) {
             ballots: data.votes,
             seats: data.ballot.positions,
             tieBreak: data.ballot.tieBreak,
+            ballotKey: data.ballot.key,
           }),
         });
       },

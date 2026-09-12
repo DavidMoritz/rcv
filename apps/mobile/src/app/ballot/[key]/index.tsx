@@ -10,7 +10,7 @@ import type { GroupAnswers } from '@/features/group-answers';
 import { createRanking } from '@/features/ranking';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Keyboard, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type LoadState =
@@ -32,6 +32,7 @@ export default function BallotScreen() {
   const [groupAnswers, setGroupAnswers] = useState<GroupAnswers>({});
   const [voteAccepted, setVoteAccepted] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [voterName, setVoterName] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -97,6 +98,7 @@ export default function BallotScreen() {
 
   return (
     <ScrollView
+      automaticallyAdjustKeyboardInsets
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
       onScrollBeginDrag={Keyboard.dismiss}
@@ -132,12 +134,32 @@ export default function BallotScreen() {
           ) : null}
         </View>
 
-        {!voteAccepted && ballot.allowGrouping ? (
-          <GroupQuestions answers={groupAnswers} fields={groupFields} onChange={setGroupAnswers} />
-        ) : null}
-
-        {!voteAccepted ? (
+        {!voteAccepted && !showResults ? (
           <>
+            {ballot.allowGrouping ? (
+              <GroupQuestions answers={groupAnswers} fields={groupFields} onChange={setGroupAnswers} />
+            ) : null}
+
+            {ballot.register !== 2 ? (
+              <View style={styles.nameField}>
+                <Text style={styles.nameLabel}>
+                  Your name{ballot.register === 0 ? ' (optional)' : ''}
+                </Text>
+                <TextInput
+                  accessibilityLabel="Voter name"
+                  autoCapitalize="words"
+                  autoComplete="name"
+                  autoCorrect={false}
+                  maxLength={100}
+                  onChangeText={setVoterName}
+                  placeholder="Your name"
+                  style={styles.nameInput}
+                  textContentType="name"
+                  value={voterName}
+                />
+              </View>
+            ) : null}
+
             <Text style={styles.sectionTitle}>Your ranking</Text>
             <Text style={styles.helpText}>
               Put your favorite choice first. Use the controls to move or remove choices; you can
@@ -149,16 +171,17 @@ export default function BallotScreen() {
               orderedEntries={ballot.orderedEntries}
               ranking={ranking}
             />
+
+            <VoteSubmission
+              ballot={ballot}
+              groupAnswers={groupAnswers}
+              groupFields={groupFields}
+              onAccepted={() => setVoteAccepted(true)}
+              ranking={ranking}
+              voterName={voterName}
+            />
           </>
         ) : null}
-
-        <VoteSubmission
-          ballot={ballot}
-          groupAnswers={groupAnswers}
-          groupFields={groupFields}
-          onAccepted={() => setVoteAccepted(true)}
-          ranking={ranking}
-        />
         {voteAccepted || showResults ? (
           <>
             <ElectionResults ballotKey={ballot.key} />
@@ -211,6 +234,19 @@ const styles = StyleSheet.create({
   },
   metaValue: { color: '#125435', fontSize: 18, fontWeight: '800' },
   metaLabel: { color: '#436251', fontSize: 12, marginTop: 2 },
+  nameField: { marginTop: 22 },
+  nameLabel: { color: '#263b33', fontSize: 14, fontWeight: '700', marginBottom: 6 },
+  nameInput: {
+    backgroundColor: '#ffffff',
+    borderColor: '#8aa097',
+    borderRadius: 10,
+    borderWidth: 1,
+    color: '#172b23',
+    fontSize: 16,
+    minHeight: 48,
+    paddingHorizontal: 13,
+    paddingVertical: 10,
+  },
   sectionTitle: { color: '#1f3143', fontSize: 22, fontWeight: '800', marginTop: 30 },
   helpText: { color: '#52697f', fontSize: 14, lineHeight: 20, marginTop: 6 },
   errorCard: {

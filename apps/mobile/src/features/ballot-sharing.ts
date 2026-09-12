@@ -3,7 +3,6 @@ export const RANKED_CHOICES_ORIGIN = 'https://rankedchoices.com';
 export type BallotShareContent = {
   message: string;
   title: string;
-  url: string;
 };
 
 export function canonicalBallotUrl(key: string): string {
@@ -17,7 +16,6 @@ export function ballotShareContent(ballotName: string, key: string): BallotShare
   return {
     message: `Vote in “${name}” on Ranked Choices: ${url}`,
     title: `Share ${name}`,
-    url,
   };
 }
 

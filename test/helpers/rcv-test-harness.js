@@ -74,6 +74,7 @@ export function runElection(opts) {
     votes,
     mutableVotes,
     ballotName,
+    shortcode: opts.shortcode || '',
     patchRcvis,
     rcvisId: null,
     rcvisSlug: null,

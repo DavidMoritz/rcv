@@ -32,6 +32,7 @@ type VoteSubmissionProps = {
   groupFields?: readonly GroupField[];
   onAccepted: () => void;
   ranking: readonly Candidate[];
+  voterName?: string;
 };
 
 export function VoteSubmission({
@@ -40,12 +41,13 @@ export function VoteSubmission({
   groupFields = [],
   onAccepted,
   ranking,
+  voterName: voterNameProp = '',
 }: VoteSubmissionProps) {
   const client = useMemo(() => createV2ApiClient(), []);
   const [now, setNow] = useState(() => Date.now());
   const [request, setRequest] = useState<PendingVoteRequest | null>(null);
   const [voterCode, setVoterCode] = useState('');
-  const [voterName, setVoterName] = useState('');
+  const voterName = voterNameProp;
   const rankingKey = ranking.map((candidate) => candidate.id).join(',');
   const normalizedVoterCode = normalizeVoterCode(voterCode);
   const ballotRankingKey = `${ballot.key}|${rankingKey}`;
@@ -149,27 +151,6 @@ export function VoteSubmission({
         </View>
       ) : null}
 
-      {ballot.register !== 2 ? (
-        <View style={styles.codeField}>
-          <Text style={styles.codeLabel}>
-            Your name{ballot.register === 0 ? ' (optional)' : ''}
-          </Text>
-          <TextInput
-            accessibilityLabel="Voter name"
-            autoCapitalize="words"
-            autoComplete="name"
-            autoCorrect={false}
-            editable={currentState.status !== 'submitting'}
-            maxLength={100}
-            onChangeText={setVoterName}
-            placeholder="Your name"
-            style={styles.nameInput}
-            textContentType="name"
-            value={voterName}
-          />
-        </View>
-      ) : null}
-
       {blocker ? (
         <Text accessibilityLiveRegion="polite" style={styles.blockerNotice}>
           {blockerMessage(blocker)}
@@ -252,17 +233,6 @@ const styles = StyleSheet.create({
     color: '#172b23',
     fontSize: 18,
     letterSpacing: 2,
-    minHeight: 48,
-    paddingHorizontal: 13,
-    paddingVertical: 10,
-  },
-  nameInput: {
-    backgroundColor: '#ffffff',
-    borderColor: '#8aa097',
-    borderRadius: 10,
-    borderWidth: 1,
-    color: '#172b23',
-    fontSize: 16,
     minHeight: 48,
     paddingHorizontal: 13,
     paddingVertical: 10,

@@ -12,6 +12,7 @@ export type ElectionInput = {
   ballots: readonly (readonly CandidateId[])[];
   seats?: number;
   tieBreak?: TieBreak;
+  ballotKey?: string;
 };
 
 export type RoundOutcome =
@@ -38,8 +39,8 @@ function round(value: number, precision: number): number {
   return Math.round((value + Number.EPSILON) * factor) / factor;
 }
 
-function deterministicScore(voteCount: number, name: string, index: number, roundNumber: number) {
-  const input = `${voteCount}${`${name.slice(0, 12)}${index}`.replace(/\W/g, '')}${roundNumber}`;
+function deterministicScore(ballotKey: string, candidateId: CandidateId, roundNumber: number) {
+  const input = `${ballotKey.replace(/\W/g, '')}${candidateId}${roundNumber}`;
   const parsed = Number.parseInt(input, 36);
   const firstTenDigits = Number(String(parsed).slice(0, 10));
   return (firstTenDigits * 9301 + 49297) % 233280;
@@ -54,12 +55,13 @@ function chooseTiedCandidate(
   tieBreak: TieBreak,
   electing: boolean,
   roundNumber: number,
+  ballotKey: string,
 ): CandidateId {
   if (tieBreak === 'random') {
     return [...tied]
       .map((id) => ({
         id,
-        score: deterministicScore(ballots.length, names.get(id) ?? String(id), ids.indexOf(id), roundNumber),
+        score: deterministicScore(ballotKey, id, roundNumber),
       }))
       .sort((left, right) => right.score - left.score || ids.indexOf(left.id) - ids.indexOf(right.id))[0].id;
   }
@@ -92,6 +94,7 @@ export function calculateElection(input: ElectionInput): ElectionResult {
   const names = new Map(candidates.map((candidate) => [candidate.id, candidate.name]));
   const seats = Math.max(1, Math.min(Math.trunc(input.seats ?? 1), candidates.length));
   const tieBreak = input.tieBreak ?? 'weighted';
+  const ballotKey = input.ballotKey ?? '';
   const ballots = input.ballots.map((ballot) =>
     ballot.filter(
       (id, index, ranking) => validIds.has(id) && ranking.indexOf(id) === index,
@@ -145,6 +148,7 @@ export function calculateElection(input: ElectionInput): ElectionResult {
             tieBreak,
             electing,
             rounds.length + 1,
+            ballotKey,
           );
 
     if (electing && activeWithVotes.length === 1) quota = Math.min(quota, tally[chosen]);

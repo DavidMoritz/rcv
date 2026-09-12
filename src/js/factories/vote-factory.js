@@ -399,30 +399,28 @@ export default function VoteFactory() {
       return tieArray[0].index;
     },
 
-    // creative way to achieve repeatable randomizing
+    // Deterministic tiebreak using ballot key + candidate id as stable seed
     breakTieRandom: function (value) {
       var model = this;
+      var ballotKey = ($s.shortcode || '').replace(/\W/g, '');
       var tieArray = [];
-      var randomize = function (seed) {
-        var string = model.votes.length + seed.replace(/\W/g, '') + model.roundnum;
+      var randomize = function (candidateId) {
+        var string = ballotKey + candidateId + model.roundnum;
         var numString = '' + parseInt(string, 36);
         var newNumber = Number(numString.substr(0, 10));
-        // algorithm supplied by http://indiegamr.com/generate-repeatable-random-numbers-in-js/
         return (newNumber * 9301 + 49297) % 233280;
       };
       // populate tieArray only with tie breakers
       this.votenum.map(function (val, idx) {
         if (val == value) {
-          var entry = $s.entryMap[model.ids[idx]] || {};
-          var seed = (entry.name || '' + model.ids[idx]).substr(0, 12);
           tieArray.push({
             index: idx,
-            rand: randomize(seed + idx)
+            rand: randomize(model.ids[idx])
           });
         }
       });
 
-      // sort by ascending random value
+      // sort by descending random value
       tieArray.sort(function (a, b) {
         return b.rand - a.rand;
       });
