@@ -27,7 +27,7 @@ if ($key === '') {
 }
 
 $ballotStatement = $dbh->prepare(
-    'SELECT id, name, positions, tieBreak, resultsRelease FROM ballots WHERE `key` = :key LIMIT 1'
+    'SELECT id, name, positions, tieBreak, resultsRelease, bordaActive FROM ballots WHERE `key` = :key LIMIT 1'
 );
 $ballotStatement->bindValue(':key', $key, PDO::PARAM_STR);
 $ballotStatement->execute();
@@ -75,6 +75,7 @@ resultsRespond(200, [
         'name' => (string) $ballot['name'],
         'positions' => (int) $ballot['positions'],
         'tieBreak' => $ballot['tieBreak'] === 'random' ? 'random' : 'weighted',
+        'resultMethod' => (int) $ballot['bordaActive'] === 1 ? 'borda' : 'rcv',
     ],
     'candidates' => $entries,
     'votes' => $votes,

@@ -1,13 +1,41 @@
 import { createV2ApiClient } from '@/api/client';
-import { V2ApiError } from '@/api/v2-api';
-import { calculateElection, type ElectionResult } from '@rankedchoices/rcv-core';
+import { V2ApiError, type ElectionResults as ElectionResultsData } from '@/api/v2-api';
+import {
+  calculateBorda,
+  calculateElection,
+  type BordaResult,
+  type ElectionResult,
+} from '@rankedchoices/rcv-core';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 type ResultState =
   | { status: 'loading' }
-  | { status: 'loaded'; result: ElectionResult; voteCount: number }
+  | ({ status: 'loaded'; voteCount: number } & LocalResult)
   | { status: 'error'; error: V2ApiError };
+
+type LocalResult =
+  | { resultMethod: 'rcv'; result: ElectionResult }
+  | { resultMethod: 'borda'; result: BordaResult };
+
+export function calculateLocalResult(data: ElectionResultsData): LocalResult {
+  const sharedInput = {
+    candidates: data.candidates,
+    ballots: data.votes,
+    seats: data.ballot.positions,
+  };
+  if (data.ballot.resultMethod === 'borda') {
+    return { resultMethod: 'borda', result: calculateBorda(sharedInput) };
+  }
+  return {
+    resultMethod: 'rcv',
+    result: calculateElection({
+      ...sharedInput,
+      tieBreak: data.ballot.tieBreak,
+      ballotKey: data.ballot.key,
+    }),
+  };
+}
 
 export function ElectionResults({ ballotKey }: { ballotKey: string }) {
   const client = useMemo(() => createV2ApiClient(), []);
@@ -21,13 +49,7 @@ export function ElectionResults({ ballotKey }: { ballotKey: string }) {
         setState({
           status: 'loaded',
           voteCount: data.votes.length,
-          result: calculateElection({
-            candidates: data.candidates,
-            ballots: data.votes,
-            seats: data.ballot.positions,
-            tieBreak: data.ballot.tieBreak,
-            ballotKey: data.ballot.key,
-          }),
+          ...calculateLocalResult(data),
         });
       },
       (error: unknown) => {
@@ -79,7 +101,11 @@ export function ElectionResults({ ballotKey }: { ballotKey: string }) {
     );
   }
 
-  return <ElectionResultsView result={state.result} voteCount={state.voteCount} />;
+  return state.resultMethod === 'borda' ? (
+    <BordaResultsView result={state.result} voteCount={state.voteCount} />
+  ) : (
+    <ElectionResultsView result={state.result} voteCount={state.voteCount} />
+  );
 }
 
 export function ElectionResultsView({
@@ -126,6 +152,58 @@ export function ElectionResultsView({
   );
 }
 
+export function BordaResultsView({
+  result,
+  voteCount,
+}: {
+  result: BordaResult;
+  voteCount: number;
+}) {
+  const firstPlacePoints = Math.max(0, result.cap - 1);
+  return (
+    <View accessibilityLabel="Local Borda results" style={styles.results}>
+      <Text style={styles.sectionTitle}>Current results</Text>
+      <Text style={styles.summary}>
+        Calculated on this device from {voteCount} {voteCount === 1 ? 'vote' : 'votes'} using
+        Borda count.
+      </Text>
+
+      <View style={styles.winnerCard}>
+        <Text style={styles.winnerLabel}>{result.winners.length === 1 ? 'Winner' : 'Winners'}</Text>
+        <Text style={styles.winnerNames}>
+          {result.winners.length > 0
+            ? result.winners.map((candidate) => candidate.name).join(', ')
+            : 'No winner yet'}
+        </Text>
+      </View>
+
+      <View style={styles.methodCard}>
+        <Text style={styles.cardTitle}>How Borda count works</Text>
+        <Text style={styles.methodText}>
+          A first-place ranking earns {firstPlacePoints} {firstPlacePoints === 1 ? 'point' : 'points'},
+          with one fewer point for each lower rank. Unranked choices and ranks after {result.cap} earn
+          0 points.
+        </Text>
+      </View>
+
+      <View style={styles.roundCard}>
+        <Text style={styles.roundTitle}>Point totals</Text>
+        {result.tally.map((candidate) => (
+          <View key={candidate.id} style={styles.tallyRow}>
+            <Text style={styles.tallyName}>{candidate.name}</Text>
+            <Text style={styles.tallyVotes}>
+              {candidate.points} {candidate.points === 1 ? 'pt' : 'pts'}
+            </Text>
+          </View>
+        ))}
+        {result.tieBreakApplied ? (
+          <Text style={styles.outcomeText}>The final seat tie was broken by first-place rankings.</Text>
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
 function candidateName(result: ElectionResult, id: number): string {
   return result.candidates.find((candidate) => candidate.id === id)?.name ?? `Choice ${id}`;
 }
@@ -145,6 +223,9 @@ const styles = StyleSheet.create({
   winnerNames: { color: '#125435', fontSize: 21, fontWeight: '800', marginTop: 4 },
   roundCard: { backgroundColor: '#ffffff', borderRadius: 14, marginTop: 12, padding: 16 },
   roundTitle: { color: '#12355b', fontSize: 18, fontWeight: '800', marginBottom: 8 },
+  methodCard: { backgroundColor: '#eef3f7', borderRadius: 14, marginTop: 12, padding: 16 },
+  cardTitle: { color: '#12355b', fontSize: 16, fontWeight: '800' },
+  methodText: { color: '#344a5f', fontSize: 14, lineHeight: 20, marginTop: 6 },
   tallyRow: { flexDirection: 'row', gap: 12, justifyContent: 'space-between', paddingVertical: 4 },
   tallyName: { color: '#344a5f', flex: 1, fontSize: 14 },
   tallyVotes: { color: '#1f3143', fontSize: 14, fontWeight: '700' },

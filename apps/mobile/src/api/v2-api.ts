@@ -37,6 +37,7 @@ export type ElectionResults = {
     key: string;
     name: string;
     positions: number;
+    resultMethod: 'rcv' | 'borda';
     tieBreak: 'weighted' | 'random';
   };
   candidates: { id: number; name: string }[];
@@ -283,6 +284,7 @@ function isElectionResults(value: unknown): value is ElectionResults {
     typeof ballot.key === 'string' &&
     typeof ballot.name === 'string' &&
     typeof ballot.positions === 'number' &&
+    (ballot.resultMethod === 'rcv' || ballot.resultMethod === 'borda') &&
     (ballot.tieBreak === 'weighted' || ballot.tieBreak === 'random') &&
     value.candidates.every(
       (candidate) => isRecord(candidate) && typeof candidate.id === 'number' && typeof candidate.name === 'string',

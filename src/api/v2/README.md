@@ -89,6 +89,8 @@ the anonymous client.
 
 ## `GET /api/v2/results.php?key=ballot-shortcode`
 
-Returns the ballot's candidate IDs and anonymous ranked votes for local RCV
-calculation. The endpoint enforces `resultsRelease` before returning any vote
-data and responds with `results_not_released` while results are private.
+Returns the ballot's candidate IDs, anonymous ranked votes, and normalized
+`resultMethod` (`rcv` or `borda`) for local calculation. The endpoint enforces
+`resultsRelease` before returning any vote data and responds with
+`results_not_released` while results are private. Deploy this additive server
+contract before releasing a mobile client that requires `resultMethod`.

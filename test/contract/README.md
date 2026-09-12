@@ -34,6 +34,7 @@ The suite currently verifies a small but high-signal flow:
 - `get-candidates.php` success and missing-key plain-text error
 - `vote.php` success and validation error envelope
 - `get-votes.php` success after casting a real vote
+- `v2/results.php` normalized RCV/Borda result methods
 
 Each test run creates a unique ballot through the public API and then attempts
 to delete its votes and ballot during cleanup.

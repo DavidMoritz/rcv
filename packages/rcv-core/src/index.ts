@@ -34,9 +34,102 @@ export type ElectionResult = {
   seats: number;
 };
 
+export type BordaInput = {
+  candidates: readonly RcvCandidate[];
+  ballots: readonly (readonly CandidateId[])[];
+  seats?: number;
+};
+
+export type BordaTally = RcvCandidate & {
+  points: number;
+  firstPlaceVotes: number;
+  percent: number;
+  rankCounts: Record<number, number>;
+  averageRank: number | null;
+};
+
+export type BordaResult = {
+  candidates: RcvCandidate[];
+  winners: RcvCandidate[];
+  tally: BordaTally[];
+  seats: number;
+  cap: number;
+  tieBreakApplied: boolean;
+};
+
 function round(value: number, precision: number): number {
   const factor = 10 ** precision;
   return Math.round((value + Number.EPSILON) * factor) / factor;
+}
+
+export function calculateBorda(input: BordaInput): BordaResult {
+  const candidates = input.candidates.filter(
+    (candidate, index, all) => all.findIndex((item) => item.id === candidate.id) === index,
+  );
+  if (candidates.length === 0) {
+    return { candidates: [], winners: [], tally: [], seats: 0, cap: 0, tieBreakApplied: false };
+  }
+
+  const seats = Math.max(1, Math.min(Math.trunc(input.seats ?? 1), candidates.length));
+  const cap = Math.min(candidates.length, Math.max(seats, 10));
+  const validIds = new Set(candidates.map((candidate) => candidate.id));
+  const ballots = input.ballots.map((ballot) =>
+    ballot.filter(
+      (id, index, ranking) => validIds.has(id) && ranking.indexOf(id) === index,
+    ),
+  );
+  const maxPoints = ballots.length * Math.max(0, cap - 1);
+
+  const tally = candidates.map<BordaTally>((candidate) => {
+    let points = 0;
+    let firstPlaceVotes = 0;
+    let rankSum = 0;
+    let totalRanked = 0;
+    const rankCounts: Record<number, number> = {};
+
+    ballots.forEach((ballot) => {
+      const rank = ballot.indexOf(candidate.id);
+      if (rank < 0) return;
+      points += Math.max(0, cap - 1 - rank);
+      firstPlaceVotes += rank === 0 ? 1 : 0;
+      rankCounts[rank + 1] = (rankCounts[rank + 1] ?? 0) + 1;
+      rankSum += rank + 1;
+      totalRanked += 1;
+    });
+
+    return {
+      ...candidate,
+      points,
+      firstPlaceVotes,
+      percent: maxPoints > 0 ? round((points / maxPoints) * 100, 1) : 0,
+      rankCounts,
+      averageRank: totalRanked > 0 ? round(rankSum / totalRanked, 1) : null,
+    };
+  });
+
+  tally.sort((left, right) => right.points - left.points);
+
+  let tieBreakApplied = false;
+  if (tally.length > seats && tally[seats - 1].points === tally[seats].points) {
+    const tiedPoints = tally[seats - 1].points;
+    let tieStart = seats - 1;
+    while (tieStart > 0 && tally[tieStart - 1].points === tiedPoints) tieStart -= 1;
+    let tieEnd = seats;
+    while (tieEnd < tally.length - 1 && tally[tieEnd + 1].points === tiedPoints) tieEnd += 1;
+    const tied = tally.splice(tieStart, tieEnd - tieStart + 1);
+    tied.sort((left, right) => right.firstPlaceVotes - left.firstPlaceVotes);
+    tally.splice(tieStart, 0, ...tied);
+    tieBreakApplied = tally[seats - 1].firstPlaceVotes > tally[seats].firstPlaceVotes;
+  }
+
+  return {
+    candidates,
+    winners: tally.slice(0, seats).map(({ id, name }) => ({ id, name })),
+    tally,
+    seats,
+    cap,
+    tieBreakApplied,
+  };
 }
 
 function deterministicScore(ballotKey: string, candidateId: CandidateId, roundNumber: number) {

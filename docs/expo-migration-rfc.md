@@ -400,7 +400,8 @@ unchanged.
   reset controls; gestures are an enhancement, not the only control.
 - Submit votes online with clear loading, retry, duplicate, secure-code, and
   cutoff states.
-- Extract `rcv-core` and render local round results.
+- Extract `rcv-core` and render local RCV round results or Borda point totals,
+  according to an explicit result method supplied by the server.
 - Support the canonical `/ballot/[key]` route and test incoming links in a
   development build.
 - Cover the flow with API contract tests and one device-level E2E scenario.
@@ -448,6 +449,13 @@ passes it to the native system share sheet. The URL is included in both the
 cross-platform message and the iOS URL field so shared links are canonical on
 both platforms.
 
+TestFlight review exposed a result-method gap: the legacy `pizza` ballot uses
+Borda count, while the initial v2 results contract omitted that setting and the
+native client therefore calculated RCV rounds. The v2 contract now normalizes
+the legacy flag as `resultMethod: "rcv" | "borda"`; `rcv-core` implements the
+website's existing Borda scoring and seat-boundary first-place tie break, and
+the native view renders winners plus point totals without RCV rounds.
+
 ### Phase 3 — authentication and management
 
 - Implement server-side password hashing, migrate legacy hashes on successful
@@ -465,7 +473,8 @@ logged-in user can safely manage only their own ballots.
 
 - RCVis display/synchronization.
 - Full grouping management and exports.
-- Borda views, custom entries, delayed results, and administrative tools.
+- Detailed Borda breakdowns, custom entries, delayed results, and
+  administrative tools.
 - Revisit initially web-only owner workflows only where native demand warrants
   them; permanently web-only features remain on RankedChoices.com.
 - Run the Expo-web proof and decide whether, when, and how to replace AngularJS.
@@ -550,9 +559,10 @@ results path has now passed on both Android and an iOS simulator against the
 real local PHP/MySQL backend. Xcode MCP also completed a clean native iOS build.
 
 Production distribution follows `docs/mobile-release-checklist.md`. David
-Moritz has confirmed that he will own and control both store listings. The
-Apple account type, team access, Expo ownership, and signing workflow still
-must be confirmed before registering or uploading the production identifiers.
+Moritz has confirmed that he will own and control both store listings. He has
+uploaded an iOS build to TestFlight, and Elisabeth has accepted App Store
+Connect team access and installed the app from TestFlight. Durable Expo
+ownership and the Google Play signing workflow still require confirmation.
 The app-side production/staging link declarations and
 non-deployable association templates may be reviewed in advance, but the
 server files require the final Apple Team ID and Google Play app-signing
