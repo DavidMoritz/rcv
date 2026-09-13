@@ -5,6 +5,90 @@ staging and TestFlight/internal-testing gates before App Store or Play Store
 review. Do not place passwords, signing keys, management tokens, voter codes,
 or store API credentials in the repository.
 
+## Per-build pre-publication gate
+
+Copy this section into the release PR or release-tracking issue for **every**
+TestFlight, Play testing, App Store, or Play Store candidate. Record evidence
+there instead of checking off this reusable template permanently.
+
+Release candidate:
+
+- Version and iOS build number / Android version code:
+- Source commit:
+- Distribution target (internal beta, external beta, or public):
+- API environment and deployed backend commit:
+- Release owner and rollback owner:
+
+### 1. Establish the backend/build dependency order
+
+- [ ] Inventory every schema, API, configuration, association-file, policy,
+  and store-metadata change required by this source commit.
+- [ ] Back up the target database and apply any required migrations before
+  deploying endpoints that depend on them; record migration verification.
+- [ ] Deploy backward-compatible backend changes before uploading or
+  distributing the dependent mobile build.
+- [ ] For builds containing native Borda support, confirm the deployed
+  `GET /api/v2/results.php` response includes `resultMethod`; an ordinary
+  released ballot must return `rcv` and a maintainer-approved Borda ballot must
+  return `borda`.
+- [ ] From outside the hosting network, verify the production API, privacy and
+  support URLs, and any universal/app-link association files required by this
+  candidate.
+- [ ] Re-run the existing website create, vote, results, and management smoke
+  tests after backend deployment.
+
+The Borda API field is additive and requires no schema migration. Older mobile
+builds ignore it, but Borda-aware builds deliberately reject a response that
+omits it rather than calculate the wrong result method. Once such a build has
+been distributed, retain the `resultMethod` field during rollback; pause the
+mobile rollout instead of restoring an incompatible API response.
+
+### 2. Build and verify the exact candidate
+
+- [ ] Pull the intended release commit and confirm the worktree is clean.
+- [ ] Bump and record the platform build identifiers; never reuse an uploaded
+  App Store Connect or Play Console build number.
+- [ ] Inspect the resolved Expo configuration and EAS profile for the app name,
+  bundle/package identifier, API URL, update channel, associated domain, icon,
+  telemetry flags, and signing owner.
+- [ ] Run root Vitest/PHPUnit, the production web build, mobile Vitest,
+  TypeScript, lint, Expo export, release validation, and applicable live MySQL
+  and device tests from the recorded commit.
+- [ ] Install the signed artifact through its intended channel—not only from a
+  local development build—and complete lookup, create, vote, results, sharing,
+  reporting, failure/retry, and cold-link smoke tests with disposable data.
+- [ ] Verify both result methods: ordinary RCV shows rounds; Borda shows the
+  same ordered winners and point totals as the website and does not show RCV
+  rounds.
+- [ ] Check the UI at larger text sizes and complete VoiceOver/TalkBack basics;
+  verify placeholder and other secondary text remains readable on a physical
+  device.
+- [ ] Remove disposable ballots, votes, codes, screenshots, and local test
+  credentials, then verify cleanup targeted only the recorded test data.
+
+### 3. Authorize distribution
+
+- [ ] Review the unresolved entries from `npm run validate:release:strict` and
+  complete every blocker required for this distribution tier.
+- [ ] Confirm store copy, screenshots, privacy/data-safety answers, support
+  contacts, moderation coverage, review notes, and export-compliance answers
+  match the exact candidate.
+- [ ] Record the tested artifact identifier, backend commit, test evidence,
+  known limitations, monitoring owner, and rollback steps in the release
+  record.
+- [ ] Confirm the previous known-good build remains available and that the
+  website remains the fallback for ballot links.
+- [ ] Obtain David's explicit approval for the exact build and distribution
+  tier before inviting testers, submitting for review, or starting release.
+
+Do not distribute when any required checkbox is incomplete. Internal beta can
+leave public-launch-only items open only when the release record identifies
+them and they do not make the beta unsafe, misleading, or dependent on an
+undeployed backend contract.
+
+The sections below are the long-form first-launch checklist used to decide
+which tier-specific items are required by the per-build gate.
+
 ## 1. Ownership and access
 
 - [x] David Moritz confirmed on September 9, 2026 that he will own and retain
