@@ -207,8 +207,11 @@ Apple Team ID, and Google Play app-signing certificate are final. Development
 builds intentionally rely on the `rankedchoices://` scheme and do not claim a
 web domain.
 
-See `docs/mobile-release-checklist.md` for deployment, privacy, TestFlight,
-store-submission, and rollback gates.
+See `docs/mobile-release-checklist.md` for the reusable per-build
+pre-publication gate plus deployment, privacy, TestFlight, store-submission,
+and rollback requirements. Copy the per-build gate into the release PR or
+tracking issue and attach evidence for the exact backend/build pair before
+distributing it.
 
 ### Building and submitting
 
