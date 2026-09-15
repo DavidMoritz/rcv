@@ -7,6 +7,14 @@
             <span ng-bind-html="bordaTeaser"></span>
             <a href ng-click="openBordaModal()" class="no-print">Learn more</a>
           </p>
+          <p
+            ng-if="(user.id == ballotCreatedBy || user.clearance >= 1) && resultsNotReleased && entryList.length"
+            class="text-muted no-print"
+            style="margin-bottom: 10px"
+          >
+            Does a candidate need to be withdrawn?
+            <a href ng-click="openWithdrawModal()">Click here</a>
+          </p>
           <div ng-if="!bordaActive" ng-bind-html="bodyText"></div>
           <div ng-if="bordaActive" ng-bind-html="bordaBodyText"></div>
         </div>

@@ -60,6 +60,26 @@ class GetVotesTest extends ApiTestCase
         $this->assertCount(2, $result['body']['votes']);
     }
 
+    public function testReturnsWithdrawalFieldsInEntries(): void
+    {
+        $key = 'withdrawn-' . uniqid();
+        $ballotId = $this->seedBallot(['key' => $key]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice', 'Bob']);
+        $this->seedVote($ballotId, 'Alice,Bob', implode(',', $entryIds));
+
+        // Withdraw Alice
+        $this->db->exec("UPDATE entries SET withdrawnAt = '2024-06-01 00:00:00', withdrawnReason = 'Dropped out' WHERE entry_id = {$entryIds[0]}");
+
+        $result = $this->callApi('get-votes.php', [], ['key' => $key]);
+
+        $this->assertIsArray($result['body']);
+        $entries = $result['body']['entries'];
+        $this->assertSame('2024-06-01 00:00:00', $entries[0]['withdrawnAt']);
+        $this->assertSame('Dropped out', $entries[0]['withdrawnReason']);
+        $this->assertNull($entries[1]['withdrawnAt']);
+        $this->assertSame('', $entries[1]['withdrawnReason']);
+    }
+
     public function testReturnsBordaActiveInBallot(): void
     {
         $key = 'borda-' . uniqid();

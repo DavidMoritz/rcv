@@ -43,13 +43,23 @@ if ($ballot['resultsRelease'] !== null && $ballot['resultsRelease'] > gmdate('Y-
 
 $ballotId = (int) $ballot['id'];
 $entryStatement = $dbh->prepare(
-    'SELECT entry_id, name FROM entries WHERE ballotId = :ballotId ORDER BY entry_id ASC'
+    'SELECT entry_id, name, withdrawnAt, withdrawnReason FROM entries WHERE ballotId = :ballotId ORDER BY entry_id ASC'
 );
 $entryStatement->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
 $entryStatement->execute();
 $entries = array_map(
-    fn (array $entry): array => ['id' => (int) $entry['entry_id'], 'name' => (string) $entry['name']],
+    fn (array $entry): array => [
+        'id' => (int) $entry['entry_id'],
+        'name' => (string) $entry['name'],
+        'withdrawnAt' => $entry['withdrawnAt'],
+        'withdrawnReason' => (string) $entry['withdrawnReason'],
+    ],
     $entryStatement->fetchAll(PDO::FETCH_ASSOC)
+);
+
+$withdrawnIds = array_fill_keys(
+    array_column(array_filter($entries, fn (array $e): bool => $e['withdrawnAt'] !== null), 'id'),
+    true
 );
 
 $voteStatement = $dbh->prepare(
@@ -62,7 +72,7 @@ $votes = [];
 foreach ($voteStatement->fetchAll(PDO::FETCH_COLUMN) as $voteIds) {
     $ranking = array_values(array_filter(
         array_map('intval', explode(',', trim((string) $voteIds, '[]'))),
-        fn (int $id): bool => isset($validIds[$id])
+        fn (int $id): bool => isset($validIds[$id]) && !isset($withdrawnIds[$id])
     ));
     if ($ranking !== []) {
         $votes[] = $ranking;

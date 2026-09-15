@@ -54,7 +54,7 @@ if(!empty($key)) {
 			echo "No one has voted yet on this ballot.";
 		} else {
 			// Fetch entries
-			$entrySth = $dbh->prepare("SELECT entry_id, name, image, color, hyperlink FROM entries WHERE ballotId = :ballotId ORDER BY entry_id ASC");
+			$entrySth = $dbh->prepare("SELECT entry_id, name, image, color, hyperlink, withdrawnAt, withdrawnReason FROM entries WHERE ballotId = :ballotId ORDER BY entry_id ASC");
 			$entrySth->bindValue(':ballotId', $ballotId, PDO::PARAM_INT);
 			$entrySth->execute();
 			$entries = $entrySth->fetchAll(PDO::FETCH_ASSOC);

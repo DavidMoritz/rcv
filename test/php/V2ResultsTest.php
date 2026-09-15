@@ -58,6 +58,64 @@ class V2ResultsTest extends ApiTestCase
         $this->assertNull($result['body']['data']);
     }
 
+    public function testWithdrawnCandidateIncludedInCandidatesButFilteredFromVotes(): void
+    {
+        $key = 'withdrawn-' . uniqid();
+        $ballotId = $this->seedBallot([
+            'key' => $key,
+            'resultsRelease' => '2000-01-01 00:00:00',
+        ]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice', 'Bob', 'Carol']);
+
+        // Withdraw Bob
+        $this->db->exec("UPDATE entries SET withdrawnAt = '2024-06-01 00:00:00', withdrawnReason = 'Won president' WHERE entry_id = {$entryIds[1]}");
+
+        // Vote: Alice > Bob > Carol
+        $this->seedVote($ballotId, 'Alice,Bob,Carol', implode(',', $entryIds));
+        // Vote: Bob > Carol > Alice
+        $this->seedVote($ballotId, 'Bob,Carol,Alice', implode(',', [$entryIds[1], $entryIds[2], $entryIds[0]]));
+
+        $result = $this->callApi('v2/results.php', [], ['key' => $key]);
+
+        $this->assertNull($result['body']['error']);
+        $data = $result['body']['data'];
+
+        // All 3 candidates should be in the candidates list
+        $this->assertCount(3, $data['candidates']);
+
+        // Bob should have withdrawal data
+        $bob = $data['candidates'][1];
+        $this->assertSame('Bob', $bob['name']);
+        $this->assertNotNull($bob['withdrawnAt']);
+        $this->assertSame('Won president', $bob['withdrawnReason']);
+
+        // Votes should NOT contain Bob's ID
+        foreach ($data['votes'] as $vote) {
+            $this->assertNotContains($entryIds[1], $vote, 'Withdrawn candidate ID should be filtered from votes');
+        }
+
+        // First vote should be [Alice, Carol], second should be [Carol, Alice]
+        $this->assertSame([$entryIds[0], $entryIds[2]], $data['votes'][0]);
+        $this->assertSame([$entryIds[2], $entryIds[0]], $data['votes'][1]);
+    }
+
+    public function testWithdrawnCandidateFieldsNullWhenNotWithdrawn(): void
+    {
+        $key = 'not-withdrawn-' . uniqid();
+        $ballotId = $this->seedBallot([
+            'key' => $key,
+            'resultsRelease' => '2000-01-01 00:00:00',
+        ]);
+        $entryIds = $this->seedEntries($ballotId, ['Alice']);
+        $this->seedVote($ballotId, 'Alice', implode(',', $entryIds));
+
+        $result = $this->callApi('v2/results.php', [], ['key' => $key]);
+
+        $alice = $result['body']['data']['candidates'][0];
+        $this->assertNull($alice['withdrawnAt']);
+        $this->assertSame('', $alice['withdrawnReason']);
+    }
+
     public function testReturnsTypedValidationAndNotFoundErrors(): void
     {
         $missingKey = $this->callApi('v2/results.php');

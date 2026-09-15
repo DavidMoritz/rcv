@@ -1,0 +1,69 @@
+<div class="modal" id="withdraw-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h2 class="modal-title">Candidate Withdrawal</h2>
+      </div>
+      <div class="modal-body">
+        <p>
+          If a candidate needs to be removed from the results (e.g. they won another office, dropped
+          out, or were disqualified), you can withdraw them here. Their votes will be redistributed
+          to the remaining candidates.
+        </p>
+        <p class="text-muted">
+          <em>Withdrawals can be reversed until results are released. The vote page is not affected
+          &mdash; all candidates still appear for ranking.</em>
+        </p>
+        <hr />
+        <div
+          ng-repeat="entry in entryList"
+          style="padding: 6px 0; border-bottom: 1px solid #eee"
+        >
+          <div style="display: flex; align-items: center; gap: 8px">
+            <span style="flex: 1" ng-class="{'text-muted': entry.withdrawnAt}">
+              <span ng-if="entry.withdrawnAt" style="text-decoration: line-through">{{entry.name}}</span>
+              <span ng-if="!entry.withdrawnAt">{{entry.name}}</span>
+              <em ng-if="entry.withdrawnAt" class="text-warning" style="margin-left: 6px; font-size: 12px">
+                {{entry.withdrawnReason}}
+              </em>
+            </span>
+            <button
+              ng-if="!entry.withdrawnAt && !entry.showWithdrawForm"
+              ng-click="entry.showWithdrawForm = true"
+              class="btn btn-xs btn-warning"
+            >Withdraw</button>
+            <button
+              ng-if="entry.withdrawnAt"
+              ng-click="unwithdrawCandidate(entry)"
+              class="btn btn-xs btn-default"
+            >Reverse</button>
+          </div>
+          <div ng-if="entry.showWithdrawForm" style="margin-top: 6px; display: flex; gap: 6px; align-items: center">
+            <input
+              type="text"
+              ng-model="entry.withdrawReason"
+              placeholder="Reason for withdrawal"
+              class="form-control input-sm"
+              style="flex: 1"
+            />
+            <button
+              ng-click="withdrawCandidate(entry)"
+              ng-disabled="!entry.withdrawReason"
+              class="btn btn-xs btn-warning"
+            >Confirm</button>
+            <button
+              ng-click="entry.showWithdrawForm = false; entry.withdrawReason = ''"
+              class="btn btn-xs btn-default"
+            >Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
