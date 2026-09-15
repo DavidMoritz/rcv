@@ -138,7 +138,8 @@ describe('candidate withdrawal', () => {
       votes: [[2, 1, 3], [1, 3, 2], [3, 1, 2]],
     });
     expect(local.resultMethod).toBe('borda');
-    const tallyIds = local.result.tally.map((c) => c.id);
+    if (local.resultMethod !== 'borda') throw new Error('expected borda');
+    const tallyIds = local.result.tally.map((c: { id: number }) => c.id);
     expect(tallyIds).not.toContain(2);
   });
 });
