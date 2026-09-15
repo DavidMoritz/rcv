@@ -303,6 +303,11 @@
 .borda-breakdown th, .borda-breakdown td { text-align: center; }
 .borda-breakdown th:first-child, .borda-breakdown td:first-child { min-width: 78px; }
 
+/* Round 0 / withdrawn candidates */
+.round-zero { list-style: none; padding-left: 0; }
+.round-zero li { padding: 4px 0; }
+.round-zero .withdrawn { text-decoration: line-through; color: #999; }
+
 /* Print styles */
 @media print {
   nav, footer, .no-print, .delete-vote-btn { display: none !important; }

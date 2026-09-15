@@ -18,10 +18,24 @@ type LocalResult =
   | { resultMethod: 'rcv'; result: ElectionResult }
   | { resultMethod: 'borda'; result: BordaResult };
 
+export type WithdrawnCandidate = { id: number; name: string; reason: string };
+
+export function getWithdrawnCandidates(data: ElectionResultsData): WithdrawnCandidate[] {
+  return data.candidates
+    .filter((c) => c.withdrawnAt != null)
+    .map((c) => ({ id: c.id, name: c.name, reason: c.withdrawnReason ?? '' }));
+}
+
 export function calculateLocalResult(data: ElectionResultsData): LocalResult {
+  const withdrawn = new Set(getWithdrawnCandidates(data).map((c) => c.id));
+  const activeCandidates = data.candidates.filter((c) => !withdrawn.has(c.id));
+  const filteredBallots = data.votes
+    .map((ballot) => ballot.filter((id) => !withdrawn.has(id)))
+    .filter((ballot) => ballot.length > 0);
+
   const sharedInput = {
-    candidates: data.candidates,
-    ballots: data.votes,
+    candidates: activeCandidates,
+    ballots: filteredBallots,
     seats: data.ballot.positions,
   };
   if (data.ballot.resultMethod === 'borda') {
@@ -42,10 +56,13 @@ export function ElectionResults({ ballotKey }: { ballotKey: string }) {
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<ResultState>({ status: 'loading' });
 
+  const [withdrawn, setWithdrawn] = useState<WithdrawnCandidate[]>([]);
+
   useEffect(() => {
     const controller = new AbortController();
     client.getResults(ballotKey, controller.signal).then(
       (data) => {
+        setWithdrawn(getWithdrawnCandidates(data));
         setState({
           status: 'loaded',
           voteCount: data.votes.length,
@@ -101,10 +118,15 @@ export function ElectionResults({ ballotKey }: { ballotKey: string }) {
     );
   }
 
-  return state.resultMethod === 'borda' ? (
-    <BordaResultsView result={state.result} voteCount={state.voteCount} />
-  ) : (
-    <ElectionResultsView result={state.result} voteCount={state.voteCount} />
+  return (
+    <View>
+      {withdrawn.length > 0 ? <WithdrawnCandidatesCard withdrawn={withdrawn} /> : null}
+      {state.resultMethod === 'borda' ? (
+        <BordaResultsView result={state.result} voteCount={state.voteCount} />
+      ) : (
+        <ElectionResultsView result={state.result} voteCount={state.voteCount} />
+      )}
+    </View>
   );
 }
 
@@ -204,6 +226,21 @@ export function BordaResultsView({
   );
 }
 
+function WithdrawnCandidatesCard({ withdrawn }: { withdrawn: WithdrawnCandidate[] }) {
+  return (
+    <View style={styles.withdrawnCard}>
+      <Text style={styles.roundTitle}>Round 0 — Withdrawn Candidates</Text>
+      {withdrawn.map((candidate) => (
+        <View key={candidate.id} style={styles.withdrawnRow}>
+          <Text style={styles.withdrawnName}>{candidate.name}</Text>
+          <Text style={styles.withdrawnReason}>{candidate.reason}</Text>
+        </View>
+      ))}
+      <Text style={styles.withdrawnNote}>Withdrawn by ballot owner</Text>
+    </View>
+  );
+}
+
 function candidateName(result: ElectionResult, id: number): string {
   return result.candidates.find((candidate) => candidate.id === id)?.name ?? `Choice ${id}`;
 }
@@ -241,4 +278,9 @@ const styles = StyleSheet.create({
   },
   retryText: { color: '#ffffff', fontSize: 14, fontWeight: '800' },
   buttonPressed: { opacity: 0.75 },
+  withdrawnCard: { backgroundColor: '#fff8e1', borderRadius: 14, marginTop: 14, padding: 16 },
+  withdrawnRow: { paddingVertical: 4 },
+  withdrawnName: { color: '#6b4600', fontSize: 14, fontWeight: '700', textDecorationLine: 'line-through' },
+  withdrawnReason: { color: '#8a6d3b', fontSize: 13, fontStyle: 'italic', marginTop: 2 },
+  withdrawnNote: { color: '#8a6d3b', fontSize: 12, marginTop: 10 },
 });

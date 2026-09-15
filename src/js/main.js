@@ -412,12 +412,17 @@ mainApp.controller('MainCtrl', [
           $s.activeLink = $loc.$$search.key ? 'code' : 'vote';
           var resultsDate = ballot.resultsRelease ? moment.tz(ballot.resultsRelease, 'Zulu') : null;
           $s.resultsReady = !resultsDate || resultsDate < moment();
-          $s.resultsReleaseFormatted = resultsDate ? resultsDate.tz(moment.tz.guess()).format('MMM Do, h:mma') : null;
+          $s.resultsReleaseFormatted = resultsDate
+            ? resultsDate.tz(moment.tz.guess()).format('MMM Do, h:mma')
+            : null;
 
           $s.voteCutoffMoment = ballot.voteCutoff ? moment.tz(ballot.voteCutoff, 'Zulu') : null;
           if ($s.voteCutoffMoment) {
             var cutdownInterval = $interval(function () {
-              if (!$s.voteCutoffMoment) { $interval.cancel(cutdownInterval); return; }
+              if (!$s.voteCutoffMoment) {
+                $interval.cancel(cutdownInterval);
+                return;
+              }
               var secs = $s.voteCutoffMoment.diff(moment(), 'seconds');
               $s.cutoffSecondsLeft = secs;
               $s.cutoffMinutes = Math.floor(Math.max(0, secs) / 60);
@@ -479,30 +484,76 @@ mainApp.controller('MainCtrl', [
 
     $s.checkGraphStatus = function () {
       var key = $s.shortcode || $s.ballot.key;
-      $http.get('/api/check-graph-status.php?key=' + key + '&t=' + Date.now()).then(function (resp) {
-        if (resp.data && resp.data.data) {
-          var status = resp.data.data;
-          $s.graphStatus = status;
+      $http
+        .get('/api/check-graph-status.php?key=' + key + '&t=' + Date.now())
+        .then(function (resp) {
+          if (resp.data && resp.data.data) {
+            var status = resp.data.data;
+            $s.graphStatus = status;
 
-          if (shouldAutoUpdate({
-            rcvisSlug: $s.rcvisSlug,
-            votesSinceUpdate: status.votesSinceUpdate,
-            minutesSinceUpdate: status.minutesSinceUpdate,
-            minVotes: $s.user.rcvisInfo && $s.user.rcvisInfo.minVotes,
-            minMinutes: $s.user.rcvisInfo && $s.user.rcvisInfo.minMinutes
-          })) {
-            $s.graphUpdating = true;
-            $s.patchRcvis = true;
-            $s.getResults();
-          } else if ($s.rcvisSlug) {
-            $s.displayRcvisIframe();
+            if (
+              shouldAutoUpdate({
+                rcvisSlug: $s.rcvisSlug,
+                votesSinceUpdate: status.votesSinceUpdate,
+                minutesSinceUpdate: status.minutesSinceUpdate,
+                minVotes: $s.user.rcvisInfo && $s.user.rcvisInfo.minVotes,
+                minMinutes: $s.user.rcvisInfo && $s.user.rcvisInfo.minMinutes
+              })
+            ) {
+              $s.graphUpdating = true;
+              $s.patchRcvis = true;
+              $s.getResults();
+            } else if ($s.rcvisSlug) {
+              $s.displayRcvisIframe();
+            }
           }
-        }
-      });
+        });
     };
 
     $s.printResults = function () {
       window.print();
+    };
+
+    $s.withdrawCandidate = function (entry) {
+      var reason = entry.withdrawReason;
+      if (!reason) return;
+      $http
+        .post('/api/withdraw-candidate.php', {
+          entryId: entry.entry_id,
+          ballotId: $s.ballotId,
+          createdBy: $s.user.id,
+          withdraw: true,
+          reason: reason
+        })
+        .then(function (resp) {
+          if (resp.data.errors) {
+            var firstKey = Object.keys(resp.data.errors)[0];
+            alert(resp.data.errors[firstKey]);
+            return;
+          }
+          $('#withdraw-modal').modal('hide');
+          $s.getResults();
+        });
+    };
+
+    $s.unwithdrawCandidate = function (entry) {
+      $http
+        .post('/api/withdraw-candidate.php', {
+          entryId: entry.entry_id,
+          ballotId: $s.ballotId,
+          createdBy: $s.user.id,
+          withdraw: false,
+          reason: ''
+        })
+        .then(function (resp) {
+          if (resp.data.errors) {
+            var firstKey = Object.keys(resp.data.errors)[0];
+            alert(resp.data.errors[firstKey]);
+            return;
+          }
+          $('#withdraw-modal').modal('hide');
+          $s.getResults();
+        });
     };
 
     $s.updateGraphNow = function () {
@@ -539,6 +590,20 @@ mainApp.controller('MainCtrl', [
           };
         });
 
+        // Build withdrawn entries list and lookup
+        $s.withdrawnEntries = [];
+        var withdrawnIds = {};
+        _.each(entryList, function (e) {
+          if (e.withdrawnAt) {
+            $s.withdrawnEntries.push({
+              entry_id: e.entry_id,
+              name: e.name,
+              reason: e.withdrawnReason
+            });
+            withdrawnIds[e.entry_id] = true;
+          }
+        });
+
         // Read ballot metadata from dedicated ballot object
         var now = moment();
         var resultsDate = ballot.resultsRelease ? moment.tz(ballot.resultsRelease, 'Zulu') : null;
@@ -547,7 +612,13 @@ mainApp.controller('MainCtrl', [
         var createdBy = ballot.createdBy;
         $s.ballotCreatedBy = createdBy;
         $s.ballotId = ballot.id;
-        var loggedIn = $s.user.id == createdBy || $s.user.clearance >= 1;
+        var ownerParam = $loc.$$search.owner;
+        var loggedIn =
+          $s.user.id == createdBy ||
+          $s.user.clearance >= 1 ||
+          (ownerParam && ownerParam == createdBy);
+        $s.resultsNotReleased = resultsDate && resultsDate > now;
+        $s.entryList = entryList;
         if (resultsDate && resultsDate > now) {
           $s.errors.shortcode =
             'The ballot you selected will not have the results released until ' +
@@ -594,7 +665,24 @@ mainApp.controller('MainCtrl', [
 
           return JSON.parse(result.voteIds);
         });
-        $s.ids = _.uniq(_.flatten($s.votes));
+        // Keep unfiltered votes for Round 0 display
+        var unfilteredVotes = $s.withdrawnEntries.length
+          ? $s.votes.map(function (v) {
+              return v.slice();
+            })
+          : null;
+        var allIds = _.uniq(_.flatten($s.votes));
+        $s.ids = allIds.filter(function (id) {
+          return !withdrawnIds[id];
+        });
+        // Remove withdrawn candidates from vote arrays for Round 1+
+        if ($s.withdrawnEntries.length) {
+          $s.votes = $s.votes.map(function (vote) {
+            return vote.filter(function (id) {
+              return !withdrawnIds[id];
+            });
+          });
+        }
         $s.mutableVotes = JSON.parse(JSON.stringify($s.votes));
 
         // Parse group data for grouped analysis
@@ -615,8 +703,17 @@ mainApp.controller('MainCtrl', [
                 { id: 'true', label: 'True' },
                 { id: 'false', label: 'False' }
               ];
-            } else if (type === 'select' && field.options.some(function (o) { return o.required == 0 || field.required == 0; })) {
-              if (!field.options.some(function (o) { return o.id === '__no_answer'; })) {
+            } else if (
+              type === 'select' &&
+              field.options.some(function (o) {
+                return o.required == 0 || field.required == 0;
+              })
+            ) {
+              if (
+                !field.options.some(function (o) {
+                  return o.id === '__no_answer';
+                })
+              ) {
                 field.options.push({ id: '__no_answer', label: 'No answer' });
               }
             }
@@ -629,7 +726,10 @@ mainApp.controller('MainCtrl', [
             if (row.group_answers) {
               var answers;
               try {
-                answers = typeof row.group_answers === 'string' ? JSON.parse(row.group_answers) : row.group_answers;
+                answers =
+                  typeof row.group_answers === 'string'
+                    ? JSON.parse(row.group_answers)
+                    : row.group_answers;
               } catch (e) {
                 return;
               }
@@ -638,7 +738,8 @@ mainApp.controller('MainCtrl', [
                 if (type === 'text') return;
                 var answer = answers[fieldId];
                 if (type === 'checkbox') {
-                  var key = (answer === true || answer === 'true' || answer === '1') ? 'true' : 'false';
+                  var key =
+                    answer === true || answer === 'true' || answer === '1' ? 'true' : 'false';
                   if (groupBuckets[fieldId] && groupBuckets[fieldId][key]) {
                     groupBuckets[fieldId][key].push(idx);
                   }
@@ -665,11 +766,15 @@ mainApp.controller('MainCtrl', [
               var subVotes = voteIndices.map(function (i) {
                 return JSON.parse(JSON.stringify($s.votes[i]));
               });
-              var subIds = _.uniq(_.flatten(subVotes));
+              var subIds = _.uniq(_.flatten(subVotes)).filter(function (id) {
+                return !withdrawnIds[id];
+              });
               // Simple final-round tally: count first choices iteratively eliminating lowest
               var tally = {};
               var eliminated = {};
-              var activeVotes = subVotes.map(function (v) { return v.slice(); });
+              var activeVotes = subVotes.map(function (v) {
+                return v.slice();
+              });
               var elected = [];
               var seats = $s.seats;
 
@@ -691,9 +796,13 @@ mainApp.controller('MainCtrl', [
                   break;
                 }
                 // Check if anyone exceeds quota
-                var totalActive = remaining.reduce(function (s, id) { return s + tally[id]; }, 0);
+                var totalActive = remaining.reduce(function (s, id) {
+                  return s + tally[id];
+                }, 0);
                 var quota = totalActive / (seats + 1);
-                var winner = remaining.find(function (id) { return tally[id] > quota; });
+                var winner = remaining.find(function (id) {
+                  return tally[id] > quota;
+                });
                 if (winner) {
                   elected.push(winner);
                   eliminated[winner] = true;
@@ -706,19 +815,27 @@ mainApp.controller('MainCtrl', [
                 remaining.forEach(function (id) {
                   if (tally[id] < minVotes) minVotes = tally[id];
                 });
-                var loser = remaining.find(function (id) { return tally[id] === minVotes; });
+                var loser = remaining.find(function (id) {
+                  return tally[id] === minVotes;
+                });
                 eliminated[loser] = true;
               }
 
               // Build final tally sorted descending
-              var finalTally = Object.keys(tally).map(function (id) {
-                var entry = $s.entryMap[id] || { name: id };
-                return { id: id, name: entry.name, color: entry.color, votes: tally[id] };
-              }).sort(function (a, b) { return b.votes - a.votes; });
+              var finalTally = Object.keys(tally)
+                .map(function (id) {
+                  var entry = $s.entryMap[id] || { name: id };
+                  return { id: id, name: entry.name, color: entry.color, votes: tally[id] };
+                })
+                .sort(function (a, b) {
+                  return b.votes - a.votes;
+                });
 
-              var totalVotes = finalTally.reduce(function (s, t) { return s + t.votes; }, 0);
+              var totalVotes = finalTally.reduce(function (s, t) {
+                return s + t.votes;
+              }, 0);
               finalTally.forEach(function (t) {
-                t.percent = totalVotes > 0 ? Math.round(t.votes / totalVotes * 100) : 0;
+                t.percent = totalVotes > 0 ? Math.round((t.votes / totalVotes) * 100) : 0;
               });
 
               $s.groupResults[field.id][opt.id] = {
@@ -789,19 +906,112 @@ mainApp.controller('MainCtrl', [
 
         $('.ballot-name').text(' for ' + ballot.ballotName);
         $s.runTheCode(loggedIn);
+
+        // Prepend Round 0 showing withdrawn candidates with full vote table
+        if ($s.withdrawnEntries.length && unfilteredVotes) {
+          var r0 = '';
+          var getName = function (id) {
+            return $s.entryMap[id] ? $s.entryMap[id].name : id;
+          };
+
+          // Vote table matching Round N format
+          if (unfilteredVotes.length < 100 || loggedIn) {
+            r0 += '<table class="table"><thead>Round 0 votes — before withdrawal</thead><tbody>';
+            _.each(unfilteredVotes, function (vote, idx) {
+              var dName = $s.voterNames[idx] || 'Vote ' + (idx + 1);
+              r0 += '<tr>';
+              r0 += '<th class="vote-pin-left">';
+              if ($s.ballotIsSecure) {
+                r0 += '<span class="voter-code">' + dName + '</span>:</th>';
+              } else {
+                r0 += dName + ':</th>';
+              }
+              r0 += '<td class="vote-pin-first"><span class="next-vote">';
+              if (vote[0]) {
+                var firstName = getName(vote[0]);
+                if (withdrawnIds[vote[0]]) {
+                  r0 += '<span class="eliminated">' + firstName + '</span>';
+                } else {
+                  r0 += firstName;
+                }
+              }
+              r0 += '</span></td>';
+              r0 += '<td class="vote-mid-cell"><div class="vote-mid-scroll">';
+              for (var i = 1; i < vote.length; i++) {
+                if (i > 1) r0 += '<span class="vote-mid-sep">|</span>';
+                var cName = getName(vote[i]);
+                if (withdrawnIds[vote[i]]) {
+                  r0 +=
+                    '<span class="vote-mid-item"><span class="eliminated">' +
+                    cName +
+                    '</span></span>';
+                } else {
+                  r0 += '<span class="vote-mid-item">' + cName + '</span>';
+                }
+              }
+              r0 += '</div></td>';
+              r0 += '</tr>';
+            });
+            r0 += '</tbody></table>';
+          } else {
+            r0 += '<hr>Round 0 Summary — withdrawn candidates<hr>';
+          }
+
+          // Tally: count first-choice votes for all candidates
+          var r0tally = {};
+          _.each(allIds, function (id) {
+            r0tally[id] = 0;
+          });
+          _.each(unfilteredVotes, function (vote) {
+            if (vote[0] && r0tally[vote[0]] !== undefined) {
+              r0tally[vote[0]]++;
+            }
+          });
+          var r0sorted = allIds
+            .map(function (id) {
+              return { id: id, name: getName(id), votes: r0tally[id] };
+            })
+            .sort(function (a, b) {
+              return b.votes - a.votes;
+            });
+          _.each(r0sorted, function (c) {
+            if (withdrawnIds[c.id]) {
+              r0 += '<span class="eliminated">' + c.name + '</span> = ' + c.votes + '<br>';
+            } else {
+              r0 += c.name + ' = ' + c.votes + '<br>';
+            }
+          });
+
+          // Withdrawal outcome
+          _.each($s.withdrawnEntries, function (w) {
+            r0 += '<br><span class="eliminated">' + _.escape(w.name) + '</span>';
+            r0 += ' is withdrawn by ballot owner';
+            r0 += ' — <em>' + _.escape(w.reason) + '</em>.';
+          });
+          r0 += '<br><br>';
+
+          $s.outputstring = r0 + $s.outputstring;
+        }
+
         $s.bodyText = $sce.trustAsHtml($s.outputstring);
 
         // Borda count computation (uses original voteRows, not mutated $s.votes)
         var bordaVotes = voteRows.map(function (row) {
-          return JSON.parse(row.voteIds);
+          var ids = JSON.parse(row.voteIds);
+          return ids.filter(function (id) {
+            return !withdrawnIds[id];
+          });
         });
         $s.bordaResults = computeBorda(bordaVotes, $s.ids, $s.entryMap, $s.seats);
-        $s.bordaSwitchDisabled = $s.user.clearance >= 1 ? false : !resultsDate || resultsDate <= now;
+        $s.bordaSwitchDisabled =
+          $s.user.clearance >= 1 ? false : !resultsDate || resultsDate <= now;
 
         // Shared Borda bar helpers
         var bordaN = $s.bordaResults.cap;
         var rankColors = ['#1a5276', '#2980b9', '#5dade2', '#85c1e9', '#aed6f1'];
-        var rankColor = function (rank) { return rankColors[(rank - 1) % rankColors.length]; };
+        var rankColor = function (rank) {
+          return rankColors[(rank - 1) % rankColors.length];
+        };
         var ordinal = function (k) {
           var s = ['th', 'st', 'nd', 'rd'];
           var v = k % 100;
@@ -810,7 +1020,14 @@ mainApp.controller('MainCtrl', [
         var buildBordaLegend = function () {
           var h = '<div class="borda-legend">';
           for (var r = 0; r < bordaN; r++) {
-            h += '<span><span class="borda-legend-swatch" style="background:' + rankColor(r + 1) + ';border:6px solid ' + rankColor(r + 1) + ';box-sizing:border-box"></span>' + ordinal(r + 1) + '</span>';
+            h +=
+              '<span><span class="borda-legend-swatch" style="background:' +
+              rankColor(r + 1) +
+              ';border:6px solid ' +
+              rankColor(r + 1) +
+              ';box-sizing:border-box"></span>' +
+              ordinal(r + 1) +
+              '</span>';
           }
           h += '</div>';
           return h;
@@ -822,9 +1039,24 @@ mainApp.controller('MainCtrl', [
             var count = entry.rankCounts[rank] || 0;
             var contribution = count * (bordaN - rank);
             if (contribution === 0) continue;
-            var widthPct = (contribution / pts * 100);
+            var widthPct = (contribution / pts) * 100;
             var segColor = rankColor(rank);
-            h += '<div class="borda-rank-seg" style="width:' + widthPct + '%;background:' + segColor + ';border:11px solid ' + segColor + ';box-sizing:border-box" title="' + count + ' vote' + (count !== 1 ? 's' : '') + ' ranked ' + ordinal(rank) + ' (' + contribution + ' pts)"></div>';
+            h +=
+              '<div class="borda-rank-seg" style="width:' +
+              widthPct +
+              '%;background:' +
+              segColor +
+              ';border:11px solid ' +
+              segColor +
+              ';box-sizing:border-box" title="' +
+              count +
+              ' vote' +
+              (count !== 1 ? 's' : '') +
+              ' ranked ' +
+              ordinal(rank) +
+              ' (' +
+              contribution +
+              ' pts)"></div>';
           }
           return h;
         };
@@ -835,14 +1067,25 @@ mainApp.controller('MainCtrl', [
           var maxPts = br.tally.length ? br.tally[0].points : 1;
           var html = buildBordaLegend();
           br.tally.forEach(function (entry) {
-            var barScale = maxPts > 0 ? (entry.points / maxPts * 100) : 0;
+            var barScale = maxPts > 0 ? (entry.points / maxPts) * 100 : 0;
             html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
-            html += '<span style="width:150px;flex-shrink:0;text-align:right;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + _.escape(entry.name) + '">' + _.escape(entry.name) + '</span>';
-            html += '<div style="flex:1;background:#eee;border:1px solid #ddd;border-radius:3px;height:22px">';
+            html +=
+              '<span style="width:150px;flex-shrink:0;text-align:right;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' +
+              _.escape(entry.name) +
+              '">' +
+              _.escape(entry.name) +
+              '</span>';
+            html +=
+              '<div style="flex:1;background:#eee;border:1px solid #ddd;border-radius:3px;height:22px">';
             html += '<div class="borda-rank-bar" style="width:' + barScale + '%">';
             html += buildBordaBarSegments(entry);
             html += '</div></div>';
-            html += '<span style="min-width:80px;font-size:12px;color:#666">' + entry.points + ' pts (' + entry.percent + '%)</span>';
+            html +=
+              '<span style="min-width:80px;font-size:12px;color:#666">' +
+              entry.points +
+              ' pts (' +
+              entry.percent +
+              '%)</span>';
             html += '</div>';
           });
           $s.bordaTopGraphHtml = $sce.trustAsHtml(html);
@@ -852,7 +1095,8 @@ mainApp.controller('MainCtrl', [
         (function buildBordaBody() {
           var br = $s.bordaResults;
           var totalVotes = bordaVotes.length;
-          var html = '<strong>Candidates: ' + $s.ids.length + ' | Votes: ' + totalVotes + '</strong><br>';
+          var html =
+            '<strong>Candidates: ' + $s.ids.length + ' | Votes: ' + totalVotes + '</strong><br>';
 
           // Vote table
           if (totalVotes < 100 || loggedIn) {
@@ -862,14 +1106,18 @@ mainApp.controller('MainCtrl', [
               html += '<tr>';
               html += '<th class="vote-pin-left">';
               if (loggedIn && !$s.ballotIsSecure) {
-                html += '<span class="delete-vote-btn" data-delete-vote=' + $s.voterIds[idx] + '>&times;</span>';
+                html +=
+                  '<span class="delete-vote-btn" data-delete-vote=' +
+                  $s.voterIds[idx] +
+                  '>&times;</span>';
               }
               if ($s.ballotIsSecure) {
                 html += '<span class="voter-code">' + _.escape(dName) + '</span>:</th>';
               } else {
                 html += _.escape(dName) + ':</th>';
               }
-              html += '<td class="vote-pin-first"><span class="next-vote">' +
+              html +=
+                '<td class="vote-pin-first"><span class="next-vote">' +
                 (vote[0] ? ($s.entryMap[vote[0]] ? $s.entryMap[vote[0]].name : vote[0]) : '') +
                 '</span></td>';
               html += '<td class="vote-mid-cell"><div class="vote-mid-scroll">';
@@ -885,13 +1133,17 @@ mainApp.controller('MainCtrl', [
 
           // Per-candidate breakdown tables
           var rankBgColors = ['#d4e6f1', '#d6eaf8', '#e0f0fa', '#ebf5fb', '#f2f9fd'];
-          var rankBgColor = function (rank) { return rankBgColors[(rank - 1) % rankBgColors.length]; };
+          var rankBgColor = function (rank) {
+            return rankBgColors[(rank - 1) % rankBgColors.length];
+          };
           var totalRanks = $s.ids.length;
           br.tally.forEach(function (entry) {
             html += '<div class="print-together">';
-            html += '<h4 style="margin-top:18px;margin-bottom:6px">' + _.escape(entry.name) + '</h4>';
+            html +=
+              '<h4 style="margin-top:18px;margin-bottom:6px">' + _.escape(entry.name) + '</h4>';
             html += '<table class="table table-bordered table-condensed borda-breakdown">';
-            html += '<thead><tr><th>Rank</th><th>Votes</th><th>Value</th><th>Total</th></tr></thead><tbody>';
+            html +=
+              '<thead><tr><th>Rank</th><th>Votes</th><th>Value</th><th>Total</th></tr></thead><tbody>';
             // Show scored ranks (1 to cap), collapsing consecutive 0-total rows
             var zeroStart = null;
             for (var rank = 1; rank <= bordaN; rank++) {
@@ -902,8 +1154,16 @@ mainApp.controller('MainCtrl', [
                 if (zeroStart === null) zeroStart = rank;
               } else {
                 if (zeroStart !== null) {
-                  var zeroLabel = zeroStart === rank - 1 ? ordinal(zeroStart) : ordinal(zeroStart) + ' - ' + ordinal(rank - 1);
-                  html += '<tr style="background:' + rankBgColor(zeroStart) + ';color:#999"><td>' + zeroLabel + '</td><td>—</td><td>0</td><td>0</td></tr>';
+                  var zeroLabel =
+                    zeroStart === rank - 1
+                      ? ordinal(zeroStart)
+                      : ordinal(zeroStart) + ' - ' + ordinal(rank - 1);
+                  html +=
+                    '<tr style="background:' +
+                    rankBgColor(zeroStart) +
+                    ';color:#999"><td>' +
+                    zeroLabel +
+                    '</td><td>—</td><td>0</td><td>0</td></tr>';
                   zeroStart = null;
                 }
                 html += '<tr style="background:' + rankBgColor(rank) + '">';
@@ -916,8 +1176,16 @@ mainApp.controller('MainCtrl', [
             }
             // Flush any trailing zero-value rows within the scored range
             if (zeroStart !== null) {
-              var zeroLabel = zeroStart === bordaN ? ordinal(zeroStart) : ordinal(zeroStart) + ' - ' + ordinal(bordaN);
-              html += '<tr style="background:' + rankBgColor(zeroStart) + ';color:#999"><td>' + zeroLabel + '</td><td>—</td><td>0</td><td>0</td></tr>';
+              var zeroLabel =
+                zeroStart === bordaN
+                  ? ordinal(zeroStart)
+                  : ordinal(zeroStart) + ' - ' + ordinal(bordaN);
+              html +=
+                '<tr style="background:' +
+                rankBgColor(zeroStart) +
+                ';color:#999"><td>' +
+                zeroLabel +
+                '</td><td>—</td><td>0</td><td>0</td></tr>';
             }
             // Collapse unscored ranks beyond the cap
             if (bordaN < totalRanks) {
@@ -925,10 +1193,16 @@ mainApp.controller('MainCtrl', [
               for (var r = bordaN + 1; r <= totalRanks; r++) {
                 unscoredVotes += entry.rankCounts[r] || 0;
               }
-              html += '<tr style="background:#f5f5f5;color:#999"><td>Unscored</td><td>' + (unscoredVotes || '—') + '</td><td>0</td><td>0</td></tr>';
+              html +=
+                '<tr style="background:#f5f5f5;color:#999"><td>Unscored</td><td>' +
+                (unscoredVotes || '—') +
+                '</td><td>0</td><td>0</td></tr>';
             }
             html += '</tbody>';
-            html += '<tfoot><tr style="font-weight:bold"><td colspan="3" style="text-align:right">Total Score</td><td>' + entry.points + '</td></tr></tfoot>';
+            html +=
+              '<tfoot><tr style="font-weight:bold"><td colspan="3" style="text-align:right">Total Score</td><td>' +
+              entry.points +
+              '</td></tr></tfoot>';
             html += '</table>';
             html += '</div>';
           });
@@ -938,13 +1212,24 @@ mainApp.controller('MainCtrl', [
           html += buildBordaLegend();
           var maxPts = br.tally.length ? br.tally[0].points : 1;
           br.tally.forEach(function (entry) {
-            var barScale = maxPts > 0 ? (entry.points / maxPts * 100) : 0;
+            var barScale = maxPts > 0 ? (entry.points / maxPts) * 100 : 0;
             html += '<div style="display:flex;align-items:center;margin-bottom:6px">';
-            html += '<div style="width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + _.escape(entry.name) + '">' + _.escape(entry.name) + '</div>';
-            html += '<div style="flex:1"><div class="borda-rank-bar" style="width:' + barScale + '%">';
+            html +=
+              '<div style="width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' +
+              _.escape(entry.name) +
+              '">' +
+              _.escape(entry.name) +
+              '</div>';
+            html +=
+              '<div style="flex:1"><div class="borda-rank-bar" style="width:' + barScale + '%">';
             html += buildBordaBarSegments(entry);
             html += '</div></div>';
-            html += '<div style="width:120px;flex-shrink:0;text-align:right;font-size:12px;padding-left:8px">' + entry.points + ' pts' + (entry.avgRank !== null ? ' (avg ' + entry.avgRank + ')' : '') + '</div>';
+            html +=
+              '<div style="width:120px;flex-shrink:0;text-align:right;font-size:12px;padding-left:8px">' +
+              entry.points +
+              ' pts' +
+              (entry.avgRank !== null ? ' (avg ' + entry.avgRank + ')' : '') +
+              '</div>';
             html += '</div>';
           });
           html += '</div>';
@@ -988,6 +1273,10 @@ mainApp.controller('MainCtrl', [
       $('#borda-modal').modal('show');
     };
 
+    $s.openWithdrawModal = function () {
+      $('#withdraw-modal').modal('show');
+    };
+
     $s.toggleBorda = function () {
       var newValue = $s.bordaActive ? 0 : 1;
       $s.bordaToggling = true;
@@ -1002,30 +1291,38 @@ mainApp.controller('MainCtrl', [
           createdBy: $s.ballotCreatedBy,
           bordaActive: newValue
         }
-      }).then(function () {
-        $s.bordaActive = newValue === 1;
-        // Rebuild teaser
-        var teaserText;
-        if ($s.bordaActive) {
-          if ($s.user.id == $s.ballotCreatedBy || $s.user.clearance >= 1) {
-            teaserText = 'Currently showing Borda count results.';
+      }).then(
+        function () {
+          $s.bordaActive = newValue === 1;
+          // Rebuild teaser
+          var teaserText;
+          if ($s.bordaActive) {
+            if ($s.user.id == $s.ballotCreatedBy || $s.user.clearance >= 1) {
+              teaserText = 'Currently showing Borda count results.';
+            } else {
+              teaserText = 'These results use the Borda counting method.';
+            }
           } else {
-            teaserText = 'These results use the Borda counting method.';
+            if (
+              ($s.user.id == $s.ballotCreatedBy || $s.user.clearance >= 1) &&
+              $s.bordaResults &&
+              $s.bordaResults.winner
+            ) {
+              var winnerName = truncateName($s.bordaResults.winner.name);
+              teaserText =
+                'Under Borda count, <strong>' + _.escape(winnerName) + '</strong> would win.';
+            } else {
+              teaserText = null;
+            }
           }
-        } else {
-          if (($s.user.id == $s.ballotCreatedBy || $s.user.clearance >= 1) && $s.bordaResults && $s.bordaResults.winner) {
-            var winnerName = truncateName($s.bordaResults.winner.name);
-            teaserText = 'Under Borda count, <strong>' + _.escape(winnerName) + '</strong> would win.';
-          } else {
-            teaserText = null;
-          }
+          $s.bordaTeaser = teaserText ? $sce.trustAsHtml(teaserText) : null;
+          $s.bordaToggling = false;
+          $('#borda-modal').modal('hide');
+        },
+        function () {
+          $s.bordaToggling = false;
         }
-        $s.bordaTeaser = teaserText ? $sce.trustAsHtml(teaserText) : null;
-        $s.bordaToggling = false;
-        $('#borda-modal').modal('hide');
-      }, function () {
-        $s.bordaToggling = false;
-      });
+      );
     };
 
     $s.submitGroupAnswers = function () {
@@ -1103,13 +1400,16 @@ mainApp.controller('MainCtrl', [
           var cols = [row.name || '', row.date_created || ''];
           var ids = JSON.parse(row.voteIds || '[]');
           for (var i = 0; i < maxRanks; i++) {
-            cols.push(ids[i] ? (entryMap[ids[i]] || ids[i]) : '');
+            cols.push(ids[i] ? entryMap[ids[i]] || ids[i] : '');
           }
           // Group answers
           var answers = {};
           if (row.group_answers) {
             try {
-              answers = typeof row.group_answers === 'string' ? JSON.parse(row.group_answers) : row.group_answers;
+              answers =
+                typeof row.group_answers === 'string'
+                  ? JSON.parse(row.group_answers)
+                  : row.group_answers;
             } catch (e) {}
           }
           groupFields.forEach(function (field) {
@@ -1120,7 +1420,7 @@ mainApp.controller('MainCtrl', [
             } else if (type === 'checkbox') {
               cols.push(val ? 'true' : 'false');
             } else {
-              cols.push(val ? (optionMap[val] || val) : '');
+              cols.push(val ? optionMap[val] || val : '');
             }
           });
           lines.push(cols.map(esc).join(','));
@@ -1195,7 +1495,8 @@ mainApp.controller('MainCtrl', [
           name: $s.ballot.voterName,
           fingerprint: $s.deviceFingerprint || '',
           userId: $s.user.id || '',
-          group_answers: $s.ballot.allowGrouping && $s.groupAnswers ? JSON.stringify($s.groupAnswers) : null
+          group_answers:
+            $s.ballot.allowGrouping && $s.groupAnswers ? JSON.stringify($s.groupAnswers) : null
         }
       }).success(function (resp) {
         if (resp && resp.errors && resp.errors.duplicate) {
@@ -1255,7 +1556,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function playWinkAll() {
     if (isAnimating) return;
     isAnimating = true;
-    winkEls.forEach(function (el) { el.classList.add('winking'); });
+    winkEls.forEach(function (el) {
+      el.classList.add('winking');
+    });
   }
 
   function resetInterval() {
@@ -1266,7 +1569,9 @@ document.addEventListener('DOMContentLoaded', function () {
   winkEls.forEach(function (el) {
     el.addEventListener('animationend', function (e) {
       if (e.animationName.indexOf('wink-reverse') === 0) {
-        winkEls.forEach(function (w) { w.classList.remove('winking'); });
+        winkEls.forEach(function (w) {
+          w.classList.remove('winking');
+        });
         isAnimating = false;
       }
     });

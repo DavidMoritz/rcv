@@ -82,6 +82,8 @@ CREATE TABLE `entries` (
   `image` varchar(15600) NOT NULL DEFAULT '',
   `color` varchar(6) DEFAULT NULL,
   `hyperlink` varchar(1024) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '',
+  `withdrawnAt` datetime DEFAULT NULL,
+  `withdrawnReason` varchar(256) NOT NULL DEFAULT '',
   PRIMARY KEY (`entry_id`),
   KEY `ballotId_on_entries` (`ballotId`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;

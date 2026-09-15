@@ -40,7 +40,7 @@ export type ElectionResults = {
     resultMethod: 'rcv' | 'borda';
     tieBreak: 'weighted' | 'random';
   };
-  candidates: { id: number; name: string }[];
+  candidates: { id: number; name: string; withdrawnAt?: string | null; withdrawnReason?: string }[];
   votes: number[][];
 };
 

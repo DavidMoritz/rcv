@@ -2,7 +2,12 @@ import { calculateBorda, calculateElection } from '@rankedchoices/rcv-core';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 
-import { BordaResultsView, calculateLocalResult, ElectionResultsView } from './election-results';
+import {
+  BordaResultsView,
+  calculateLocalResult,
+  ElectionResultsView,
+  getWithdrawnCandidates,
+} from './election-results';
 
 describe('ElectionResultsView', () => {
   it('renders winners and every local tally round', () => {
@@ -86,5 +91,54 @@ describe('BordaResultsView', () => {
     expect(local.resultMethod).toBe('rcv');
     expect(local.result).toHaveProperty('rounds');
     expect(local.result).not.toHaveProperty('tally');
+  });
+});
+
+describe('candidate withdrawal', () => {
+  it('getWithdrawnCandidates returns only withdrawn candidates', () => {
+    const withdrawn = getWithdrawnCandidates({
+      ballot: { key: 'w', name: 'W', positions: 1, resultMethod: 'rcv', tieBreak: 'weighted' },
+      candidates: [
+        { id: 1, name: 'Alice', withdrawnAt: null, withdrawnReason: '' },
+        { id: 2, name: 'Bob', withdrawnAt: '2024-06-01 00:00:00', withdrawnReason: 'Won president' },
+        { id: 3, name: 'Carol', withdrawnAt: null, withdrawnReason: '' },
+      ],
+      votes: [[1, 2, 3]],
+    });
+    expect(withdrawn).toHaveLength(1);
+    expect(withdrawn[0]).toEqual({ id: 2, name: 'Bob', reason: 'Won president' });
+  });
+
+  it('calculateLocalResult filters withdrawn candidates from election', () => {
+    const local = calculateLocalResult({
+      ballot: { key: 'w2', name: 'W2', positions: 1, resultMethod: 'rcv', tieBreak: 'weighted' },
+      candidates: [
+        { id: 1, name: 'Alice', withdrawnAt: null, withdrawnReason: '' },
+        { id: 2, name: 'Bob', withdrawnAt: '2024-06-01 00:00:00', withdrawnReason: 'Dropped out' },
+        { id: 3, name: 'Carol', withdrawnAt: null, withdrawnReason: '' },
+      ],
+      votes: [[2, 1, 3], [1, 3], [3, 1]],
+    });
+    expect(local.resultMethod).toBe('rcv');
+    // Bob should not appear in the result candidates
+    const resultCandidateIds = local.result.candidates.map((c) => c.id);
+    expect(resultCandidateIds).not.toContain(2);
+    expect(resultCandidateIds).toContain(1);
+    expect(resultCandidateIds).toContain(3);
+  });
+
+  it('calculateLocalResult filters withdrawn from Borda', () => {
+    const local = calculateLocalResult({
+      ballot: { key: 'w3', name: 'W3', positions: 1, resultMethod: 'borda', tieBreak: 'weighted' },
+      candidates: [
+        { id: 1, name: 'Alice', withdrawnAt: null, withdrawnReason: '' },
+        { id: 2, name: 'Bob', withdrawnAt: '2024-06-01 00:00:00', withdrawnReason: 'Withdrawn' },
+        { id: 3, name: 'Carol', withdrawnAt: null, withdrawnReason: '' },
+      ],
+      votes: [[2, 1, 3], [1, 3, 2], [3, 1, 2]],
+    });
+    expect(local.resultMethod).toBe('borda');
+    const tallyIds = local.result.tally.map((c) => c.id);
+    expect(tallyIds).not.toContain(2);
   });
 });

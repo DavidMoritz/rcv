@@ -45,7 +45,9 @@ CREATE TABLE entries (
   name varchar(256) NOT NULL DEFAULT '',
   image varchar(15600) NOT NULL DEFAULT '',
   color varchar(6) DEFAULT NULL,
-  hyperlink varchar(1024) NOT NULL DEFAULT ''
+  hyperlink varchar(1024) NOT NULL DEFAULT '',
+  withdrawnAt datetime DEFAULT NULL,
+  withdrawnReason varchar(256) NOT NULL DEFAULT ''
 );
 CREATE INDEX ballotId_on_entries ON entries (ballotId);
 
