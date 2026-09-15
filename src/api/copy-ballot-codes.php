@@ -41,7 +41,7 @@ if (empty($errors)) {
 
 if (empty($errors)) {
 	$sth = $dbh->prepare("
-		INSERT OR IGNORE INTO ballot_codes (ballot_id, random_code_id, label)
+		INSERT IGNORE INTO ballot_codes (ballot_id, random_code_id, label)
 		SELECT :targetId, random_code_id, label
 		FROM ballot_codes WHERE ballot_id = :sourceId
 	");
