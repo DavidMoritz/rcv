@@ -6,6 +6,7 @@ type BallotTopActionsProps = {
   ballotKey: string;
   ballotName: string;
   onViewResults: () => void;
+  resultsRelease: string | null;
   resultsVisible: boolean;
 };
 
@@ -13,12 +14,16 @@ export function BallotTopActions({
   ballotKey,
   ballotName,
   onViewResults,
+  resultsRelease,
   resultsVisible,
 }: BallotTopActionsProps) {
+  const resultsNotYetReleased = resultsRelease != null && new Date(resultsRelease) > new Date();
+  const showViewResults = !resultsVisible && !resultsNotYetReleased;
+
   return (
     <View style={styles.topActions}>
       <BallotShareButton ballotKey={ballotKey} ballotName={ballotName} />
-      {!resultsVisible ? (
+      {showViewResults ? (
         <Pressable
           accessibilityRole="button"
           onPress={onViewResults}

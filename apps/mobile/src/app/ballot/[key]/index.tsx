@@ -114,6 +114,7 @@ export default function BallotScreen() {
           ballotKey={ballot.key}
           ballotName={ballot.name}
           onViewResults={() => setShowResults(true)}
+          resultsRelease={ballot.resultsRelease}
           resultsVisible={resultsVisible}
         />
 
