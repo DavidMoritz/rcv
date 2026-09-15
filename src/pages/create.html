@@ -22,11 +22,7 @@
           class="form-control"
           maxlength="128"
           data-testid="ballot-name-input"
-        /><span
-          ng-show="errors.name"
-          class="text-danger"
-          >{{errors.name}}</span
-        >
+        /><span ng-show="errors.name" class="text-danger">{{errors.name}}</span>
       </div>
       <div class="form-group">
         <label>Shortcode (for link {{canonicalBallotUrl(ballot.key)}})</label>
@@ -138,13 +134,13 @@
           <div class="form-group">
             <span ng-show="errors.secureCutoff" class="text-danger">{{errors.secureCutoff}}</span>
             <label
-              >Voting Cutoff:<span ng-hide="editTime">
-                never (check box for custom)</span
-              >
-              <input type="checkbox" ng-model="editTime" ng-change="editDate = editTime; initCutoff()" ng-disabled="ballot.isSecure" /><small
-                ng-show="editTime && ballot.voteCutoff"
-                class="text-muted"
-              >
+              >Voting Cutoff:<span ng-hide="editTime"> never (check box for custom)</span>
+              <input
+                type="checkbox"
+                ng-model="editTime"
+                ng-change="editDate = editTime; initCutoff()"
+                ng-disabled="ballot.isSecure"
+              /><small ng-show="editTime && ballot.voteCutoff" class="text-muted">
                 {{ballot.voteCutoff | date: dateFormat }}</small
               >
             </label>
@@ -308,7 +304,7 @@
             <input
               type="number"
               ng-model="ballot.codeCount"
-              min="1"
+              min="0"
               max="500"
               class="form-control"
               style="max-width: 200px"
@@ -385,11 +381,7 @@
             <label>
               Visual display of results provided by
               <a href="https://rcvis.com/" target="_blank">RCVis</a>:
-              <input
-                type="checkbox"
-                ng-model="ballot.showGraph"
-                ng-disabled="!editTime"
-              /><br />
+              <input type="checkbox" ng-model="ballot.showGraph" ng-disabled="!editTime" /><br />
               <small class="text-muted"
                 >NOTE: This graph is only available if a Voting Cutoff time is chosen above.</small
               >
@@ -416,9 +408,7 @@
           <div class="form-group">
             <label>Tie-Break Method:</label>
             <div>
-              <label
-                class="radio-inline"
-              >
+              <label class="radio-inline">
                 <input
                   type="radio"
                   value="random"
@@ -432,9 +422,7 @@
                   tooltip-placement="right"
                 ></i>
               </label>
-              <label
-                class="radio-inline"
-              >
+              <label class="radio-inline">
                 <input
                   type="radio"
                   value="weighted"
@@ -503,7 +491,8 @@
               ></i>
             </label>
             <small ng-show="ballot.useCustomHtml" class="text-muted">
-              After creating the ballot, use "Custom Instructions" from your Profile to write your instructions.
+              After creating the ballot, use "Custom Instructions" from your Profile to write your
+              instructions.
             </small>
           </div>
           <div class="form-group" ng-if="!ballot.useCustomHtml">
