@@ -398,8 +398,13 @@ export function initBallot(scope, http, sce, timeout) {
     $s.manageSortReverse = false;
     $s.activeLink = 'manage';
     $s.manageGroupFields = [];
+    $s.copyCodesSource = '';
+    $s.copyCodesSuccess = null;
     if (ballot.isSecure == 1) {
       $s.loadBallotCodes(ballot);
+      $s.otherSecureBallots = ($s.allBallots || []).filter(function (b) {
+        return b.isSecure == 1 && b.id !== ballot.id;
+      });
     }
     if (ballot.allowGrouping == 1) {
       $s.showManageGroups = ballot.isSecure != 1; // Default open if no codes section
@@ -670,6 +675,26 @@ export function initBallot(scope, http, sce, timeout) {
       data: { ballotId: $s.manageBallot.id, count: count, createdBy: $s.user.id }
     }).success(function (resp) {
       if (resp.codes) {
+        $s.loadBallotCodes($s.manageBallot);
+      }
+    });
+  };
+
+  $s.copyCodesFromBallot = function (sourceBallotId) {
+    if (!sourceBallotId) return;
+    $s.copyCodesSuccess = null;
+    $http({
+      method: 'POST',
+      url: '/api/copy-ballot-codes.php',
+      data: {
+        sourceBallotId: sourceBallotId,
+        targetBallotId: $s.manageBallot.id,
+        createdBy: $s.user.id
+      }
+    }).success(function (resp) {
+      if (resp.success) {
+        $s.copyCodesSuccess = resp.count;
+        $s.copyCodesSource = '';
         $s.loadBallotCodes($s.manageBallot);
       }
     });
