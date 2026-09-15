@@ -162,6 +162,17 @@
                 <button ng-click="printCodeSheet()" class="btn btn-default btn-sm">
                   <i class="fa fa-print"></i> Print Code Sheet
                 </button>
+                <span ng-if="otherSecureBallots.length" style="margin-left: 10px">
+                  <select ng-model="copyCodesSource" ng-options="b.id as b.name for b in otherSecureBallots" class="form-control" style="display: inline-block; width: auto; min-width: 160px">
+                    <option value="">Copy codes from...</option>
+                  </select>
+                  <button ng-click="copyCodesFromBallot(copyCodesSource)" ng-disabled="!copyCodesSource" class="btn btn-default btn-sm">
+                    Copy Codes
+                  </button>
+                  <span ng-if="copyCodesSuccess !== null" class="text-success" style="margin-left: 6px">
+                    Copied {{copyCodesSuccess}} code{{copyCodesSuccess !== 1 ? 's' : ''}}
+                  </span>
+                </span>
               </div>
               <table ng-show="manageBallot.isSecure == 1" class="table table-condensed">
                 <thead>

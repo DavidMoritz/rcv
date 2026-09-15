@@ -22,6 +22,11 @@ class TestPDO extends PDO
             return new NoopStatement();
         }
 
+        // Rewrite INSERT IGNORE INTO → INSERT OR IGNORE INTO (MySQL → SQLite)
+        if (preg_match('/\bINSERT\s+IGNORE\s+INTO\b/i', $query)) {
+            $query = preg_replace('/\bINSERT\s+IGNORE\s+INTO\b/i', 'INSERT OR IGNORE INTO', $query, 1);
+        }
+
         // Rewrite ON DUPLICATE KEY UPDATE col=col (no-op upsert) → INSERT OR IGNORE.
         // Only fires when the no-op self-assignment form is present, so unrelated
         // INSERT statements still surface unique/PK violations as exceptions.
