@@ -916,7 +916,7 @@ mainApp.controller('MainCtrl', [
 
           // Vote table matching Round N format
           if (unfilteredVotes.length < 100 || loggedIn) {
-            r0 += '<table class="table"><thead>Round 0 votes — before withdrawal</thead><tbody>';
+            r0 += '<table class="table"><thead>Round 0 — withdrawn candidates</thead><tbody>';
             _.each(unfilteredVotes, function (vote, idx) {
               var dName = $s.voterNames[idx] || 'Vote ' + (idx + 1);
               r0 += '<tr>';
