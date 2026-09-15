@@ -2,6 +2,7 @@ import { createLegacyApiClient } from '@/api/client';
 import { LegacyApiError, type BallotDetail, type Candidate } from '@/api/legacy-api';
 import { BallotShareButton } from '@/components/ballot-share-button';
 import { BallotReportLink } from '@/components/ballot-report-link';
+import { BallotTopActions } from '@/components/ballot-top-actions';
 import { CandidateRanking } from '@/components/candidate-ranking';
 import { ElectionResults } from '@/components/election-results';
 import { GroupQuestions } from '@/components/group-questions';
@@ -96,6 +97,7 @@ export default function BallotScreen() {
   }
 
   const { ballot, candidates, groupFields } = state.detail;
+  const resultsVisible = voteAccepted || showResults;
 
   return (
     <ScrollView
@@ -108,15 +110,12 @@ export default function BallotScreen() {
         <Text style={styles.eyebrow}>RANK YOUR CHOICES</Text>
         <Text style={styles.title}>{ballot.name}</Text>
         <Text style={styles.shortcode}>Shortcode: {ballot.key}</Text>
-        <View style={styles.topActions}>
-          <BallotShareButton ballotKey={ballot.key} ballotName={ballot.name} />
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setShowResults(true)}
-            style={({ pressed }) => [styles.resultsButton, pressed && styles.buttonPressed]}>
-            <Text style={styles.resultsButtonText}>View Results</Text>
-          </Pressable>
-        </View>
+        <BallotTopActions
+          ballotKey={ballot.key}
+          ballotName={ballot.name}
+          onViewResults={() => setShowResults(true)}
+          resultsVisible={resultsVisible}
+        />
 
         <View style={styles.metaRow}>
           <View style={styles.metaCard}>
@@ -135,7 +134,7 @@ export default function BallotScreen() {
           ) : null}
         </View>
 
-        {!voteAccepted && !showResults ? (
+        {!resultsVisible ? (
           <>
             {ballot.allowGrouping ? (
               <GroupQuestions answers={groupAnswers} fields={groupFields} onChange={setGroupAnswers} />
@@ -184,7 +183,7 @@ export default function BallotScreen() {
             />
           </>
         ) : null}
-        {voteAccepted || showResults ? (
+        {resultsVisible ? (
           <>
             <ElectionResults ballotKey={ballot.key} />
             <BallotShareButton
@@ -215,17 +214,6 @@ const styles = StyleSheet.create({
   eyebrow: { color: '#b24c00', fontSize: 12, fontWeight: '800', letterSpacing: 1.2 },
   title: { color: '#12355b', fontSize: 32, fontWeight: '800', lineHeight: 38, marginTop: 8 },
   shortcode: { color: '#52697f', fontSize: 15, marginTop: 6 },
-  topActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 14 },
-  resultsButton: {
-    alignItems: 'center',
-    backgroundColor: '#e8f2ed',
-    borderRadius: 10,
-    justifyContent: 'center',
-    minHeight: 44,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  resultsButtonText: { color: '#125435', fontSize: 15, fontWeight: '800' },
   metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 22 },
   metaCard: {
     backgroundColor: '#e8f2ed',
