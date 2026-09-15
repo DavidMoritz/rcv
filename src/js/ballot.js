@@ -400,6 +400,7 @@ export function initBallot(scope, http, sce, timeout) {
     $s.manageGroupFields = [];
     $s.copyCodesSource = '';
     $s.copyCodesSuccess = null;
+    $s.showCopyCodesDropdown = false;
     if (ballot.isSecure == 1) {
       $s.loadBallotCodes(ballot);
       $s.otherSecureBallots = ($s.allBallots || []).filter(function (b) {
@@ -416,7 +417,7 @@ export function initBallot(scope, http, sce, timeout) {
 
   $s.manageHasVotes = function () {
     if ($s.manageBallot && $s.manageBallot.isSecure == 1) {
-      return $s.manageCodesAvailable < $s.manageCodes.length;
+      return $s.manageCodes && $s.manageCodesAvailable < $s.manageCodes.length;
     }
     return $s.manageBallot && $s.manageBallot.totalVotes > 0;
   };
@@ -680,6 +681,13 @@ export function initBallot(scope, http, sce, timeout) {
     });
   };
 
+  $s.focusCopyDropdown = function () {
+    $timeout(function () {
+      var el = document.getElementById('copy-codes-select');
+      if (el) el.focus();
+    });
+  };
+
   $s.copyCodesFromBallot = function (sourceBallotId) {
     if (!sourceBallotId) return;
     $s.copyCodesSuccess = null;
@@ -695,6 +703,7 @@ export function initBallot(scope, http, sce, timeout) {
       if (resp.success) {
         $s.copyCodesSuccess = resp.count;
         $s.copyCodesSource = '';
+        $s.showCopyCodesDropdown = false;
         $s.loadBallotCodes($s.manageBallot);
       }
     });
