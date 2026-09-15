@@ -163,10 +163,10 @@
                   <i class="fa fa-print"></i> Print Code Sheet
                 </button>
                 <span ng-show="otherSecureBallots.length">
-                  <button ng-show="!showCopyCodesDropdown" ng-click="showCopyCodesDropdown = true; focusCopyDropdown()" class="btn btn-default btn-sm">
+                  <button ng-show="!showCopyCodesDropdown" ng-click="showCopyCodesDropdown = true" class="btn btn-default btn-sm">
                     Copy Codes
                   </button>
-                  <select id="copy-codes-select" ng-show="showCopyCodesDropdown" ng-model="copyCodesSource" ng-options="b.id as b.name for b in otherSecureBallots" class="form-control" style="display: inline-block; width: auto; min-width: 160px">
+                  <select ng-show="showCopyCodesDropdown" ng-model="copyCodesSource" ng-options="b.id as b.name for b in otherSecureBallots" class="form-control" style="display: inline-block; width: auto; min-width: 160px">
                     <option value="">Copy codes from...</option>
                   </select>
                   <button ng-show="showCopyCodesDropdown" ng-click="copyCodesFromBallot(copyCodesSource)" ng-disabled="!copyCodesSource" class="btn btn-default btn-sm">

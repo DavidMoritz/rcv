@@ -681,13 +681,6 @@ export function initBallot(scope, http, sce, timeout) {
     });
   };
 
-  $s.focusCopyDropdown = function () {
-    $timeout(function () {
-      var el = document.getElementById('copy-codes-select');
-      if (el) el.focus();
-    });
-  };
-
   $s.copyCodesFromBallot = function (sourceBallotId) {
     if (!sourceBallotId) return;
     $s.copyCodesSuccess = null;
