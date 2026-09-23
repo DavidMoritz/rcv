@@ -1,7 +1,6 @@
 import type { Candidate } from '@/api/legacy-api';
 import { createRanking, moveCandidate, removeCandidate } from '@/features/ranking';
-import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 type CandidateRankingProps = {
   candidates: readonly Candidate[];
@@ -34,7 +33,6 @@ export function CandidateRanking({
               <View accessibilityLabel={`Rank ${index + 1}`} style={styles.rankBadge}>
                 <Text style={styles.rankText}>{index + 1}</Text>
               </View>
-              <CandidateImage candidate={candidate} />
               <Text style={styles.candidateName}>{candidate.name}</Text>
               <View accessibilityLabel={`Ranking controls for ${candidate.name}`} style={styles.actions}>
                 <RankButton
@@ -76,24 +74,6 @@ export function CandidateRanking({
         <Text style={styles.resetText}>Reset ranking</Text>
       </Pressable>
     </View>
-  );
-}
-
-function CandidateImage({ candidate }: { candidate: Candidate }) {
-  const [failed, setFailed] = useState(false);
-  const uri = candidate.image.trim();
-
-  if (!uri || failed) return null;
-
-  return (
-    <Image
-      accessibilityIgnoresInvertColors
-      accessible={false}
-      onError={() => setFailed(true)}
-      resizeMode="contain"
-      source={{ uri }}
-      style={styles.candidateImage}
-    />
   );
 }
 
@@ -155,14 +135,6 @@ const styles = StyleSheet.create({
     width: 36,
   },
   rankText: { color: '#ffffff', fontSize: 15, fontWeight: '800' },
-  candidateImage: {
-    backgroundColor: '#f5f7fa',
-    borderColor: '#d9e0e7',
-    borderRadius: 10,
-    borderWidth: 1,
-    height: 72,
-    width: 72,
-  },
   candidateName: { color: '#1f3143', flex: 1, fontSize: 17, fontWeight: '700', minWidth: 120 },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   actionButton: {

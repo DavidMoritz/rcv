@@ -1,6 +1,9 @@
-import { useState } from 'react';
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Constants from 'expo-constants';
+import * as Updates from 'expo-updates';
+import { useRef, useState } from 'react';
+import { Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { getApiBaseUrl } from '@/config/api';
 import {
   PRIVACY_POLICY_URL,
   SOURCE_CODE_URL,
@@ -28,8 +31,57 @@ function ResourceLink({ description, label, onPress }: ResourceLinkProps) {
   );
 }
 
+function DebugPanel() {
+  const updateId = Updates.updateId ?? 'embedded';
+  const runtimeVersion = Updates.runtimeVersion ?? 'unknown';
+  const channel = Updates.channel ?? 'none';
+  const apiUrl = getApiBaseUrl();
+  const appVersion = Constants.expoConfig?.version ?? 'unknown';
+  const buildNumber =
+    Platform.OS === 'ios'
+      ? Constants.expoConfig?.ios?.buildNumber ?? '?'
+      : String(Constants.expoConfig?.android?.versionCode ?? '?');
+
+  const rows = [
+    ['App version', `${appVersion} (${buildNumber})`],
+    ['Runtime version', runtimeVersion],
+    ['Update ID', updateId],
+    ['Channel', channel],
+    ['API URL', apiUrl],
+    ['Platform', `${Platform.OS} ${Platform.Version}`],
+  ];
+
+  return (
+    <View style={styles.debugCard}>
+      <Text style={styles.debugTitle}>Debug info</Text>
+      {rows.map(([label, value]) => (
+        <View key={label} style={styles.debugRow}>
+          <Text style={styles.debugLabel}>{label}</Text>
+          <Text selectable style={styles.debugValue}>{value}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 export default function AboutScreen() {
   const [error, setError] = useState('');
+  const [showDebug, setShowDebug] = useState(false);
+  const tapCount = useRef(0);
+  const lastTap = useRef(0);
+
+  const handleTitlePress = () => {
+    const now = Date.now();
+    if (now - lastTap.current > 2000) {
+      tapCount.current = 0;
+    }
+    lastTap.current = now;
+    tapCount.current += 1;
+    if (tapCount.current >= 5) {
+      setShowDebug((prev) => !prev);
+      tapCount.current = 0;
+    }
+  };
 
   const open = async (url: string) => {
     setError('');
@@ -44,10 +96,10 @@ export default function AboutScreen() {
     <ScrollView contentContainerStyle={styles.scrollContent} style={styles.screen}>
       <View style={styles.content}>
         <Text style={styles.eyebrow}>RANKED CHOICES</Text>
-        <Text style={styles.title}>Privacy & support</Text>
+        <Text onPress={handleTitlePress} style={styles.title}>Privacy & support</Text>
         <Text style={styles.introduction}>
           Learn how ballot and device data are handled, review the terms, contact support, or
-          inspect the open-source project.
+          inspect the open-source project. Free and open source.
         </Text>
 
         {error ? (
@@ -55,6 +107,8 @@ export default function AboutScreen() {
             {error}
           </Text>
         ) : null}
+
+        {showDebug ? <DebugPanel /> : null}
 
         <View style={styles.card}>
           <ResourceLink
@@ -120,4 +174,14 @@ const styles = StyleSheet.create({
   resourceDescription: { color: '#52697f', fontSize: 14, lineHeight: 20, marginTop: 4 },
   pressed: { opacity: 0.7 },
   email: { color: '#52697f', fontSize: 14, marginTop: 18, textAlign: 'center' },
+  debugCard: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 14,
+    marginTop: 18,
+    padding: 16,
+  },
+  debugTitle: { color: '#7fdbca', fontSize: 14, fontWeight: '800', marginBottom: 10 },
+  debugRow: { marginBottom: 8 },
+  debugLabel: { color: '#888da7', fontSize: 12, fontWeight: '700' },
+  debugValue: { color: '#e0e0e0', fontSize: 13, marginTop: 2 },
 });
