@@ -57,6 +57,10 @@ mobile rollout instead of restoring an incompatible API response.
 - [ ] Install the signed artifact through its intended channel—not only from a
   local development build—and complete lookup, create, vote, results, sharing,
   reporting, failure/retry, and cold-link smoke tests with disposable data.
+- [ ] Confirm `View Results` is available before voting when results are
+  released, opens the in-place results view without submitting a vote, and is
+  absent once results are already visible, including immediately after a
+  successful submission.
 - [ ] Verify both result methods: ordinary RCV shows rounds; Borda shows the
   same ordered winners and point totals as the website and does not show RCV
   rounds.
