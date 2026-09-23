@@ -61,6 +61,9 @@ mobile rollout instead of restoring an incompatible API response.
   released, opens the in-place results view without submitting a vote, and is
   absent once results are already visible, including immediately after a
   successful submission.
+- [ ] Open ballots with a valid candidate image and with an empty or broken
+  image URL; confirm the valid thumbnail appears beside its name, failures do
+  not block ranking, and names plus controls remain usable at larger text sizes.
 - [ ] Verify both result methods: ordinary RCV shows rounds; Borda shows the
   same ordered winners and point totals as the website and does not show RCV
   rounds.
