@@ -231,6 +231,32 @@
     text-align: center;
   }
 }
+/* Profile trophy banner */
+.profile-trophy-banner {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #fdf6e3, #fceabb);
+  border: 2px solid #d4a843;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 15px 0;
+}
+.trophy-icon {
+  font-size: 48px;
+  color: #d4a843;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+.trophy-content h4 {
+  margin: 0 0 8px;
+  color: #7a5c00;
+  font-weight: bold;
+}
+.trophy-content p {
+  margin: 0 0 12px;
+  color: #5a4a00;
+}
+
 .ballot-tabs {
   list-style: none;
   padding: 0;

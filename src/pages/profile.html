@@ -5,6 +5,21 @@
       >Sign out</a
     >
     <h3 ng-show="user.name" data-testid="profile-name">Name: {{user.name}}</h3>
+    <div ng-if="profileBanner" class="profile-trophy-banner">
+      <div class="trophy-icon">
+        <i class="fa fa-trophy"></i>
+      </div>
+      <div class="trophy-content">
+        <h4>{{profileBanner.title}}</h4>
+        <p>{{profileBanner.message}}</p>
+        <a ng-if="!profileBanner.responded" href="mailto:davidmoritz@gmail.com?subject=Ranked%20Choices%20Feedback" class="btn btn-sm btn-warning">
+          <i class="fa fa-envelope"></i> Send Me a Note
+        </a>
+        <span ng-if="profileBanner.responded" class="text-success">
+          <i class="fa fa-check"></i> Thanks for reaching out!
+        </span>
+      </div>
+    </div>
     <div ng-show="!ballotsLoaded" style="margin-top: 20px; text-align: center">
       <i class="fa fa-spinner fa-spin fa-2x"></i>
     </div>

@@ -1,7 +1,14 @@
 import { dataFromObj } from './utils/helpers.js';
 import { canonicalBallotUrl } from './utils/ballot-links.js';
 
+import profileBannerList from '../custom-user-message.json';
+
 var $s, $http, $sce, $timeout;
+
+var PROFILE_BANNERS = {};
+profileBannerList.forEach(function (entry) {
+  PROFILE_BANNERS[entry.id] = { title: entry.title, message: entry.message, responded: entry.responded };
+});
 
 /**
  * Convert Quill editor HTML to portable HTML with inline styles,
@@ -190,6 +197,10 @@ export function initBallot(scope, http, sce, timeout) {
         $s.managedBallotCount = $s.allBallots.filter(function (b) {
           return b.isSecure == 1 || b.allowGrouping == 1;
         }).length;
+        var banner = PROFILE_BANNERS[$s.user.id];
+        if (banner) {
+          $s.profileBanner = banner;
+        }
       });
     } else {
       setTimeout($s.getBallots, 750);
