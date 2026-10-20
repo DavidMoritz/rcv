@@ -488,11 +488,14 @@
                 ? { month: 'short', day: 'numeric', year: 'numeric' }
                 : { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' };
             var created = b.timeCreated ? new Date(b.timeCreated.replace(' ', 'T') + 'Z').toLocaleString([], dateOpts) : '-';
+            var bold = (b.voteCount || 0) >= 10 || b.isSecure == 1 || b.bordaActive == 1 || b.kickbackUrl || b.iframeUrl;
+            var o = bold ? '<strong>' : '';
+            var c = bold ? '</strong>' : '';
             return '<tr>' +
-                '<td>' + (showRank ? (i + 1) : b.id) + '</td>' +
-                '<td>' + escapeHtml(b.name) + '</td>' +
-                '<td><a href="/results/' + encodeURIComponent(b.key) + '" target="_blank"><code>' + escapeHtml(b.key) + '</code></a></td>' +
-                '<td>' + ((b.ownerName || b.createdBy) && (b.ownerName || b.createdBy) !== 'guest' ? escapeHtml(b.ownerName || b.createdBy) : '') + '</td>' +
+                '<td>' + o + (showRank ? (i + 1) : b.id) + c + '</td>' +
+                '<td>' + o + escapeHtml(b.name) + c + '</td>' +
+                '<td><a href="/results/' + encodeURIComponent(b.key) + '" target="_blank"><code>' + o + escapeHtml(b.key) + c + '</code></a></td>' +
+                '<td>' + o + ((b.ownerName || b.createdBy) && (b.ownerName || b.createdBy) !== 'guest' ? escapeHtml(b.ownerName || b.createdBy) : '') + c + '</td>' +
                 '<td>' + (b.positions > 1 ? green : '') + '</td>' +
                 '<td>' + (b.register == 2 ? greenBold : b.register > 0 ? green : '') + '</td>' +
                 '<td>' + (b.voteCutoff ? green : '') + '</td>' +
@@ -510,8 +513,8 @@
                 '<td>' + (b.kickbackUrl ? red : '') + '</td>' +
                 '<td>' + (b.iframeUrl ? red : '') + '</td>' +
                 '<td><strong>' + (b.voteCount || 0) + '</strong></td>' +
-                '<td>' + (b.entryCount || 0) + '</td>' +
-                '<td>' + created + '</td>' +
+                '<td>' + o + (b.entryCount || 0) + c + '</td>' +
+                '<td>' + o + created + c + '</td>' +
                 '</tr>';
         }).join('');
     }
