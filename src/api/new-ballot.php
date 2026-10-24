@@ -86,6 +86,11 @@ if (!empty($_POST['allowGrouping']))
 else
 	$allowGrouping = 0;
 
+if (!empty($_POST['bordaActive']))
+	$bordaActive = 1;
+else
+	$bordaActive = 0;
+
 $codeCount = 0;
 if ($isSecure && !empty($_POST['codeCount']))
 	$codeCount = min(intval($_POST['codeCount']), 500);
@@ -107,9 +112,9 @@ if (!empty($errors)) {
 	$sth->execute();
 	$query = "
 		INSERT INTO
-			ballots (`name`, `timeCreated`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `register`, `allowCustom`, `hideNames`, `hideDetails`, `showGraph`, `maxVotes`, `kickbackUrl`, `iframeUrl`, `oneDeviceOneVote`, `isSecure`, `orderedEntries`, `allowGrouping`)
+			ballots (`name`, `timeCreated`, `key`, `positions`, `createdBy`, `resultsRelease`, `voteCutoff`, `requireSignIn`, `tieBreak`, `register`, `allowCustom`, `hideNames`, `hideDetails`, `showGraph`, `maxVotes`, `kickbackUrl`, `iframeUrl`, `oneDeviceOneVote`, `isSecure`, `orderedEntries`, `allowGrouping`, `bordaActive`)
 		VALUES
-			(:name, UTC_TIMESTAMP(), :key, :positions, :createdBy, :resultsRelease, :voteCutoff, :requireSignIn, :tieBreak, :register, :allowCustom, :hideNames, :hideDetails, :showGraph, :maxVotes, :kickbackUrl, :iframeUrl, :oneDeviceOneVote, :isSecure, :orderedEntries, :allowGrouping)";
+			(:name, UTC_TIMESTAMP(), :key, :positions, :createdBy, :resultsRelease, :voteCutoff, :requireSignIn, :tieBreak, :register, :allowCustom, :hideNames, :hideDetails, :showGraph, :maxVotes, :kickbackUrl, :iframeUrl, :oneDeviceOneVote, :isSecure, :orderedEntries, :allowGrouping, :bordaActive)";
 
 	$sth = $dbh->prepare($query);
 	$sth->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
@@ -132,6 +137,7 @@ if (!empty($errors)) {
 	$sth->bindValue(':isSecure', $isSecure, PDO::PARAM_INT);
 	$sth->bindValue(':orderedEntries', $orderedEntries, PDO::PARAM_INT);
 	$sth->bindValue(':allowGrouping', $allowGrouping, PDO::PARAM_INT);
+	$sth->bindValue(':bordaActive', $bordaActive, PDO::PARAM_INT);
 	$sth->execute();
 	$ballotId = $dbh->lastInsertId();
 

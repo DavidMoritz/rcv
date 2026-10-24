@@ -170,6 +170,7 @@ export function initBallot(scope, http, sce, timeout) {
       allowCustom: 0,
       oneDeviceOneVote: 0,
       orderedEntries: 0,
+      bordaActive: '0',
       tieBreak: 'weighted',
       voteCutoff: roundResultsRelease(),
       voteTimezone: moment.tz.guess(),
@@ -262,6 +263,7 @@ export function initBallot(scope, http, sce, timeout) {
     $s.ballot.useCustomHtml = (ballot.iframeUrl === 'custom');
     $s.ballot.iframeUrl = ballot.iframeUrl || '';
     $s.showIntegrationOptions = !!(ballot.kickbackUrl || ballot.iframeUrl);
+    $s.ballot.bordaActive = ballot.bordaActive == 1 ? '1' : '0';
     $s.ballot.allowGrouping = ballot.allowGrouping == 1;
 
     $http
