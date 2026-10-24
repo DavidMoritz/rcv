@@ -132,33 +132,6 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Scoring Method:</label>
-            <i
-              class="fa fa-question-circle"
-              style="cursor: pointer; color: #1a43bf"
-              data-toggle="modal"
-              data-target="#borda-modal"
-            ></i>
-            <div>
-              <label class="radio-inline">
-                <input
-                  type="radio"
-                  value="0"
-                  name="counting-method"
-                  ng-model="ballot.bordaActive"
-                />Standard RCV
-              </label>
-              <label class="radio-inline">
-                <input
-                  type="radio"
-                  value="1"
-                  name="counting-method"
-                  ng-model="ballot.bordaActive"
-                />Borda RCV
-              </label>
-            </div>
-          </div>
-          <div class="form-group">
             <span ng-show="errors.secureCutoff" class="text-danger">{{errors.secureCutoff}}</span>
             <label
               >Voting Cutoff:<span ng-hide="editTime"> never (check box for custom)</span>
@@ -299,6 +272,33 @@
                   ></select>
                 </div>
               </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Scoring Method:</label>
+            <i
+              class="fa fa-question-circle"
+              style="cursor: pointer; color: #1a43bf"
+              data-toggle="modal"
+              data-target="#borda-modal"
+            ></i>
+            <div>
+              <label class="radio-inline">
+                <input
+                  type="radio"
+                  value="0"
+                  name="counting-method"
+                  ng-model="ballot.bordaActive"
+                />Standard RCV
+              </label>
+              <label class="radio-inline">
+                <input
+                  type="radio"
+                  value="1"
+                  name="counting-method"
+                  ng-model="ballot.bordaActive"
+                />Borda RCV
+              </label>
             </div>
           </div>
         </div>

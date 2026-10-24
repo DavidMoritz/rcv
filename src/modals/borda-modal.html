@@ -47,7 +47,7 @@
             rounds.</em
           >
         </p>
-        <div ng-if="user.id == ballotCreatedBy || user.clearance >= 1">
+        <div ng-if="bordaResults && (user.id == ballotCreatedBy || user.clearance >= 1)">
           <hr />
           <p ng-if="!bordaSwitchDisabled">
             <button class="btn btn-primary" ng-click="toggleBorda()" ng-disabled="bordaToggling">
