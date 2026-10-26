@@ -12,6 +12,9 @@ export default defineConfig({
       'react-native': 'react-native-web',
     },
   },
+  define: {
+    __DEV__: true,
+  },
   test: {
     environment: 'node',
     include: ['src/**/*.test.{ts,tsx}'],

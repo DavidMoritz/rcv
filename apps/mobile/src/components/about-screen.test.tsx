@@ -1,5 +1,8 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('expo-constants', () => ({ default: { expoConfig: { version: '1.0.0' } } }));
+vi.mock('expo-updates', () => ({ updateId: null, runtimeVersion: null, channel: null }));
 
 import AboutScreen from '@/app/about';
 
