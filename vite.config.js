@@ -90,7 +90,7 @@ export default defineConfig({
         // Copy timezone-picker.js (loaded as script tag, not bundled)
         {
           src: 'inc/timezone-picker.js',
-          dest: 'inc'
+          dest: '.'
         },
         // Copy service worker (deregistration script)
         {
