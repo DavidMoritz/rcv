@@ -321,35 +321,31 @@
             <label>
               Secure Ballot (voters provided with codes):
               <input type="checkbox" ng-model="ballot.isSecure" ng-change="onSecureToggle()" />
+              <i
+                class="fa fa-question-circle"
+                style="cursor: pointer; color: #1a43bf"
+                data-toggle="modal"
+                data-target="#secure-ballot-modal"
+                ng-click="$event.stopPropagation()"
+              ></i>
             </label>
-            <small ng-show="ballot.isSecure" class="text-muted">
-              Secure ballots use system-generated codes for verified voting.
-            </small>
-          </div>
-          <div class="form-group" ng-show="ballot.isSecure">
-            <label>Number of voter codes to generate: </label>
-            <input
-              type="number"
-              ng-model="ballot.codeCount"
-              min="0"
-              max="500"
-              class="form-control"
-              style="max-width: 200px"
-              placeholder="e.g. 25"
-            /><small class="text-muted">more may be added at any time</small>
           </div>
           <div class="form-group" ng-show="user.name">
             <label>
-              Prompt voters for custom information:
+              Voter analytics prompts:
               <input
                 type="checkbox"
                 ng-model="ballot.allowGrouping"
                 ng-change="onGroupingToggle()"
               />
+              <i
+                class="fa fa-question-circle"
+                style="cursor: pointer; color: #1a43bf"
+                data-toggle="modal"
+                data-target="#voter-prompts-modal"
+                ng-click="$event.stopPropagation()"
+              ></i>
             </label>
-            <small ng-show="ballot.allowGrouping" class="text-muted">
-              Define prompts on the next screen.
-            </small>
           </div>
           <div class="form-group" ng-show="!ballot.isSecure && !ballot.allowGrouping">
             <label>
@@ -370,6 +366,7 @@
                 style="cursor: pointer; color: #1a43bf"
                 data-toggle="modal"
                 data-target="#device-vote-help-modal"
+                ng-click="$event.stopPropagation()"
               ></i>
             </label>
           </div>
@@ -398,9 +395,11 @@
               Preserve candidate order for voters:
               <input type="checkbox" ng-model="ballot.orderedEntries" />
               <i
-                class="fa fa-question-circle text-muted"
-                uib-tooltip="By default, candidates are shown in random order to each voter to reduce bias. Check this to show candidates in the order you entered them."
-                tooltip-placement="right"
+                class="fa fa-question-circle"
+                style="cursor: pointer; color: #1a43bf"
+                data-toggle="modal"
+                data-target="#candidate-order-modal"
+                ng-click="$event.stopPropagation()"
               ></i>
             </label>
           </div>
@@ -408,10 +407,14 @@
             <label>
               Visual display of results provided by
               <a href="https://rcvis.com/" target="_blank">RCVis</a>:
-              <input type="checkbox" ng-model="ballot.showGraph" ng-disabled="!editTime" /><br />
-              <small class="text-muted"
-                >NOTE: This graph is only available if a Voting Cutoff time is chosen above.</small
-              >
+              <input type="checkbox" ng-model="ballot.showGraph" ng-disabled="!editTime" />
+              <i
+                class="fa fa-question-circle"
+                style="cursor: pointer; color: #1a43bf"
+                data-toggle="modal"
+                data-target="#rcvis-help-modal"
+                ng-click="$event.stopPropagation()"
+              ></i>
             </label>
           </div>
           <div class="form-group" ng-show="user.name && !ballot.isSecure">
@@ -434,6 +437,12 @@
           </div>
           <div class="form-group">
             <label>Tie-Break Method:</label>
+            <i
+              class="fa fa-question-circle"
+              style="cursor: pointer; color: #1a43bf"
+              data-toggle="modal"
+              data-target="#tiebreak-modal"
+            ></i>
             <div>
               <label class="radio-inline">
                 <input
@@ -443,11 +452,6 @@
                   ng-model="ballot.tieBreak"
                   ng-disabled="ballot.isSecure"
                 />Random (official)
-                <i
-                  class="fa fa-question-circle text-muted"
-                  uib-tooltip="Tied candidates are eliminated randomly. This is the standard method in official RCV elections."
-                  tooltip-placement="right"
-                ></i>
               </label>
               <label class="radio-inline">
                 <input
@@ -457,11 +461,6 @@
                   ng-model="ballot.tieBreak"
                   ng-disabled="ballot.isSecure"
                 />Weighted (factor in subsequent choices)
-                <i
-                  class="fa fa-question-circle text-muted"
-                  uib-tooltip="Tied candidates are compared by their voters' next-choice preferences to decide who is eliminated."
-                  tooltip-placement="right"
-                ></i>
               </label>
               <label
                 title="All candidates in a tie are simultaneously eliminated"
@@ -515,6 +514,7 @@
                 style="cursor: pointer; color: #1a43bf"
                 data-toggle="modal"
                 data-target="#customInstructionsModal"
+                ng-click="$event.stopPropagation()"
               ></i>
             </label>
             <small ng-show="ballot.useCustomHtml" class="text-muted">
