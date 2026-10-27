@@ -446,6 +446,28 @@ describe('RCV Algorithm — Multi-Seat (3 seats)', () => {
   });
 });
 
+describe('RCV Algorithm — HTML Escaping', () => {
+  it('escapes angle brackets in candidate names in vote table HTML', () => {
+    const result = runElection({
+      candidates: ['<Dingus Squad>', 'Normal', '<Bikini Bottom>'],
+      ballots: [
+        ['<Dingus Squad>', 'Normal'],
+        ['<Dingus Squad>', '<Bikini Bottom>'],
+        ['Normal', '<Bikini Bottom>'],
+        ['<Bikini Bottom>', 'Normal'],
+        ['Normal', '<Dingus Squad>']
+      ]
+    });
+
+    // Names should be HTML-escaped, not rendered as tags
+    expect(result.outputstring).toContain('&lt;Dingus Squad&gt;');
+    expect(result.outputstring).toContain('&lt;Bikini Bottom&gt;');
+    // Raw angle brackets should NOT appear around candidate names
+    expect(result.outputstring).not.toContain('<Dingus Squad>');
+    expect(result.outputstring).not.toContain('<Bikini Bottom>');
+  });
+});
+
 describe('RCV Algorithm — patchRcvis output', () => {
   it('populates per-round transfer diffs and posts to rcvis_new when patchRcvis is true', () => {
     // Two-round single-seat election. With patchRcvis=true, finishElection

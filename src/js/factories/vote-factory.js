@@ -63,15 +63,17 @@ export default function VoteFactory() {
       var model = this;
       var displayItem = function (item) {
         if (typeof item === 'object' && item.decoration) {
+          var dName = $s.entryMap[item.id] ? $s.entryMap[item.id].name : item.id;
           return (
             '<span class="' +
             item.className +
             '">' +
-            ($s.entryMap[item.id] ? $s.entryMap[item.id].name : item.id) +
+            _.escape(dName) +
             '</span>'
           );
         }
-        return $s.entryMap[item] ? $s.entryMap[item].name : item;
+        var rawName = $s.entryMap[item] ? $s.entryMap[item].name : item;
+        return _.escape(rawName);
       };
       this.outputstring += '<tbody>';
       _.each(this.votes, function (vote, idx) {
@@ -202,7 +204,7 @@ export default function VoteFactory() {
             model.jsonObj.results[model.roundnum - 1].tally[cand.name] = cand.vote + '';
           }
           if (!model.eliminatedIds[cand.id]) {
-            model.outputstring += cand.name + ' = ' + cand.vote + '<br>';
+            model.outputstring += _.escape(cand.name) + ' = ' + cand.vote + '<br>';
           }
         });
 
@@ -281,7 +283,7 @@ export default function VoteFactory() {
           ' is <span class="' +
           data.class +
           '">' +
-          chosenName +
+          _.escape(chosenName) +
           '</span>.';
       }
 
@@ -301,7 +303,7 @@ export default function VoteFactory() {
         '<br><span class="' +
         data.class +
         '">' +
-        chosenName +
+        _.escape(chosenName) +
         '</span> ' +
         data.text.result +
         '.';
@@ -436,7 +438,7 @@ export default function VoteFactory() {
       var model = this;
       this.outputstring += '<p><b>The election is complete and the elected candidates are';
       _.each(this.elected, function (winner) {
-        model.outputstring += ' (' + winner.name + ')';
+        model.outputstring += ' (' + _.escape(winner.name) + ')';
       });
       this.outputstring += '.</b></p>';
 

@@ -911,7 +911,8 @@ mainApp.controller('MainCtrl', [
         if ($s.withdrawnEntries.length && unfilteredVotes) {
           var r0 = '';
           var getName = function (id) {
-            return $s.entryMap[id] ? $s.entryMap[id].name : id;
+            var name = $s.entryMap[id] ? $s.entryMap[id].name : id;
+            return _.escape(name);
           };
 
           // Vote table matching Round N format
@@ -1118,13 +1119,13 @@ mainApp.controller('MainCtrl', [
               }
               html +=
                 '<td class="vote-pin-first"><span class="next-vote">' +
-                (vote[0] ? ($s.entryMap[vote[0]] ? $s.entryMap[vote[0]].name : vote[0]) : '') +
+                _.escape(vote[0] ? ($s.entryMap[vote[0]] ? $s.entryMap[vote[0]].name : vote[0]) : '') +
                 '</span></td>';
               html += '<td class="vote-mid-cell"><div class="vote-mid-scroll">';
               for (var i = 1; i < vote.length; i++) {
                 if (i > 1) html += '<span class="vote-mid-sep">|</span>';
                 var name = $s.entryMap[vote[i]] ? $s.entryMap[vote[i]].name : vote[i];
-                html += '<span class="vote-mid-item">' + name + '</span>';
+                html += '<span class="vote-mid-item">' + _.escape(name) + '</span>';
               }
               html += '</div></td></tr>';
             });
