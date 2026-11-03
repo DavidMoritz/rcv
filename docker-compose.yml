@@ -1,0 +1,54 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: rcv_db
+      MYSQL_USER: rcv_user
+      MYSQL_PASSWORD: rcv_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/docker-init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/php.Dockerfile
+    ports:
+      - "2461:2461"
+    volumes:
+      - ./src:/app/src
+    environment:
+      DB_HOST: db
+      DB_USER: rcv_user
+      DB_PASS: rcv_password
+      DB_NAME: rcv_db
+      ADMIN_PASSWORD: admin123
+    depends_on:
+      db:
+        condition: service_healthy
+
+  node:
+    image: node:20-alpine
+    working_dir: /app
+    ports:
+      - "2460:2460"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    environment:
+      PHP_PROXY_HOST: php
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - php
+
+volumes:
+  db_data:
+  node_modules:

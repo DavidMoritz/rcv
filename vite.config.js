@@ -3,6 +3,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 import htmlIncludes from './vite-plugin-html-includes.js';
 import path from 'path';
 
+const phpProxyHost = process.env.PHP_PROXY_HOST || 'localhost';
 const phpProxyPort = process.env.E2E_PHP_PORT || '2461';
 
 export default defineConfig({
@@ -169,7 +170,7 @@ export default defineConfig({
     proxy: {
       // Proxy API requests to PHP backend
       '/api': {
-        target: `http://localhost:${phpProxyPort}`,
+        target: `http://${phpProxyHost}:${phpProxyPort}`,
         changeOrigin: true,
         secure: false
       }

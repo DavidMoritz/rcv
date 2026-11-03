@@ -56,6 +56,20 @@ This will automatically check:
 
 The script will tell you exactly what's missing and how to fix it.
 
+### Docker Setup (Easiest)
+
+If you have [Docker](https://docs.docker.com/get-docker/) installed, you can skip all the prerequisites and run the entire stack with one command:
+
+```bash
+docker compose up
+```
+
+Then open [http://localhost:2460](http://localhost:2460). That's it — MySQL, PHP, and the Vite dev server are all running. Data persists across restarts. To reset everything:
+
+```bash
+docker compose down -v
+```
+
 ### Prerequisites
 
 - Node.js 18+ (for running the development server)
