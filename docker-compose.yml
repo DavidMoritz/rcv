@@ -12,10 +12,11 @@ services:
       - db_data:/var/lib/mysql
       - ./docker/init/:/docker-entrypoint-initdb.d/
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysql", "-u", "rcv_user", "-prcv_password", "rcv_db", "-e", "SELECT 1"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 30
+      start_period: 30s
 
   php:
     build:
