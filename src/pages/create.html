@@ -289,6 +289,7 @@
                   value="0"
                   name="counting-method"
                   ng-model="ballot.bordaActive"
+                  ng-change="onCountingMethodChange()"
                 />Standard RCV
               </label>
               <label class="radio-inline">
@@ -297,6 +298,7 @@
                   value="1"
                   name="counting-method"
                   ng-model="ballot.bordaActive"
+                  ng-change="onCountingMethodChange()"
                 />Borda RCV
               </label>
             </div>
@@ -399,7 +401,13 @@
               data-target="#candidate-order-modal"
             ></i>
           </div>
-          <div class="form-group">
+          <div class="form-group" ng-if="ballot.bordaActive == '1'">
+            <label>
+              Visual display of results:
+              <input type="checkbox" ng-model="ballot.showGraph" />
+            </label>
+          </div>
+          <div class="form-group" ng-if="ballot.bordaActive != '1'">
             <label>
               Visual display of results provided by
               <a href="https://rcvis.com/" target="_blank">RCVis</a>:

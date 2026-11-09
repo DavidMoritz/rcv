@@ -79,6 +79,7 @@ CREATE INDEX ballot_management_token_ballot_id ON ballot_management_tokens (ball
 CREATE TABLE users (
   id bigint NOT NULL,
   username varchar(64) NOT NULL,
+  createdAt datetime DEFAULT NULL,
   email varchar(64) DEFAULT NULL,
   image varchar(256) DEFAULT NULL,
   role varchar(64) DEFAULT NULL,

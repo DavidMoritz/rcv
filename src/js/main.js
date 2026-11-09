@@ -850,7 +850,7 @@ mainApp.controller('MainCtrl', [
           });
         }
 
-        if ($s.showGraph) {
+        if ($s.showGraph && !$s.bordaActive) {
           var evaluateGraph = function () {
             var isCreator = $s.user.id == createdBy || $s.user.clearance >= 1;
             var creatorWithKey = isCreator && $s.user.rcvisInfo && $s.user.rcvisInfo.apiKey;
@@ -1276,6 +1276,12 @@ mainApp.controller('MainCtrl', [
 
     $s.openWithdrawModal = function () {
       $('#withdraw-modal').modal('show');
+    };
+
+    $s.onCountingMethodChange = function () {
+      if ($s.ballot.bordaActive == '1') {
+        $s.ballot.showGraph = true;
+      }
     };
 
     $s.toggleBorda = function () {

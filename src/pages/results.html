@@ -72,7 +72,7 @@
             <li ng-repeat="result in bordaResults.tally | limitTo:seats">{{result.name}}</li>
           </ol>
         </div>
-        <div style="margin-top: 15px; clear: both" ng-bind-html="bordaTopGraphHtml"></div>
+        <div ng-if="showGraph" style="margin-top: 15px; clear: both" ng-bind-html="bordaTopGraphHtml"></div>
       </div>
       <div ng-if="showGraph && !bordaActive">
         <div

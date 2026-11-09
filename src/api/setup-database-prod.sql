@@ -138,6 +138,7 @@ CREATE TABLE `ballot_management_tokens` (
 CREATE TABLE `users` (
   `id` bigint NOT NULL,
   `username` varchar(64) NOT NULL,
+  `createdAt` datetime NOT NULL DEFAULT (UTC_TIMESTAMP()),
   `email` varchar(64) DEFAULT NULL,
   `image` varchar(256) DEFAULT NULL,
   `role` varchar(64) DEFAULT NULL,
