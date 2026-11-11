@@ -386,6 +386,10 @@ mainApp.controller('MainCtrl', [
           $s.ballot.isSecure = !!parseInt(ballot.isSecure);
           $s.ballot.orderedEntries = !!parseInt(ballot.orderedEntries);
           $s.ballot.allowGrouping = !!parseInt(ballot.allowGrouping);
+          if ($s.ballot.isSecure && $loc.$$search.code) {
+            $s.secure.voterCode = $loc.$$search.code;
+            $s.validateSecureCode();
+          }
           $s.ballot.positions = parseInt(ballot.positions);
           if (ballot.iframeUrl && ballot.iframeUrl !== 'custom') {
             $s.ballot.iframeUrl = $sce.trustAsResourceUrl(ballot.iframeUrl);

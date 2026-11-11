@@ -562,6 +562,24 @@ export function initBallot(scope, http, sce, timeout) {
     }
 
     var ballot = $s.manageBallot;
+
+    // Generate QR codes in a temporary hidden container
+    var tempDiv = document.createElement('div');
+    tempDiv.style.cssText = 'position:absolute;left:-9999px;top:-9999px;';
+    document.body.appendChild(tempDiv);
+
+    var qrDataUrls = [];
+    codes.forEach(function (c) {
+      var codeUrl = $s.origin + '/' + ballot.key + '?code=' + c.code.toUpperCase();
+      var qrDiv = document.createElement('div');
+      tempDiv.appendChild(qrDiv);
+      new QRCode(qrDiv, { text: codeUrl, width: 80, height: 80 });
+      var canvas = qrDiv.querySelector('canvas');
+      qrDataUrls.push(canvas.toDataURL('image/png'));
+    });
+
+    document.body.removeChild(tempDiv);
+
     var html =
       '<!DOCTYPE html><html><head><title>Voter Codes - ' +
       ballot.name +
@@ -574,6 +592,8 @@ export function initBallot(scope, http, sce, timeout) {
       '.grid { display: grid; grid-template-columns: repeat(3, 1fr); }' +
       '.code-cell { border: 1px solid #ccc; margin: -0.5px; padding: 24px 16px; text-align: center; break-inside: avoid; }' +
       '.code-cell .code { font-family: monospace; font-size: 32px; letter-spacing: 6px; font-weight: bold; text-transform: uppercase; }' +
+      '.code-cell .qr { margin: 8px 0; }' +
+      '.code-cell .qr img { width: 80px; height: 80px; }' +
       '.code-cell .label { font-size: 11px; color: #999; margin-top: 6px; }' +
       '.code-cell .ballot-name { font-size: 12px; color: #777; margin-bottom: 6px; }' +
       '@media print { .instructions { break-after: avoid; } }' +
@@ -592,7 +612,8 @@ export function initBallot(scope, http, sce, timeout) {
       '</div>' +
       '<div class="grid">';
 
-    codes.forEach(function (c) {
+    codes.forEach(function (c, i) {
+      var codeUrl = $s.origin + '/' + ballot.key + '?code=' + c.code.toUpperCase();
       html +=
         '<div class="code-cell">' +
         '<div class="ballot-name">' +
@@ -601,10 +622,11 @@ export function initBallot(scope, http, sce, timeout) {
         '<div class="code">' +
         c.code.toUpperCase() +
         '</div>' +
+        '<div class="qr"><img src="' +
+        qrDataUrls[i] +
+        '"/></div>' +
         '<div class="label">' +
-        $s.origin +
-        '/' +
-        ballot.key +
+        codeUrl +
         '</div>' +
         '</div>';
     });
