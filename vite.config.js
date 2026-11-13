@@ -159,6 +159,10 @@ export default defineConfig({
         {
           src: 'admin.html',
           dest: '.'
+        },
+        {
+          src: 'proposal',
+          dest: '.'
         }
       ]
     })

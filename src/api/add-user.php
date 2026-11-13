@@ -5,6 +5,12 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 
 $acceptableFields = array("username", "email", "image", "password");
 
+if (empty($_POST['username']) || !trim($_POST['username'])) {
+	echo json_encode(array('error' => 'Username is required'));
+	exit;
+}
+$_POST['username'] = trim($_POST['username']);
+
 $columns = array();
 $placeholders = array();
 $params = array();

@@ -111,6 +111,7 @@ class SchemaDriftTest extends TestCase
      */
     private const EXPECTED_PROD_TABLES = [
         'ballots',
+        'cached_info',
         'contributions',
         'entries',
         'random_codes',

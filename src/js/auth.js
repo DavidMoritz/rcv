@@ -69,6 +69,11 @@ export function initAuth(scope, http, loc, resetNavFn) {
   };
 
   $s.createNewAccount = function () {
+    if (!$s.newAccount.username || !$s.newAccount.username.trim()) {
+      alert('Username is required');
+      return;
+    }
+    $s.newAccount.username = $s.newAccount.username.trim();
     $http.get('/api/check-user.php?user=' + $s.newAccount.username).then(function (resp) {
       if (resp.data.length) {
         alert($s.newAccount.username + ' is already taken');

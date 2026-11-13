@@ -39,6 +39,9 @@ if ($innerPdo instanceof Pdo\Sqlite) {
     $innerPdo->createFunction('RAND', function () {
         return mt_rand() / mt_getrandmax();
     }, 0);
+    $innerPdo->createFunction('YEAR', function ($dateStr) {
+        return $dateStr ? (int) date('Y', strtotime($dateStr)) : null;
+    }, 1);
 } else {
     $innerPdo->sqliteCreateFunction('NOW', function () {
         return date('Y-m-d H:i:s');
@@ -49,6 +52,9 @@ if ($innerPdo instanceof Pdo\Sqlite) {
     $innerPdo->sqliteCreateFunction('RAND', function () {
         return mt_rand() / mt_getrandmax();
     }, 0);
+    $innerPdo->sqliteCreateFunction('YEAR', function ($dateStr) {
+        return $dateStr ? (int) date('Y', strtotime($dateStr)) : null;
+    }, 1);
 }
 
 // Wrap in TestPDO to intercept SET statements and DATE_SUB

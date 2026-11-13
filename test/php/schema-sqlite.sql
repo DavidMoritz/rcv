@@ -106,6 +106,13 @@ CREATE TABLE votes (
 );
 CREATE INDEX idx_ballot_fingerprint ON votes (ballotId, fingerprint);
 
+CREATE TABLE cached_info (
+  `key` varchar(64) NOT NULL,
+  value text NOT NULL DEFAULT '{}',
+  updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`key`)
+);
+
 CREATE TABLE voter_group_fields (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   ballot_id int NOT NULL,

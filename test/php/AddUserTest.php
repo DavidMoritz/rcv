@@ -21,14 +21,13 @@ class AddUserTest extends ApiTestCase
         $this->assertEquals('alice', $sth->fetchColumn());
     }
 
-    public function testReturnsIdEvenWithNoUserFields(): void
+    public function testRejectsEmptyUsername(): void
     {
-        // add-user.php always inserts at minimum the server-generated id,
-        // so the error branch (`failed to supply info`) is unreachable.
         $result = $this->callApi('add-user.php', []);
 
         $this->assertIsArray($result['body']);
-        $this->assertArrayHasKey('id', $result['body'], 'A bare id-only row is always inserted');
+        $this->assertArrayHasKey('error', $result['body']);
+        $this->assertEquals('Username is required', $result['body']['error']);
     }
 
     public function testIgnoresNonAcceptableFields(): void

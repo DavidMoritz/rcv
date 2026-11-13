@@ -11,6 +11,11 @@
   }
 }
 /* About page */
+.about-stats {
+  color: #555;
+  font-size: 15px;
+  line-height: 1.7;
+}
 .about-hero {
   background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
   border-left: 4px solid #5cb85c;

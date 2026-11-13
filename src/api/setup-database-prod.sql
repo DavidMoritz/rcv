@@ -177,6 +177,18 @@ CREATE TABLE `votes` (
 
 
 
+# Dump of table cached_info
+# ------------------------------------------------------------
+
+CREATE TABLE `cached_info` (
+  `key` varchar(64) NOT NULL,
+  `value` json NOT NULL,
+  `updated` datetime NOT NULL DEFAULT (UTC_TIMESTAMP()),
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
 # Dump of table voter_group_fields
 # ------------------------------------------------------------
 

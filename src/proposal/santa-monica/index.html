@@ -1,0 +1,2234 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Proposal: Ranked Choice Voting for Santa Monica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Noto+Serif:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --sm-blue: #00529b;
+        --sm-blue-light: #e8f0f8;
+        --sm-blue-dark: #003366;
+        --accent: #2a9d8f;
+        --accent-light: #e6f5f3;
+        --text: #2d3748;
+        --text-light: #718096;
+        --text-dark: #1a202c;
+        --bg: #fafbfc;
+        --card-bg: #ffffff;
+        --border: #e2e8f0;
+        --border-light: #edf2f7;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family:
+          'Manrope',
+          -apple-system,
+          sans-serif;
+        line-height: 1.75;
+        color: var(--text);
+        background: var(--bg);
+        margin: 0;
+        padding: 0;
+        font-size: 16px;
+      }
+
+      /* ── Hero ── */
+      .hero {
+        background: linear-gradient(135deg, var(--sm-blue) 0%, var(--sm-blue-dark) 100%);
+        color: #fff;
+        padding: 80px 24px 60px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent), var(--sm-blue), var(--accent));
+      }
+      .hero-label {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 16px;
+      }
+      .hero h1 {
+        font-family: 'Noto Serif', serif;
+        font-size: clamp(28px, 5vw, 44px);
+        font-weight: 700;
+        margin: 0 0 16px;
+        line-height: 1.2;
+      }
+      .hero .subtitle {
+        font-size: 18px;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.85);
+        max-width: 600px;
+        margin: 0 auto 24px;
+      }
+      .hero-meta {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 32px;
+      }
+
+      /* ── Layout ── */
+      .wrapper {
+        display: flex;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 24px;
+        gap: 48px;
+      }
+
+      /* ── Sidebar / TOC ── */
+      .sidebar {
+        width: 240px;
+        flex-shrink: 0;
+        padding-top: 48px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+      }
+      .toc {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .toc-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--text-light);
+        margin-bottom: 12px;
+      }
+      .toc li {
+        margin-bottom: 2px;
+      }
+      .toc a {
+        display: block;
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-light);
+        text-decoration: none;
+        border-radius: 6px;
+        border-left: 3px solid transparent;
+        transition: all 0.2s;
+      }
+      .toc a:hover {
+        color: var(--sm-blue);
+        background: var(--sm-blue-light);
+      }
+      .toc a.active {
+        color: var(--sm-blue);
+        border-left-color: var(--sm-blue);
+        background: var(--sm-blue-light);
+        font-weight: 600;
+      }
+      .toc ul {
+        list-style: none;
+        padding-left: 12px;
+        margin: 2px 0 0 0;
+      }
+      .toc ul a {
+        font-size: 12px;
+      }
+
+      /* ── Highlights & Notes ── */
+      .content .highlighted {
+        background: #fff9c4;
+        border-radius: 3px;
+        box-shadow:
+          -4px 0 0 #fff9c4,
+          4px 0 0 #fff9c4;
+      }
+      .content p:hover,
+      .content li:hover,
+      .content td:hover,
+      .content h2:hover,
+      .content h3:hover,
+      .content h4:hover {
+        cursor: pointer;
+      }
+      .section-note-btn {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        background: #ffe4e8;
+        border: 1px solid #f5b0bb;
+        border-radius: 50%;
+        font-size: 14px;
+        line-height: 20px;
+        text-align: center;
+        color: #c06;
+        cursor: pointer;
+        margin-left: 8px;
+        vertical-align: middle;
+        transition: all 0.2s;
+      }
+      .section-note-btn:hover {
+        background: #c06;
+        color: #fff;
+        border-color: #c06;
+      }
+      .sticky-note {
+        background: #ffe4e8;
+        border: 1px solid #f5b0bb;
+        border-radius: 6px;
+        padding: 8px 12px;
+        margin: 8px 0 12px;
+        font-size: 13px;
+        font-family: 'Manrope', sans-serif;
+        position: relative;
+      }
+      .sticky-note textarea {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        font-family: 'Manrope', sans-serif;
+        resize: vertical;
+        min-height: 40px;
+        outline: none;
+      }
+      .sticky-note .note-delete {
+        position: absolute;
+        top: 4px;
+        right: 8px;
+        cursor: pointer;
+        color: #999;
+        font-size: 14px;
+        line-height: 1;
+      }
+      .sticky-note .note-delete:hover {
+        color: #c00;
+      }
+
+      /* ── Main Content ── */
+      .content {
+        flex: 1;
+        min-width: 0;
+        padding: 48px 0 120px;
+      }
+
+      /* ── Sections ── */
+      section {
+        margin-bottom: 64px;
+        scroll-margin-top: 24px;
+      }
+
+      h2 {
+        font-family: 'Noto Serif', serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0 0 8px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--border);
+      }
+
+      h3 {
+        font-family: 'Noto Serif', serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 32px 0 12px;
+      }
+
+      h4 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 24px 0 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      p {
+        margin: 0 0 16px;
+      }
+
+      ul,
+      ol {
+        margin: 0 0 16px;
+        padding-left: 24px;
+      }
+      li {
+        margin-bottom: 6px;
+      }
+
+      strong {
+        color: var(--text-dark);
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 28px;
+        margin: 20px 0;
+      }
+      .card h3 {
+        margin-top: 0;
+      }
+
+      .card.highlight {
+        border-color: var(--sm-blue);
+        border-width: 2px;
+        background: var(--sm-blue-light);
+      }
+      .card.highlight h3 {
+        color: var(--sm-blue);
+      }
+
+      .card.accent {
+        border-left: 4px solid var(--accent);
+        background: var(--accent-light);
+      }
+
+      /* ── Phase Cards ── */
+      .phase {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 32px;
+        margin: 24px 0;
+        position: relative;
+      }
+      .phase-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: var(--sm-blue);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        border-radius: 50%;
+        margin-bottom: 12px;
+      }
+      .phase-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .phase h3 {
+        margin: 0;
+        font-size: 22px;
+      }
+      .phase-meta {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .phase-tag {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+      .tag-time {
+        background: #ebf8ff;
+        color: #2b6cb0;
+      }
+      .tag-cost {
+        background: #f0fff4;
+        color: #276749;
+      }
+      .tag-hours {
+        background: #faf5ff;
+        color: #6b46c1;
+      }
+
+      /* ── Tables ── */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        font-size: 14px;
+      }
+      thead th {
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--text-light);
+        padding: 10px 16px;
+        border-bottom: 2px solid var(--border);
+      }
+      tbody td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-light);
+        vertical-align: top;
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      tbody tr:hover {
+        background: var(--bg);
+      }
+      .total-row td {
+        font-weight: 700;
+        border-top: 2px solid var(--border);
+        color: var(--text-dark);
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+      }
+
+      /* ── Callout ── */
+      .callout {
+        background: var(--sm-blue-light);
+        border-radius: 10px;
+        padding: 24px 28px;
+        margin: 24px 0;
+        border: 1px solid rgba(0, 82, 155, 0.15);
+      }
+      .callout p:last-child {
+        margin-bottom: 0;
+      }
+      .callout strong {
+        color: var(--sm-blue-dark);
+      }
+
+      .callout.green {
+        background: var(--accent-light);
+        border-color: rgba(42, 157, 143, 0.2);
+      }
+      .callout.green strong {
+        color: #1a7a6d;
+      }
+
+      /* ── Blockchain Diagram ── */
+      .chain-visual {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        margin: 28px 0;
+        flex-wrap: wrap;
+      }
+      .chain-step {
+        text-align: center;
+        padding: 16px;
+        flex: 1;
+        min-width: 120px;
+      }
+      .chain-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--sm-blue-light);
+        color: var(--sm-blue);
+        font-size: 24px;
+        margin-bottom: 8px;
+      }
+      .chain-step .label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+      .chain-step .sublabel {
+        font-size: 11px;
+        color: var(--text-light);
+      }
+      .chain-arrow {
+        font-size: 20px;
+        color: var(--border);
+        flex-shrink: 0;
+      }
+
+      /* ── Comparison ── */
+      .vs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin: 20px 0;
+      }
+      .vs-card {
+        border-radius: 12px;
+        padding: 24px;
+      }
+      .vs-card.theirs {
+        background: #fff5f5;
+        border: 1px solid #fed7d7;
+      }
+      .vs-card.ours {
+        background: var(--accent-light);
+        border: 1px solid rgba(42, 157, 143, 0.2);
+      }
+      .vs-card h4 {
+        margin-top: 0;
+      }
+      .vs-card ul {
+        margin-bottom: 0;
+      }
+
+      /* ── Footer ── */
+      .footer {
+        background: var(--text-dark);
+        color: rgba(255, 255, 255, 0.7);
+        padding: 48px 24px;
+        text-align: center;
+        font-size: 14px;
+      }
+      .footer a {
+        color: #fff;
+        text-decoration: none;
+      }
+      .footer-links {
+        margin-top: 16px;
+      }
+      .footer-links a {
+        margin: 0 16px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .footer-links a:hover {
+        color: #fff;
+      }
+
+      /* ── Utilities ── */
+      .muted {
+        color: var(--text-light);
+      }
+      .small {
+        font-size: 13px;
+      }
+      .nowrap {
+        white-space: nowrap;
+      }
+
+      /* ── Mobile ── */
+      @media (max-width: 768px) {
+        .sidebar {
+          display: none;
+        }
+        .wrapper {
+          padding: 0 16px;
+        }
+        .content {
+          padding: 24px 0 80px;
+        }
+        .hero {
+          padding: 48px 16px 40px;
+        }
+        .hero h1 {
+          font-size: 28px;
+        }
+        h2 {
+          font-size: 22px;
+        }
+        h3 {
+          font-size: 17px;
+        }
+        .vs {
+          grid-template-columns: 1fr;
+        }
+        .phase-header {
+          flex-direction: column;
+        }
+        .chain-arrow {
+          display: none;
+        }
+        .chain-visual {
+          gap: 4px;
+        }
+        .card {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        table {
+          font-size: 13px;
+        }
+        thead th,
+        tbody td {
+          padding: 8px 10px;
+        }
+        .sticky-note textarea {
+          font-size: 16px; /* prevents iOS zoom on focus */
+        }
+        section {
+          margin-bottom: 48px;
+        }
+      }
+
+      /* ── Password Gate ── */
+      .gate {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: linear-gradient(135deg, var(--sm-blue) 0%, var(--sm-blue-dark) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: #fff;
+        font-family:
+          'Manrope',
+          -apple-system,
+          sans-serif;
+      }
+      .gate.hidden {
+        display: none;
+      }
+      .gate-box {
+        text-align: center;
+        max-width: 360px;
+        padding: 0 24px;
+      }
+      .gate-box h1 {
+        font-family: 'Noto Serif', serif;
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+      .gate-box p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 0 24px;
+      }
+      .gate-input {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 16px;
+        font-family: inherit;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        text-align: center;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .gate-input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+      .gate-input:focus {
+        border-color: var(--accent);
+      }
+      .gate-input.error {
+        border-color: #e53e3e;
+        animation: shake 0.4s ease-in-out;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-8px);
+        }
+        75% {
+          transform: translateX(8px);
+        }
+      }
+      body.gated .hero,
+      body.gated .wrapper,
+      body.gated .footer {
+        display: none;
+      }
+
+      /* ── Collapsible Sections ── */
+      .content details {
+        margin: 20px 0;
+        border-left: 3px solid var(--sm-blue-light);
+        padding-left: 16px;
+      }
+      .content summary {
+        cursor: pointer;
+        font-family: 'Noto Serif', serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--sm-blue);
+        list-style: none;
+        padding: 4px 0;
+        margin: 0;
+      }
+      .content summary::-webkit-details-marker {
+        display: none;
+      }
+      .content summary::marker {
+        content: '';
+      }
+      .content summary::before {
+        content: '▶';
+        display: inline-block;
+        font-size: 12px;
+        margin-right: 8px;
+        transition: transform 0.2s;
+      }
+      .content details[open] > summary::before {
+        transform: rotate(90deg);
+      }
+      .content details[open] > summary {
+        color: var(--sm-blue-dark);
+        margin-bottom: 4px;
+      }
+
+      @media print {
+        .gate {
+          display: none !important;
+        }
+        body.gated .hero,
+        body.gated .wrapper,
+        body.gated .footer {
+          display: block !important;
+        }
+        .sidebar {
+          display: none;
+        }
+        .hero {
+          padding: 32px;
+          background: #fff;
+          color: #000;
+        }
+        .hero h1 {
+          color: #000;
+        }
+        .hero .subtitle,
+        .hero-label {
+          color: #666;
+        }
+        .hero::after {
+          display: none;
+        }
+        section {
+          break-inside: avoid;
+        }
+        .phase {
+          break-inside: avoid;
+        }
+        .content details {
+          border-left: none;
+          padding-left: 0;
+        }
+        .content summary::before {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="gated">
+    <!-- ── Password Gate ── -->
+    <div class="gate" id="gate">
+      <div class="gate-box">
+        <h1>This document is private</h1>
+        <p>Enter the access code to continue</p>
+        <input
+          type="password"
+          class="gate-input"
+          id="gate-input"
+          placeholder="Access code"
+          autocomplete="off"
+          autofocus
+        />
+      </div>
+    </div>
+    <script>
+      (function () {
+        var CODE = 'santamonica';
+        var KEY = 'sm-proposal-auth';
+        var gate = document.getElementById('gate');
+        var input = document.getElementById('gate-input');
+
+        function unlock() {
+          document.body.classList.remove('gated');
+          gate.classList.add('hidden');
+          sessionStorage.setItem(KEY, '1');
+        }
+
+        if (sessionStorage.getItem(KEY) === '1') {
+          unlock();
+        }
+
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            if (input.value.toLowerCase().trim() === CODE) {
+              unlock();
+            } else {
+              input.classList.add('error');
+              input.value = '';
+              setTimeout(function () {
+                input.classList.remove('error');
+              }, 400);
+            }
+          }
+        });
+      })();
+    </script>
+
+    <!-- ── HERO ── -->
+    <div class="hero">
+      <div class="hero-label">Proposal</div>
+      <h1>Ranked Choice Voting<br />for the City of Santa Monica</h1>
+      <p class="subtitle">
+        Open-source, blockchain-verified, publicly auditable — built on software Santa Monica
+        already trusts.
+      </p>
+      <div class="hero-meta">
+        Prepared by David Moritz &middot; November 2026 &middot; Draft for Discussion
+      </div>
+    </div>
+
+    <!-- ── BODY ── -->
+    <div class="wrapper">
+      <!-- ── TOC Sidebar ── -->
+      <nav class="sidebar">
+        <div class="toc-label">Contents</div>
+        <ul class="toc" id="toc">
+          <li><a href="#summary">Executive Summary</a></li>
+          <li><a href="#today">What Exists Today</a></li>
+          <li><a href="#phase1">Phase 1: City Platform</a></li>
+          <li><a href="#phase2">Phase 2: Resident Voting</a></li>
+          <li><a href="#lifecycle">Voter Code Lifecycle</a></li>
+          <li><a href="#blockchain">Blockchain Audit Trail</a></li>
+          <li>
+            <a href="#phase3">Phase 3: Election Readiness</a>
+            <ul>
+              <li><a href="#accessibility">Accessibility</a></li>
+            </ul>
+          </li>
+          <li><a href="#team">Team &amp; Resources</a></li>
+          <li><a href="#costs">Cost Estimates</a></li>
+          <li><a href="#open-source">Open-Source Commitment</a></li>
+          <li><a href="#honest">What This Is &amp; Isn't</a></li>
+          <li><a href="#legal">Why It Can't Go Further</a></li>
+          <li><a href="#next">Next Steps</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- ── Content ── -->
+      <main class="content">
+        <!-- Executive Summary -->
+        <section id="summary">
+          <h2>Executive Summary</h2>
+          <p>
+            The City of Santa Monica already uses Ranked Choices for commission and board
+            appointments. This proposal outlines a path to expand that capability to city-wide
+            community engagement and, potentially, municipal elections.
+          </p>
+          <p>The work is structured in <strong>three phases</strong>:</p>
+
+          <div class="card highlight">
+            <table>
+              <thead>
+                <tr>
+                  <th>Phase</th>
+                  <th>Scope</th>
+                  <th style="text-align: right">Estimated Cost</th>
+                  <th style="text-align: right">Timeline</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>1</strong></td>
+                  <td>Dedicated city platform</td>
+                  <td class="num">$6,000 &ndash; $9,000</td>
+                  <td class="num">2&ndash;4 weeks</td>
+                </tr>
+                <tr>
+                  <td><strong>2</strong></td>
+                  <td>Resident voting system with blockchain audit</td>
+                  <td class="num">$30,000 &ndash; $45,000</td>
+                  <td class="num">2&ndash;3 months</td>
+                </tr>
+                <tr>
+                  <td><strong>3</strong></td>
+                  <td>Municipal election readiness (future vision)</td>
+                  <td class="num">&mdash;</td>
+                  <td class="num">&mdash;</td>
+                </tr>
+                <tr class="total-row">
+                  <td></td>
+                  <td><strong>Total (Phases 1 &amp; 2)</strong></td>
+                  <td class="num">$36,000 &ndash; $54,000</td>
+                  <td class="num">~3&ndash;4 months</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>
+            All software produced will be <strong>open source</strong>. The city pays for
+            development time, not licenses. Santa Monica owns the result.
+          </p>
+        </section>
+
+        <!-- What Exists Today -->
+        <section id="today">
+          <h2>What Exists Today</h2>
+          <p>
+            Ranked Choices is a production web application with
+            <strong>5,000+ registered accounts</strong> and <strong>350,000+ votes</strong> cast
+            over the past decade. In 2026 alone: <strong>11,000+ ballots</strong> and
+            <strong>1,800+ new accounts</strong>. Santa Monica has used it
+            <strong>over a dozen times</strong> for commission appointments since 2025.
+          </p>
+
+          <div class="card">
+            <h4>Current Capabilities</h4>
+            <ul>
+              <li>Ranked choice voting with instant-runoff and multi-seat (STV) algorithms</li>
+              <li>Secure ballots with unique voter codes (6-character alphanumeric)</li>
+              <li>QR code generation for voter code distribution</li>
+              <li>Auto-fill voter code from QR scan</li>
+              <li>Real-time animated results visualization</li>
+              <li>Borda count scoring as an alternative method</li>
+              <li>
+                Drag-and-drop voting optimized for mobile (55% of traffic is mobile, 44% desktop)
+              </li>
+              <li>Open-source codebase (PHP/MySQL backend, JavaScript frontend)</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h4>Organic Adoption — Zero Marketing, Real Usage</h4>
+            <p>
+              Ranked Choices has never spent a dollar on advertising. Every user found it because
+              someone shared a ballot link — via text message, email, or a classroom assignment. In
+              2026, over <strong>15,000 referral visits</strong> came from schools, workplaces, and
+              government agencies.
+            </p>
+            <p>
+              <strong>68% of all traffic is direct links</strong> — the same share-and-vote model
+              proposed for Santa Monica resident engagement. Someone sends a link, the recipient
+              opens it and votes. The analytics prove this flow works at scale.
+            </p>
+            <p>The top organic referral sources tell the story:</p>
+            <ul>
+              <li>
+                <strong>Google Classroom</strong> — teachers running mock elections and civic
+                education exercises (avg. <strong>4 minutes</strong> on site)
+              </li>
+              <li>
+                <strong>Microsoft Teams</strong> — organizations making workplace decisions (avg.
+                <strong>2 minutes</strong>)
+              </li>
+              <li>
+                <strong>Government Teams (.gov)</strong> — federal and state employees sharing
+                ballots through official infrastructure
+              </li>
+              <li>
+                <strong>University platforms</strong> — Schoology, Blackboard, and college portals
+              </li>
+              <li>
+                <strong>AI assistants</strong> — ChatGPT actively recommends Ranked Choices to
+                people searching for RCV tools
+              </li>
+            </ul>
+            <p>
+              Every one of these referral sessions is organic — someone chose to share a specific
+              ballot. No resource pages, no paid placements, no SEO campaigns. The platform grows
+              because people use it and pass it along.
+            </p>
+          </div>
+        </section>
+
+        <!-- Phase 1 -->
+        <section id="phase1">
+          <div class="phase">
+            <div class="phase-number">1</div>
+            <div class="phase-header">
+              <h3>Dedicated City Platform</h3>
+              <div class="phase-meta">
+                <span class="phase-tag tag-time">2&ndash;4 weeks</span>
+                <span class="phase-tag tag-hours">40&ndash;60 hours</span>
+                <span class="phase-tag tag-cost">$6,000&ndash;$9,000</span>
+              </div>
+            </div>
+            <p>
+              A Santa Monica-branded instance for commission appointments and internal use &mdash;
+              professional, reliable, and separate from the public site.
+            </p>
+            <details>
+              <summary>Deliverables &amp; Infrastructure</summary>
+              <h4>Deliverables</h4>
+              <ul>
+                <li>Dedicated deployment (e.g., <code>vote.santamonica.gov</code>)</li>
+                <li>Separate database and server infrastructure</li>
+                <li>City branding &mdash; logo, colors, custom landing page</li>
+                <li>Staff accounts for ballot creation and management</li>
+                <li>Organization-level admin dashboard</li>
+                <li>SSL/HTTPS, documented operations guide</li>
+              </ul>
+              <h4>Infrastructure Options</h4>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Option</th>
+                    <th>Description</th>
+                    <th style="text-align: right">Monthly Cost</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>City subdomain</td>
+                    <td><code>vote.santamonica.gov</code> &rarr; managed cloud</td>
+                    <td class="num">$20&ndash;$40</td>
+                  </tr>
+                  <tr>
+                    <td>AWS serverless</td>
+                    <td>Aurora Serverless + Fargate, scales to zero when idle</td>
+                    <td class="num">$5&ndash;$50</td>
+                  </tr>
+                  <tr>
+                    <td>City-hosted</td>
+                    <td>Deployed on city IT infrastructure</td>
+                    <td class="num">Existing costs</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="small muted">
+                The system is used periodically. Pay-per-use infrastructure means no expensive
+                year-round servers for something that runs intermittently.
+              </p>
+            </details>
+          </div>
+        </section>
+
+        <!-- Phase 2 -->
+        <section id="phase2">
+          <div class="phase">
+            <div class="phase-number">2</div>
+            <div class="phase-header">
+              <h3>Resident Voting System</h3>
+              <div class="phase-meta">
+                <span class="phase-tag tag-time">2&ndash;3 months</span>
+                <span class="phase-tag tag-hours">200&ndash;300 hours</span>
+                <span class="phase-tag tag-cost">$30,000&ndash;$45,000</span>
+              </div>
+            </div>
+            <p>
+              Verified Santa Monica residents participate in ranked-choice community decisions
+              &mdash; participatory budgeting, planning input, advisory polls &mdash; using their
+              own devices.
+            </p>
+
+            <h3>Resident Registry</h3>
+            <ul>
+              <li>City staff registers and verifies residents against city records</li>
+              <li>
+                Each verified resident receives a <strong>unique voter code</strong> &mdash;
+                reusable across all community ballots
+              </li>
+              <li>Status management: pending, verified, suspended</li>
+              <li>Bulk import from existing resident databases</li>
+            </ul>
+
+            <h3>Two-Channel Code Issuance</h3>
+            <h3>Two Voting Channels</h3>
+
+            <details>
+              <summary>In-Person Electronic Voting</summary>
+              <div class="card">
+                <ol>
+                  <li>Voter arrives at polling location, verifies identity with poll worker</li>
+                  <li>
+                    Poll worker marks voter roll and presses
+                    <strong>&ldquo;Issue Code&rdquo;</strong>
+                  </li>
+                  <li>
+                    System generates a unique 6-character code on the spot &mdash; no pre-generated
+                    lists to steal or leak. Only the <strong>hash</strong> of the code is stored in
+                    the database &mdash; even a database administrator cannot see or intercept
+                    usable codes
+                  </li>
+                  <li>
+                    Code prints on a card with QR code &mdash; the only place the plaintext code
+                    exists is the physical card. Voter takes it to a private area (severing the link
+                    between identity and code)
+                  </li>
+                  <li>
+                    Voter scans QR or types the 6-character code on their own device &mdash; QR is a
+                    convenience, the code is the fallback for older phones or accessibility needs
+                  </li>
+                  <li>
+                    Voter ranks choices and submits &mdash;
+                    <strong>code expires 15 minutes after issuance</strong>
+                  </li>
+                  <li>Voter keeps the card as a receipt (proves inclusion, not how they voted)</li>
+                </ol>
+                <p class="small muted">
+                  The 15-minute expiration prevents vote buying &mdash; a code cannot be sold and
+                  used later. If a voter doesn't submit in time, the code expires and their vote is
+                  forfeited. One chance, on site.
+                </p>
+              </div>
+            </details>
+
+            <details>
+              <summary>Mail-In Paper Ballots</summary>
+              <div class="card">
+                <p>
+                  Mail-in ballots are <strong>paper only</strong> &mdash; no electronic codes. The
+                  voter fills out a paper ranked-choice ballot and mails it back. Paper ballots are
+                  scanned and counted separately.
+                </p>
+                <p>
+                  If a voter requested a mail-in ballot but shows up in person, the poll worker
+                  <strong>voids the mail-in ballot</strong> (surrendered or flagged) and issues a
+                  fresh electronic code. This prevents double-voting at the voter roll level &mdash;
+                  no code-to-person linkage required.
+                </p>
+              </div>
+            </details>
+
+            <details>
+              <summary>Single-Blind Voting Model</summary>
+              <div class="card">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Who</th>
+                      <th>Sees Results</th>
+                      <th>Sees Who Voted</th>
+                      <th>Traces Code &rarr; Resident</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Public</td>
+                      <td>Yes</td>
+                      <td>No</td>
+                      <td>No</td>
+                    </tr>
+                    <tr>
+                      <td>Resident (voter)</td>
+                      <td>Yes</td>
+                      <td>No</td>
+                      <td>Only their own</td>
+                    </tr>
+                    <tr>
+                      <td>City admin</td>
+                      <td>Yes</td>
+                      <td>Yes</td>
+                      <td>Yes</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p class="small muted" style="margin: 12px 0 0">
+                  The city can verify every vote came from a verified resident. Residents cannot
+                  trace each other &mdash; preserving ballot secrecy. This mirrors the trust model
+                  of in-person public comment: the city knows who you are, your neighbors don't know
+                  how you voted.
+                </p>
+              </div>
+            </details>
+
+            <details>
+              <summary>Multi-Ballot Support</summary>
+              <ul>
+                <li>One voter code works across all city ballots the resident is assigned to</li>
+                <li>
+                  "Election" wrapper for bundling multiple races or measures under one session
+                </li>
+              </ul>
+            </details>
+          </div>
+        </section>
+
+        <!-- Voter Code Lifecycle -->
+        <section id="lifecycle">
+          <h2>Voter Code Lifecycle</h2>
+          <p>
+            Every voter code carries a public audit trail. All fields below are open data &mdash;
+            anyone can inspect them. No exact timestamps, no sequential IDs, no demographic tags.
+          </p>
+
+          <details>
+            <summary>Code Metadata Fields</summary>
+            <div class="card">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Set When</th>
+                    <th>By Whom</th>
+                    <th>Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <strong><code>code</code></strong>
+                    </td>
+                    <td>Issuance</td>
+                    <td>System (random)</td>
+                    <td>
+                      Unique 6-character voter identifier &mdash; stored as a hash only, never in
+                      plaintext. The printed card is the only place the usable code exists.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong><code>batch_id</code></strong>
+                    </td>
+                    <td>Issuance</td>
+                    <td>System</td>
+                    <td>
+                      Composite key (<code>municipality-election-precinct-worker-sequence</code>)
+                      &mdash; known from the QR code; batch seals after 30+ votes AND 30+ minutes
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong><code>issued_by</code></strong>
+                    </td>
+                    <td>Issuance</td>
+                    <td>Poll worker ID</td>
+                    <td>Which worker generated this code (in-person only)</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong><code>batch_hash</code></strong>
+                    </td>
+                    <td>Batch seal</td>
+                    <td>System</td>
+                    <td>
+                      SHA-256 hash of all rankings in the batch, computed when the batch seals.
+                      Included in Merkle tree and anchored to blockchain. Changing any single
+                      ranking changes the batch hash and breaks the seal.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+
+          <details>
+            <summary>Built-In Fraud Detection</summary>
+            <p>
+              The public data tells a story. Normal patterns are distinguishable from suspicious
+              ones &mdash; and anyone can check:
+            </p>
+
+            <div class="card">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Pattern</th>
+                    <th>Normal</th>
+                    <th>Suspicious</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Batch count per worker</strong></td>
+                    <td>Workers have similar batch counts relative to shift length</td>
+                    <td>Worker #3 has 10 batches while others have 3</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Unclaimed codes per worker</strong></td>
+                    <td>~5% unclaimed (normal)</td>
+                    <td>One worker has 40% unclaimed codes</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Code expiration</strong></td>
+                    <td>Voted within 15 minutes of issuance</td>
+                    <td>Code expired unused &mdash; possible handoff attempt</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+
+          <div class="callout green">
+            <p>
+              <strong
+                >Every code is traceable to the worker who created it, grouped into public batches
+                of 30+, and expires in 15 minutes.</strong
+              >
+              If a poll worker generates extra codes, the pattern is visible &mdash; abnormal batch
+              counts, high unclaimed rates, and suspicious timing all surface in the public data,
+              without ever revealing how any individual voted. All of this data is public and open
+              source &mdash; anyone can audit it.
+            </p>
+          </div>
+        </section>
+
+        <!-- Blockchain -->
+        <section id="blockchain">
+          <h2>Blockchain-Anchored Audit Trail</h2>
+          <p>
+            Every vote generates a cryptographic fingerprint. Those fingerprints are sealed into a
+            public, permanent, tamper-proof record on a public blockchain. If anyone &mdash; the
+            city, a hacker, or even the developer &mdash; tried to change a single vote after the
+            fact, the seal would break and the tampering would be detectable by anyone.
+          </p>
+
+          <div class="chain-visual">
+            <div class="chain-step">
+              <div class="chain-icon">&#9997;</div>
+              <div class="label">Votes Cast</div>
+              <div class="sublabel">30+ ballots per batch</div>
+            </div>
+            <div class="chain-arrow">&rarr;</div>
+            <div class="chain-step">
+              <div class="chain-icon">#</div>
+              <div class="label">Batch Hashed</div>
+              <div class="sublabel">All rankings &rarr; one SHA-256</div>
+            </div>
+            <div class="chain-arrow">&rarr;</div>
+            <div class="chain-step">
+              <div class="chain-icon">&#9653;</div>
+              <div class="label">Merkle Tree</div>
+              <div class="sublabel">Batch hashes bundled</div>
+            </div>
+            <div class="chain-arrow">&rarr;</div>
+            <div class="chain-step">
+              <div class="chain-icon">&#9830;</div>
+              <div class="label">Blockchain</div>
+              <div class="sublabel">Root published on-chain</div>
+            </div>
+            <div class="chain-arrow">&rarr;</div>
+            <div class="chain-step">
+              <div class="chain-icon">&#10003;</div>
+              <div class="label">Anyone Verifies</div>
+              <div class="sublabel">Public, permanent</div>
+            </div>
+          </div>
+
+          <details>
+            <summary>How It Works</summary>
+            <ol>
+              <li>
+                Voter receives a QR code from their poll worker. The code contains a
+                <strong>batch ID</strong> (e.g. <code>SM-2026GE-P4-W12-003</code>) &mdash; the voter
+                knows their batch immediately. The code is stored in the database as a hash only
+                &mdash; the printed card is the only place the usable code exists
+              </li>
+              <li>
+                Voter submits their ballot. The system validates the code (hashes it, matches
+                against the stored hash) and records the vote in the batch. Individual votes have no
+                separate hash or identifier &mdash; they exist only as anonymous entries in the
+                batch
+              </li>
+              <li>
+                A batch seals after 30+ votes and 30+ minutes &mdash; then all rankings in the batch
+                are published together, in random order. Batch open and close times are public;
+                individual vote times are not recorded
+              </li>
+              <li>
+                When a batch seals, a single <strong>batch hash</strong> is computed from all
+                rankings in the batch. At election close, all batch hashes are sealed into a
+                <strong>Merkle tree</strong> and the root is published to a
+                <strong>public blockchain</strong> &mdash; permanent, immutable, verifiable by
+                anyone
+              </li>
+              <li>
+                Anyone can download a batch's published rankings, recompute the batch hash, and
+                confirm it matches the Merkle tree. Changing any single ranking would produce a
+                different hash and break the seal
+              </li>
+            </ol>
+          </details>
+
+          <h3>Verification Through Recognition</h3>
+          <div class="card">
+            <p>After the election, a voter looks up their batch:</p>
+            <ol>
+              <li>
+                They scan the batch's published rankings (30+ anonymous ballots) and
+                <strong>recognize their own</strong> &mdash; &ldquo;that's mine &mdash; Alice first,
+                Bob second, Carol third &mdash; unchanged&rdquo;
+              </li>
+              <li>
+                They recompute the batch hash from the published rankings and confirm it matches the
+                Merkle tree on the blockchain &mdash;
+                <strong>the batch is intact, no tampering</strong>
+              </li>
+            </ol>
+            <p style="margin: 16px 0 0">
+              The voter <em>knows</em> their vote is there. But they cannot <em>prove</em> it. There
+              is no individual vote hash, no receipt pointing to a specific ballot &mdash; only a
+              batch of 30+ anonymous rankings. A vote buyer asks &ldquo;prove you voted for
+              Alice&rdquo; &mdash; the voter can only point to a batch of 30+ votes, some for Alice
+              and some not. Dead end.
+            </p>
+          </div>
+
+          <details>
+            <summary>What Anyone Can Verify &amp; What No One Can Do</summary>
+            <h4>What Anyone Can Verify</h4>
+            <ul>
+              <li>
+                <strong>&ldquo;Was my vote counted?&rdquo;</strong> &mdash; The voter recognizes
+                their exact rankings in their batch's published list.
+              </li>
+              <li>
+                <strong>&ldquo;Was my vote altered?&rdquo;</strong> &mdash; Recompute the batch hash
+                from the published rankings &mdash; it must match the Merkle tree on the blockchain.
+                Any change breaks the seal.
+              </li>
+              <li>
+                <strong>&ldquo;Were any votes tampered with?&rdquo;</strong> &mdash; Changing a
+                single ranking in any batch changes its hash, which changes the Merkle root and
+                breaks the blockchain seal.
+              </li>
+              <li>
+                <strong>&ldquo;Were fake votes added?&rdquo;</strong> &mdash; The total number of
+                votes across all batches must match the total number of issued codes (code hashes
+                are counted, not plaintext).
+              </li>
+            </ul>
+
+            <h4>What No One Can Do (By Design)</h4>
+            <ul>
+              <li>
+                <strong>&ldquo;Prove how someone voted&rdquo;</strong> &mdash; No link exists
+                between a hash and a specific vote within a batch. Not for the voter, not for the
+                city, not for a court order.
+              </li>
+              <li>
+                <strong>&ldquo;Buy a vote&rdquo;</strong> &mdash; A buyer cannot verify the seller
+                actually voted as promised. The receipt proves inclusion, not content.
+              </li>
+              <li>
+                <strong>&ldquo;Identify a voter from public data&rdquo;</strong> &mdash; No
+                timestamps, no sequential IDs, no demographics. Only UUIDs, opaque hashes, and
+                worker batches of 30+.
+              </li>
+            </ul>
+          </details>
+
+          <div class="callout green">
+            <p>
+              <strong
+                >This is the balance that election security researchers have sought for
+                decades:</strong
+              >
+              voters can personally verify their vote was counted and unchanged, while no one
+              &mdash; including the voter &mdash; can cryptographically prove how any individual
+              voted. Verification through recognition, not proof. Trust without receipts.
+            </p>
+          </div>
+
+          <div class="callout green">
+            <p>
+              <strong>Cost of blockchain anchoring: less than one cent per election.</strong> The
+              entire cryptographic audit trail for a city-wide vote costs less than a cup of coffee.
+              The security value is permanent.
+            </p>
+          </div>
+        </section>
+
+        <!-- Phase 3 -->
+        <section id="phase3">
+          <div class="phase">
+            <div class="phase-number">3</div>
+            <div class="phase-header">
+              <h3>Municipal Election Readiness</h3>
+              <div class="phase-meta">
+                <span class="phase-tag tag-time">Future Vision</span>
+              </div>
+            </div>
+            <p>
+              If California law evolves to allow locally certified digital voting systems, the
+              platform built in Phases 1 and 2 would be the natural foundation for binding municipal
+              RCV elections.
+            </p>
+
+            <p class="callout">
+              <strong>This phase requires a change in California law.</strong> Today, all voting
+              systems used in binding public elections must be certified by the Secretary of State
+              and run on air-gapped, offline hardware. No web-based system &mdash; open source or
+              otherwise &mdash; currently qualifies. Phase 3 represents what becomes possible if the
+              legislative landscape evolves, not a deliverable on a timeline.
+            </p>
+
+            <details id="accessibility">
+              <summary>Accessibility (ADA / Section 508)</summary>
+              <p>
+                Accessibility is not an afterthought &mdash; it is a core design requirement. This
+                system will meet WCAG 2.1 AA standards and be fully usable by voters who are blind,
+                low-vision, or have motor impairments.
+              </p>
+              <ul>
+                <li>
+                  <strong>Full screen reader support</strong> for the ranked-choice voting interface
+                  (VoiceOver on iOS, TalkBack on Android, NVDA/JAWS on desktop) &mdash; as a voter
+                  touches or navigates to a candidate, the name is read aloud; as they move a
+                  candidate, the new rank position is announced; on submission, the full ranking is
+                  read back for confirmation
+                </li>
+                <li>
+                  <strong>Keyboard-only navigation</strong> for all voting functions &mdash; no
+                  mouse or touch required
+                </li>
+                <li><strong>High-contrast mode</strong> and configurable font sizes</li>
+                <li>
+                  <strong>Multi-language support</strong> (Spanish, Russian &mdash; Santa Monica's
+                  key demographics)
+                </li>
+                <li>Testing with real assistive technology users before deployment</li>
+              </ul>
+              <h4>Accessible Voting Mode for Blind &amp; Low-Vision Voters</h4>
+              <p>
+                Rather than retrofitting drag-and-drop for screen readers, the system offers a
+                dedicated <strong>accessible voting mode</strong> &mdash; a guided, conversational
+                flow designed natively for how blind users already interact with their devices:
+              </p>
+              <div class="card">
+                <ol>
+                  <li>
+                    <strong>Prompt on entry:</strong> &ldquo;This ballot has accessibility features
+                    for screen readers. Would you like to activate accessible voting mode?&rdquo;
+                  </li>
+                  <li>
+                    <strong>Read all candidates:</strong> &ldquo;There are 12 candidates for City
+                    Council. They are: Caroline Torosis, Brett Shuster, Daniel Hall&hellip;&rdquo;
+                  </li>
+                  <li>
+                    <strong>Select first choice:</strong> &ldquo;Who is your first choice?&rdquo;
+                    &mdash; voter navigates a simple list by swiping, double-taps to select
+                  </li>
+                  <li>
+                    <strong>Confirm and continue:</strong> &ldquo;Caroline Torosis is your first
+                    choice. Who is your second choice?&rdquo; &mdash; selected candidates are
+                    removed from the list
+                  </li>
+                  <li>
+                    <strong>Optional exit at any step:</strong> &ldquo;Would you like to rank
+                    another candidate, or are you done?&rdquo;
+                  </li>
+                  <li>
+                    <strong>Final review:</strong> &ldquo;Your rankings are: 1. Caroline Torosis, 2.
+                    Daniel Hall, 3. Brett Shuster. Would you like to submit, or make changes?&rdquo;
+                  </li>
+                </ol>
+                <p class="small muted" style="margin: 12px 0 0">
+                  No spatial reasoning required. No dragging. Each step is a simple, familiar list
+                  selection with continuous verbal confirmation. A blind voter ranks candidates as
+                  confidently and independently as a sighted voter.
+                </p>
+              </div>
+              <div class="callout">
+                <p>
+                  <strong>A personal note:</strong> I spent a full year using my phone exclusively
+                  through VoiceOver after my screen broke. I understand firsthand how blind users
+                  interact with touch interfaces &mdash; the tap-to-identify, swipe-to-navigate,
+                  double-tap-to-activate patterns. This accessible voting mode is designed around
+                  those exact interaction patterns.
+                </p>
+              </div>
+            </details>
+
+            <details>
+              <summary>Security, Compliance &amp; Integration</summary>
+              <h4>Cryptographic Verifiability</h4>
+              <p>
+                For binding elections, the system will use established cryptographic techniques
+                &mdash; proven in real elections in Norway, Switzerland, and US municipalities
+                &mdash; that allow any voter to verify their vote was counted and any auditor to
+                verify the complete tally, while making it mathematically impossible for anyone to
+                prove how an individual voted. This is an active area of election security research
+                with open-source implementations available.
+              </p>
+
+              <h4>Security Certification</h4>
+              <ul>
+                <li>Independent third-party penetration testing</li>
+                <li>Code audit by accredited security assessor</li>
+                <li>Documentation of security architecture for city IT review</li>
+              </ul>
+
+              <h4>Election Law Compliance</h4>
+              <ul>
+                <li>California election code requirements for RCV</li>
+                <li>Consultation with election law attorneys</li>
+                <li>
+                  Coordination with the
+                  <a href="https://www.rcvresources.org" target="_blank">RCV Resource Center</a>
+                </li>
+              </ul>
+
+              <h4>Integration &amp; Hybrid Voting</h4>
+              <ul>
+                <li>
+                  Interoperability with Hart InterCivic (current election vendor) for non-RCV races
+                </li>
+                <li>Paper ballot design for mail-in RCV</li>
+                <li>Poll book integration for in-person code issuance</li>
+                <li>Paper + electronic dual-channel tabulation with reconciliation</li>
+              </ul>
+            </details>
+          </div>
+        </section>
+
+        <!-- Team -->
+        <section id="team">
+          <h2>Team &amp; Resources</h2>
+
+          <h3>What I Bring</h3>
+          <ul>
+            <li>10 years of ranked choice voting expertise</li>
+            <li>Production RCV software already in use by Santa Monica</li>
+            <li>Full-stack development (PHP, JavaScript, MySQL, cloud infrastructure)</li>
+            <li>Open-source philosophy &mdash; no licensing, no lock-in</li>
+            <li>Rapid prototyping &mdash; fast turnaround on UI and features</li>
+          </ul>
+
+          <details>
+            <summary>External Resources Needed</summary>
+            <div class="card">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Role</th>
+                    <th>Purpose</th>
+                    <th>Engagement</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Election law attorney</td>
+                    <td>CA election code, ballot initiative language</td>
+                    <td>As needed</td>
+                  </tr>
+                  <tr>
+                    <td>Security auditor</td>
+                    <td>Penetration testing, code audit</td>
+                    <td>One-time + periodic</td>
+                  </tr>
+                  <tr>
+                    <td>Accessibility tester</td>
+                    <td>ADA compliance validation</td>
+                    <td>2&ndash;4 weeks</td>
+                  </tr>
+                  <tr>
+                    <td>RCV policy advisor</td>
+                    <td>Ben Allen / BBI / FairVote / RCV Resource Center</td>
+                    <td>Ongoing advisory</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </section>
+
+        <!-- Costs -->
+        <section id="costs">
+          <h2>Cost Estimates</h2>
+
+          <div class="callout">
+            <p>
+              <strong>Consulting model:</strong> All work billed at <strong>$150/hour</strong>. The
+              city pays for development time and receives open-source software it owns. No licensing
+              fees, no per-election charges, no recurring subscription. After delivery, support and
+              enhancements continue at the same rate. The city is never locked in.
+            </p>
+          </div>
+
+          <h3>Phase Breakdown</h3>
+          <div class="card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Phase</th>
+                  <th style="text-align: right">Hours</th>
+                  <th style="text-align: right">Cost</th>
+                  <th style="text-align: right">Timeline</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Phase 1: Dedicated Platform</td>
+                  <td class="num">40&ndash;60</td>
+                  <td class="num">$6,000&ndash;$9,000</td>
+                  <td class="num">2&ndash;4 weeks</td>
+                </tr>
+                <tr>
+                  <td>Phase 2: Resident Voting</td>
+                  <td class="num">200&ndash;300</td>
+                  <td class="num">$30,000&ndash;$45,000</td>
+                  <td class="num">2&ndash;3 months</td>
+                </tr>
+                <tr>
+                  <td>Phase 3: Election Readiness (future vision)</td>
+                  <td class="num">&mdash;</td>
+                  <td class="num">&mdash;</td>
+                  <td class="num">&mdash;</td>
+                </tr>
+                <tr class="total-row">
+                  <td><strong>Total (Phases 1 &amp; 2)</strong></td>
+                  <td class="num"><strong>240&ndash;360</strong></td>
+                  <td class="num"><strong>$36,000&ndash;$54,000</strong></td>
+                  <td class="num"><strong>~3&ndash;4 mo</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <details>
+            <summary>Additional Costs (Not Included Above)</summary>
+            <div class="card">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th style="text-align: right">Estimated Cost</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Security audit <em>(Phase 3 only)</em></td>
+                    <td class="num">$15,000&ndash;$50,000</td>
+                    <td>Third-party; only relevant if Phase 3 becomes feasible</td>
+                  </tr>
+                  <tr>
+                    <td>Election law consultation <em>(Phase 3 only)</em></td>
+                    <td class="num">$5,000&ndash;$20,000</td>
+                    <td>City counsel or outside attorney</td>
+                  </tr>
+                  <tr>
+                    <td>Accessibility testing <em>(Phase 3 only)</em></td>
+                    <td class="num">$5,000&ndash;$10,000</td>
+                    <td>Specialized assistive tech testers</td>
+                  </tr>
+                  <tr>
+                    <td>Cloud infrastructure</td>
+                    <td class="num">$50&ndash;$500/yr</td>
+                    <td>Usage-based, minimal</td>
+                  </tr>
+                  <tr>
+                    <td>Blockchain anchoring</td>
+                    <td class="num">&lt;$10/yr</td>
+                    <td>Polygon transaction fees</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </section>
+
+        <!-- Open Source -->
+        <section id="open-source">
+          <h2>Open-Source Commitment</h2>
+          <div class="card accent">
+            <ul>
+              <li>
+                <strong>All code produced will be open source</strong> (MIT or similar permissive
+                license)
+              </li>
+              <li>
+                <strong>Santa Monica will own the deployment</strong> &mdash; not a license to use
+                my software, but actual ownership
+              </li>
+              <li>
+                <strong>Any citizen, journalist, or auditor can inspect the code</strong> that
+                counts their votes
+              </li>
+              <li>
+                <strong>No vendor lock-in</strong> &mdash; the city can hire a different developer
+                if desired and the code is theirs
+              </li>
+              <li>
+                <strong>Independent verification</strong> &mdash; anyone can download the software,
+                load the published vote data, and recount independently
+              </li>
+            </ul>
+          </div>
+          <p>
+            The argument for open source in elections is simple: if you can't see how the sausage is
+            made, you can't trust the sausage. Open source means there's nowhere to hide.
+          </p>
+        </section>
+
+        <!-- Honest -->
+        <section id="honest">
+          <h2>What This Is &mdash; and What It Isn't</h2>
+
+          <h3>What it is</h3>
+          <ul>
+            <li>
+              A secure, accessible, open-source platform for ranked-choice community engagement and
+              voting
+            </li>
+            <li>Blockchain-anchored audit trail for tamper-evident vote records</li>
+            <li>
+              A system where any voter can verify their own vote and any auditor can verify the
+              complete results
+            </li>
+            <li>
+              Built and owned by the city, maintained by a developer who believes in election
+              integrity over profit
+            </li>
+          </ul>
+
+          <h3>What it is not</h3>
+          <ul>
+            <li>
+              A certified election system &mdash; California requires Secretary of State
+              certification and air-gapped hardware for binding elections, which no web-based
+              platform meets today
+            </li>
+            <li>A replacement for the city's existing election infrastructure</li>
+          </ul>
+
+          <div class="callout">
+            <p>
+              <strong>The honest path:</strong> Phases 1 and 2 are well-defined and achievable with
+              high confidence. Phase 3 is a vision &mdash; it represents what becomes possible if
+              California law evolves to permit new classes of voting systems. I'd rather be upfront
+              about that boundary than overpromise.
+            </p>
+          </div>
+        </section>
+
+        <!-- Legal Restrictions -->
+        <section id="legal">
+          <h2>Why This Can't Be Used for Official Elections</h2>
+
+          <p>
+            California law draws a sharp line between <em>how votes are counted</em> (the voting
+            method) and <em>what system counts them</em> (the voting system). A city can adopt
+            ranked choice voting as its method. But the system that casts and tabulates those
+            ballots must meet state requirements that no internet-based tool can satisfy today.
+          </p>
+
+          <p>
+            These are the specific laws. Anyone who uses Ranked Choices and wonders why it can't
+            simply be adopted for city council elections deserves a straight answer.
+          </p>
+
+          <div class="card">
+            <h4>Elections Code &sect;19205 &mdash; No Internet, Period</h4>
+            <p>
+              No part of a voting system may be connected to the internet
+              <strong>at any time</strong>. No part may transmit or receive data through any
+              external communication network. No part may use wireless communication of any kind.
+            </p>
+            <p>
+              A web application is, by definition, a system that sends and receives data over the
+              internet. This statute is an absolute ban with no exceptions for tabulation-only
+              tools, supplemental systems, or open-source software.
+            </p>
+            <p class="small muted">
+              <a
+                href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=ELEC&sectionNum=19205"
+                target="_blank"
+              >
+                Cal. Elec. Code &sect;19205
+              </a>
+            </p>
+          </div>
+
+          <div class="card">
+            <h4>Elections Code &sect;362 &mdash; What Counts as a &ldquo;Voting System&rdquo;</h4>
+            <p>
+              A &ldquo;voting system&rdquo; is any electronic system and its software used for
+              <strong>casting a ballot, tabulating votes, or both</strong>. The only exception is
+              remote accessible vote-by-mail systems (an accessibility accommodation, not a general
+              exemption).
+            </p>
+            <p>
+              An RCV web application that tabulates ranked ballots meets this definition. Once
+              classified as a voting system, every requirement in Division 19 of the Elections Code
+              applies &mdash; including the internet ban above.
+            </p>
+            <p class="small muted">
+              <a
+                href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=ELEC&sectionNum=362"
+                target="_blank"
+              >
+                Cal. Elec. Code &sect;362
+              </a>
+            </p>
+          </div>
+
+          <div class="card">
+            <h4>Elections Code &sect;19202 &mdash; Secretary of State Certification Required</h4>
+            <p>
+              No voting system may be used in any California election unless it has been
+              <strong>certified or conditionally approved</strong> by the Secretary of State. No
+              jurisdiction may purchase or contract for an uncertified system.
+            </p>
+            <p>
+              Certification requires testing by an accredited laboratory, a complete security
+              review, source code escrow, and an air-gapped architecture. An internet-dependent
+              system cannot pass this process. No web-based voting application has ever been
+              certified in California.
+            </p>
+            <p class="small muted">
+              <a
+                href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=ELEC&sectionNum=19202"
+                target="_blank"
+              >
+                Cal. Elec. Code &sect;19202
+              </a>
+            </p>
+          </div>
+
+          <div class="card">
+            <h4>Elections Code &sect;19103 &mdash; Source Code Escrow</h4>
+            <p>
+              An exact copy of the source code for all ballot tally software must be placed in an
+              approved escrow facility <strong>before</strong> the system is used. This applies to
+              every version and every modification.
+            </p>
+            <p>
+              A web application that is continuously updated and runs server-side cannot satisfy
+              this requirement in the way the statute contemplates &mdash; fixed, version-controlled
+              binaries placed in escrow before each election.
+            </p>
+            <p class="small muted">
+              <a
+                href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=ELEC&sectionNum=19103"
+                target="_blank"
+              >
+                Cal. Elec. Code &sect;19103
+              </a>
+            </p>
+          </div>
+
+          <div class="card">
+            <h4>Charter City Authority &mdash; Method Yes, System No</h4>
+            <p>
+              Under the California Constitution (Article XI, &sect;5), charter cities have broad
+              authority over municipal affairs. This is why San Francisco, Oakland, and Berkeley
+              have adopted ranked choice voting for their elections.
+            </p>
+            <p>
+              But adopting a voting <em>method</em> does not exempt a city from voting
+              <em>system</em> requirements. San Francisco uses a certified Dominion system to run
+              its RCV elections &mdash; not a web application. Santa Monica can choose to count
+              votes by ranked choice, but the equipment that casts and counts those ballots must
+              still be state-certified, air-gapped, and offline.
+            </p>
+          </div>
+
+          <div class="callout">
+            <p>
+              <strong>What this means in practice:</strong> Everything in Phases 1 and 2 &mdash;
+              commission appointments, community surveys, participatory budgeting &mdash; is fully
+              legal because those are not official public elections under state law. Phase 3 is what
+              becomes possible if California's legislative framework evolves to accommodate new
+              classes of voting systems. Until then, binding elections must use the County's
+              certified infrastructure. Ranked Choices could verify and visualize results from that
+              infrastructure, but it cannot replace it today.
+            </p>
+          </div>
+        </section>
+
+        <!-- Next Steps -->
+        <section id="next">
+          <h2>Next Steps</h2>
+          <div class="card">
+            <ol>
+              <li>
+                <strong>Meeting with ISD/IT</strong> &mdash; Discuss infrastructure, security
+                requirements, and integration
+              </li>
+              <li>
+                <strong>Phase 1 agreement</strong> &mdash; Scope, timeline, and billing arrangement
+                for the dedicated platform
+              </li>
+              <li>
+                <strong>Legal consultation</strong> &mdash; City attorney to advise on California
+                requirements for RCV adoption
+              </li>
+              <li>
+                <strong>Research delivery</strong> &mdash; Voter satisfaction data and demographic
+                research for council presentation (via Ben Allen / Better Ballot Iowa)
+              </li>
+              <li>
+                <strong>Council update</strong> &mdash; Progress report in next council session
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact">
+          <h2>Contact</h2>
+          <div class="card">
+            <p>
+              <strong>David Moritz</strong><br />
+              Creator, <a href="https://rankedchoices.com">Ranked Choices</a><br />
+              davidmoritz@gmail.com
+            </p>
+            <p style="margin-bottom: 0">
+              <strong>Ben Allen</strong><br />
+              Executive Director, Better Ballot Iowa<br />
+              ben.allen@betterballotiowa.org
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ── FOOTER ── -->
+    <div class="footer">
+      <p>
+        This proposal is a starting point for discussion. Scope, timeline, and costs will be refined
+        as we learn more about the city's requirements.
+      </p>
+      <p class="small">Nothing in this document constitutes a binding commitment.</p>
+      <div class="footer-links">
+        <a href="https://rankedchoices.com">rankedchoices.com</a>
+      </div>
+    </div>
+
+    <!-- ── TOC Active State ── -->
+    <script>
+      (function () {
+        var links = document.querySelectorAll('.toc a');
+        var sections = [];
+        links.forEach(function (a) {
+          var target = document.querySelector(a.getAttribute('href'));
+          if (target) sections.push({ link: a, el: target });
+        });
+
+        function update() {
+          var active = sections[0];
+          for (var i = 0; i < sections.length; i++) {
+            if (sections[i].el.getBoundingClientRect().top <= 100) active = sections[i];
+          }
+          links.forEach(function (a) {
+            a.classList.remove('active');
+          });
+          if (active) active.link.classList.add('active');
+        }
+
+        window.addEventListener('scroll', update, { passive: true });
+        update();
+      })();
+    </script>
+
+    <!-- ── Highlights (click to highlight paragraphs/list items) ── -->
+    <script>
+      (function () {
+        var STORAGE_KEY = 'sm-proposal-highlights';
+
+        function getPath(el) {
+          var parts = [];
+          while (el && el !== document.body) {
+            var parent = el.parentElement;
+            if (!parent) break;
+            var siblings = Array.prototype.filter.call(parent.children, function (c) {
+              return c.tagName === el.tagName;
+            });
+            parts.unshift(el.tagName + '[' + siblings.indexOf(el) + ']');
+            el = parent;
+          }
+          return parts.join('>');
+        }
+
+        function fromPath(path) {
+          var el = document.body;
+          var steps = path.split('>');
+          for (var i = 0; i < steps.length; i++) {
+            var m = steps[i].match(/^(\w+)\[(\d+)\]$/);
+            if (!m) return null;
+            var tag = m[1],
+              idx = parseInt(m[2]);
+            var children = Array.prototype.filter.call(el.children, function (c) {
+              return c.tagName === tag;
+            });
+            el = children[idx];
+            if (!el) return null;
+          }
+          return el;
+        }
+
+        function load() {
+          try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+          } catch (e) {
+            return [];
+          }
+        }
+
+        function save(paths) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(paths));
+        }
+
+        // Restore highlights
+        var highlighted = load();
+        highlighted.forEach(function (p) {
+          var el = fromPath(p);
+          if (el) el.classList.add('highlighted');
+        });
+
+        // Click to toggle highlight
+        document.querySelector('.content').addEventListener('click', function (e) {
+          // Don't highlight if they clicked a link, button, or inside a sticky note
+          if (e.target.closest('a, button, summary, .sticky-note, .section-note-btn')) return;
+          var el = e.target.closest('td, h2, h3, h4, p, li');
+          if (!el || !el.closest('.content')) return;
+
+          var path = getPath(el);
+          el.classList.toggle('highlighted');
+
+          var paths = load();
+          var idx = paths.indexOf(path);
+          if (idx > -1) paths.splice(idx, 1);
+          else paths.push(path);
+          save(paths);
+        });
+      })();
+    </script>
+
+    <!-- ── Sticky Notes (per-section) ── -->
+    <script>
+      (function () {
+        var STORAGE_KEY = 'sm-proposal-notes';
+
+        function loadNotes() {
+          try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+          } catch (e) {
+            return {};
+          }
+        }
+
+        function saveNotes(notes) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+        }
+
+        function createNoteEl(sectionId, text) {
+          var div = document.createElement('div');
+          div.className = 'sticky-note';
+          div.innerHTML =
+            '<span class="note-delete">&times;</span><textarea placeholder="Add a note\u2026"></textarea>';
+          var textarea = div.querySelector('textarea');
+          textarea.value = text || '';
+
+          textarea.addEventListener('input', function () {
+            var notes = loadNotes();
+            if (textarea.value.trim()) {
+              notes[sectionId] = textarea.value;
+            } else {
+              delete notes[sectionId];
+            }
+            saveNotes(notes);
+          });
+
+          div.querySelector('.note-delete').addEventListener('click', function () {
+            div.remove();
+            var notes = loadNotes();
+            delete notes[sectionId];
+            saveNotes(notes);
+          });
+
+          return div;
+        }
+
+        // Add note buttons to each section and restore saved notes
+        var sections = document.querySelectorAll('.content section[id]');
+        var notes = loadNotes();
+
+        sections.forEach(function (section) {
+          var id = section.id;
+
+          // Add the "+" button inline next to the section heading
+          var heading = section.querySelector('h2, h3');
+          if (!heading) return;
+          var btn = document.createElement('span');
+          btn.className = 'section-note-btn';
+          btn.textContent = '+';
+          btn.title = 'Add a note to this section';
+          heading.appendChild(btn);
+
+          btn.addEventListener('click', function () {
+            // Don't add duplicate
+            if (section.querySelector('.sticky-note')) {
+              section.querySelector('.sticky-note textarea').focus();
+              return;
+            }
+            var noteEl = createNoteEl(id, '');
+            section.insertBefore(noteEl, section.children[1]);
+            noteEl.querySelector('textarea').focus();
+          });
+
+          // Restore saved note
+          if (notes[id]) {
+            var noteEl = createNoteEl(id, notes[id]);
+            section.insertBefore(noteEl, section.children[1]);
+          }
+        });
+      })();
+    </script>
+
+    <!-- ── Print: force all details open ── -->
+    <script>
+      (function () {
+        window.addEventListener('beforeprint', function () {
+          document.querySelectorAll('details:not([open])').forEach(function (d) {
+            d.setAttribute('open', '');
+            d.dataset.printOpened = 'true';
+          });
+        });
+        window.addEventListener('afterprint', function () {
+          document.querySelectorAll('details[data-print-opened]').forEach(function (d) {
+            d.removeAttribute('open');
+            delete d.dataset.printOpened;
+          });
+        });
+      })();
+    </script>
+
+    <!-- ── Auto-open details on hash navigation ── -->
+    <script>
+      (function () {
+        function openTargetDetails() {
+          var hash = window.location.hash;
+          if (!hash) return;
+          var target = document.querySelector(hash);
+          if (!target) return;
+          var details = target.tagName === 'DETAILS' ? target : target.closest('details');
+          if (details && !details.hasAttribute('open')) {
+            details.setAttribute('open', '');
+          }
+        }
+        window.addEventListener('hashchange', openTargetDetails);
+        openTargetDetails();
+      })();
+    </script>
+  </body>
+</html>

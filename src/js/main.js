@@ -307,6 +307,13 @@ mainApp.controller('MainCtrl', [
           break;
         case 'manage':
           break;
+        case 'about':
+          if (!$s.aboutStats) {
+            $http.get('/api/get-stats.php').then(function (resp) {
+              $s.aboutStats = resp.data.data;
+            });
+          }
+          break;
         case 'hall_of_fame':
           getContributions();
           break;
