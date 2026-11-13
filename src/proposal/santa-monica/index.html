@@ -52,6 +52,10 @@
         font-size: 16px;
       }
 
+      [hide] {
+        display: none !important;
+      }
+
       /* ── Hero ── */
       .hero {
         background: linear-gradient(135deg, var(--sm-blue) 0%, var(--sm-blue-dark) 100%);
@@ -823,14 +827,10 @@
           <li><a href="#today">What Exists Today</a></li>
           <li><a href="#phase1">Phase 1: City Platform</a></li>
           <li><a href="#phase2">Phase 2: Resident Voting</a></li>
-          <li><a href="#lifecycle">Voter Code Lifecycle</a></li>
+          <li><a href="#lifecycle">Double-Blind Code Lifecycle</a></li>
           <li><a href="#blockchain">Blockchain Audit Trail</a></li>
-          <li>
-            <a href="#phase3">Phase 3: Election Readiness</a>
-            <ul>
-              <li><a href="#accessibility">Accessibility</a></li>
-            </ul>
-          </li>
+          <li><a href="#accessibility">Accessibility</a></li>
+          <li><a href="#phase3">Phase 3: Election Readiness</a></li>
           <li><a href="#team">Team &amp; Resources</a></li>
           <li><a href="#costs">Cost Estimates</a></li>
           <li><a href="#open-source">Open-Source Commitment</a></li>
@@ -1053,54 +1053,25 @@
               <li>City staff registers and verifies residents against city records</li>
               <li>
                 Each verified resident receives a <strong>unique voter code</strong> &mdash;
-                reusable across all community ballots
+                reusable across all community ballots (single-blind: the city can verify
+                participation, but results remain anonymous)
               </li>
-              <li>Status management: pending, verified, suspended</li>
+              <li>
+                The resident's device is fingerprinted to their code so only that device can vote
+                using that code, preventing fraud
+              </li>
+              <li>Residant status management: (e.g. pending, verified, suspended)</li>
               <li>Bulk import from existing resident databases</li>
+              <li>
+                At the administration's discretion, specific ballots can use
+                <strong>one-time codes</strong> instead &mdash; for double-blind engagement where
+                not even the city knows how participants voted
+              </li>
             </ul>
 
-            <h3>Two-Channel Code Issuance</h3>
             <h3>Two Voting Channels</h3>
 
-            <details>
-              <summary>In-Person Electronic Voting</summary>
-              <div class="card">
-                <ol>
-                  <li>Voter arrives at polling location, verifies identity with poll worker</li>
-                  <li>
-                    Poll worker marks voter roll and presses
-                    <strong>&ldquo;Issue Code&rdquo;</strong>
-                  </li>
-                  <li>
-                    System generates a unique 6-character code on the spot &mdash; no pre-generated
-                    lists to steal or leak. Only the <strong>hash</strong> of the code is stored in
-                    the database &mdash; even a database administrator cannot see or intercept
-                    usable codes
-                  </li>
-                  <li>
-                    Code prints on a card with QR code &mdash; the only place the plaintext code
-                    exists is the physical card. Voter takes it to a private area (severing the link
-                    between identity and code)
-                  </li>
-                  <li>
-                    Voter scans QR or types the 6-character code on their own device &mdash; QR is a
-                    convenience, the code is the fallback for older phones or accessibility needs
-                  </li>
-                  <li>
-                    Voter ranks choices and submits &mdash;
-                    <strong>code expires 15 minutes after issuance</strong>
-                  </li>
-                  <li>Voter keeps the card as a receipt (proves inclusion, not how they voted)</li>
-                </ol>
-                <p class="small muted">
-                  The 15-minute expiration prevents vote buying &mdash; a code cannot be sold and
-                  used later. If a voter doesn't submit in time, the code expires and their vote is
-                  forfeited. One chance, on site.
-                </p>
-              </div>
-            </details>
-
-            <details>
+            <details hide>
               <summary>Mail-In Paper Ballots</summary>
               <div class="card">
                 <p>
@@ -1157,26 +1128,63 @@
                   how you voted.
                 </p>
               </div>
-            </details>
-
-            <details>
-              <summary>Multi-Ballot Support</summary>
+              <h4>Multi-Ballot Support</h4>
               <ul>
                 <li>One voter code works across all city ballots the resident is assigned to</li>
+                <li>They vote on their device, at their convenience, within the voting window</li>
                 <li>
                   "Election" wrapper for bundling multiple races or measures under one session
                 </li>
               </ul>
             </details>
+
+            <details>
+              <summary>In-Person Double-Blind Voting</summary>
+              <div class="card">
+                <ol>
+                  <li>Voter arrives at polling location, verifies identity with poll worker</li>
+                  <li>
+                    Poll worker marks voter roll and presses
+                    <strong>&ldquo;Issue Code&rdquo;</strong>
+                  </li>
+                  <li>
+                    System generates a unique 6-character code on the spot &mdash; no pre-generated
+                    lists to steal or leak. Only the <strong>hash</strong> of the code is stored in
+                    the database &mdash; even a database administrator cannot see or intercept
+                    usable codes
+                  </li>
+                  <li>
+                    Code prints on a card with QR code &mdash; the only place the plaintext code
+                    exists is the physical card. Voter takes it to a private area (severing the link
+                    between identity and code)
+                  </li>
+                  <li>
+                    Voter scans QR or types the 6-character code on their own device &mdash; QR is a
+                    convenience, the code is the fallback for older phones or accessibility needs
+                  </li>
+                  <li>
+                    Voter ranks choices and submits &mdash;
+                    <strong>code expires 15 minutes after issuance</strong>
+                  </li>
+                  <li>Voter keeps the card as a receipt (proves inclusion, not how they voted)</li>
+                </ol>
+                <p class="small muted">
+                  The 15-minute expiration prevents vote buying &mdash; a code cannot be sold and
+                  used later. If a voter doesn't submit in time, the code expires and their vote is
+                  forfeited. One chance, on site.
+                </p>
+              </div>
+            </details>
           </div>
         </section>
 
-        <!-- Voter Code Lifecycle -->
+        <!-- Doubl Code Lifecycle -->
         <section id="lifecycle">
-          <h2>Voter Code Lifecycle</h2>
+          <h2>Double-Blind Code Lifecycle</h2>
           <p>
-            Every voter code carries a public audit trail. All fields below are open data &mdash;
-            anyone can inspect them. No exact timestamps, no sequential IDs, no demographic tags.
+            Every voter code in the in-person double-blind voting model carries a public audit
+            trail. All fields below are open data &mdash; anyone can inspect them. No exact
+            timestamps, no sequential IDs, no demographic tags.
           </p>
 
           <details>
@@ -1194,7 +1202,7 @@
                 <tbody>
                   <tr>
                     <td>
-                      <strong><code>code</code></strong>
+                      <strong><code>code_hash</code></strong>
                     </td>
                     <td>Issuance</td>
                     <td>System (random)</td>
@@ -1224,14 +1232,13 @@
                   </tr>
                   <tr>
                     <td>
-                      <strong><code>batch_hash</code></strong>
+                      <strong><code>used</code></strong>
                     </td>
-                    <td>Batch seal</td>
+                    <td>Vote submission</td>
                     <td>System</td>
                     <td>
-                      SHA-256 hash of all rankings in the batch, computed when the batch seals.
-                      Included in Merkle tree and anchored to blockchain. Changing any single
-                      ranking changes the batch hash and breaks the seal.
+                      Marked spent when a vote is cast &mdash; the torn admission ticket. A used
+                      code cannot be submitted again.
                     </td>
                   </tr>
                 </tbody>
@@ -1294,10 +1301,11 @@
         <section id="blockchain">
           <h2>Blockchain-Anchored Audit Trail</h2>
           <p>
-            Every vote generates a cryptographic fingerprint. Those fingerprints are sealed into a
-            public, permanent, tamper-proof record on a public blockchain. If anyone &mdash; the
-            city, a hacker, or even the developer &mdash; tried to change a single vote after the
-            fact, the seal would break and the tampering would be detectable by anyone.
+            Votes are collected in batches of 30+. When a batch seals, all its rankings are hashed
+            together into a single cryptographic fingerprint. That fingerprint is published to a
+            public blockchain &mdash; permanent and immutable. If anyone changed even one part of
+            one vote after the fact, the hash would no longer match, and the tampering would be
+            detectable by anyone.
           </p>
 
           <div class="chain-visual">
@@ -1450,10 +1458,90 @@
           <div class="callout green">
             <p>
               <strong>Cost of blockchain anchoring: less than one cent per election.</strong> The
-              entire cryptographic audit trail for a city-wide vote costs less than a cup of coffee.
-              The security value is permanent.
+              entire cryptographic audit trail for a city-wide vote is essentially free. The
+              security value is permanent.
             </p>
           </div>
+        </section>
+
+        <!-- Accessibility -->
+        <section id="accessibility">
+          <h2>Accessibility (ADA / Section 508)</h2>
+          <p>
+            If the city chooses to prioritize accessibility, the platform can be built to WCAG 2.1
+            AA standards &mdash; fully usable by voters who are blind, low-vision, or have motor
+            impairments.
+          </p>
+          <ul>
+            <li>
+              <strong>Full screen reader support</strong> for the ranked-choice voting interface
+              (VoiceOver on iOS, TalkBack on Android, NVDA/JAWS on desktop) &mdash; as a voter
+              touches or navigates to a candidate, the name is read aloud; as they move a candidate,
+              the new rank position is announced; on submission, the full ranking is read back for
+              confirmation
+            </li>
+            <li>
+              <strong>Keyboard-only navigation</strong> for all voting functions &mdash; no mouse or
+              touch required
+            </li>
+            <li><strong>High-contrast mode</strong> and configurable font sizes</li>
+            <li>
+              <strong>Multi-language support</strong> (Spanish, Russian &mdash; Santa Monica's key
+              demographics)
+            </li>
+          </ul>
+
+          <details>
+            <summary>Accessible Voting Mode for Blind &amp; Low-Vision Voters</summary>
+            <p>
+              Rather than retrofitting drag-and-drop for screen readers, the system could offer a
+              dedicated <strong>accessible voting mode</strong> &mdash; a guided, conversational
+              flow designed natively for how blind users already interact with their devices:
+            </p>
+            <div class="card">
+              <ol>
+                <li>
+                  <strong>Prompt on entry:</strong> &ldquo;This ballot has accessibility features
+                  for screen readers. Would you like to activate accessible voting mode?&rdquo;
+                </li>
+                <li>
+                  <strong>Read all candidates:</strong> &ldquo;There are 12 candidates for City
+                  Council. They are: Caroline Torosis, Brett Shuster, Daniel Hall&hellip;&rdquo;
+                </li>
+                <li>
+                  <strong>Select first choice:</strong> &ldquo;Who is your first choice?&rdquo;
+                  &mdash; voter navigates a simple list by swiping, double-taps to select
+                </li>
+                <li>
+                  <strong>Confirm and continue:</strong> &ldquo;Caroline Torosis is your first
+                  choice. Who is your second choice?&rdquo; &mdash; selected candidates are removed
+                  from the list
+                </li>
+                <li>
+                  <strong>Optional exit at any step:</strong> &ldquo;Would you like to rank another
+                  candidate, or are you done?&rdquo;
+                </li>
+                <li>
+                  <strong>Final review:</strong> &ldquo;Your rankings are: 1. Caroline Torosis, 2.
+                  Daniel Hall, 3. Brett Shuster. Would you like to submit, or make changes?&rdquo;
+                </li>
+              </ol>
+              <p class="small muted" style="margin: 12px 0 0">
+                No spatial reasoning required. No dragging. Each step is a simple, familiar list
+                selection with continuous verbal confirmation. A blind voter ranks candidates as
+                confidently and independently as a sighted voter.
+              </p>
+            </div>
+            <div class="callout">
+              <p>
+                <strong>A personal note:</strong> I spent a full year using my phone exclusively
+                through VoiceOver after my screen broke. I understand firsthand how blind users
+                interact with touch interfaces &mdash; the tap-to-identify, swipe-to-navigate,
+                double-tap-to-activate patterns. This accessible voting mode is designed around
+                those exact interaction patterns.
+              </p>
+            </div>
+          </details>
         </section>
 
         <!-- Phase 3 -->
@@ -1479,83 +1567,6 @@
               otherwise &mdash; currently qualifies. Phase 3 represents what becomes possible if the
               legislative landscape evolves, not a deliverable on a timeline.
             </p>
-
-            <details id="accessibility">
-              <summary>Accessibility (ADA / Section 508)</summary>
-              <p>
-                Accessibility is not an afterthought &mdash; it is a core design requirement. This
-                system will meet WCAG 2.1 AA standards and be fully usable by voters who are blind,
-                low-vision, or have motor impairments.
-              </p>
-              <ul>
-                <li>
-                  <strong>Full screen reader support</strong> for the ranked-choice voting interface
-                  (VoiceOver on iOS, TalkBack on Android, NVDA/JAWS on desktop) &mdash; as a voter
-                  touches or navigates to a candidate, the name is read aloud; as they move a
-                  candidate, the new rank position is announced; on submission, the full ranking is
-                  read back for confirmation
-                </li>
-                <li>
-                  <strong>Keyboard-only navigation</strong> for all voting functions &mdash; no
-                  mouse or touch required
-                </li>
-                <li><strong>High-contrast mode</strong> and configurable font sizes</li>
-                <li>
-                  <strong>Multi-language support</strong> (Spanish, Russian &mdash; Santa Monica's
-                  key demographics)
-                </li>
-                <li>Testing with real assistive technology users before deployment</li>
-              </ul>
-              <h4>Accessible Voting Mode for Blind &amp; Low-Vision Voters</h4>
-              <p>
-                Rather than retrofitting drag-and-drop for screen readers, the system offers a
-                dedicated <strong>accessible voting mode</strong> &mdash; a guided, conversational
-                flow designed natively for how blind users already interact with their devices:
-              </p>
-              <div class="card">
-                <ol>
-                  <li>
-                    <strong>Prompt on entry:</strong> &ldquo;This ballot has accessibility features
-                    for screen readers. Would you like to activate accessible voting mode?&rdquo;
-                  </li>
-                  <li>
-                    <strong>Read all candidates:</strong> &ldquo;There are 12 candidates for City
-                    Council. They are: Caroline Torosis, Brett Shuster, Daniel Hall&hellip;&rdquo;
-                  </li>
-                  <li>
-                    <strong>Select first choice:</strong> &ldquo;Who is your first choice?&rdquo;
-                    &mdash; voter navigates a simple list by swiping, double-taps to select
-                  </li>
-                  <li>
-                    <strong>Confirm and continue:</strong> &ldquo;Caroline Torosis is your first
-                    choice. Who is your second choice?&rdquo; &mdash; selected candidates are
-                    removed from the list
-                  </li>
-                  <li>
-                    <strong>Optional exit at any step:</strong> &ldquo;Would you like to rank
-                    another candidate, or are you done?&rdquo;
-                  </li>
-                  <li>
-                    <strong>Final review:</strong> &ldquo;Your rankings are: 1. Caroline Torosis, 2.
-                    Daniel Hall, 3. Brett Shuster. Would you like to submit, or make changes?&rdquo;
-                  </li>
-                </ol>
-                <p class="small muted" style="margin: 12px 0 0">
-                  No spatial reasoning required. No dragging. Each step is a simple, familiar list
-                  selection with continuous verbal confirmation. A blind voter ranks candidates as
-                  confidently and independently as a sighted voter.
-                </p>
-              </div>
-              <div class="callout">
-                <p>
-                  <strong>A personal note:</strong> I spent a full year using my phone exclusively
-                  through VoiceOver after my screen broke. I understand firsthand how blind users
-                  interact with touch interfaces &mdash; the tap-to-identify, swipe-to-navigate,
-                  double-tap-to-activate patterns. This accessible voting mode is designed around
-                  those exact interaction patterns.
-                </p>
-              </div>
-            </details>
 
             <details>
               <summary>Security, Compliance &amp; Integration</summary>
@@ -1625,24 +1636,24 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Election law attorney</td>
+                    <td>RCV policy advisor</td>
+                    <td>Ben Allen / BBI / CalRCV / FairVote / RCV Resource Center</td>
+                    <td>Ongoing advisory</td>
+                  </tr>
+                  <tr>
+                    <td>Accessibility tester</td>
+                    <td>ADA compliance validation (if accessibility is prioritized)</td>
+                    <td>2&ndash;4 weeks</td>
+                  </tr>
+                  <tr style="border-top: 2px solid var(--border)">
+                    <td>Election law attorney <em>(Phase 3 only)</em></td>
                     <td>CA election code, ballot initiative language</td>
                     <td>As needed</td>
                   </tr>
                   <tr>
-                    <td>Security auditor</td>
+                    <td>Security auditor <em>(Phase 3 only)</em></td>
                     <td>Penetration testing, code audit</td>
                     <td>One-time + periodic</td>
-                  </tr>
-                  <tr>
-                    <td>Accessibility tester</td>
-                    <td>ADA compliance validation</td>
-                    <td>2&ndash;4 weeks</td>
-                  </tr>
-                  <tr>
-                    <td>RCV policy advisor</td>
-                    <td>Ben Allen / BBI / FairVote / RCV Resource Center</td>
-                    <td>Ongoing advisory</td>
                   </tr>
                 </tbody>
               </table>
@@ -1682,7 +1693,7 @@
                   <td class="num">2&ndash;4 weeks</td>
                 </tr>
                 <tr>
-                  <td>Phase 2: Resident Voting</td>
+                  <td>Phase 2: Resident Engagement</td>
                   <td class="num">200&ndash;300</td>
                   <td class="num">$30,000&ndash;$45,000</td>
                   <td class="num">2&ndash;3 months</td>
@@ -1716,21 +1727,6 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Security audit <em>(Phase 3 only)</em></td>
-                    <td class="num">$15,000&ndash;$50,000</td>
-                    <td>Third-party; only relevant if Phase 3 becomes feasible</td>
-                  </tr>
-                  <tr>
-                    <td>Election law consultation <em>(Phase 3 only)</em></td>
-                    <td class="num">$5,000&ndash;$20,000</td>
-                    <td>City counsel or outside attorney</td>
-                  </tr>
-                  <tr>
-                    <td>Accessibility testing <em>(Phase 3 only)</em></td>
-                    <td class="num">$5,000&ndash;$10,000</td>
-                    <td>Specialized assistive tech testers</td>
-                  </tr>
-                  <tr>
                     <td>Cloud infrastructure</td>
                     <td class="num">$50&ndash;$500/yr</td>
                     <td>Usage-based, minimal</td>
@@ -1739,6 +1735,11 @@
                     <td>Blockchain anchoring</td>
                     <td class="num">&lt;$10/yr</td>
                     <td>Polygon transaction fees</td>
+                  </tr>
+                  <tr>
+                    <td>Accessibility testing <em>(optional)</em></td>
+                    <td class="num">$5,000&ndash;$10,000</td>
+                    <td>Specialized assistive tech testers</td>
                   </tr>
                 </tbody>
               </table>
@@ -1828,7 +1829,10 @@
             California law draws a sharp line between <em>how votes are counted</em> (the voting
             method) and <em>what system counts them</em> (the voting system). A city can adopt
             ranked choice voting as its method. But the system that casts and tabulates those
-            ballots must meet state requirements that no internet-based tool can satisfy today.
+            ballots must meet state requirements that no internet-based tool can satisfy today
+            &mdash; and even a closed local network wouldn't qualify, since the law prohibits
+            transmitting vote data over <em>any</em> communication network, including localized
+            Wi-Fi.
           </p>
 
           <p>
@@ -1836,8 +1840,8 @@
             simply be adopted for city council elections deserves a straight answer.
           </p>
 
-          <div class="card">
-            <h4>Elections Code &sect;19205 &mdash; No Internet, Period</h4>
+          <details>
+            <summary>Elections Code &sect;19205 &mdash; No Internet, Period</summary>
             <p>
               No part of a voting system may be connected to the internet
               <strong>at any time</strong>. No part may transmit or receive data through any
@@ -1856,10 +1860,12 @@
                 Cal. Elec. Code &sect;19205
               </a>
             </p>
-          </div>
+          </details>
 
-          <div class="card">
-            <h4>Elections Code &sect;362 &mdash; What Counts as a &ldquo;Voting System&rdquo;</h4>
+          <details>
+            <summary>
+              Elections Code &sect;362 &mdash; What Counts as a &ldquo;Voting System&rdquo;
+            </summary>
             <p>
               A &ldquo;voting system&rdquo; is any electronic system and its software used for
               <strong>casting a ballot, tabulating votes, or both</strong>. The only exception is
@@ -1879,10 +1885,12 @@
                 Cal. Elec. Code &sect;362
               </a>
             </p>
-          </div>
+          </details>
 
-          <div class="card">
-            <h4>Elections Code &sect;19202 &mdash; Secretary of State Certification Required</h4>
+          <details>
+            <summary>
+              Elections Code &sect;19202 &mdash; Secretary of State Certification Required
+            </summary>
             <p>
               No voting system may be used in any California election unless it has been
               <strong>certified or conditionally approved</strong> by the Secretary of State. No
@@ -1902,10 +1910,10 @@
                 Cal. Elec. Code &sect;19202
               </a>
             </p>
-          </div>
+          </details>
 
-          <div class="card">
-            <h4>Elections Code &sect;19103 &mdash; Source Code Escrow</h4>
+          <details>
+            <summary>Elections Code &sect;19103 &mdash; Source Code Escrow</summary>
             <p>
               An exact copy of the source code for all ballot tally software must be placed in an
               approved escrow facility <strong>before</strong> the system is used. This applies to
@@ -1924,10 +1932,10 @@
                 Cal. Elec. Code &sect;19103
               </a>
             </p>
-          </div>
+          </details>
 
-          <div class="card">
-            <h4>Charter City Authority &mdash; Method Yes, System No</h4>
+          <details>
+            <summary>Charter City Authority &mdash; Method Yes, System No</summary>
             <p>
               Under the California Constitution (Article XI, &sect;5), charter cities have broad
               authority over municipal affairs. This is why San Francisco, Oakland, and Berkeley
@@ -1940,7 +1948,7 @@
               votes by ranked choice, but the equipment that casts and counts those ballots must
               still be state-certified, air-gapped, and offline.
             </p>
-          </div>
+          </details>
 
           <div class="callout">
             <p>
@@ -1951,6 +1959,12 @@
               classes of voting systems. Until then, binding elections must use the County's
               certified infrastructure. Ranked Choices could verify and visualize results from that
               infrastructure, but it cannot replace it today.
+            </p>
+            <p>
+              <strong>That said:</strong> If Santa Monica demonstrates a successful, transparent,
+              and auditable system through Phases 1 and 2, it could strengthen the case for a pilot
+              program or formal exception from the Secretary of State &mdash; the kind of precedent
+              that changes what's possible statewide.
             </p>
           </div>
         </section>
