@@ -634,9 +634,14 @@
         color: rgba(255, 255, 255, 0.7);
         margin: 0 0 24px;
       }
+      .gate-input-wrap {
+        position: relative;
+        width: 100%;
+        margin-bottom: 12px;
+      }
       .gate-input {
         width: 100%;
-        padding: 12px 16px;
+        padding: 12px 40px 12px 16px;
         font-size: 16px;
         font-family: inherit;
         border: 2px solid rgba(255, 255, 255, 0.3);
@@ -656,6 +661,38 @@
       .gate-input.error {
         border-color: #e53e3e;
         animation: shake 0.4s ease-in-out;
+      }
+      .gate-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        font-size: 18px;
+        padding: 4px;
+        line-height: 1;
+      }
+      .gate-toggle:hover {
+        color: rgba(255, 255, 255, 0.8);
+      }
+      .gate-enter {
+        width: 100%;
+        padding: 10px 16px;
+        font-size: 15px;
+        font-family: inherit;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .gate-enter:hover {
+        background: #238b7e;
       }
       @keyframes shake {
         0%,
@@ -761,14 +798,18 @@
       <div class="gate-box">
         <h1>This document is private</h1>
         <p>Enter the access code to continue</p>
-        <input
-          type="password"
-          class="gate-input"
-          id="gate-input"
-          placeholder="Access code"
-          autocomplete="off"
-          autofocus
-        />
+        <div class="gate-input-wrap">
+          <input
+            type="password"
+            class="gate-input"
+            id="gate-input"
+            placeholder="Access code"
+            autocomplete="off"
+            autofocus
+          />
+          <button type="button" class="gate-toggle" id="gate-toggle" aria-label="Show password">&#128065;</button>
+        </div>
+        <button type="button" class="gate-enter" id="gate-enter">Enter</button>
       </div>
     </div>
     <script>
@@ -777,6 +818,8 @@
         var KEY = 'sm-proposal-auth';
         var gate = document.getElementById('gate');
         var input = document.getElementById('gate-input');
+        var toggle = document.getElementById('gate-toggle');
+        var enterBtn = document.getElementById('gate-enter');
 
         function unlock() {
           document.body.classList.remove('gated');
@@ -784,22 +827,33 @@
           sessionStorage.setItem(KEY, '1');
         }
 
+        function tryUnlock() {
+          if (input.value.toLowerCase().trim() === CODE) {
+            unlock();
+          } else {
+            input.classList.add('error');
+            input.value = '';
+            setTimeout(function () {
+              input.classList.remove('error');
+            }, 400);
+          }
+        }
+
         if (sessionStorage.getItem(KEY) === '1') {
           unlock();
         }
 
         input.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter') {
-            if (input.value.toLowerCase().trim() === CODE) {
-              unlock();
-            } else {
-              input.classList.add('error');
-              input.value = '';
-              setTimeout(function () {
-                input.classList.remove('error');
-              }, 400);
-            }
-          }
+          if (e.key === 'Enter') tryUnlock();
+        });
+
+        enterBtn.addEventListener('click', tryUnlock);
+
+        toggle.addEventListener('click', function () {
+          var showing = input.type === 'text';
+          input.type = showing ? 'password' : 'text';
+          toggle.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+          input.focus();
         });
       })();
     </script>
@@ -1164,7 +1218,7 @@
                   </li>
                   <li>
                     Voter ranks choices and submits &mdash;
-                    <strong>code expires 15 minutes after issuance</strong>
+                    <strong>code expires after 15 minutes of inactivity</strong>
                   </li>
                   <li>Voter keeps the card as a receipt (proves inclusion, not how they voted)</li>
                 </ol>
@@ -1275,7 +1329,7 @@
                   </tr>
                   <tr>
                     <td><strong>Code expiration</strong></td>
-                    <td>Voted within 15 minutes of issuance</td>
+                    <td>Voted within 15 minutes of activity</td>
                     <td>Code expired unused &mdash; possible handoff attempt</td>
                   </tr>
                 </tbody>
@@ -1287,7 +1341,7 @@
             <p>
               <strong
                 >Every code is traceable to the worker who created it, grouped into public batches
-                of 30+, and expires in 15 minutes.</strong
+                of 30+, and expires after 15 minutes of inactivity.</strong
               >
               If a poll worker generates extra codes, the pattern is visible &mdash; abnormal batch
               counts, high unclaimed rates, and suspicious timing all surface in the public data,
