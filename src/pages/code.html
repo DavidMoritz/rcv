@@ -109,7 +109,7 @@
             <h1>Ballot: {{ballot.name}}</h1>
             <div>
               <iframe
-                ng-if="ballot.iframeUrl"
+                ng-if="ballot.iframeUrl && ballot.iframeUrl !== 'custom'"
                 ng-src="{{ballot.iframeUrl}}"
                 class="ballot-iframe"
               ></iframe>
